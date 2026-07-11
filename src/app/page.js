@@ -43,10 +43,12 @@ export default function Home() {
             {/* Card 1 */}
             <div className={styles.card}>
               <div className={styles.cardImageWrapper}>
-                {/* Note: In production, place actual preview image in public/images/ */}
-                <div style={{width: '100%', height: '100%', background: '#d5e2d6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5c715e'}}>
-                  [Preview Floral 1]
-                </div>
+                <Image 
+                  src="/images/floral1_preview.png" 
+                  alt="Floral Elegance 1 Preview" 
+                  fill 
+                  style={{objectFit: 'cover', objectPosition: 'top'}} 
+                />
               </div>
               <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>Floral Elegance 1</h3>
