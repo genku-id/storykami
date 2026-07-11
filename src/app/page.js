@@ -52,7 +52,7 @@ export default function Home() {
                 <h3 className={styles.cardTitle}>Floral Elegance 1</h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Minimalis & Romantis</p>
                 {/* Asumsikan template dihosting di /template/template-floral1/index.html */}
-                <a href="#" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+                <a href="/demo/template-floral1/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
               </div>
             </div>
 
