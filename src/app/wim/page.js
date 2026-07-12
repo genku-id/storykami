@@ -58,31 +58,31 @@ export default function WIM() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Pilih Template</label>
-            <select name="templateName" value={formData.templateName} onChange={handleChange} required>
+            <label className={styles.label}>Pilih Template</label>
+            <select name="templateName" value={formData.templateName} onChange={handleChange} required className={styles.input}>
               <option value="template-floral1">Floral 1 (Elegan)</option>
             </select>
           </div>
 
           <div className={styles.formGroup}>
-            <label>URL / Slug Klien</label>
-            <input type="text" name="slug" placeholder="contoh: romeo-juliet" value={formData.slug} onChange={handleChange} required />
-            <small>Link undangan nantinya: storykami.my.id/<strong>{formData.slug || '...'}</strong></small>
+            <label className={styles.label}>URL / Slug Klien</label>
+            <input type="text" name="slug" placeholder="contoh: romeo-juliet" value={formData.slug} onChange={handleChange} required className={styles.input} />
+            <small className={styles.small}>Link undangan nantinya: storykami.my.id/<strong>{formData.slug || '...'}</strong></small>
           </div>
 
           <div className={styles.formGroup}>
-            <label>Judul Mempelai (di Cover)</label>
-            <input type="text" name="coupleName" placeholder="contoh: Romeo & Juliet" value={formData.coupleName} onChange={handleChange} required />
+            <label className={styles.label}>Judul Mempelai (di Cover)</label>
+            <input type="text" name="coupleName" placeholder="contoh: Romeo & Juliet" value={formData.coupleName} onChange={handleChange} required className={styles.input} />
           </div>
 
           <div className={styles.row}>
             <div className={styles.formGroup}>
-              <label>Nama Pengantin Pria</label>
-              <input type="text" name="groomName" placeholder="contoh: Romeo" value={formData.groomName} onChange={handleChange} required />
+              <label className={styles.label}>Nama Pengantin Pria</label>
+              <input type="text" name="groomName" placeholder="contoh: Romeo" value={formData.groomName} onChange={handleChange} required className={styles.input} />
             </div>
             <div className={styles.formGroup}>
-              <label>Nama Pengantin Wanita</label>
-              <input type="text" name="brideName" placeholder="contoh: Juliet" value={formData.brideName} onChange={handleChange} required />
+              <label className={styles.label}>Nama Pengantin Wanita</label>
+              <input type="text" name="brideName" placeholder="contoh: Juliet" value={formData.brideName} onChange={handleChange} required className={styles.input} />
             </div>
           </div>
 
