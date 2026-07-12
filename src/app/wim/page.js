@@ -9,7 +9,8 @@ export default function WIM() {
     slug: '',
     coupleName: '',
     groomName: '',
-    brideName: ''
+    brideName: '',
+    pin: ''
   });
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [message, setMessage] = useState('');
@@ -84,6 +85,11 @@ export default function WIM() {
               <label className={styles.label}>Nama Pengantin Wanita</label>
               <input type="text" name="brideName" placeholder="contoh: Juliet" value={formData.brideName} onChange={handleChange} required className={styles.input} />
             </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>PIN Keamanan (Wajib Diisi)</label>
+            <input type="password" name="pin" placeholder="Masukkan PIN" value={formData.pin} onChange={handleChange} required className={styles.input} />
           </div>
 
           <button type="submit" disabled={status === 'loading'} className={styles.btn}>
