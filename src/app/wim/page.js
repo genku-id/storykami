@@ -14,6 +14,7 @@ export default function WIMDashboard() {
   
   const [slug, setSlug] = useState('');
   const [templateName, setTemplateName] = useState('template-floral1');
+  const [clientWa, setClientWa] = useState('');
   
   // ================= STATE FORM 8 HALAMAN =================
   const [formData, setFormData] = useState({
@@ -141,7 +142,7 @@ export default function WIMDashboard() {
     const payload = {
       slug: slugStr,
       template_name: templateName,
-      data: { ...finalFormData, ...uploadedUrls }
+      data: { ...finalFormData, clientWa, ...uploadedUrls }
     };
 
     const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
@@ -164,6 +165,7 @@ export default function WIMDashboard() {
   const handleEdit = (inv) => {
     setSlug(inv.slug);
     setTemplateName(inv.template_name || 'template-floral1');
+    setClientWa(inv.data.clientWa || '');
     setFormData(prev => ({ ...prev, ...inv.data }));
     setActiveTab('pengaturan');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -215,6 +217,12 @@ export default function WIMDashboard() {
                   <option value="template-floral1">Floral Elegance 1</option>
                   <option value="template-floral2">Floral Elegance 2</option>
                 </select>
+              </div>
+
+              <h3 style={{ marginTop: '20px', marginBottom: '15px', color: '#334155' }}>📱 No. WA Pelanggan</h3>
+              <div className={styles.formGroup}>
+                <input type="text" value={clientWa} onChange={e => setClientWa(e.target.value)} className={styles.input} placeholder="contoh: 6281234567890" />
+                <small style={{ color: '#64748b' }}>Opsional. Gunakan awalan 62 untuk mempermudah kirim link via WhatsApp.</small>
               </div>
             </div>
 
@@ -421,6 +429,13 @@ export default function WIMDashboard() {
                         </a>
                       </td>
                       <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
+                        <button onClick={() => {
+                          const waNum = inv.data.clientWa || '';
+                          const text = encodeURIComponent(`Halo! Berikut adalah link undangan digital pernikahan kalian yang sudah siap:\n\nhttps://storykami.my.id/${inv.slug}\n\nTerima kasih telah mempercayakan StoryKami!`);
+                          window.open(`https://wa.me/${waNum}?text=${text}`, '_blank');
+                        }} style={{ background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0', padding: '6px', borderRadius: '6px', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center' }} title="Kirim WA">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        </button>
                         <button onClick={() => handleEdit(inv)} style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '6px', borderRadius: '6px', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center' }} title="Edit">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </button>
