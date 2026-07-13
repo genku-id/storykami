@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
-import styles from './Floral.module.css'; // Optional if you need custom module css
+
 
 export default function Floral1Template({ data }) {
   const [showCover, setShowCover] = useState(true);
