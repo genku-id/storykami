@@ -162,6 +162,25 @@ export default function WIMDashboard() {
     if (files.length > 0) setImages(prev => ({ ...prev, [name]: files[0] }));
   };
 
+  const getPreviewUrl = (name) => {
+    if (images[name]) return URL.createObjectURL(images[name]);
+    if (formData[name] && typeof formData[name] === 'string') return formData[name];
+    return null;
+  };
+
+  const handleRemoveImage = (name) => {
+    if (images[name]) {
+      setImages(prev => {
+        const newImgs = { ...prev };
+        delete newImgs[name];
+        return newImgs;
+      });
+    }
+    if (formData[name]) {
+      setFormData(prev => ({ ...prev, [name]: null }));
+    }
+  };
+
   const uploadImageToSupabase = async (file, slugName, prefix) => {
     if (!file) return null;
     const fileExt = file.name.split('.').pop();
@@ -312,6 +331,12 @@ export default function WIMDashboard() {
               
               <div className={styles.formGroup} style={{ marginBottom: '20px' }}>
                 <label className={styles.label}>Foto Thumbnail (Rekomendasi rasio 16:9)</label>
+                {getPreviewUrl('thumbnailFoto') && (
+                  <div style={{ position: 'relative', width: '160px', height: '90px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <img src={getPreviewUrl('thumbnailFoto')} alt="Preview Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                  </div>
+                )}
                 <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} />
               </div>
 
@@ -367,6 +392,12 @@ export default function WIMDashboard() {
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Upload Foto Couple (Hero)</label>
+                {getPreviewUrl('hal2_fotoCouple') && (
+                  <div style={{ position: 'relative', width: '100px', height: '140px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <img src={getPreviewUrl('hal2_fotoCouple')} alt="Preview Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button type="button" onClick={() => handleRemoveImage('hal2_fotoCouple')} style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                  </div>
+                )}
                 <input type="file" accept="image/*" name="hal2_fotoCouple" onChange={handleImageChange} className={styles.input} />
               </div>
             </div>
@@ -387,6 +418,12 @@ export default function WIMDashboard() {
               <div className={styles.responsiveGrid} style={{ marginTop: '20px' }}>
                 <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
                   <h4 style={{ marginBottom: '10px' }}>Mempelai Wanita</h4>
+                  {getPreviewUrl('hal3_fotoWanita') && (
+                    <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
+                      <img src={getPreviewUrl('hal3_fotoWanita')} alt="Preview Wanita" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button type="button" onClick={() => handleRemoveImage('hal3_fotoWanita')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                    </div>
+                  )}
                   <input type="file" accept="image/*" name="hal3_fotoWanita" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_namaWanita" value={formData.hal3_namaWanita} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_ortuWanita" value={formData.hal3_ortuWanita} onChange={handleChange} className={styles.input} placeholder="Nama Orang Tua" style={{ marginBottom: '10px' }} />
@@ -395,6 +432,12 @@ export default function WIMDashboard() {
                 
                 <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
                   <h4 style={{ marginBottom: '10px' }}>Mempelai Pria</h4>
+                  {getPreviewUrl('hal3_fotoPria') && (
+                    <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
+                      <img src={getPreviewUrl('hal3_fotoPria')} alt="Preview Pria" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button type="button" onClick={() => handleRemoveImage('hal3_fotoPria')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                    </div>
+                  )}
                   <input type="file" accept="image/*" name="hal3_fotoPria" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_namaPria" value={formData.hal3_namaPria} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_ortuPria" value={formData.hal3_ortuPria} onChange={handleChange} className={styles.input} placeholder="Nama Orang Tua" style={{ marginBottom: '10px' }} />
