@@ -535,7 +535,7 @@ export default function WIMDashboard() {
                   )}
                   <input type="file" accept="image/*" name="hal3_fotoWanita" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_namaWanita" value={formData.hal3_namaWanita} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
-                  <input type="text" name="hal3_ortuWanita" value={formData.hal3_ortuWanita} onChange={handleChange} className={styles.input} placeholder="Nama Orang Tua" style={{ marginBottom: '10px' }} />
+                  <textarea name="hal3_ortuWanita" value={formData.hal3_ortuWanita} onChange={handleChange} className={styles.input} placeholder="Contoh: Putri dari Bapak Budi & Ibu Ani" style={{ marginBottom: '10px', height: '60px' }} />
                   <input type="text" name="hal3_igWanita" value={formData.hal3_igWanita} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @juliet)" />
                 </div>
                 
@@ -549,7 +549,7 @@ export default function WIMDashboard() {
                   )}
                   <input type="file" accept="image/*" name="hal3_fotoPria" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
                   <input type="text" name="hal3_namaPria" value={formData.hal3_namaPria} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
-                  <input type="text" name="hal3_ortuPria" value={formData.hal3_ortuPria} onChange={handleChange} className={styles.input} placeholder="Nama Orang Tua" style={{ marginBottom: '10px' }} />
+                  <textarea name="hal3_ortuPria" value={formData.hal3_ortuPria} onChange={handleChange} className={styles.input} placeholder="Contoh: Putra dari Bapak Joko & Ibu Marni" style={{ marginBottom: '10px', height: '60px' }} />
                   <input type="text" name="hal3_igPria" value={formData.hal3_igPria} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @romeo)" />
                 </div>
               </div>

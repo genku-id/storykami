@@ -299,7 +299,7 @@ export default function Floral2Template({ data }) {
                     </div>
                   </div>
                   <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.hal3_namaWanita || "Nama Wanita"}</h2>
-                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putri dari<br/>{data.hal3_ortuWanita || "Orang Tua"}</p>
+                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s', whiteSpace: 'pre-line' }}>{data.hal3_ortuWanita || "Putri dari Bapak & Ibu"}</p>
                   {data.hal3_igWanita && <a href={`https://instagram.com/${data.hal3_igWanita.replace('@','')}`} target="_blank" className="social-link" data-animate="fade-up" style={{ transitionDelay: '0.6s' }}><i className="fa-brands fa-instagram"></i> {data.hal3_igWanita}</a>}
                 </div>
 
@@ -315,7 +315,7 @@ export default function Floral2Template({ data }) {
                     </div>
                   </div>
                   <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.hal3_namaPria || "Nama Pria"}</h2>
-                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putra dari<br/>{data.hal3_ortuPria || "Orang Tua"}</p>
+                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s', whiteSpace: 'pre-line' }}>{data.hal3_ortuPria || "Putra dari Bapak & Ibu"}</p>
                   {data.hal3_igPria && <a href={`https://instagram.com/${data.hal3_igPria.replace('@','')}`} target="_blank" className="social-link" data-animate="fade-up" style={{ transitionDelay: '0.6s' }}><i className="fa-brands fa-instagram"></i> {data.hal3_igPria}</a>}
                 </div>
               </div>
