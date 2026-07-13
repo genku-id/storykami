@@ -172,9 +172,9 @@ export default function WIMDashboard() {
       <div className={styles.card} style={{ maxWidth: '900px', width: '100%', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
         <h1 className={styles.title} style={{ color: '#1e293b' }}>✨ WIM Dashboard (8 Halaman)</h1>
         
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
-          <button onClick={() => setActiveTab('pengaturan')} className={styles.button} style={{ flex: 1, background: activeTab === 'pengaturan' ? '#3b82f6' : '#cbd5e1', color: activeTab === 'pengaturan' ? '#fff' : '#475569' }}>⚙️ Pengaturan Undangan</button>
-          <button onClick={() => setActiveTab('list')} className={styles.button} style={{ flex: 1, background: activeTab === 'list' ? '#10b981' : '#cbd5e1', color: activeTab === 'list' ? '#fff' : '#475569' }}>📋 Daftar Link Aktif</button>
+        <div className={styles.buttonGroup}>
+          <button onClick={() => setActiveTab('pengaturan')} className={styles.button} style={{ flex: 1, background: activeTab === 'pengaturan' ? '#3b82f6' : '#cbd5e1', color: activeTab === 'pengaturan' ? '#fff' : '#475569', marginBottom: '0' }}>⚙️ Pengaturan Undangan</button>
+          <button onClick={() => setActiveTab('list')} className={styles.button} style={{ flex: 1, background: activeTab === 'list' ? '#10b981' : '#cbd5e1', color: activeTab === 'list' ? '#fff' : '#475569', marginBottom: '0' }}>📋 Daftar Link Aktif</button>
         </div>
 
         {statusMsg && (
@@ -243,7 +243,7 @@ export default function WIMDashboard() {
                 <textarea name="hal3_kataPengantar" value={formData.hal3_kataPengantar} onChange={handleChange} className={styles.input} rows="4" />
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+              <div className={styles.responsiveGrid} style={{ marginTop: '20px' }}>
                 <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
                   <h4 style={{ marginBottom: '10px' }}>Mempelai Wanita</h4>
                   <input type="file" accept="image/*" name="hal3_fotoWanita" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
@@ -287,7 +287,7 @@ export default function WIMDashboard() {
                 <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
                   <h4 style={{ marginBottom: '10px' }}>Acara {i + 1}</h4>
                   {i > 0 && <button type="button" onClick={() => removeArrayItem('hal5_acara', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>Hapus</button>}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div className={styles.responsiveGrid}>
                     <input type="text" value={acara.nama} onChange={e => handleArrayChange('hal5_acara', i, 'nama', e.target.value)} className={styles.input} placeholder="Nama Acara (Akad/Resepsi)" />
                     <input type="text" value={acara.tanggal} onChange={e => handleArrayChange('hal5_acara', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal" />
                     <input type="text" value={acara.jam} onChange={e => handleArrayChange('hal5_acara', i, 'jam', e.target.value)} className={styles.input} placeholder="Jam (08:00 - Selesai)" />
@@ -333,7 +333,7 @@ export default function WIMDashboard() {
                 <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
                   <h4 style={{ marginBottom: '10px', fontSize: '14px' }}>Bank {i + 1}</h4>
                   <button type="button" onClick={() => removeArrayItem('hal7_bank', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>Hapus</button>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div className={styles.responsiveGrid}>
                     <input type="text" value={bank.namaBank} onChange={e => handleArrayChange('hal7_bank', i, 'namaBank', e.target.value)} className={styles.input} placeholder="Nama Bank (BCA / MANDIRI)" />
                     <input type="text" value={bank.rekening} onChange={e => handleArrayChange('hal7_bank', i, 'rekening', e.target.value)} className={styles.input} placeholder="No. Rekening" />
                     <input type="text" value={bank.atasNama} onChange={e => handleArrayChange('hal7_bank', i, 'atasNama', e.target.value)} className={styles.input} placeholder="Atas Nama" />
@@ -378,7 +378,8 @@ export default function WIMDashboard() {
             {invitations.length === 0 ? (
               <p style={{ color: '#64748b' }}>Belum ada undangan yang dibuat.</p>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <div className={styles.tableResponsive}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>
                     <th style={{ padding: '15px', color: '#475569' }}>Nama Slug</th>
@@ -403,7 +404,8 @@ export default function WIMDashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             )}
           </div>
         )}
