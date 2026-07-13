@@ -119,6 +119,12 @@ export default function Floral1Template({ data }) {
         {/* ================= HALAMAN 1 (COVER) ================= */}
         {data.show_hal1 !== false && (
           <div id="cover-page" className={`cover-page ${!showCover ? 'slide-up' : ''}`}>
+            {/* Animated Clouds Background */}
+            <div className="cloud cloud-1"></div>
+            <div className="cloud cloud-2"></div>
+            <div className="cloud cloud-3"></div>
+            <div className="floral-bottom-cover"></div>
+
             <div className="cover-content text-center">
               <h4 className="text-sage mb-2" data-animate="fade-up">THE WEDDING OF</h4>
               <h1 className="title-names-cursive text-dark-gold mt-3 mb-4" data-animate="zoom-in" style={{ fontSize: '3.5rem' }}>
@@ -143,6 +149,11 @@ export default function Floral1Template({ data }) {
           {/* ================= HALAMAN 2 (HERO) ================= */}
           {data.show_hal2 !== false && (
             <section id="hero" className="section hero-section bg-cream">
+              {/* Animated Clouds Background */}
+              <div className="cloud cloud-1"></div>
+              <div className="cloud cloud-2"></div>
+              <div className="cloud cloud-3"></div>
+
               <div className="floral-corner floral-pattern-1 floral-top-left"></div>
               <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
               <div className="hero-content text-center">
@@ -152,6 +163,7 @@ export default function Floral1Template({ data }) {
                 <h1 className="title-names text-sage mb-3 mt-4" data-animate="slide-right">{data.hal1_namaPasangan || "Nama Pasangan"}</h1>
                 <p className="date-highlight mb-4" data-animate="slide-left">{data.hal2_tanggalAcara || "Tanggal Acara"}</p>
               </div>
+              <div className="floral-bottom-hero"></div>
             </section>
           )}
 
