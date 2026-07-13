@@ -10,7 +10,30 @@ export default function Floral1Template({ data }) {
   useEffect(() => {
     // Lock scroll on mount
     document.body.classList.add('locked');
-    return () => document.body.classList.remove('locked');
+
+    // Animasi Scroll (memunculkan elemen text & foto yang hidden oleh data-animate)
+    const animateElements = document.querySelectorAll('[data-animate]');
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            } else {
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, observerOptions);
+
+    animateElements.forEach(el => observer.observe(el));
+
+    return () => {
+      document.body.classList.remove('locked');
+      observer.disconnect();
+    };
   }, []);
 
   const parseYoutubeId = (url) => {
