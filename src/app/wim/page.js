@@ -124,6 +124,13 @@ export default function WIMDashboard() {
     setStatusMsg('Mengunggah foto...');
 
     const slugStr = slug.toLowerCase().replace(/\s+/g, '-');
+    
+    // Auto-replace "dan" with "&" in partner's name
+    let finalFormData = { ...formData };
+    if (finalFormData.hal1_namaPasangan) {
+      finalFormData.hal1_namaPasangan = finalFormData.hal1_namaPasangan.replace(/\s+dan\s+/gi, ' & ');
+    }
+
     let uploadedUrls = {};
     if (images.hal2_fotoCouple) uploadedUrls.hal2_fotoCouple = await uploadImageToSupabase(images.hal2_fotoCouple, slugStr, 'couple');
     if (images.hal3_fotoWanita) uploadedUrls.hal3_fotoWanita = await uploadImageToSupabase(images.hal3_fotoWanita, slugStr, 'wanita');
@@ -134,7 +141,7 @@ export default function WIMDashboard() {
     const payload = {
       slug: slugStr,
       template_name: templateName,
-      data: { ...formData, ...uploadedUrls }
+      data: { ...finalFormData, ...uploadedUrls }
     };
 
     const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
@@ -395,32 +402,31 @@ export default function WIMDashboard() {
             {invitations.length === 0 ? (
               <p style={{ color: '#64748b' }}>Belum ada undangan yang dibuat.</p>
             ) : (
-              <div className={styles.tableResponsive}>
+              <div className={styles.tableResponsive} style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                 <thead>
-                  <tr style={{ background: '#f8fafc', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>
-                    <th style={{ padding: '15px', color: '#475569' }}>Nama Slug</th>
-                    <th style={{ padding: '15px', color: '#475569' }}>Pasangan</th>
-                    <th style={{ padding: '15px', color: '#475569' }}>Link Aktif</th>
-                    <th style={{ padding: '15px', color: '#475569' }}>Aksi</th>
+                  <tr style={{ background: '#f8fafc', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontSize: '0.85rem' }}>
+                    <th style={{ padding: '10px', color: '#475569' }}>Pasangan</th>
+                    <th style={{ padding: '10px', color: '#475569' }}>Link</th>
+                    <th style={{ padding: '10px', color: '#475569', textAlign: 'center' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invitations.map(inv => (
-                    <tr key={inv.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '15px', fontWeight: 600 }}>{inv.slug}</td>
-                      <td style={{ padding: '15px' }}>{inv.data.hal1_namaPasangan || inv.data.coupleName || '-'}</td>
-                      <td style={{ padding: '15px' }}>
-                        <a href={`/${inv.slug}`} target="_blank" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          Buka <span style={{ fontSize: '12px' }}>↗</span>
+                    <tr key={inv.id} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '0.85rem' }}>
+                      <td style={{ padding: '10px', fontWeight: 600 }}>{inv.data.hal1_namaPasangan || inv.data.coupleName || '-'}</td>
+                      <td style={{ padding: '10px' }}>
+                        <a href={`/${inv.slug}`} target="_blank" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}>
+                          /{inv.slug}
                         </a>
                       </td>
-                      <td style={{ padding: '15px', display: 'flex', gap: '8px' }}>
-                        <button onClick={() => handleEdit(inv)} style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
+                        <button onClick={() => handleEdit(inv)} style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '6px', borderRadius: '6px', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center' }} title="Edit">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                          Edit
                         </button>
-                        <button onClick={() => handleDelete(inv.slug)} style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, transition: '0.2s' }}>Hapus</button>
+                        <button onClick={() => handleDelete(inv.slug)} style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', padding: '6px', borderRadius: '6px', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center' }} title="Hapus">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
                       </td>
                     </tr>
                   ))}
