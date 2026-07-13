@@ -70,7 +70,8 @@ export default async function InvitationPage({ params }) {
     return notFound();
   }
 
-  const { template_name, data } = invitation;
+  const { template_name, data, slug } = invitation;
+  data.slug = slug;
 
   if (template_name === 'template-floral1') {
     return <Floral1Template data={data} />;
