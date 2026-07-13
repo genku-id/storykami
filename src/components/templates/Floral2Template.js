@@ -3,6 +3,31 @@ import React, { useEffect, useState } from 'react';
 import Script from 'next/script';
 import Guestbook from '@/components/Guestbook';
 
+const BANK_DOMAINS = {
+  BCA: 'bca.co.id',
+  MANDIRI: 'bankmandiri.co.id',
+  BNI: 'bni.co.id',
+  BRI: 'bri.co.id',
+  BSI: 'bankbsi.co.id',
+  CIMB: 'cimbniaga.co.id',
+  PERMATA: 'permatabank.com',
+  JAGO: 'jago.com',
+  SEABANK: 'seabank.co.id',
+  JENIUS: 'jenius.com',
+  BLU: 'blubybcadigital.id',
+  NEO: 'bankneocommerce.co.id',
+  GOPAY: 'gopay.co.id',
+  OVO: 'ovo.id',
+  DANA: 'dana.id',
+  SHOPEEPAY: 'shopee.co.id',
+  LINKAJA: 'linkaja.id'
+};
+
+const getBankLogo = (bankName) => {
+  const name = (bankName || '').toUpperCase().trim();
+  if (BANK_DOMAINS[name]) return `https://logo.clearbit.com/${BANK_DOMAINS[name]}`;
+  return null;
+};
 
 export default function Floral2Template({ data }) {
   const [showCover, setShowCover] = useState(true);
@@ -422,7 +447,19 @@ export default function Floral2Template({ data }) {
                         <div className="card-top-row">
                             <h3 className="bank-card-title">Wedding Gift</h3>
                             <div className="bank-logo-container">
-                                <span style={{ fontWeight: 'bold', fontStyle: 'italic', color: '#555' }}>{bank.namaBank}</span>
+                                {getBankLogo(bank.namaBank) ? (
+                                  <>
+                                    <img 
+                                      src={getBankLogo(bank.namaBank)} 
+                                      alt={bank.namaBank} 
+                                      style={{ height: '30px', objectFit: 'contain', maxWidth: '100px' }} 
+                                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'inline'; }} 
+                                    />
+                                    <span style={{ fontWeight: 'bold', fontStyle: 'italic', color: '#555', display: 'none' }}>{bank.namaBank}</span>
+                                  </>
+                                ) : (
+                                  <span style={{ fontWeight: 'bold', fontStyle: 'italic', color: '#555' }}>{bank.namaBank}</span>
+                                )}
                                 <hr className="bank-divider" />
                             </div>
                         </div>
