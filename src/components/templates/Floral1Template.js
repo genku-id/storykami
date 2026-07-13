@@ -48,7 +48,10 @@ export default function Floral1Template({ data }) {
   const handleOpenInvitation = () => {
     setShowCover(false);
     document.body.classList.remove('locked');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      window.scrollTo({ top: mainContent.offsetTop, behavior: 'smooth' });
+    }
 
     // Play YouTube Audio if exists
     if (ytId && window.player && typeof window.player.playVideo === 'function') {
