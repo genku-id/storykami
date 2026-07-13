@@ -135,8 +135,11 @@ a {
 /* Utilities */
 .bg-red-main { background-color: var(--red-main); color: var(--white); }
 .bg-red-light { background-color: var(--red-light); color: var(--white); }
+.bg-red-main { background-color: var(--red-main); color: var(--white); }
+.bg-red-light { background-color: var(--red-light); color: var(--white); }
 .bg-red-dark { background-color: var(--red-dark); color: var(--white); }
-.bg-dark-red { background-color: var(--dark-red) !important; color: var(--white); }
+.bg-dark-blue { background-color: var(--dark-red) !important; color: var(--white); }
+.bg-sage-dark { background-color: var(--dark-red) !important; color: var(--white); }
 .text-red-main { color: var(--red-main); }
 .text-white { color: var(--white); }
 .text-muted { color: var(--text-light); }
@@ -300,8 +303,13 @@ body.locked {
     transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
 }
 .cover-page.slide-up {
-    transform: translateY(-100%);
+    /* transform: translateY(-100%); removed so cover stays at the top */
     pointer-events: none;
+}
+.cover-page.slide-up .btn-cover {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
 }
 .floral-bottom-cover {
     position: absolute;
@@ -412,11 +420,12 @@ body.locked {
 .hero-couple-img {
     width: 220px;
     height: 220px;
-    object-fit: cover;
+    object-fit: cover !important;
     border-radius: 50%;
     border: 4px solid var(--white);
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     animation: floating 4s ease-in-out infinite;
+    max-width: 100%;
 }
 @keyframes floating {
     0% { transform: translateY(0); }
@@ -673,9 +682,10 @@ body.locked {
     animation: floating 4s ease-in-out infinite;
 }
 .profile-card .avatar-circle img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: inherit;
 }
 .profile-card .title-names {
     font-size: 2.2rem;
