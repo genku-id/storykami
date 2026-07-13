@@ -357,21 +357,10 @@ export default function WIMDashboard() {
             
             {/* LINK UNDANGAN */}
             <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Pengaturan Link & Thumbnail</h3>
+              <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Link & Thumbnail</h3>
               
               <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Judul Thumbnail (Muncul saat link disebar)</label>
-                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of [NAMA]|StoryKami" />
-              </div>
-              
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Deskripsi Thumbnail (Teks kecil di bawah judul)</label>
-                <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan [NAMA] yaa" />
-                <small style={{ color: '#64748b' }}>Gunakan <b>[NAMA]</b> agar otomatis diganti dengan nama mempelai.</small>
-              </div>
-              
-              <div className={styles.formGroup} style={{ marginBottom: '20px' }}>
-                <label className={styles.label}>Foto Thumbnail (Rekomendasi rasio 16:9)</label>
+                <label className={styles.label}>Thumbnail</label>
                 {getPreviewUrl('thumbnailFoto') && (
                   <div style={{ position: 'relative', width: '160px', height: '90px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
                     <img src={getPreviewUrl('thumbnailFoto')} alt="Preview Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -381,23 +370,37 @@ export default function WIMDashboard() {
                 <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} />
               </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Link Undangan (Slug)</label>
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Judul</label>
+                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of [NAMA]|StoryKami" />
+              </div>
+              
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Deskripsi</label>
+                <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan [NAMA] yaa" />
+              </div>
+              
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Slug link</label>
                 <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
               </div>
 
-              <h3 style={{ marginTop: '20px', marginBottom: '15px', color: '#334155' }}>🎨 Pilihan Template</h3>
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Template</label>
                 <select value={templateName} onChange={e => setTemplateName(e.target.value)} className={styles.input}>
                   <option value="template-floral1">Floral Elegance 1</option>
                   <option value="template-floral2">Floral Elegance 2</option>
                 </select>
               </div>
 
-              <h3 style={{ marginTop: '20px', marginBottom: '15px', color: '#334155' }}>📱 No. WA Pelanggan</h3>
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>WA</label>
                 <input type="text" value={clientWa} onChange={e => setClientWa(e.target.value)} className={styles.input} placeholder="contoh: 6281234567890" />
-                <small style={{ color: '#64748b' }}>Opsional. Gunakan awalan 62 untuk mempermudah kirim link via WhatsApp.</small>
+              </div>
+
+              <div style={{ marginTop: '20px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                <small style={{ color: '#64748b', display: 'block', marginBottom: '5px' }}>* gunakan <b>[NAMA]</b> untuk menampilkan nama mempelai</small>
+                <small style={{ color: '#64748b', display: 'block' }}>* gunakan <b>62</b> untuk kirim link via WhatsApp</small>
               </div>
             </div>
 
