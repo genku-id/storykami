@@ -164,9 +164,72 @@ export default function WIMDashboard() {
     handleArrayChange('hal5_acara', i, field, formatted);
   };
 
-  const handleImageChange = (e) => {
+  const compressImage = (file, maxSizeKB, maxWidth = 1200) => {
+    return new Promise((resolve) => {
+      // Allow GIFs to bypass compression to preserve animation
+      if (file.type === 'image/gif') {
+        resolve(file);
+        return;
+      }
+      
+      if (file.size <= maxSizeKB * 1024) {
+        resolve(file);
+        return;
+      }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          let quality = 0.8;
+          const tryCompress = (q) => {
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                resolve(file);
+                return;
+              }
+              if (blob.size <= maxSizeKB * 1024 || q <= 0.2) {
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(newFile);
+              } else {
+                tryCompress(q - 0.2);
+              }
+            }, 'image/jpeg', q);
+          };
+          tryCompress(quality);
+        };
+      };
+    });
+  };
+
+  const handleImageChange = async (e) => {
     const { name, files } = e.target;
-    if (files.length > 0) setImages(prev => ({ ...prev, [name]: files[0] }));
+    if (files.length > 0) {
+      setStatusMsg('Memproses foto...');
+      // 290KB for thumbnail (safe under 300), 800KB for other images to save storage
+      const maxSize = name === 'thumbnailFoto' ? 290 : 800;
+      const compressedFile = await compressImage(files[0], maxSize);
+      setImages(prev => ({ ...prev, [name]: compressedFile }));
+      setStatusMsg('');
+    }
   };
 
   const getPreviewUrl = (name) => {
@@ -361,7 +424,7 @@ export default function WIMDashboard() {
               
               <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
                 <label className={styles.label}>Thumbnail</label>
-                <small style={{ color: '#ef4444', display: 'block', marginBottom: '10px', fontSize: '0.8rem' }}>* WA maksimal 300KB agar gambar muncul</small>
+                <small style={{ color: '#10b981', display: 'block', marginBottom: '10px', fontSize: '0.8rem' }}>* Tenang, sistem otomatis meng-compress foto ini di bawah 300KB agar pasti muncul di WA</small>
                 {getPreviewUrl('thumbnailFoto') && (
                   <div style={{ position: 'relative', width: '160px', height: '90px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
                     <img src={getPreviewUrl('thumbnailFoto')} alt="Preview Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
