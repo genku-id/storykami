@@ -506,104 +506,131 @@ export default function WIMDashboard() {
             </div>
 
             <h3 style={{ color: '#0f172a', margin: '10px 0 0 0' }}>Atur Konten Halaman</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
               
               {/* Halaman 1 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal1 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal1 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal1 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📖 Hal 1 (Cover)</h4>
-                  <input type="checkbox" name="show_hal1" checked={formData.show_hal1} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                    Cover
+                  </h4>
+                  <input type="checkbox" name="show_hal1" checked={formData.show_hal1} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal1 && (
-                  <button type="button" onClick={() => setActiveModal('hal1')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal1')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 2 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal2 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal2 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal2 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>🌅 Hal 2 (Hero)</h4>
-                  <input type="checkbox" name="show_hal2" checked={formData.show_hal2} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    Hero
+                  </h4>
+                  <input type="checkbox" name="show_hal2" checked={formData.show_hal2} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal2 && (
-                  <button type="button" onClick={() => setActiveModal('hal2')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal2')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 3 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal3 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal3 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal3 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>👰 Hal 3 (Mempelai)</h4>
-                  <input type="checkbox" name="show_hal3" checked={formData.show_hal3} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Mempelai
+                  </h4>
+                  <input type="checkbox" name="show_hal3" checked={formData.show_hal3} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal3 && (
-                  <button type="button" onClick={() => setActiveModal('hal3')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal3')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 4 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal4 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal4 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal4 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📜 Hal 4 (Kutipan)</h4>
-                  <input type="checkbox" name="show_hal4" checked={formData.show_hal4} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Kutipan
+                  </h4>
+                  <input type="checkbox" name="show_hal4" checked={formData.show_hal4} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal4 && (
-                  <button type="button" onClick={() => setActiveModal('hal4')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal4')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 5 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal5 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal5 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal5 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📅 Hal 5 (Acara)</h4>
-                  <input type="checkbox" name="show_hal5" checked={formData.show_hal5} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Acara
+                  </h4>
+                  <input type="checkbox" name="show_hal5" checked={formData.show_hal5} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal5 && (
-                  <button type="button" onClick={() => setActiveModal('hal5')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal5')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 6 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal6 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal6 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal6 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>❤️ Hal 6 (Cerita)</h4>
-                  <input type="checkbox" name="show_hal6" checked={formData.show_hal6} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    Cerita
+                  </h4>
+                  <input type="checkbox" name="show_hal6" checked={formData.show_hal6} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal6 && (
-                  <button type="button" onClick={() => setActiveModal('hal6')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal6')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 7 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal7 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal7 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal7 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>🎁 Hal 7 (Hadiah)</h4>
-                  <input type="checkbox" name="show_hal7" checked={formData.show_hal7} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+                    Hadiah
+                  </h4>
+                  <input type="checkbox" name="show_hal7" checked={formData.show_hal7} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal7 && (
-                  <button type="button" onClick={() => setActiveModal('hal7')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal7')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
 
               {/* Halaman 8 (Ucapan / Guestbook) - Internal = show_hal9 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal9 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal9 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal9 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>💬 Hal 8 (Ucapan)</h4>
-                  <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    Ucapan
+                  </h4>
+                  <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal9 && (
-                  <button type="button" onClick={() => setActiveModal('hal8')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Lihat Info</button>
+                  <button type="button" onClick={() => setActiveModal('hal8')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Lihat Info</button>
                 )}
               </div>
 
               {/* Halaman 9 (Footer) - Internal = show_hal8 */}
-              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal8 ? 1 : 0.6, transition: '0.2s' }}>
+              <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal8 ? 1 : 0.6, transition: '0.2s' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal8 ? '10px' : '0' }}>
-                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>👋 Hal 9 (Footer)</h4>
-                  <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    Footer
+                  </h4>
+                  <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                 </div>
                 {formData.show_hal8 && (
-                  <button type="button" onClick={() => setActiveModal('hal9')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                  <button type="button" onClick={() => setActiveModal('hal9')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Edit Isian</button>
                 )}
               </div>
             </div>
@@ -614,16 +641,16 @@ export default function WIMDashboard() {
                 <div style={{ background: '#fff', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '12px', padding: '25px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                    <h3 style={{ margin: 0, color: '#0f172a' }}>
-                      {activeModal === 'hal1' && '📖 Halaman 1 (Cover)'}
-                      {activeModal === 'hal2' && '🌅 Halaman 2 (Hero)'}
-                      {activeModal === 'hal3' && '👰 Halaman 3 (Profil Mempelai)'}
-                      {activeModal === 'hal4' && '📜 Halaman 4 (Kutipan/Deskripsi)'}
-                      {activeModal === 'hal5' && '📅 Halaman 5 (Acara)'}
-                      {activeModal === 'hal6' && '❤️ Halaman 6 (Cerita/Love Story)'}
-                      {activeModal === 'hal7' && '🎁 Halaman 7 (Hadiah/Rekening)'}
-                      {activeModal === 'hal8' && '💬 Halaman 8 (Ucapan & RSVP)'}
-                      {activeModal === 'hal9' && '👋 Halaman 9 (Footer)'}
+                    <h3 style={{ margin: 0, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {activeModal === 'hal1' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> 1. Cover</>}
+                      {activeModal === 'hal2' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> 2. Hero</>}
+                      {activeModal === 'hal3' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> 3. Profil Mempelai</>}
+                      {activeModal === 'hal4' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 4. Kutipan/Deskripsi</>}
+                      {activeModal === 'hal5' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 5. Acara</>}
+                      {activeModal === 'hal6' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> 6. Cerita/Love Story</>}
+                      {activeModal === 'hal7' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg> 7. Hadiah/Rekening</>}
+                      {activeModal === 'hal8' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> 8. Ucapan & RSVP</>}
+                      {activeModal === 'hal9' && <><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> 9. Footer</>}
                     </h3>
                     <button type="button" onClick={() => setActiveModal(null)} style={{ background: '#f1f5f9', border: 'none', width: '30px', height: '30px', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>&times;</button>
                   </div>
