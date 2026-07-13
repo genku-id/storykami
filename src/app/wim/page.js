@@ -435,7 +435,7 @@ export default function WIMDashboard() {
               {isLoading ? 'Sedang Memproses...' : '✨ Generate & Publikasikan ke Supabase'}
             </button>
           </form>
-        ) : (
+        ) : activeTab === 'list' ? (
           <div>
             <h3 style={{ marginBottom: '20px', color: '#0f172a' }}>Daftar Undangan Klien Aktif</h3>
             {invitations.length === 0 ? (
