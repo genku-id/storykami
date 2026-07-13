@@ -58,17 +58,20 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Placeholder Card 2 */}
+            {/* Card 2 */}
             <div className={styles.card}>
               <div className={styles.cardImageWrapper}>
-                <div style={{width: '100%', height: '100%', background: '#e8eef2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1a2b4c'}}>
-                  [Coming Soon]
-                </div>
+                <Image 
+                  src="/images/floral2_preview.png" 
+                  alt="Floral Elegance 2 Preview" 
+                  fill 
+                  style={{objectFit: 'cover', objectPosition: 'top'}} 
+                />
               </div>
               <div className={styles.cardContent}>
-                <h3 className={styles.cardTitle}>Modern Classic</h3>
-                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Elegan & Mewah</p>
-                <button className="btn btn-outline" style={{width: '100%'}} disabled>Segera Hadir</button>
+                <h3 className={styles.cardTitle}>Floral Elegance 2</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Vintage & Estetik</p>
+                <a href="/demo/template-floral2/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
               </div>
             </div>
 
