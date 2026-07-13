@@ -336,11 +336,9 @@ export default function WIMDashboard() {
           });
 
           if (fileNames.length > 0) {
-            const { data: removedData, error: storageError } = await supabase.storage.from('wim-assets').remove(fileNames);
+            const { error: storageError } = await supabase.storage.from('wim-assets').remove(fileNames);
             if (storageError) {
               errorMsg += `Storage Error: ${storageError.message}. `;
-            } else if (!removedData || removedData.length === 0) {
-              errorMsg += `Storage Warning: File foto tidak ditemukan atau RLS memblokir penghapusan. `;
             }
           }
         }
