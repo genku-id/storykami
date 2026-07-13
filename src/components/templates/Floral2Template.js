@@ -481,7 +481,7 @@ export default function Floral2Template({ data }) {
 
           {/* ================= HALAMAN 8 (FOOTER) ================= */}
           {data.show_hal8 !== false && (
-            <section id="closing" className="section closing-section text-center">
+            <section id="closing" className="section closing-section text-center" style={{ backgroundImage: `url(${data.hal2_fotoCouple || '/demo/template-floral2/assets/images/couple.png'})` }}>
                 <div className="closing-gradient-overlay">
                     <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3.5rem', color: 'black' }}>Terima Kasih</h1>
                     <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text-dark)', maxWidth: '320px', margin: '0 auto', fontWeight: 500 }}>
