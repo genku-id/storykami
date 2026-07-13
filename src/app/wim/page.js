@@ -317,38 +317,46 @@ export default function WIMDashboard() {
     if (confirm(`Yakin ingin menghapus secara menyeluruh (Turbo Delete) undangan ${delSlug}? Ini akan menghapus data form, semua ucapan, dan foto dari server!`)) {
       setStatusMsg('Menghapus data, foto, dan ucapan (Turbo Delete)...');
       
-      // Cari data undangan untuk mendapatkan URL foto
-      const inv = invitations.find(i => i.slug === delSlug);
-      if (inv && inv.data) {
-        // Ekstrak URL foto yang ada
-        const imgUrls = [
-          inv.data.thumbnailFoto,
-          inv.data.hal2_fotoCouple,
-          inv.data.hal3_fotoWanita,
-          inv.data.hal3_fotoPria
-        ].filter(Boolean);
+      try {
+        let errorMsg = '';
+        
+        // Cari data undangan untuk mendapatkan URL foto
+        const inv = invitations.find(i => i.slug === delSlug);
+        if (inv && inv.data) {
+          const imgUrls = [
+            inv.data.thumbnailFoto,
+            inv.data.hal2_fotoCouple,
+            inv.data.hal3_fotoWanita,
+            inv.data.hal3_fotoPria
+          ].filter(Boolean);
 
-        // Ambil nama file dari URL
-        const fileNames = imgUrls.map(url => {
-          const parts = url.split('/');
-          return parts[parts.length - 1];
-        });
+          const fileNames = imgUrls.map(url => {
+            const parts = url.split('/');
+            return parts[parts.length - 1];
+          });
 
-        // Hapus foto dari Storage Supabase
-        if (fileNames.length > 0) {
-          await supabase.storage.from('wim-assets').remove(fileNames);
+          if (fileNames.length > 0) {
+            const { error: storageError } = await supabase.storage.from('wim-assets').remove(fileNames);
+            if (storageError) errorMsg += `Storage Error: ${storageError.message}. `;
+          }
         }
+
+        const { error: guestbookError } = await supabase.from('guestbook').delete().eq('invitation_slug', delSlug);
+        if (guestbookError) errorMsg += `Guestbook Error: ${guestbookError.message}. `;
+
+        const { error: invError } = await supabase.from('invitations').delete().eq('slug', delSlug);
+        if (invError) errorMsg += `Invitations Error: ${invError.message}. `;
+
+        if (errorMsg) {
+          setStatusMsg(`Gagal menghapus sepenuhnya: ${errorMsg}`);
+        } else {
+          setStatusMsg(`Undangan ${delSlug} berhasil dihapus beserta seluruh asetnya.`);
+          setTimeout(() => setStatusMsg(''), 4000);
+          loadInvitations();
+        }
+      } catch (err) {
+        setStatusMsg(`Error: ${err.message}`);
       }
-
-      // Hapus data ucapan dari tabel guestbook
-      await supabase.from('guestbook').delete().eq('invitation_slug', delSlug);
-
-      // Hapus data undangan dari tabel invitations
-      await supabase.from('invitations').delete().eq('slug', delSlug);
-      
-      setStatusMsg(`Undangan ${delSlug} berhasil dihapus beserta seluruh asetnya.`);
-      setTimeout(() => setStatusMsg(''), 4000);
-      loadInvitations();
     }
   };
 
