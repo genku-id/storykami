@@ -792,7 +792,32 @@ export default function WIMDashboard() {
                           <h4 style={{ marginBottom: '10px', marginTop: 0, fontSize: '14px' }}>Bank {i + 1}</h4>
                           <button type="button" onClick={() => removeArrayItem('hal7_bank', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }}>Hapus</button>
                           <div className={styles.responsiveGrid}>
-                            <input type="text" value={bank.namaBank} onChange={e => handleArrayChange('hal7_bank', i, 'namaBank', e.target.value)} className={styles.input} placeholder="Nama Bank (BCA / MANDIRI)" />
+                            <select value={bank.namaBank} onChange={e => handleArrayChange('hal7_bank', i, 'namaBank', e.target.value)} className={styles.input}>
+                              <option value="">Pilih Bank / E-Wallet</option>
+                              <optgroup label="Bank Nasional">
+                                <option value="BCA">BCA</option>
+                                <option value="MANDIRI">Mandiri</option>
+                                <option value="BNI">BNI</option>
+                                <option value="BRI">BRI</option>
+                                <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                                <option value="CIMB">CIMB Niaga</option>
+                                <option value="PERMATA">Permata Bank</option>
+                              </optgroup>
+                              <optgroup label="Bank Digital">
+                                <option value="JAGO">Bank Jago</option>
+                                <option value="SEABANK">SeaBank</option>
+                                <option value="JENIUS">Jenius (BTPN)</option>
+                                <option value="BLU">Blu by BCA Digital</option>
+                                <option value="NEO">Neo Commerce</option>
+                              </optgroup>
+                              <optgroup label="E-Wallet">
+                                <option value="GOPAY">GoPay</option>
+                                <option value="OVO">OVO</option>
+                                <option value="DANA">DANA</option>
+                                <option value="SHOPEEPAY">ShopeePay</option>
+                                <option value="LINKAJA">LinkAja</option>
+                              </optgroup>
+                            </select>
                             <input type="text" value={bank.rekening} onChange={e => handleArrayChange('hal7_bank', i, 'rekening', e.target.value)} className={styles.input} placeholder="No. Rekening" />
                             <input type="text" value={bank.atasNama} onChange={e => handleArrayChange('hal7_bank', i, 'atasNama', e.target.value)} className={styles.input} placeholder="Atas Nama" />
                             <input type="text" value={bank.wa} onChange={e => handleArrayChange('hal7_bank', i, 'wa', e.target.value)} className={styles.input} placeholder="No WA (Konfirmasi)" />
