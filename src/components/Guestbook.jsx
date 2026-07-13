@@ -162,7 +162,7 @@ export default function Guestbook({ slug }) {
         }
         .guestbook-form-card {
           background: rgba(255, 255, 255, 0.95);
-          padding: 25px;
+          padding: 15px 20px;
           border-radius: 15px;
           box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
@@ -214,7 +214,7 @@ export default function Guestbook({ slug }) {
         }
         
         .wishes-scroll-container {
-          max-height: 400px;
+          max-height: 280px;
           overflow-y: auto;
           padding-right: 10px;
         }
