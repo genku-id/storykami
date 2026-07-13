@@ -302,7 +302,7 @@ export default function Floral1Template({ data }) {
                       <div className={`story-item ${idx % 2 === 0 ? 'story-left' : 'story-right'}`}>
                           <h3 className="story-title">{cerita.judul || `Cerita ${idx+1}`}</h3>
                           <p className="story-date">{`Bagian ${idx+1}`}</p>
-                          <p className="story-text">{cerita.isi}</p>
+                          <p className="story-text">{cerita.deskripsi}</p>
                       </div>
                       
                       {idx < ceritaList.length - 1 && (

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { supabase } from '@/utils/supabase';
 import Floral1Template from '@/components/templates/Floral1Template';
 
-export const revalidate = 60; // Regenerate cache setiap 60 detik (ISR)
+export const revalidate = 0; // Disable cache agar update dari WIM langsung terlihat
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
