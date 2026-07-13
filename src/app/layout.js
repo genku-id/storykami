@@ -1,6 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
+  metadataBase: new URL('https://storykami.my.id'),
   title: "StoryKami | Undangan Digital Premium",
   description: "Buat undangan digital elegan, cepat, dan terjangkau. Pesan sekarang untuk momen tak terlupakan.",
 };

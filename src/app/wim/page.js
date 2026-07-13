@@ -361,6 +361,7 @@ export default function WIMDashboard() {
               
               <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
                 <label className={styles.label}>Thumbnail</label>
+                <small style={{ color: '#ef4444', display: 'block', marginBottom: '10px', fontSize: '0.8rem' }}>* WA maksimal 300KB agar gambar muncul</small>
                 {getPreviewUrl('thumbnailFoto') && (
                   <div style={{ position: 'relative', width: '160px', height: '90px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
                     <img src={getPreviewUrl('thumbnailFoto')} alt="Preview Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
