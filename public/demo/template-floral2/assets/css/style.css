@@ -516,13 +516,13 @@ body.locked {
     letter-spacing: 1px;
 }
 
-/* Quote Section */
 .quote-section {
     position: relative;
-    padding: 20px 20px;
+    padding: 60px 20px;
     background-color: var(--red-bg); /* Use the light blue background */
     z-index: 10;
-    height: 80vh;
+    min-height: 80vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -551,7 +551,7 @@ body.locked {
 }
 .quote-main-image {
     width: 100%;
-    height: auto;
+    max-height: 400px;
     display: block;
     object-fit: cover;
     border-radius: 10px;

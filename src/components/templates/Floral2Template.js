@@ -80,7 +80,7 @@ export default function Floral2Template({ data }) {
     <>
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=Great+Vibes&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-      <link rel="stylesheet" href="/demo/template-floral2/assets/css/style.css?v=72" />
+      <link rel="stylesheet" href="/demo/template-floral2/assets/css/style.css?v=73" />
 
       <div className="floral-theme-wrapper">
         
@@ -244,7 +244,6 @@ export default function Floral2Template({ data }) {
                   </div>
                   <div className="quote-text text-white mt-4">
                       {/* Optional Heading for custom quote? Or hide if none */}
-                      <h3>Quote</h3>
                       <p className="arabic-text mt-3" style={{ whiteSpace: 'pre-line', fontSize: '1rem', lineHeight: '1.8' }}>
                           {data.hal4_deskripsi}
                       </p>
