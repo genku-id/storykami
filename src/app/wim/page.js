@@ -16,6 +16,27 @@ export default function WIMDashboard() {
   const [templateName, setTemplateName] = useState('template-floral1');
   const [clientWa, setClientWa] = useState('');
   
+  // ================= STATE ADMIN SETTINGS =================
+  const [adminSettings, setAdminSettings] = useState({
+    adminName: '',
+    adminWa: '',
+    waTemplate: 'Halo! Berikut adalah link undangan digital pernikahan kalian yang sudah siap:\n\n[LINK]\n\nTerima kasih telah mempercayakan StoryKami, [NAMA_ADMIN]!'
+  });
+  const [isEditingAdmin, setIsEditingAdmin] = useState(false);
+
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('wim_admin_settings');
+    if (savedSettings) {
+      setAdminSettings(JSON.parse(savedSettings));
+    }
+  }, []);
+
+  const saveAdminSettings = () => {
+    localStorage.setItem('wim_admin_settings', JSON.stringify(adminSettings));
+    setIsEditingAdmin(false);
+    alert('Pengaturan admin berhasil disimpan!');
+  };
+  
   // ================= STATE FORM 8 HALAMAN =================
   const [formData, setFormData] = useState({
     // Saklar (Toggles)
@@ -188,11 +209,21 @@ export default function WIMDashboard() {
   return (
     <div className={styles.container} style={{ alignItems: 'flex-start', paddingTop: '40px', background: '#f0f2f5' }}>
       <div className={styles.card} style={{ maxWidth: '900px', width: '100%', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-        <h1 className={styles.title} style={{ color: '#1e293b' }}>✨ WIM Dashboard (8 Halaman)</h1>
+        <h1 className={styles.title} style={{ color: '#1e293b' }}>✨ Wedding Invitation Manager</h1>
         
-        <div className={styles.buttonGroup}>
-          <button onClick={() => setActiveTab('pengaturan')} className={styles.button} style={{ flex: 1, background: activeTab === 'pengaturan' ? '#3b82f6' : '#cbd5e1', color: activeTab === 'pengaturan' ? '#fff' : '#475569', marginBottom: '0' }}>⚙️ Pengaturan Undangan</button>
-          <button onClick={() => setActiveTab('list')} className={styles.button} style={{ flex: 1, background: activeTab === 'list' ? '#10b981' : '#cbd5e1', color: activeTab === 'list' ? '#fff' : '#475569', marginBottom: '0' }}>📋 Daftar Link Aktif</button>
+        <div className={styles.buttonGroup} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+          <button onClick={() => setActiveTab('pengaturan')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'pengaturan' ? '#3b82f6' : '#f1f5f9', color: activeTab === 'pengaturan' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Pengaturan</span>
+          </button>
+          <button onClick={() => setActiveTab('list')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'list' ? '#10b981' : '#f1f5f9', color: activeTab === 'list' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Daftar Link</span>
+          </button>
+          <button onClick={() => setActiveTab('dashboard')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'dashboard' ? '#8b5cf6' : '#f1f5f9', color: activeTab === 'dashboard' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Dashboard</span>
+          </button>
         </div>
 
         {statusMsg && (
@@ -431,7 +462,9 @@ export default function WIMDashboard() {
                       <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
                         <button onClick={() => {
                           const waNum = inv.data.clientWa || '';
-                          const text = encodeURIComponent(`Halo! Berikut adalah link undangan digital pernikahan kalian yang sudah siap:\n\nhttps://storykami.my.id/${inv.slug}\n\nTerima kasih telah mempercayakan StoryKami!`);
+                          const rawLink = `https://storykami.my.id/${inv.slug}`;
+                          const rawText = adminSettings.waTemplate.replace('[LINK]', rawLink).replace('[NAMA_ADMIN]', adminSettings.adminName || '');
+                          const text = encodeURIComponent(rawText);
                           window.open(`https://wa.me/${waNum}?text=${text}`, '_blank');
                         }} style={{ background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0', padding: '6px', borderRadius: '6px', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center' }} title="Kirim WA">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -450,7 +483,40 @@ export default function WIMDashboard() {
               </div>
             )}
           </div>
-        )}
+        ) : activeTab === 'dashboard' ? (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ color: '#0f172a', margin: 0 }}>Pengaturan Dashboard & Pesan WA</h3>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {isEditingAdmin ? (
+                  <button onClick={saveAdminSettings} style={{ background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0', padding: '8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Simpan">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  </button>
+                ) : (
+                  <button onClick={() => setIsEditingAdmin(true)} style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Edit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Nama Admin</label>
+                <input type="text" value={adminSettings.adminName} onChange={e => setAdminSettings({...adminSettings, adminName: e.target.value})} className={styles.input} disabled={!isEditingAdmin} placeholder="contoh: Budi" />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>No. WA Admin (Format 62...)</label>
+                <input type="text" value={adminSettings.adminWa} onChange={e => setAdminSettings({...adminSettings, adminWa: e.target.value})} className={styles.input} disabled={!isEditingAdmin} placeholder="contoh: 6281234567890" />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Pengaturan Kalimat WA</label>
+                <textarea rows={6} value={adminSettings.waTemplate} onChange={e => setAdminSettings({...adminSettings, waTemplate: e.target.value})} className={styles.input} disabled={!isEditingAdmin} placeholder="Halo! Berikut link undangan Anda..." />
+                <small style={{ color: '#64748b', marginTop: '5px', display: 'block' }}>Gunakan <b>[LINK]</b> untuk menyisipkan link otomatis, dan <b>[NAMA_ADMIN]</b> untuk menyisipkan nama Anda.</small>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
