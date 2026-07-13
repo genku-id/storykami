@@ -314,8 +314,40 @@ export default function WIMDashboard() {
   };
 
   const handleDelete = async (delSlug) => {
-    if (confirm(`Yakin ingin menghapus undangan ${delSlug}?`)) {
+    if (confirm(`Yakin ingin menghapus secara menyeluruh (Turbo Delete) undangan ${delSlug}? Ini akan menghapus data form, semua ucapan, dan foto dari server!`)) {
+      setStatusMsg('Menghapus data, foto, dan ucapan (Turbo Delete)...');
+      
+      // Cari data undangan untuk mendapatkan URL foto
+      const inv = invitations.find(i => i.slug === delSlug);
+      if (inv && inv.data) {
+        // Ekstrak URL foto yang ada
+        const imgUrls = [
+          inv.data.thumbnailFoto,
+          inv.data.hal2_fotoCouple,
+          inv.data.hal3_fotoWanita,
+          inv.data.hal3_fotoPria
+        ].filter(Boolean);
+
+        // Ambil nama file dari URL
+        const fileNames = imgUrls.map(url => {
+          const parts = url.split('/');
+          return parts[parts.length - 1];
+        });
+
+        // Hapus foto dari Storage Supabase
+        if (fileNames.length > 0) {
+          await supabase.storage.from('wim-assets').remove(fileNames);
+        }
+      }
+
+      // Hapus data ucapan dari tabel guestbook
+      await supabase.from('guestbook').delete().eq('invitation_slug', delSlug);
+
+      // Hapus data undangan dari tabel invitations
       await supabase.from('invitations').delete().eq('slug', delSlug);
+      
+      setStatusMsg(`Undangan ${delSlug} berhasil dihapus beserta seluruh asetnya.`);
+      setTimeout(() => setStatusMsg(''), 4000);
       loadInvitations();
     }
   };
