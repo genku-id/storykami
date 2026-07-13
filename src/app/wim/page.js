@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import styles from './wim.module.css';
+import Floral1Template from '@/components/templates/Floral1Template';
+import Floral2Template from '@/components/templates/Floral2Template';
 
 const INITIAL_FORM_DATA = {
   // Saklar (Toggles)
@@ -411,6 +413,49 @@ export default function WIMDashboard() {
     setActiveTab('pengaturan');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const getPreviewData = () => {
+    let finalFormData = { ...formData };
+    if (finalFormData.hal1_namaPasangan) {
+      finalFormData.hal1_namaPasangan = finalFormData.hal1_namaPasangan.replace(/\s+dan\s+/gi, ' & ');
+    }
+    if (finalFormData.hal5_acara) {
+      finalFormData.hal5_acara = finalFormData.hal5_acara.map(a => {
+        let jamStr = a.jam_mulai || '';
+        if (jamStr && a.jam_selesai) {
+           jamStr += ` - ${a.jam_selesai}`;
+        } else if (jamStr) {
+           jamStr += ` - Selesai`;
+        }
+        return { ...a, jam: jamStr || a.jam };
+      });
+    }
+
+    return {
+      slug: slug || 'preview',
+      template_name: templateName,
+      data: {
+        ...finalFormData,
+        slug: slug || 'preview',
+        thumbnailFoto: getPreviewUrl('thumbnailFoto'),
+        hal2_fotoCouple: getPreviewUrl('hal2_fotoCouple'),
+        hal3_fotoWanita: getPreviewUrl('hal3_fotoWanita'),
+        hal3_fotoPria: getPreviewUrl('hal3_fotoPria'),
+      }
+    };
+  };
+
+  if (activeTab === 'preview') {
+    const previewData = getPreviewData();
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999999, background: '#fff', overflowY: 'auto' }}>
+        <button onClick={() => setActiveTab('pengaturan')} style={{ position: 'fixed', top: '15px', right: '15px', zIndex: 1000000, background: '#0f172a', color: '#fff', padding: '10px 20px', borderRadius: '50px', border: '2px solid #fff', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Tutup Preview
+        </button>
+        {templateName === 'template-floral1' ? <Floral1Template data={previewData.data} /> : <Floral2Template data={previewData.data} />}
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -866,9 +911,14 @@ export default function WIMDashboard() {
               </div>
             )}
 
-            <button type="submit" disabled={isLoading} className={styles.button} style={{ width: '100%', marginTop: '10px', padding: '18px', fontSize: '1.2rem', background: '#0f172a', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              {isLoading ? 'Sedang Memproses...' : <><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> GENERATE</>}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <button type="button" onClick={() => setActiveTab('preview')} className={styles.button} style={{ flex: 1, padding: '18px', fontSize: '1.2rem', background: '#3b82f6', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: 'none' }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> PREVIEW
+              </button>
+              <button type="submit" disabled={isLoading} className={styles.button} style={{ flex: 1, padding: '18px', fontSize: '1.2rem', background: '#0f172a', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: 'none' }}>
+                {isLoading ? 'Memproses...' : <><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> GENERATE</>}
+              </button>
+            </div>
           </form>
         ) : activeTab === 'list' ? (
           <div>
