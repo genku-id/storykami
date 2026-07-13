@@ -848,7 +848,7 @@ export default function WIMDashboard() {
         ) : activeTab === 'list' ? (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ color: '#0f172a', margin: 0 }}>Daftar Undangan Klien Aktif</h3>
+              <h3 style={{ color: '#0f172a', margin: 0 }}>UNDANGAN AKTIF</h3>
               <button onClick={handleCreateNew} style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Buat Undangan
