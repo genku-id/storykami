@@ -53,6 +53,7 @@ export default function WIMDashboard() {
   const [pin, setPin] = useState('');
   
   const [activeTab, setActiveTab] = useState('list');
+  const [activeModal, setActiveModal] = useState(null); // Tambahkan state untuk modal
   const [isLoading, setIsLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [invitations, setInvitations] = useState([]);
@@ -460,260 +461,348 @@ export default function WIMDashboard() {
         {activeTab === 'pengaturan' ? (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
             
-            {/* LINK UNDANGAN */}
-            <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Link & Thumbnail</h3>
-              
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Thumbnail</label>
-                <small style={{ color: '#10b981', display: 'block', marginBottom: '10px', fontSize: '0.8rem' }}>* Tenang, sistem otomatis meng-compress foto ini di bawah 300KB agar pasti muncul di WA</small>
-                {getPreviewUrl('thumbnailFoto') && (
-                  <div style={{ position: 'relative', width: '160px', height: '90px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                    <img src={getPreviewUrl('thumbnailFoto')} alt="Preview Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+            {/* LINK UNDANGAN (COMPACT) */}
+            <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Slug link</label>
+                  <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Template</label>
+                  <select value={templateName} onChange={e => setTemplateName(e.target.value)} className={styles.input}>
+                    <option value="template-floral1">Floral Elegance 1</option>
+                    <option value="template-floral2">Floral Elegance 2</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>No. WA Klien</label>
+                  <input type="text" value={clientWa} onChange={e => setClientWa(e.target.value)} className={styles.input} placeholder="contoh: 6281234567890" />
+                </div>
+              </div>
+              <hr style={{ borderTop: '1px solid #e2e8f0', borderBottom: 'none', margin: '15px 0' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Judul Thumbnail</label>
+                  <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of..." />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Deskripsi Thumbnail</label>
+                  <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan..." />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Foto Thumbnail (<small style={{color: '#10b981'}}>Auto &lt; 300KB</small>)</label>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} style={{ flex: 1 }} />
+                    {getPreviewUrl('thumbnailFoto') && (
+                      <div style={{ position: 'relative', width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+                        <img src={getPreviewUrl('thumbnailFoto')} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: 0, right: 0, background: '#ef4444', color: 'white', border: 'none', borderRadius: '0 0 0 4px', width: '16px', height: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', lineHeight: 1 }}>&times;</button>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 style={{ color: '#0f172a', margin: '10px 0 0 0' }}>Atur Konten Halaman</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+              
+              {/* Halaman 1 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal1 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal1 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📖 Hal 1 (Cover)</h4>
+                  <input type="checkbox" name="show_hal1" checked={formData.show_hal1} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal1 && (
+                  <button type="button" onClick={() => setActiveModal('hal1')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
                 )}
-                <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} />
               </div>
 
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Judul</label>
-                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of [NAMA]|StoryKami" />
-              </div>
-              
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Deskripsi</label>
-                <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan [NAMA] yaa" />
-              </div>
-              
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Slug link</label>
-                <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
+              {/* Halaman 2 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal2 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal2 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>🌅 Hal 2 (Hero)</h4>
+                  <input type="checkbox" name="show_hal2" checked={formData.show_hal2} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal2 && (
+                  <button type="button" onClick={() => setActiveModal('hal2')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
               </div>
 
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>Template</label>
-                <select value={templateName} onChange={e => setTemplateName(e.target.value)} className={styles.input}>
-                  <option value="template-floral1">Floral Elegance 1</option>
-                  <option value="template-floral2">Floral Elegance 2</option>
-                </select>
+              {/* Halaman 3 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal3 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal3 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>👰 Hal 3 (Mempelai)</h4>
+                  <input type="checkbox" name="show_hal3" checked={formData.show_hal3} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal3 && (
+                  <button type="button" onClick={() => setActiveModal('hal3')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
               </div>
 
-              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                <label className={styles.label}>WA</label>
-                <input type="text" value={clientWa} onChange={e => setClientWa(e.target.value)} className={styles.input} placeholder="contoh: 6281234567890" />
+              {/* Halaman 4 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal4 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal4 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📜 Hal 4 (Kutipan)</h4>
+                  <input type="checkbox" name="show_hal4" checked={formData.show_hal4} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal4 && (
+                  <button type="button" onClick={() => setActiveModal('hal4')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
               </div>
 
-              <div style={{ marginTop: '20px', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                <small style={{ color: '#64748b', display: 'block', marginBottom: '5px' }}>* gunakan <b>[NAMA]</b> untuk menampilkan nama mempelai</small>
-                <small style={{ color: '#64748b', display: 'block' }}>* gunakan <b>62</b> untuk kirim link via WhatsApp</small>
+              {/* Halaman 5 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal5 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal5 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>📅 Hal 5 (Acara)</h4>
+                  <input type="checkbox" name="show_hal5" checked={formData.show_hal5} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal5 && (
+                  <button type="button" onClick={() => setActiveModal('hal5')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
+              </div>
+
+              {/* Halaman 6 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal6 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal6 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>❤️ Hal 6 (Cerita)</h4>
+                  <input type="checkbox" name="show_hal6" checked={formData.show_hal6} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal6 && (
+                  <button type="button" onClick={() => setActiveModal('hal6')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
+              </div>
+
+              {/* Halaman 7 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal7 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal7 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>🎁 Hal 7 (Hadiah)</h4>
+                  <input type="checkbox" name="show_hal7" checked={formData.show_hal7} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal7 && (
+                  <button type="button" onClick={() => setActiveModal('hal7')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
+              </div>
+
+              {/* Halaman 8 (Ucapan / Guestbook) - Internal = show_hal9 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal9 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal9 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>💬 Hal 8 (Ucapan)</h4>
+                  <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal9 && (
+                  <button type="button" onClick={() => setActiveModal('hal8')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Lihat Info</button>
+                )}
+              </div>
+
+              {/* Halaman 9 (Footer) - Internal = show_hal8 */}
+              <div style={{ border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px', background: '#f8fafc', opacity: formData.show_hal8 ? 1 : 0.6, transition: '0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: formData.show_hal8 ? '10px' : '0' }}>
+                  <h4 style={{ margin: 0, color: '#334155', fontSize: '0.95rem' }}>👋 Hal 9 (Footer)</h4>
+                  <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                </div>
+                {formData.show_hal8 && (
+                  <button type="button" onClick={() => setActiveModal('hal9')} style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>Edit Isian</button>
+                )}
               </div>
             </div>
 
-            {/* HALAMAN 1 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal1 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>📖 Halaman 1 (Cover)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal1" checked={formData.show_hal1} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Nama Pasangan (Maks 3 Kata)</label>
-                <input type="text" name="hal1_namaPasangan" value={formData.hal1_namaPasangan} onChange={handleChange} className={styles.input} required placeholder="Romeo & Juliet" />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Link Musik (YouTube URL)</label>
-                <input type="url" name="hal1_youtubeLink" value={formData.hal1_youtubeLink} onChange={handleChange} className={styles.input} placeholder="https://www.youtube.com/watch?v=..." />
-              </div>
-            </div>
-
-            {/* HALAMAN 2 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal2 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>🌅 Halaman 2 (Hero)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal2" checked={formData.show_hal2} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Tanggal Acara Utama</label>
-                <input type="text" name="hal2_tanggalAcara" value={formData.hal2_tanggalAcara} onChange={handleChange} className={styles.input} placeholder="12 Desember 2026" />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Upload Foto Couple (Hero)</label>
-                {getPreviewUrl('hal2_fotoCouple') && (
-                  <div style={{ position: 'relative', width: '100px', height: '140px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                    <img src={getPreviewUrl('hal2_fotoCouple')} alt="Preview Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button type="button" onClick={() => handleRemoveImage('hal2_fotoCouple')} style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+            {/* MODAL / POPUP ISIAN */}
+            {activeModal && (
+              <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(15, 23, 42, 0.75)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '15px' }}>
+                <div style={{ background: '#fff', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '12px', padding: '25px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                    <h3 style={{ margin: 0, color: '#0f172a' }}>
+                      {activeModal === 'hal1' && '📖 Halaman 1 (Cover)'}
+                      {activeModal === 'hal2' && '🌅 Halaman 2 (Hero)'}
+                      {activeModal === 'hal3' && '👰 Halaman 3 (Profil Mempelai)'}
+                      {activeModal === 'hal4' && '📜 Halaman 4 (Kutipan/Deskripsi)'}
+                      {activeModal === 'hal5' && '📅 Halaman 5 (Acara)'}
+                      {activeModal === 'hal6' && '❤️ Halaman 6 (Cerita/Love Story)'}
+                      {activeModal === 'hal7' && '🎁 Halaman 7 (Hadiah/Rekening)'}
+                      {activeModal === 'hal8' && '💬 Halaman 8 (Ucapan & RSVP)'}
+                      {activeModal === 'hal9' && '👋 Halaman 9 (Footer)'}
+                    </h3>
+                    <button type="button" onClick={() => setActiveModal(null)} style={{ background: '#f1f5f9', border: 'none', width: '30px', height: '30px', borderRadius: '50%', fontSize: '18px', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>&times;</button>
                   </div>
-                )}
-                <input type="file" accept="image/*" name="hal2_fotoCouple" onChange={handleImageChange} className={styles.input} />
-              </div>
-            </div>
 
-            {/* HALAMAN 3 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal3 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>👰 Halaman 3 (Profil Mempelai)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal3" checked={formData.show_hal3} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Kata Pengantar</label>
-                <textarea name="hal3_kataPengantar" value={formData.hal3_kataPengantar} onChange={handleChange} className={styles.input} rows="4" />
-              </div>
-              
-              <div className={styles.responsiveGrid} style={{ marginTop: '20px' }}>
-                <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
-                  <h4 style={{ marginBottom: '10px' }}>Mempelai Wanita</h4>
-                  {getPreviewUrl('hal3_fotoWanita') && (
-                    <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
-                      <img src={getPreviewUrl('hal3_fotoWanita')} alt="Preview Wanita" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button type="button" onClick={() => handleRemoveImage('hal3_fotoWanita')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                  {/* KONTEN HAL 1 */}
+                  {activeModal === 'hal1' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Nama Pasangan (Maks 3 Kata)</label>
+                        <input type="text" name="hal1_namaPasangan" value={formData.hal1_namaPasangan} onChange={handleChange} className={styles.input} required placeholder="Romeo & Juliet" />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Link Musik (YouTube URL)</label>
+                        <input type="url" name="hal1_youtubeLink" value={formData.hal1_youtubeLink} onChange={handleChange} className={styles.input} placeholder="https://www.youtube.com/watch?v=..." />
+                      </div>
                     </div>
                   )}
-                  <input type="file" accept="image/*" name="hal3_fotoWanita" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
-                  <input type="text" name="hal3_namaWanita" value={formData.hal3_namaWanita} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
-                  <textarea name="hal3_ortuWanita" value={formData.hal3_ortuWanita} onChange={handleChange} className={styles.input} placeholder="Contoh: Putri dari Bapak Budi & Ibu Ani" style={{ marginBottom: '10px', height: '60px' }} />
-                  <input type="text" name="hal3_igWanita" value={formData.hal3_igWanita} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @juliet)" />
-                </div>
-                
-                <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
-                  <h4 style={{ marginBottom: '10px' }}>Mempelai Pria</h4>
-                  {getPreviewUrl('hal3_fotoPria') && (
-                    <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
-                      <img src={getPreviewUrl('hal3_fotoPria')} alt="Preview Pria" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button type="button" onClick={() => handleRemoveImage('hal3_fotoPria')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+
+                  {/* KONTEN HAL 2 */}
+                  {activeModal === 'hal2' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Tanggal Acara Utama</label>
+                        <input type="text" name="hal2_tanggalAcara" value={formData.hal2_tanggalAcara} onChange={handleChange} className={styles.input} placeholder="12 Desember 2026" />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Upload Foto Couple (Hero)</label>
+                        {getPreviewUrl('hal2_fotoCouple') && (
+                          <div style={{ position: 'relative', width: '100px', height: '140px', marginBottom: '10px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                            <img src={getPreviewUrl('hal2_fotoCouple')} alt="Preview Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button type="button" onClick={() => handleRemoveImage('hal2_fotoCouple')} style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                          </div>
+                        )}
+                        <input type="file" accept="image/*" name="hal2_fotoCouple" onChange={handleImageChange} className={styles.input} />
+                      </div>
                     </div>
                   )}
-                  <input type="file" accept="image/*" name="hal3_fotoPria" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
-                  <input type="text" name="hal3_namaPria" value={formData.hal3_namaPria} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
-                  <textarea name="hal3_ortuPria" value={formData.hal3_ortuPria} onChange={handleChange} className={styles.input} placeholder="Contoh: Putra dari Bapak Joko & Ibu Marni" style={{ marginBottom: '10px', height: '60px' }} />
-                  <input type="text" name="hal3_igPria" value={formData.hal3_igPria} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @romeo)" />
-                </div>
-              </div>
-            </div>
 
-            {/* HALAMAN 4 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal4 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>📜 Halaman 4 (Kutipan/Deskripsi)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal4" checked={formData.show_hal4} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              <div className={styles.formGroup}>
-                <textarea name="hal4_deskripsi" value={formData.hal4_deskripsi} onChange={handleChange} className={styles.input} rows="6" placeholder="Kutipan Ayat Suci atau Quotes..." />
-              </div>
-            </div>
-
-            {/* HALAMAN 5 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal5 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>📅 Halaman 5 (Acara)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal5" checked={formData.show_hal5} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              {formData.hal5_acara.map((acara, i) => (
-                <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
-                  <h4 style={{ marginBottom: '10px' }}>Acara {i + 1}</h4>
-                  {i > 0 && <button type="button" onClick={() => removeArrayItem('hal5_acara', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>Hapus</button>}
-                  <div className={styles.responsiveGrid}>
-                    <input type="text" value={acara.nama} onChange={e => handleArrayChange('hal5_acara', i, 'nama', e.target.value)} className={styles.input} placeholder="Nama Acara (Akad/Resepsi)" />
-                    <input type="text" value={acara.tanggal} onChange={e => handleArrayChange('hal5_acara', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal" />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <input type="text" value={acara.jam_mulai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_mulai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_mulai', e.target.value)} className={styles.input} placeholder="Mulai" />
-                      <input type="text" value={acara.jam_selesai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_selesai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_selesai', e.target.value)} className={styles.input} placeholder="Selesai" />
+                  {/* KONTEN HAL 3 */}
+                  {activeModal === 'hal3' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Kata Pengantar</label>
+                        <textarea name="hal3_kataPengantar" value={formData.hal3_kataPengantar} onChange={handleChange} className={styles.input} rows="4" />
+                      </div>
+                      <div className={styles.responsiveGrid} style={{ marginTop: '10px' }}>
+                        <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
+                          <h4 style={{ marginBottom: '10px' }}>Mempelai Wanita</h4>
+                          {getPreviewUrl('hal3_fotoWanita') && (
+                            <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
+                              <img src={getPreviewUrl('hal3_fotoWanita')} alt="Preview Wanita" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <button type="button" onClick={() => handleRemoveImage('hal3_fotoWanita')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                            </div>
+                          )}
+                          <input type="file" accept="image/*" name="hal3_fotoWanita" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
+                          <input type="text" name="hal3_namaWanita" value={formData.hal3_namaWanita} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
+                          <textarea name="hal3_ortuWanita" value={formData.hal3_ortuWanita} onChange={handleChange} className={styles.input} placeholder="Contoh: Putri dari Bapak Budi & Ibu Ani" style={{ marginBottom: '10px', height: '60px' }} />
+                          <input type="text" name="hal3_igWanita" value={formData.hal3_igWanita} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @juliet)" />
+                        </div>
+                        <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
+                          <h4 style={{ marginBottom: '10px' }}>Mempelai Pria</h4>
+                          {getPreviewUrl('hal3_fotoPria') && (
+                            <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '10px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #e2e8f0', margin: '0 auto 10px auto' }}>
+                              <img src={getPreviewUrl('hal3_fotoPria')} alt="Preview Pria" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <button type="button" onClick={() => handleRemoveImage('hal3_fotoPria')} style={{ position: 'absolute', top: '0px', right: '0px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', lineHeight: 1 }}>&times;</button>
+                            </div>
+                          )}
+                          <input type="file" accept="image/*" name="hal3_fotoPria" onChange={handleImageChange} className={styles.input} style={{ marginBottom: '10px' }} />
+                          <input type="text" name="hal3_namaPria" value={formData.hal3_namaPria} onChange={handleChange} className={styles.input} placeholder="Nama Lengkap" style={{ marginBottom: '10px' }} />
+                          <textarea name="hal3_ortuPria" value={formData.hal3_ortuPria} onChange={handleChange} className={styles.input} placeholder="Contoh: Putra dari Bapak Joko & Ibu Marni" style={{ marginBottom: '10px', height: '60px' }} />
+                          <input type="text" name="hal3_igPria" value={formData.hal3_igPria} onChange={handleChange} className={styles.input} placeholder="Username IG (Contoh: @romeo)" />
+                        </div>
+                      </div>
                     </div>
-                    <input type="text" value={acara.alamat} onChange={e => handleArrayChange('hal5_acara', i, 'alamat', e.target.value)} className={styles.input} placeholder="Nama Tempat / Alamat Lengkap" />
-                    <input type="url" value={acara.maps} onChange={e => handleArrayChange('hal5_acara', i, 'maps', e.target.value)} className={styles.input} placeholder="Link Google Maps" style={{ gridColumn: '1 / -1' }} />
-                  </div>
+                  )}
+
+                  {/* KONTEN HAL 4 */}
+                  {activeModal === 'hal4' && (
+                    <div className={styles.formGroup}>
+                      <textarea name="hal4_deskripsi" value={formData.hal4_deskripsi} onChange={handleChange} className={styles.input} rows="10" placeholder="Kutipan Ayat Suci atau Quotes..." />
+                    </div>
+                  )}
+
+                  {/* KONTEN HAL 5 */}
+                  {activeModal === 'hal5' && (
+                    <div>
+                      {formData.hal5_acara.map((acara, i) => (
+                        <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
+                          <h4 style={{ marginBottom: '10px', marginTop: 0 }}>Acara {i + 1}</h4>
+                          {i > 0 && <button type="button" onClick={() => removeArrayItem('hal5_acara', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }}>Hapus</button>}
+                          <div className={styles.responsiveGrid}>
+                            <input type="text" value={acara.nama} onChange={e => handleArrayChange('hal5_acara', i, 'nama', e.target.value)} className={styles.input} placeholder="Nama Acara (Akad/Resepsi)" />
+                            <input type="text" value={acara.tanggal} onChange={e => handleArrayChange('hal5_acara', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal" />
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                              <input type="text" value={acara.jam_mulai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_mulai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_mulai', e.target.value)} className={styles.input} placeholder="Mulai" />
+                              <input type="text" value={acara.jam_selesai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_selesai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_selesai', e.target.value)} className={styles.input} placeholder="Selesai" />
+                            </div>
+                            <input type="text" value={acara.alamat} onChange={e => handleArrayChange('hal5_acara', i, 'alamat', e.target.value)} className={styles.input} placeholder="Nama Tempat / Alamat Lengkap" />
+                            <input type="url" value={acara.maps} onChange={e => handleArrayChange('hal5_acara', i, 'maps', e.target.value)} className={styles.input} placeholder="Link Google Maps" style={{ gridColumn: '1 / -1' }} />
+                          </div>
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => addArrayItem('hal5_acara', { nama: '', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Acara Baru</button>
+                    </div>
+                  )}
+
+                  {/* KONTEN HAL 6 */}
+                  {activeModal === 'hal6' && (
+                    <div>
+                      {formData.hal6_cerita.map((cerita, i) => (
+                        <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
+                          <h4 style={{ marginBottom: '10px', marginTop: 0 }}>Cerita {i + 1}</h4>
+                          <button type="button" onClick={() => removeArrayItem('hal6_cerita', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }}>Hapus</button>
+                          <input type="text" value={cerita.judul} onChange={e => handleArrayChange('hal6_cerita', i, 'judul', e.target.value)} className={styles.input} placeholder="Judul Cerita (Awal Kenal)" style={{ marginBottom: '10px' }} />
+                          <input type="text" value={cerita.tanggal} onChange={e => handleArrayChange('hal6_cerita', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal/Tahun" style={{ marginBottom: '10px' }} />
+                          <textarea value={cerita.deskripsi} onChange={e => handleArrayChange('hal6_cerita', i, 'deskripsi', e.target.value)} className={styles.input} rows="3" placeholder="Deskripsi Cerita..." />
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => addArrayItem('hal6_cerita', { judul: '', tanggal: '', deskripsi: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Cerita Baru</button>
+                    </div>
+                  )}
+
+                  {/* KONTEN HAL 7 */}
+                  {activeModal === 'hal7' && (
+                    <div>
+                      <h4 style={{ marginBottom: '10px', color: '#475569', marginTop: 0 }}>Daftar Rekening Bank/E-Wallet</h4>
+                      {formData.hal7_bank.map((bank, i) => (
+                        <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
+                          <h4 style={{ marginBottom: '10px', marginTop: 0, fontSize: '14px' }}>Bank {i + 1}</h4>
+                          <button type="button" onClick={() => removeArrayItem('hal7_bank', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }}>Hapus</button>
+                          <div className={styles.responsiveGrid}>
+                            <input type="text" value={bank.namaBank} onChange={e => handleArrayChange('hal7_bank', i, 'namaBank', e.target.value)} className={styles.input} placeholder="Nama Bank (BCA / MANDIRI)" />
+                            <input type="text" value={bank.rekening} onChange={e => handleArrayChange('hal7_bank', i, 'rekening', e.target.value)} className={styles.input} placeholder="No. Rekening" />
+                            <input type="text" value={bank.atasNama} onChange={e => handleArrayChange('hal7_bank', i, 'atasNama', e.target.value)} className={styles.input} placeholder="Atas Nama" />
+                            <input type="text" value={bank.wa} onChange={e => handleArrayChange('hal7_bank', i, 'wa', e.target.value)} className={styles.input} placeholder="No WA (Konfirmasi)" />
+                          </div>
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => addArrayItem('hal7_bank', { namaBank: '', rekening: '', atasNama: '', wa: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, marginBottom: '25px' }}>+ Tambah Bank Baru</button>
+
+                      <h4 style={{ marginBottom: '10px', color: '#475569' }}>Kirim Kado Fisik (Wedding Gift)</h4>
+                      <div style={{ display: 'grid', gap: '10px' }}>
+                        <textarea name="hal7_alamatKado" value={formData.hal7_alamatKado} onChange={handleChange} className={styles.input} rows="3" placeholder="Alamat Pengiriman Kado Fisik..." />
+                        <input type="text" name="hal7_waKado" value={formData.hal7_waKado} onChange={handleChange} className={styles.input} placeholder="No WA Penerima Kado" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* KONTEN HAL 8 */}
+                  {activeModal === 'hal8' && (
+                    <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px' }}>
+                      <p style={{ color: '#475569', margin: 0, lineHeight: 1.5 }}>
+                        Halaman ini akan memuat fitur <b>Buku Tamu (Guestbook)</b> dan <b>Form RSVP</b> secara otomatis.<br/><br/>
+                        Tamu undangan dapat menulis ucapan yang akan langsung tampil bergulir secara <i>real-time</i>.<br/><br/>
+                        Anda cukup mengatur ceklis "Tampilkan Halaman Ini" di luar (aktif = Ya, nonaktif = Tidak).
+                      </p>
+                    </div>
+                  )}
+
+                  {/* KONTEN HAL 9 */}
+                  {activeModal === 'hal9' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Deskripsi Penutup</label>
+                        <textarea name="hal8_deskripsi" value={formData.hal8_deskripsi} onChange={handleChange} className={styles.input} rows="4" />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Teks Footer Brand (Watermark)</label>
+                        <input type="text" name="hal8_footer" value={formData.hal8_footer} onChange={handleChange} className={styles.input} placeholder="StoryKami" />
+                      </div>
+                    </div>
+                  )}
+
+                  <button type="button" onClick={() => setActiveModal(null)} style={{ width: '100%', marginTop: '25px', padding: '12px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: '0.2s', boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.4)' }}>
+                    ✅ Simpan & Tutup Kotak Isian
+                  </button>
                 </div>
-              ))}
-              <button type="button" onClick={() => addArrayItem('hal5_acara', { nama: '', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Acara Baru</button>
-            </div>
-
-            {/* HALAMAN 6 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal6 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>❤️ Halaman 6 (Cerita/Love Story)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal6" checked={formData.show_hal6} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
               </div>
-              {formData.hal6_cerita.map((cerita, i) => (
-                <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
-                  <h4 style={{ marginBottom: '10px' }}>Cerita {i + 1}</h4>
-                  <button type="button" onClick={() => removeArrayItem('hal6_cerita', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>Hapus</button>
-                  <input type="text" value={cerita.judul} onChange={e => handleArrayChange('hal6_cerita', i, 'judul', e.target.value)} className={styles.input} placeholder="Judul Cerita (Awal Kenal)" style={{ marginBottom: '10px' }} />
-                  <input type="text" value={cerita.tanggal} onChange={e => handleArrayChange('hal6_cerita', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal/Tahun" style={{ marginBottom: '10px' }} />
-                  <textarea value={cerita.deskripsi} onChange={e => handleArrayChange('hal6_cerita', i, 'deskripsi', e.target.value)} className={styles.input} rows="3" placeholder="Deskripsi Cerita..." />
-                </div>
-              ))}
-              <button type="button" onClick={() => addArrayItem('hal6_cerita', { judul: '', tanggal: '', deskripsi: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Cerita Baru</button>
-            </div>
-
-            {/* HALAMAN 7 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal7 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>🎁 Halaman 7 (Hadiah/Rekening)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal7" checked={formData.show_hal7} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              
-              <h4 style={{ marginBottom: '10px', color: '#475569' }}>Daftar Rekening Bank/E-Wallet</h4>
-              {formData.hal7_bank.map((bank, i) => (
-                <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
-                  <h4 style={{ marginBottom: '10px', fontSize: '14px' }}>Bank {i + 1}</h4>
-                  <button type="button" onClick={() => removeArrayItem('hal7_bank', i)} style={{ position: 'absolute', top: '15px', right: '15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>Hapus</button>
-                  <div className={styles.responsiveGrid}>
-                    <input type="text" value={bank.namaBank} onChange={e => handleArrayChange('hal7_bank', i, 'namaBank', e.target.value)} className={styles.input} placeholder="Nama Bank (BCA / MANDIRI)" />
-                    <input type="text" value={bank.rekening} onChange={e => handleArrayChange('hal7_bank', i, 'rekening', e.target.value)} className={styles.input} placeholder="No. Rekening" />
-                    <input type="text" value={bank.atasNama} onChange={e => handleArrayChange('hal7_bank', i, 'atasNama', e.target.value)} className={styles.input} placeholder="Atas Nama" />
-                    <input type="text" value={bank.wa} onChange={e => handleArrayChange('hal7_bank', i, 'wa', e.target.value)} className={styles.input} placeholder="No WA (Konfirmasi)" />
-                  </div>
-                </div>
-              ))}
-              <button type="button" onClick={() => addArrayItem('hal7_bank', { namaBank: '', rekening: '', atasNama: '', wa: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, marginBottom: '25px' }}>+ Tambah Bank Baru</button>
-
-              <h4 style={{ marginBottom: '10px', color: '#475569' }}>Kirim Kado Fisik (Wedding Gift)</h4>
-              <div style={{ display: 'grid', gap: '10px' }}>
-                <textarea name="hal7_alamatKado" value={formData.hal7_alamatKado} onChange={handleChange} className={styles.input} rows="3" placeholder="Alamat Pengiriman Kado Fisik..." />
-                <input type="text" name="hal7_waKado" value={formData.hal7_waKado} onChange={handleChange} className={styles.input} placeholder="No WA Penerima Kado" />
-              </div>
-            </div>
-
-            {/* HALAMAN 8 (UCAPAN) - internally uses hal9 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal9 ? 1 : 0.5, marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>💬 Halaman 8 (Ucapan & RSVP)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-            </div>
-
-            {/* HALAMAN 9 (FOOTER) - internally uses hal8 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal8 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>👋 Halaman 9 (Footer)</h3>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
-                </label>
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Deskripsi Penutup</label>
-                <textarea name="hal8_deskripsi" value={formData.hal8_deskripsi} onChange={handleChange} className={styles.input} rows="3" />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Teks Footer Brand (Watermark)</label>
-                <input type="text" name="hal8_footer" value={formData.hal8_footer} onChange={handleChange} className={styles.input} placeholder="StoryKami" />
-              </div>
-            </div>
+            )}
 
             <button type="submit" disabled={isLoading} className={styles.button} style={{ width: '100%', marginTop: '10px', padding: '18px', fontSize: '1.2rem', background: '#0f172a', fontWeight: 'bold' }}>
               {isLoading ? 'Sedang Memproses...' : '✨ Generate & Publikasikan ke Supabase'}
