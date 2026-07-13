@@ -17,9 +17,34 @@ export async function generateMetadata({ params }) {
   }
 
   const data = invitation.data;
+  
+  const defaultTitle = `Undangan Pernikahan ${data.hal1_namaPasangan || data.coupleName} | StoryKami`;
+  const title = data.thumbnailJudul || defaultTitle;
+  const description = `Undangan Pernikahan Digital ${data.hal1_namaPasangan || data.coupleName}`;
+  const ogImage = data.thumbnailFoto || 'https://storykami.my.id/default-og.jpg'; // fallback image if needed
+
   return {
-    title: `Undangan Pernikahan ${data.coupleName} | StoryKami`,
-    description: `Undangan Pernikahan Digital ${data.coupleName}`,
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: title,
+      description: description,
+      images: [ogImage],
+    },
   };
 }
 

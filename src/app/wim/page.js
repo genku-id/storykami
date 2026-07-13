@@ -184,6 +184,7 @@ export default function WIMDashboard() {
     }
 
     let uploadedUrls = {};
+    if (images.thumbnailFoto) uploadedUrls.thumbnailFoto = await uploadImageToSupabase(images.thumbnailFoto, slugStr, 'thumbnail');
     if (images.hal2_fotoCouple) uploadedUrls.hal2_fotoCouple = await uploadImageToSupabase(images.hal2_fotoCouple, slugStr, 'couple');
     if (images.hal3_fotoWanita) uploadedUrls.hal3_fotoWanita = await uploadImageToSupabase(images.hal3_fotoWanita, slugStr, 'wanita');
     if (images.hal3_fotoPria) uploadedUrls.hal3_fotoPria = await uploadImageToSupabase(images.hal3_fotoPria, slugStr, 'pria');
@@ -280,8 +281,20 @@ export default function WIMDashboard() {
             
             {/* LINK UNDANGAN */}
             <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Link Undangan (Slug)</h3>
+              <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Pengaturan Link & Thumbnail</h3>
+              
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Judul Thumbnail (Muncul saat link disebar)</label>
+                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="Undangan Pernikahan Romeo & Juliet" />
+              </div>
+              
+              <div className={styles.formGroup} style={{ marginBottom: '20px' }}>
+                <label className={styles.label}>Foto Thumbnail (Rekomendasi rasio 16:9)</label>
+                <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} />
+              </div>
+
               <div className={styles.formGroup}>
+                <label className={styles.label}>Link Undangan (Slug)</label>
                 <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
               </div>
 
