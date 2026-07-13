@@ -18,10 +18,13 @@ export async function generateMetadata({ params }) {
 
   const data = invitation.data;
   
-  const defaultTitle = `Undangan Pernikahan ${data.hal1_namaPasangan || data.coupleName} | StoryKami`;
+  const namaPasangan = data.hal1_namaPasangan || data.coupleName || '';
+  const defaultTitle = namaPasangan ? `Undangan Pernikahan ${namaPasangan} | StoryKami` : 'Undangan Pernikahan Digital | StoryKami';
   const title = data.thumbnailJudul || defaultTitle;
-  const description = `Undangan Pernikahan Digital ${data.hal1_namaPasangan || data.coupleName}`;
-  const ogImage = data.thumbnailFoto || 'https://storykami.my.id/default-og.jpg'; // fallback image if needed
+  const description = data.thumbnailJudul || (namaPasangan ? `Undangan Pernikahan Digital ${namaPasangan}` : 'Undangan Pernikahan Digital');
+  
+  // Gunakan thumbnailFoto, jika tidak ada gunakan hal2_fotoCouple (Hero image) sebagai fallback
+  const ogImage = data.thumbnailFoto || data.hal2_fotoCouple || null;
 
   return {
     title: title,
@@ -29,21 +32,23 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: title,
       description: description,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      ...(ogImage && {
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+      }),
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: title,
       description: description,
-      images: [ogImage],
+      ...(ogImage && { images: [ogImage] }),
     },
   };
 }
