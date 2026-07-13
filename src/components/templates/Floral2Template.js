@@ -55,6 +55,19 @@ export default function Floral2Template({ data }) {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}`;
   };
 
+  const renderPengantar = (text) => {
+    if (!text) return "Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan...";
+    return text.split('\n').map((line, i) => {
+      const isSalam = line.toLowerCase().includes('assalamu');
+      return (
+        <React.Fragment key={i}>
+          {isSalam ? <strong>{line}</strong> : line}
+          {i !== text.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      );
+    });
+  };
+
   useEffect(() => {
     const eventDate = parseIndonesianDate(data.hal2_tanggalAcara);
     if (!eventDate) return;
@@ -271,8 +284,8 @@ export default function Floral2Template({ data }) {
               <div className="floral-top-profiles"></div>
               
               <div className="profiles-content" data-animate="fade-up">
-                <p className="greeting text-dark mb-4" style={{ fontSize: '0.85rem', lineHeight: '1.6', fontStyle: 'italic', color: '#000', marginBottom: '30px', whiteSpace: 'pre-line' }}>
-                  {data.hal3_kataPengantar || "Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan..."}
+                <p className="greeting text-dark mb-4" style={{ fontSize: '0.85rem', lineHeight: '1.6', fontStyle: 'italic', color: '#000', marginBottom: '30px' }}>
+                  {renderPengantar(data.hal3_kataPengantar)}
                 </p>
 
                 {/* Bride */}
