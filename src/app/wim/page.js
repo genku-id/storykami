@@ -13,6 +13,7 @@ const INITIAL_FORM_DATA = {
   show_hal6: true,
   show_hal7: true,
   show_hal8: true,
+  show_hal9: true,
 
   // Halaman 1
   hal1_namaPasangan: '',
@@ -642,6 +643,16 @@ export default function WIMDashboard() {
               <div style={{ display: 'grid', gap: '10px' }}>
                 <textarea name="hal7_alamatKado" value={formData.hal7_alamatKado} onChange={handleChange} className={styles.input} rows="3" placeholder="Alamat Pengiriman Kado Fisik..." />
                 <input type="text" name="hal7_waKado" value={formData.hal7_waKado} onChange={handleChange} className={styles.input} placeholder="No WA Penerima Kado" />
+              </div>
+            </div>
+
+            {/* HALAMAN 9 */}
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal9 ? 1 : 0.5, marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>💬 Halaman 9 (Ucapan & RSVP)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
               </div>
             </div>
 

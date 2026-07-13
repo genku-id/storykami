@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Script from 'next/script';
+import Guestbook from '@/components/Guestbook';
 
 
 export default function Floral1Template({ data }) {
@@ -477,6 +478,17 @@ export default function Floral1Template({ data }) {
                     </div>
                   )}
               </div>
+            </section>
+          )}
+
+          {/* ================= HALAMAN 9 (UCAPAN & RSVP) ================= */}
+          {data.show_hal9 !== false && (
+            <section id="guestbook" className="section guestbook-section" style={{ padding: '60px 15px', background: 'var(--sage-light)' }}>
+                <div className="floral-corner floral-pattern-1 floral-top-left-small"></div>
+                <div className="floral-corner floral-pattern-1 floral-bottom-right-small"></div>
+                <div data-animate="fade-up">
+                    <Guestbook slug={data.slug} />
+                </div>
             </section>
           )}
 
