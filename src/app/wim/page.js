@@ -3,6 +3,50 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import styles from './wim.module.css';
 
+const INITIAL_FORM_DATA = {
+  // Saklar (Toggles)
+  show_hal1: true,
+  show_hal2: true,
+  show_hal3: true,
+  show_hal4: true,
+  show_hal5: true,
+  show_hal6: true,
+  show_hal7: true,
+  show_hal8: true,
+
+  // Halaman 1
+  hal1_namaPasangan: '',
+  hal1_youtubeLink: '',
+  // Halaman 2
+  hal2_tanggalAcara: '',
+  // Halaman 3
+  hal3_kataPengantar: "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\nMaha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah semoga ridho-Mu menyertai pernikahan putra-putri kami:",
+  hal3_namaWanita: '',
+  hal3_ortuWanita: '',
+  hal3_igWanita: '',
+  hal3_namaPria: '',
+  hal3_ortuPria: '',
+  hal3_igPria: '',
+  // Halaman 4
+  hal4_deskripsi: "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ\n\nDan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berfikir.\n(QS. Ar-Rum: 21)",
+  // Halaman 5 (Acara Array)
+  hal5_acara: [{ nama: 'Akad Nikah', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' }],
+  // Halaman 6 (Cerita Array)
+  hal6_cerita: [{ judul: 'Awal Pertemuan', tanggal: '', deskripsi: '' }],
+  // Halaman 7 (Hadiah/Bank)
+  hal7_bank: [{ namaBank: 'BCA', rekening: '', atasNama: '', wa: '' }],
+  hal7_alamatKado: '',
+  hal7_waKado: '',
+  // Halaman 8
+  hal8_deskripsi: "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.",
+  hal8_footer: "StoryKami",
+
+  // Thumbnail
+  thumbnailJudul: '',
+  thumbnailDeskripsi: '',
+  thumbnailFoto: null,
+};
+
 export default function WIMDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
@@ -49,44 +93,7 @@ export default function WIMDashboard() {
   };
   
   // ================= STATE FORM 8 HALAMAN =================
-  const [formData, setFormData] = useState({
-    // Saklar (Toggles)
-    show_hal1: true,
-    show_hal2: true,
-    show_hal3: true,
-    show_hal4: true,
-    show_hal5: true,
-    show_hal6: true,
-    show_hal7: true,
-    show_hal8: true,
-
-    // Halaman 1
-    hal1_namaPasangan: '',
-    hal1_youtubeLink: '',
-    // Halaman 2
-    hal2_tanggalAcara: '',
-    // Halaman 3
-    hal3_kataPengantar: "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\nMaha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah semoga ridho-Mu menyertai pernikahan putra-putri kami:",
-    hal3_namaWanita: '',
-    hal3_ortuWanita: '',
-    hal3_igWanita: '',
-    hal3_namaPria: '',
-    hal3_ortuPria: '',
-    hal3_igPria: '',
-    // Halaman 4
-    hal4_deskripsi: "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ\n\nDan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berfikir.\n(QS. Ar-Rum: 21)",
-    // Halaman 5 (Acara Array)
-    hal5_acara: [{ nama: 'Akad Nikah', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' }],
-    // Halaman 6 (Cerita Array)
-    hal6_cerita: [{ judul: 'Awal Pertemuan', tanggal: '', deskripsi: '' }],
-    // Halaman 7 (Hadiah/Bank)
-    hal7_bank: [{ namaBank: 'BCA', rekening: '', atasNama: '', wa: '' }],
-    hal7_alamatKado: '',
-    hal7_waKado: '',
-    // Halaman 8
-    hal8_deskripsi: "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.",
-    hal8_footer: "StoryKami"
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   const [images, setImages] = useState({
     hal2_fotoCouple: null,
@@ -266,7 +273,29 @@ export default function WIMDashboard() {
       });
     }
 
-    setFormData(prev => ({ ...prev, ...migratedData }));
+    setFormData({ ...INITIAL_FORM_DATA, ...migratedData });
+    setImages({
+      thumbnailFoto: null,
+      hal2_fotoCouple: null,
+      hal3_fotoWanita: null,
+      hal3_fotoPria: null,
+    });
+    
+    setActiveTab('pengaturan');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCreateNew = () => {
+    setSlug('');
+    setTemplateName('template-floral1');
+    setClientWa('');
+    setFormData(INITIAL_FORM_DATA);
+    setImages({
+      thumbnailFoto: null,
+      hal2_fotoCouple: null,
+      hal3_fotoWanita: null,
+      hal3_fotoPria: null,
+    });
     setActiveTab('pengaturan');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -304,6 +333,15 @@ export default function WIMDashboard() {
             <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Dashboard</span>
           </button>
         </div>
+
+        {activeTab === 'pengaturan' && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '15px' }}>
+            <button onClick={handleCreateNew} style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Buat Undangan Baru
+            </button>
+          </div>
+        )}
 
         {statusMsg && (
           <div style={{ padding: '15px', background: statusMsg.includes('Gagal') ? '#fee2e2' : '#dcfce7', color: statusMsg.includes('Gagal') ? '#991b1b' : '#166534', borderRadius: '8px', marginBottom: '20px', fontWeight: 600 }}>
