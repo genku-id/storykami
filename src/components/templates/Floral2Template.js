@@ -49,7 +49,7 @@ export default function Floral2Template({ data }) {
 
     const start = `${year}${month}${day}`;
     const end = `${nextYear}${nextMonth}${nextDay}`;
-    const title = encodeURIComponent(`Pernikahan ${data.hal1_namaPasangan || 'Kami'}`);
+    const title = encodeURIComponent(`Undangan Pernikahan ${data.hal1_namaPasangan || ''}`.trim());
     const details = encodeURIComponent(`Turut mengundang ke acara pernikahan kami pada ${data.hal2_tanggalAcara}`);
 
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}`;
