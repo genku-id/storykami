@@ -3,7 +3,7 @@ if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+setTimeout(() => {
     // Force scroll to top when page loads
     window.scrollTo(0, 0);
     // 1. Open Invitation & Audio Logic
@@ -177,7 +177,7 @@ function showCustomToast(message) {
     }, 2000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+setTimeout(() => {
     // Dynamic Guest Name from URL Parameter (?to=)
     const urlParams = new URLSearchParams(window.location.search);
     const guestNameParam = urlParams.get('to') || urlParams.get('invitation');
