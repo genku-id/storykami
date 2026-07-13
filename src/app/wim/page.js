@@ -307,10 +307,15 @@ export default function WIMDashboard() {
     const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
 
     setIsLoading(false);
-    if (error) setStatusMsg(`Gagal: ${error.message}`);
-    else {
+    if (error) {
+      setStatusMsg(`Gagal: ${error.message}`);
+      setTimeout(() => setStatusMsg(''), 3000);
+    } else {
       setStatusMsg(`Sukses! Undangan ${slugStr} berhasil dibuat/diperbarui.`);
       loadInvitations();
+      setTimeout(() => setStatusMsg(''), 3000);
+      setActiveTab('list');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -453,7 +458,12 @@ export default function WIMDashboard() {
         )}
 
         {statusMsg && (
-          <div style={{ padding: '15px', background: statusMsg.includes('Gagal') ? '#fee2e2' : '#dcfce7', color: statusMsg.includes('Gagal') ? '#991b1b' : '#166534', borderRadius: '8px', marginBottom: '20px', fontWeight: 600 }}>
+          <div style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10000, padding: '15px 25px', background: statusMsg.includes('Gagal') || statusMsg.includes('Error') ? '#fee2e2' : '#dcfce7', color: statusMsg.includes('Gagal') || statusMsg.includes('Error') ? '#991b1b' : '#166534', borderRadius: '50px', fontWeight: 600, boxShadow: '0 10px 20px rgba(0,0,0,0.15)', border: `1px solid ${statusMsg.includes('Gagal') || statusMsg.includes('Error') ? '#fca5a5' : '#bbf7d0'}`, textAlign: 'center', maxWidth: '90%', fontSize: '0.9rem', transition: 'all 0.3s ease-in-out', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {statusMsg.includes('Gagal') || statusMsg.includes('Error') ? <circle cx="12" cy="12" r="10"></circle> : <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>}
+              {statusMsg.includes('Gagal') || statusMsg.includes('Error') ? <line x1="12" y1="8" x2="12" y2="12"></line> : <polyline points="22 4 12 14.01 9 11.01"></polyline>}
+              {statusMsg.includes('Gagal') || statusMsg.includes('Error') ? <line x1="12" y1="16" x2="12.01" y2="16"></line> : null}
+            </svg>
             {statusMsg}
           </div>
         )}
@@ -831,8 +841,8 @@ export default function WIMDashboard() {
               </div>
             )}
 
-            <button type="submit" disabled={isLoading} className={styles.button} style={{ width: '100%', marginTop: '10px', padding: '18px', fontSize: '1.2rem', background: '#0f172a', fontWeight: 'bold' }}>
-              {isLoading ? 'Sedang Memproses...' : '✨ Generate & Publikasikan ke Supabase'}
+            <button type="submit" disabled={isLoading} className={styles.button} style={{ width: '100%', marginTop: '10px', padding: '18px', fontSize: '1.2rem', background: '#0f172a', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              {isLoading ? 'Sedang Memproses...' : <><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> GENERATE</>}
             </button>
           </form>
         ) : activeTab === 'list' ? (
