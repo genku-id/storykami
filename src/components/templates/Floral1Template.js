@@ -125,20 +125,24 @@ export default function Floral1Template({ data }) {
             <div className="cloud cloud-3"></div>
             <div className="floral-bottom-cover"></div>
 
-            <div className="cover-content text-center">
-              <h4 className="text-sage mb-2" data-animate="fade-up">THE WEDDING OF</h4>
-              <h1 className="title-names-cursive text-dark-gold mt-3 mb-4" data-animate="zoom-in" style={{ fontSize: '3.5rem' }}>
-                {data.hal1_namaPasangan || "Nama Pasangan"}
-              </h1>
-              <div className="guest-info mt-5" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
-                <p className="text-dark mb-2">Kepada Yth. Bapak/Ibu/Saudara/i</p>
-                <div className="guest-name-box">
-                  <h3 className="guest-name text-sage">Tamu Undangan</h3>
-                </div>
-                <p className="text-muted small mt-2">Mohon maaf apabila ada kesalahan penulisan nama/gelar</p>
+            <div className="cover-content">
+              <div className="monogram-large">
+                <span className="mono-m"><span className="cover-slide-in-left">{data.hal1_namaPasangan ? data.hal1_namaPasangan.charAt(0).toUpperCase() : "M"}</span></span>
+                <span className="mono-d"><span className="cover-slide-in-right">{data.hal1_namaPasangan ? data.hal1_namaPasangan.split('&')[1]?.trim().charAt(0).toUpperCase() || "D" : "D"}</span></span>
               </div>
-              <button id="btn-open" className="btn-open-invitation mt-5" onClick={handleOpenInvitation} data-animate="bounce">
-                <i className="fa-solid fa-envelope-open-text me-2"></i> Buka Undangan
+              
+              <div className="wedding-text cover-fade-up-1">
+                <p className="subtitle text-serif">The Wedding Of</p>
+                <h2 className="title-names-cursive">{data.hal1_namaPasangan || "Dilan & Milea"}</h2>
+              </div>
+              
+              <div className="guest-info cover-fade-up-2">
+                <p className="kepada-yth text-serif">Kepada Yth:</p>
+                <h3 className="guest-name text-serif">Tamu Undangan</h3>
+              </div>
+              
+              <button id="btn-open" className="btn-cover cover-fade-up-3" onClick={handleOpenInvitation}>
+                <i className="fa-solid fa-envelope"></i> BUKA UNDANGAN
               </button>
             </div>
           </div>
@@ -148,20 +152,30 @@ export default function Floral1Template({ data }) {
           
           {/* ================= HALAMAN 2 (HERO) ================= */}
           {data.show_hal2 !== false && (
-            <section id="hero" className="section hero-section bg-cream">
+            <section id="hero" className="section hero-section">
               {/* Animated Clouds Background */}
               <div className="cloud cloud-1"></div>
               <div className="cloud cloud-2"></div>
               <div className="cloud cloud-3"></div>
 
-              <div className="floral-corner floral-pattern-1 floral-top-left"></div>
-              <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
               <div className="hero-content text-center">
                 <div className="hero-image-container mb-4" data-animate="zoom-in">
                   <img src={data.hal2_fotoCouple || "/demo/template-floral1/assets/images/couple.png"} alt="Couple" className="hero-couple-img" style={{ objectFit: 'cover' }} />
                 </div>
                 <h1 className="title-names text-sage mb-3 mt-4" data-animate="slide-right">{data.hal1_namaPasangan || "Nama Pasangan"}</h1>
                 <p className="date-highlight mb-4" data-animate="slide-left">{data.hal2_tanggalAcara || "Tanggal Acara"}</p>
+                
+                <div className="countdown-container" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
+                    <div className="countdown-item"><span>00</span><p>Hari</p></div>
+                    <div className="countdown-item"><span>00</span><p>Jam</p></div>
+                    <div className="countdown-item"><span>00</span><p>Menit</p></div>
+                    <div className="countdown-item"><span>00</span><p>Detik</p></div>
+                </div>
+                
+                {/* Fallback button kalender, di dunia nyata href-nya harus di-generate */}
+                <a href="#" target="_blank" className="btn-secondary mt-4" style={{ textDecoration: 'none', transitionDelay: '0.4s' }} data-animate="fade-up">
+                    <i className="fa-regular fa-calendar-check"></i> Simpan di Kalender
+                </a>
               </div>
               <div className="floral-bottom-hero"></div>
             </section>
@@ -169,44 +183,52 @@ export default function Floral1Template({ data }) {
 
           {/* ================= HALAMAN 3 (PROFIL) ================= */}
           {data.show_hal3 !== false && (
-            <section id="profiles" className="section profiles-section bg-white text-center">
-            <div className="floral-corner floral-pattern-1 floral-top-right"></div>
-            <div className="floral-corner floral-pattern-1 floral-bottom-left"></div>
-            <div className="profiles-content" data-animate="fade-up">
-              <p className="greeting text-dark mb-4" style={{ fontSize: '0.85rem', lineHeight: '1.6', fontStyle: 'italic', color: '#000', marginBottom: '30px', whiteSpace: 'pre-line' }}>
-                {data.hal3_kataPengantar || "Kata Pengantar..."}
-              </p>
+            <section id="profiles" className="section profiles-section">
+              {/* Animated Clouds Background */}
+              <div className="cloud cloud-1"></div>
+              <div className="cloud cloud-2"></div>
+              <div className="cloud cloud-3"></div>
+              <div className="cloud cloud-4"></div>
+              
+              <div className="floral-top-profiles"></div>
+              
+              <div className="profiles-content" data-animate="fade-up">
+                <p className="greeting text-dark mb-4" style={{ fontSize: '0.85rem', lineHeight: '1.6', fontStyle: 'italic', color: '#000', marginBottom: '30px', whiteSpace: 'pre-line' }}>
+                  {data.hal3_kataPengantar || "Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan..."}
+                </p>
 
-              {/* Bride */}
-              <div className="profile-card mb-5">
-                <div data-animate="slide-long-right">
-                  <div className="profile-avatar-wrapper">
-                    <div className="avatar-circle">
-                      <img src={data.hal3_fotoWanita || "/demo/template-floral1/assets/images/bride.png"} alt="Bride" style={{ objectFit: 'cover' }} />
+                {/* Bride */}
+                <div className="profile-card">
+                  <div data-animate="slide-long-right">
+                    <div className="profile-avatar-wrapper">
+                      <div className="avatar-circle">
+                        <img src={data.hal3_fotoWanita || "/demo/template-floral1/assets/images/bride.png"} alt="Bride" style={{ objectFit: 'cover' }} />
+                      </div>
                     </div>
                   </div>
+                  <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.hal3_namaWanita || "Nama Wanita"}</h2>
+                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putri dari<br/>{data.hal3_ortuWanita || "Orang Tua"}</p>
+                  {data.hal3_igWanita && <a href={`https://instagram.com/${data.hal3_igWanita.replace('@','')}`} target="_blank" className="social-link" data-animate="fade-up" style={{ transitionDelay: '0.6s' }}><i className="fa-brands fa-instagram"></i> {data.hal3_igWanita}</a>}
                 </div>
-                <h2 className="title-names mt-3" data-animate="fade-up">{data.hal3_namaWanita || "Nama Wanita"}</h2>
-                <p className="parents" data-animate="fade-up">Putri dari<br/>{data.hal3_ortuWanita || "Orang Tua"}</p>
-                {data.hal3_igWanita && <a href={`https://instagram.com/${data.hal3_igWanita.replace('@','')}`} target="_blank" className="ig-link text-sage mt-2 d-inline-block" data-animate="fade-up"><i className="fa-brands fa-instagram"></i> {data.hal3_igWanita}</a>}
-              </div>
 
-              <div className="ampersand text-center" data-animate="zoom-in">&</div>
+                <div className="ampersand text-center" data-animate="zoom-in">&</div>
 
-              {/* Groom */}
-              <div className="profile-card mt-5">
-                <div data-animate="slide-long-left">
-                  <div className="profile-avatar-wrapper">
-                    <div className="avatar-circle">
-                      <img src={data.hal3_fotoPria || "/demo/template-floral1/assets/images/groom.png"} alt="Groom" style={{ objectFit: 'cover' }} />
+                {/* Groom */}
+                <div className="profile-card">
+                  <div data-animate="slide-long-left">
+                    <div className="profile-avatar-wrapper">
+                      <div className="avatar-circle">
+                        <img src={data.hal3_fotoPria || "/demo/template-floral1/assets/images/groom.png"} alt="Groom" style={{ objectFit: 'cover' }} />
+                      </div>
                     </div>
                   </div>
+                  <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.hal3_namaPria || "Nama Pria"}</h2>
+                  <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putra dari<br/>{data.hal3_ortuPria || "Orang Tua"}</p>
+                  {data.hal3_igPria && <a href={`https://instagram.com/${data.hal3_igPria.replace('@','')}`} target="_blank" className="social-link" data-animate="fade-up" style={{ transitionDelay: '0.6s' }}><i className="fa-brands fa-instagram"></i> {data.hal3_igPria}</a>}
                 </div>
-                <h2 className="title-names mt-3" data-animate="fade-up">{data.hal3_namaPria || "Nama Pria"}</h2>
-                <p className="parents" data-animate="fade-up">Putra dari<br/>{data.hal3_ortuPria || "Orang Tua"}</p>
-                {data.hal3_igPria && <a href={`https://instagram.com/${data.hal3_igPria.replace('@','')}`} target="_blank" className="ig-link text-sage mt-2 d-inline-block" data-animate="fade-up"><i className="fa-brands fa-instagram"></i> {data.hal3_igPria}</a>}
               </div>
-              </div>
+              
+              <div className="floral-bottom-profiles"></div>
             </section>
           )}
 
@@ -215,129 +237,186 @@ export default function Floral1Template({ data }) {
             <section id="quote" className="section quote-section bg-dark-blue">
               <div className="floral-corner floral-pattern-1 floral-middle-right"></div>
               <div className="floral-corner floral-pattern-1 floral-bottom-left-large"></div>
+              
               <div className="quote-content" data-animate="fade-up">
-                <div className="quote-image-card">
-                  <img src={data.hal2_fotoCouple || "/demo/template-floral1/assets/images/couple.png"} alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
-                </div>
-                <div className="quote-text text-white mt-4">
-                  <p className="arabic-text mt-3" style={{ whiteSpace: 'pre-line', fontSize: '1rem', lineHeight: '1.8' }}>
-                    {data.hal4_deskripsi}
-                  </p>
-                </div>
+                  <div className="quote-image-card">
+                      <img src={data.hal2_fotoCouple || "/demo/template-floral1/assets/images/couple.png"} alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
+                  </div>
+                  <div className="quote-text text-white mt-4">
+                      {/* Optional Heading for custom quote? Or hide if none */}
+                      <h3>Quote</h3>
+                      <p className="arabic-text mt-3" style={{ whiteSpace: 'pre-line', fontSize: '1rem', lineHeight: '1.8' }}>
+                          {data.hal4_deskripsi}
+                      </p>
+                  </div>
               </div>
             </section>
           )}
 
           {/* ================= HALAMAN 5 (ACARA) ================= */}
           {data.show_hal5 !== false && acaraList.length > 0 && (
-            <section id="events" className="section events-section bg-cream">
-              <div className="floral-corner floral-pattern-1 floral-top-right"></div>
-              <div className="container">
-                <div className="section-header text-center mb-5" data-animate="fade-up">
-                  <h2 className="title-section text-sage">Rangkaian Acara</h2>
-                </div>
-                <div className="events-wrapper">
+            <section id="events" className="section events-section">
+              <div className="cloud cloud-1"></div>
+              <div className="cloud cloud-3"></div>
+              
+              <div className="floral-top-profiles"></div>
+              
+              <div className="events-content">
                   {acaraList.map((acara, idx) => (
-                    <div key={idx} className="event-card mb-4" data-animate="zoom-in" style={{ transitionDelay: `${idx * 0.2}s` }}>
-                      <div className="event-card-inner bg-white p-4 text-center">
-                        <h3 className="event-title text-dark-gold mb-3">{acara.nama}</h3>
-                        <div className="event-detail mb-2"><i className="fa-regular fa-calendar text-sage me-2"></i> {acara.tanggal}</div>
-                        <div className="event-detail mb-2"><i className="fa-regular fa-clock text-sage me-2"></i> {acara.jam}</div>
-                        <div className="event-detail mb-4"><i className="fa-solid fa-location-dot text-sage me-2"></i> {acara.alamat}</div>
+                    <div key={idx} className="event-card-pill bg-dark-blue" data-animate="zoom-in" style={{ transitionDelay: `${idx * 0.2}s` }}>
+                        <div className="card-floral card-floral-tl"></div>
+                        <div className="card-floral card-floral-mr"></div>
+                        <div className="card-floral card-floral-bl"></div>
+
+                        <h2 className="event-title text-white">{acara.nama}</h2>
+                        
+                        <p className="event-date">{acara.tanggal}</p>
+                        <p className="event-time">Pukul {acara.jam}</p>
+                        
+                        <div className="event-location-icon mt-4">
+                            <i className="fa-solid fa-map-location-dot fa-2x"></i>
+                        </div>
+                        <p className="event-address mt-3">{acara.alamat}</p>
+                        
                         {acara.maps && (
-                          <a href={acara.maps} target="_blank" className="btn-maps"><i className="fa-solid fa-map-location-dot me-2"></i> Buka Google Maps</a>
+                          <a href={acara.maps} target="_blank" className="btn btn-maps mt-4">
+                              <i className="fa-solid fa-location-dot"></i> Google Maps
+                          </a>
                         )}
-                      </div>
                     </div>
                   ))}
-                </div>
               </div>
+              
+              <div className="floral-bottom-profiles"></div>
             </section>
           )}
 
           {/* ================= HALAMAN 6 (CERITA) ================= */}
           {data.show_hal6 !== false && ceritaList.length > 0 && (
             <section id="lovestory" className="section lovestory-section bg-dark-blue">
-              <div className="container">
-                <div className="section-header text-center mb-5" data-animate="fade-up">
-                  <h2 className="title-section text-white">Love Story</h2>
-                </div>
-                <div className="timeline">
+                <h2 className="section-title text-white text-center mb-5" data-animate="fade-up">Love Story</h2>
+                
+                <div className="story-frame" data-animate="zoom-in">
                   {ceritaList.map((cerita, idx) => (
-                    <div key={idx} className={`timeline-item ${idx % 2 !== 0 ? 'right' : 'left'}`} data-animate={idx % 2 !== 0 ? 'slide-left' : 'slide-right'}>
-                      <div className="timeline-content">
-                        <h4 className="text-dark-gold">{cerita.judul}</h4>
-                        <span className="timeline-date">{cerita.tanggal}</span>
-                        <p className="mt-2 text-white-50">{cerita.deskripsi}</p>
+                    <React.Fragment key={idx}>
+                      <div className={`story-item ${idx % 2 === 0 ? 'story-left' : 'story-right'}`}>
+                          <h3 className="story-title">{cerita.judul || `Cerita ${idx+1}`}</h3>
+                          <p className="story-date">{`Bagian ${idx+1}`}</p>
+                          <p className="story-text">{cerita.isi}</p>
                       </div>
-                    </div>
+                      
+                      {idx < ceritaList.length - 1 && (
+                        <div className="story-divider"><i className="fa-solid fa-heart"></i></div>
+                      )}
+                    </React.Fragment>
                   ))}
                 </div>
-              </div>
             </section>
           )}
 
           {/* ================= HALAMAN 7 (HADIAH) ================= */}
           {data.show_hal7 !== false && (bankList.length > 0 || data.hal7_alamatKado) && (
-            <section id="gift" className="section gift-section bg-cream text-center">
-              <div className="container">
-                <div className="section-header text-center mb-4" data-animate="fade-up">
-                  <h2 className="title-section text-sage">Wedding Gift</h2>
-                  <p className="text-muted small mt-2">Tanpa mengurangi rasa hormat, bagi Anda yang ingin memberikan tanda kasih untuk kami, dapat melalui:</p>
-                </div>
-                
-                <div className="gift-container mt-4">
+            <section id="gift" className="section gift-section bg-dark-blue">
+              <div className="gift-section-header text-center text-white mb-4" data-animate="fade-up" style={{ marginTop: '-30px' }}>
+                  <i className="fa-solid fa-gift fa-3x mb-2"></i>
+                  <h2 className="section-title text-white" style={{ color: 'white', fontSize: '1.5rem' }}>Wedding Gift</h2>
+                  <p className="mt-3 gift-description" style={{ fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto', lineHeight: '1.6' }}>
+                    Doa Restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless.
+                  </p>
+              </div>
+              
+              <div className="gift-container" data-animate="zoom-in">
                   {bankList.map((bank, idx) => (
-                    <div key={idx} className="gift-card bg-white mb-3 p-4" data-animate="zoom-in">
-                      <h4 className="text-dark mb-3">{bank.namaBank}</h4>
-                      <p className="rek-number fs-4 text-sage fw-bold mb-1">{bank.rekening}</p>
-                      <p className="text-muted small mb-3">a.n {bank.atasNama}</p>
-                      <div className="d-flex gap-2 justify-content-center">
-                        <button className="btn-copy btn-copy-rek" onClick={() => navigator.clipboard.writeText(bank.rekening)}>
-                          <i className="fa-regular fa-copy"></i> Salin
-                        </button>
-                        {bank.wa && (
-                          <a href={`https://wa.me/${bank.wa.replace(/\D/g,'')}`} target="_blank" className="btn-copy" style={{ background: '#25D366', color: 'white', border: 'none' }}>
-                            <i className="fa-brands fa-whatsapp"></i> Konfirmasi
-                          </a>
-                        )}
-                      </div>
+                    <div key={idx} className="bank-card mt-4">
+                        <div className="card-top-row">
+                            <h3 className="bank-card-title">Wedding Gift</h3>
+                            <div className="bank-logo-container">
+                                <span style={{ fontWeight: 'bold', fontStyle: 'italic', color: '#555' }}>{bank.namaBank}</span>
+                                <hr className="bank-divider" />
+                            </div>
+                        </div>
+                        
+                        <div className="card-body-row">
+                            <div className="card-left">
+                                <i className="fa-solid fa-credit-card card-icon"></i>
+                                <div className="card-buttons">
+                                    <button className="btn-bank btn-copy" onClick={() => navigator.clipboard.writeText(bank.rekening)}>
+                                        <i className="fa-regular fa-copy"></i> Salin NO
+                                    </button>
+                                    {bank.wa && (
+                                      <a href={`https://wa.me/${bank.wa.replace(/\D/g,'')}`} target="_blank" className="btn-bank btn-wa mt-2" style={{ background: '#25D366', color: 'white', border: 'none', padding: '5px 10px', fontSize: '0.8rem', borderRadius: '5px', textDecoration: 'none' }}>
+                                        <i className="fa-brands fa-whatsapp"></i> Konfirmasi
+                                      </a>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="card-right">
+                                <div className="bank-details-wrapper">
+                                    <p className="bank-label">No. Rekening</p>
+                                    <p className="bank-number">{bank.rekening}</p>
+                                    
+                                    <p className="bank-label mt-2">Atas Nama</p>
+                                    <p className="bank-name">{bank.atasNama}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                   ))}
 
                   {data.hal7_alamatKado && (
-                    <div className="gift-card bg-white mb-3 p-4" data-animate="zoom-in">
-                      <h4 className="text-dark mb-3"><i className="fa-solid fa-gift me-2 text-sage"></i>Kirim Kado</h4>
-                      <p className="text-muted small mb-3">{data.hal7_alamatKado}</p>
-                      {data.hal7_waKado && (
-                        <a href={`https://wa.me/${data.hal7_waKado.replace(/\D/g,'')}`} target="_blank" className="btn-copy mx-auto" style={{ background: '#25D366', color: 'white', border: 'none' }}>
-                          <i className="fa-brands fa-whatsapp"></i> Konfirmasi Resi
-                        </a>
-                      )}
+                    <div className="bank-card mt-4 address-card text-center" style={{ alignItems: 'center', paddingTop: '30px' }}>
+                        <h3 className="bank-card-title text-center mb-3">Wedding Gift</h3>
+                        <i className="fa-solid fa-gift card-icon-address" style={{ fontSize: '5rem', color: '#8da4a6', margin: '15px 0' }}></i>
+                        
+                        <div className="address-details mt-3 mb-4 text-dark" style={{ color: 'var(--text-dark)' }}>
+                            <p className="mb-1" style={{ fontFamily: "'Quicksand', 'Inter', sans-serif", fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.5px' }}>Alamat : {data.hal7_alamatKado}</p>
+                        </div>
+                        
+                        <div className="address-buttons d-flex flex-column align-items-center w-100">
+                            <button className="btn-bank btn-copy mb-2 px-4 py-2" onClick={() => navigator.clipboard.writeText(data.hal7_alamatKado)}>
+                                <i className="fa-regular fa-copy"></i> Salin Alamat
+                            </button>
+                            {data.hal7_waKado && (
+                              <a href={`https://wa.me/${data.hal7_waKado.replace(/\D/g,'')}`} target="_blank" className="btn-bank btn-wa" style={{ background: '#25D366', color: 'white', border: 'none', padding: '5px 10px', fontSize: '0.8rem', borderRadius: '5px', textDecoration: 'none' }}>
+                                <i className="fa-brands fa-whatsapp"></i> Konfirmasi Resi
+                              </a>
+                            )}
+                        </div>
                     </div>
                   )}
-                </div>
               </div>
             </section>
           )}
 
           {/* ================= HALAMAN 8 (FOOTER) ================= */}
           {data.show_hal8 !== false && (
-            <section id="closing" className="section closing-section bg-dark-blue text-center">
-              <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
-              <div className="floral-corner floral-pattern-1 floral-top-left-small"></div>
-              <div className="closing-content" data-animate="zoom-in">
-                <p className="text-white-50 mb-4" style={{ whiteSpace: 'pre-line' }}>{data.hal8_deskripsi}</p>
-                <h2 className="title-names-cursive text-dark-gold mb-5" style={{ fontSize: '2.5rem' }}>{data.hal1_namaPasangan || "Nama Pasangan"}</h2>
-                
-                <div className="footer-credits mt-5 pt-4 border-top border-secondary">
-                  <p className="text-white-50 small mb-0">Made with ❤️ by</p>
-                  <h5 className="text-sage mt-1">{data.hal8_footer || "StoryKami"}</h5>
+            <section id="closing" className="section closing-section text-center">
+                <div className="closing-gradient-overlay">
+                    <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3.5rem', color: 'black' }}>Terima Kasih</h1>
+                    <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text-dark)', maxWidth: '320px', margin: '0 auto', fontWeight: 500 }}>
+                        <p>{data.hal8_deskripsi || "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami."}</p>
+                        <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+                    </div>
+                    
+                    <h1 id="closing-couple-names" className="title-names mt-4" data-animate="fade-up" style={{ animationDelay: '0.2s' }}>{data.hal1_namaPasangan || "Nama Pasangan"}</h1>
                 </div>
-              </div>
             </section>
           )}
 
+          {/* Absolute Footer */}
+          <footer className="footer bg-sage-dark text-white text-center">
+              <img src="/demo/template-floral1/assets/images/logo.png" alt="StoryKami" className="footer-logo" />
+              <h3>STORYKAMI</h3>
+              <p className="subtitle">UNDANGAN DIGITAL</p>
+              
+              <p className="made-with mt-4">Made with <i className="fa-solid fa-heart text-red"></i> by StoryKami</p>
+              
+              <div className="social-icons mt-3">
+                  <a href="#"><i className="fa-brands fa-instagram"></i></a>
+                  <a href="#"><i className="fa-brands fa-whatsapp"></i></a>
+              </div>
+          </footer>
         </div>
         
         {/* Audio Toggle Button */}
