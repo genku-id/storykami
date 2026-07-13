@@ -465,33 +465,33 @@ export default function WIMDashboard() {
             <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Slug link</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Slug link</label>
                   <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Template</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Template</label>
                   <select value={templateName} onChange={e => setTemplateName(e.target.value)} className={styles.input}>
                     <option value="template-floral1">Floral Elegance 1</option>
                     <option value="template-floral2">Floral Elegance 2</option>
                   </select>
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>No. WA Klien</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> No. WA Klien</label>
                   <input type="text" value={clientWa} onChange={e => setClientWa(e.target.value)} className={styles.input} placeholder="contoh: 6281234567890" />
                 </div>
               </div>
               <hr style={{ borderTop: '1px solid #e2e8f0', borderBottom: 'none', margin: '15px 0' }} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Judul Thumbnail</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg> Judul Thumbnail</label>
                   <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of..." />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Deskripsi Thumbnail</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="12" y2="18"></line></svg> Deskripsi Thumbnail</label>
                   <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan..." />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Foto Thumbnail (<small style={{color: '#10b981'}}>Auto &lt; 300KB</small>)</label>
+                  <label className={styles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> Foto Thumbnail</label>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} className={styles.input} style={{ flex: 1 }} />
                     {getPreviewUrl('thumbnailFoto') && (
