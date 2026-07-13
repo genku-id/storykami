@@ -5,10 +5,11 @@ import Floral1Template from '@/components/templates/Floral1Template';
 export const revalidate = 60; // Regenerate cache setiap 60 detik (ISR)
 
 export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
   const { data: invitation } = await supabase
     .from('invitations')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single();
 
   if (!invitation) {
@@ -23,10 +24,11 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function InvitationPage({ params }) {
+  const resolvedParams = await params;
   const { data: invitation, error } = await supabase
     .from('invitations')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single();
 
   if (error || !invitation) {
