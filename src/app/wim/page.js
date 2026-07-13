@@ -154,6 +154,14 @@ export default function WIMDashboard() {
     }
   };
 
+  const handleEdit = (inv) => {
+    setSlug(inv.slug);
+    setTemplateName(inv.template_name || 'template-floral1');
+    setFormData(prev => ({ ...prev, ...inv.data }));
+    setActiveTab('pengaturan');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (!isAuthenticated) {
     return (
       <div className={styles.container}>
@@ -407,7 +415,11 @@ export default function WIMDashboard() {
                           Buka <span style={{ fontSize: '12px' }}>↗</span>
                         </a>
                       </td>
-                      <td style={{ padding: '15px' }}>
+                      <td style={{ padding: '15px', display: 'flex', gap: '8px' }}>
+                        <button onClick={() => handleEdit(inv)} style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, transition: '0.2s', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                          Edit
+                        </button>
                         <button onClick={() => handleDelete(inv.slug)} style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, transition: '0.2s' }}>Hapus</button>
                       </td>
                     </tr>
