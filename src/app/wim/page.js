@@ -16,6 +16,16 @@ export default function WIMDashboard() {
   
   // ================= STATE FORM 8 HALAMAN =================
   const [formData, setFormData] = useState({
+    // Saklar (Toggles)
+    show_hal1: true,
+    show_hal2: true,
+    show_hal3: true,
+    show_hal4: true,
+    show_hal5: true,
+    show_hal6: true,
+    show_hal7: true,
+    show_hal8: true,
+
     // Halaman 1
     hal1_namaPasangan: '',
     hal1_youtubeLink: '',
@@ -67,8 +77,8 @@ export default function WIMDashboard() {
 
   // Handler Teks Biasa
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   // Handler Array Dinamis (Acara, Cerita, Bank)
@@ -185,8 +195,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 1 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>📖 Halaman 1 (Cover)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal1 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>📖 Halaman 1 (Cover)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal1" checked={formData.show_hal1} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Nama Pasangan (Maks 3 Kata)</label>
                 <input type="text" name="hal1_namaPasangan" value={formData.hal1_namaPasangan} onChange={handleChange} className={styles.input} required placeholder="Romeo & Juliet" />
@@ -198,8 +213,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 2 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>🌅 Halaman 2 (Hero)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal2 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>🌅 Halaman 2 (Hero)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal2" checked={formData.show_hal2} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Tanggal Acara Utama</label>
                 <input type="text" name="hal2_tanggalAcara" value={formData.hal2_tanggalAcara} onChange={handleChange} className={styles.input} placeholder="12 Desember 2026" />
@@ -211,8 +231,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 3 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>👰 Halaman 3 (Profil Mempelai)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal3 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>👰 Halaman 3 (Profil Mempelai)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal3" checked={formData.show_hal3} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Kata Pengantar</label>
                 <textarea name="hal3_kataPengantar" value={formData.hal3_kataPengantar} onChange={handleChange} className={styles.input} rows="4" />
@@ -238,16 +263,26 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 4 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>📜 Halaman 4 (Kutipan/Deskripsi)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal4 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>📜 Halaman 4 (Kutipan/Deskripsi)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal4" checked={formData.show_hal4} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               <div className={styles.formGroup}>
                 <textarea name="hal4_deskripsi" value={formData.hal4_deskripsi} onChange={handleChange} className={styles.input} rows="6" placeholder="Kutipan Ayat Suci atau Quotes..." />
               </div>
             </div>
 
             {/* HALAMAN 5 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>📅 Halaman 5 (Acara)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal5 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>📅 Halaman 5 (Acara)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal5" checked={formData.show_hal5} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               {formData.hal5_acara.map((acara, i) => (
                 <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
                   <h4 style={{ marginBottom: '10px' }}>Acara {i + 1}</h4>
@@ -265,8 +300,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 6 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>❤️ Halaman 6 (Cerita/Love Story)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal6 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>❤️ Halaman 6 (Cerita/Love Story)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal6" checked={formData.show_hal6} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               {formData.hal6_cerita.map((cerita, i) => (
                 <div key={i} style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', position: 'relative' }}>
                   <h4 style={{ marginBottom: '10px' }}>Cerita {i + 1}</h4>
@@ -280,8 +320,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 7 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>🎁 Halaman 7 (Hadiah/Rekening)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal7 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>🎁 Halaman 7 (Hadiah/Rekening)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal7" checked={formData.show_hal7} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               
               <h4 style={{ marginBottom: '10px', color: '#475569' }}>Daftar Rekening Bank/E-Wallet</h4>
               {formData.hal7_bank.map((bank, i) => (
@@ -306,8 +351,13 @@ export default function WIMDashboard() {
             </div>
 
             {/* HALAMAN 8 */}
-            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px' }}>
-              <h3 style={{ marginBottom: '15px', color: '#0f172a' }}>👋 Halaman 8 (Footer)</h3>
+            <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal8 ? 1 : 0.5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>👋 Halaman 8 (Footer)</h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
+                </label>
+              </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Deskripsi Penutup</label>
                 <textarea name="hal8_deskripsi" value={formData.hal8_deskripsi} onChange={handleChange} className={styles.input} rows="3" />

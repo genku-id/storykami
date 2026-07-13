@@ -87,42 +87,47 @@ export default function Floral1Template({ data }) {
         )}
 
         {/* ================= HALAMAN 1 (COVER) ================= */}
-        <div id="cover-page" className={`cover-page ${!showCover ? 'slide-up' : ''}`}>
-          <div className="cover-content text-center">
-            <h4 className="text-sage mb-2" data-animate="fade-up">THE WEDDING OF</h4>
-            <h1 className="title-names-cursive text-dark-gold mt-3 mb-4" data-animate="zoom-in" style={{ fontSize: '3.5rem' }}>
-              {data.hal1_namaPasangan || "Nama Pasangan"}
-            </h1>
-            <div className="guest-info mt-5" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
-              <p className="text-dark mb-2">Kepada Yth. Bapak/Ibu/Saudara/i</p>
-              <div className="guest-name-box">
-                <h3 className="guest-name text-sage">Tamu Undangan</h3>
+        {data.show_hal1 !== false && (
+          <div id="cover-page" className={`cover-page ${!showCover ? 'slide-up' : ''}`}>
+            <div className="cover-content text-center">
+              <h4 className="text-sage mb-2" data-animate="fade-up">THE WEDDING OF</h4>
+              <h1 className="title-names-cursive text-dark-gold mt-3 mb-4" data-animate="zoom-in" style={{ fontSize: '3.5rem' }}>
+                {data.hal1_namaPasangan || "Nama Pasangan"}
+              </h1>
+              <div className="guest-info mt-5" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
+                <p className="text-dark mb-2">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+                <div className="guest-name-box">
+                  <h3 className="guest-name text-sage">Tamu Undangan</h3>
+                </div>
+                <p className="text-muted small mt-2">Mohon maaf apabila ada kesalahan penulisan nama/gelar</p>
               </div>
-              <p className="text-muted small mt-2">Mohon maaf apabila ada kesalahan penulisan nama/gelar</p>
+              <button id="btn-open" className="btn-open-invitation mt-5" onClick={handleOpenInvitation} data-animate="bounce">
+                <i className="fa-solid fa-envelope-open-text me-2"></i> Buka Undangan
+              </button>
             </div>
-            <button id="btn-open" className="btn-open-invitation mt-5" onClick={handleOpenInvitation} data-animate="bounce">
-              <i className="fa-solid fa-envelope-open-text me-2"></i> Buka Undangan
-            </button>
           </div>
-        </div>
+        )}
 
         <div id="main-content" className="main-content">
           
           {/* ================= HALAMAN 2 (HERO) ================= */}
-          <section id="hero" className="section hero-section bg-cream">
-            <div className="floral-corner floral-pattern-1 floral-top-left"></div>
-            <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
-            <div className="hero-content text-center">
-              <div className="hero-image-container mb-4" data-animate="zoom-in">
-                <img src={data.hal2_fotoCouple || "/demo/template-floral1/assets/images/couple.png"} alt="Couple" className="hero-couple-img" style={{ objectFit: 'cover' }} />
+          {data.show_hal2 !== false && (
+            <section id="hero" className="section hero-section bg-cream">
+              <div className="floral-corner floral-pattern-1 floral-top-left"></div>
+              <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
+              <div className="hero-content text-center">
+                <div className="hero-image-container mb-4" data-animate="zoom-in">
+                  <img src={data.hal2_fotoCouple || "/demo/template-floral1/assets/images/couple.png"} alt="Couple" className="hero-couple-img" style={{ objectFit: 'cover' }} />
+                </div>
+                <h1 className="title-names text-sage mb-3 mt-4" data-animate="slide-right">{data.hal1_namaPasangan || "Nama Pasangan"}</h1>
+                <p className="date-highlight mb-4" data-animate="slide-left">{data.hal2_tanggalAcara || "Tanggal Acara"}</p>
               </div>
-              <h1 className="title-names text-sage mb-3 mt-4" data-animate="slide-right">{data.hal1_namaPasangan || "Nama Pasangan"}</h1>
-              <p className="date-highlight mb-4" data-animate="slide-left">{data.hal2_tanggalAcara || "Tanggal Acara"}</p>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* ================= HALAMAN 3 (PROFIL) ================= */}
-          <section id="profiles" className="section profiles-section bg-white text-center">
+          {data.show_hal3 !== false && (
+            <section id="profiles" className="section profiles-section bg-white text-center">
             <div className="floral-corner floral-pattern-1 floral-top-right"></div>
             <div className="floral-corner floral-pattern-1 floral-bottom-left"></div>
             <div className="profiles-content" data-animate="fade-up">
@@ -159,11 +164,12 @@ export default function Floral1Template({ data }) {
                 <p className="parents" data-animate="fade-up">Putra dari<br/>{data.hal3_ortuPria || "Orang Tua"}</p>
                 {data.hal3_igPria && <a href={`https://instagram.com/${data.hal3_igPria.replace('@','')}`} target="_blank" className="ig-link text-sage mt-2 d-inline-block" data-animate="fade-up"><i className="fa-brands fa-instagram"></i> {data.hal3_igPria}</a>}
               </div>
-            </div>
-          </section>
+              </div>
+            </section>
+          )}
 
           {/* ================= HALAMAN 4 (DESKRIPSI/QUOTE) ================= */}
-          {data.hal4_deskripsi && (
+          {data.show_hal4 !== false && data.hal4_deskripsi && (
             <section id="quote" className="section quote-section bg-dark-blue">
               <div className="floral-corner floral-pattern-1 floral-middle-right"></div>
               <div className="floral-corner floral-pattern-1 floral-bottom-left-large"></div>
@@ -181,7 +187,7 @@ export default function Floral1Template({ data }) {
           )}
 
           {/* ================= HALAMAN 5 (ACARA) ================= */}
-          {acaraList.length > 0 && (
+          {data.show_hal5 !== false && acaraList.length > 0 && (
             <section id="events" className="section events-section bg-cream">
               <div className="floral-corner floral-pattern-1 floral-top-right"></div>
               <div className="container">
@@ -208,7 +214,7 @@ export default function Floral1Template({ data }) {
           )}
 
           {/* ================= HALAMAN 6 (CERITA) ================= */}
-          {ceritaList.length > 0 && (
+          {data.show_hal6 !== false && ceritaList.length > 0 && (
             <section id="lovestory" className="section lovestory-section bg-dark-blue">
               <div className="container">
                 <div className="section-header text-center mb-5" data-animate="fade-up">
@@ -230,7 +236,7 @@ export default function Floral1Template({ data }) {
           )}
 
           {/* ================= HALAMAN 7 (HADIAH) ================= */}
-          {(bankList.length > 0 || data.hal7_alamatKado) && (
+          {data.show_hal7 !== false && (bankList.length > 0 || data.hal7_alamatKado) && (
             <section id="gift" className="section gift-section bg-cream text-center">
               <div className="container">
                 <div className="section-header text-center mb-4" data-animate="fade-up">
@@ -274,19 +280,21 @@ export default function Floral1Template({ data }) {
           )}
 
           {/* ================= HALAMAN 8 (FOOTER) ================= */}
-          <section id="closing" className="section closing-section bg-dark-blue text-center">
-            <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
-            <div className="floral-corner floral-pattern-1 floral-top-left-small"></div>
-            <div className="closing-content" data-animate="zoom-in">
-              <p className="text-white-50 mb-4" style={{ whiteSpace: 'pre-line' }}>{data.hal8_deskripsi}</p>
-              <h2 className="title-names-cursive text-dark-gold mb-5" style={{ fontSize: '2.5rem' }}>{data.hal1_namaPasangan || "Nama Pasangan"}</h2>
-              
-              <div className="footer-credits mt-5 pt-4 border-top border-secondary">
-                <p className="text-white-50 small mb-0">Made with ❤️ by</p>
-                <h5 className="text-sage mt-1">{data.hal8_footer || "StoryKami"}</h5>
+          {data.show_hal8 !== false && (
+            <section id="closing" className="section closing-section bg-dark-blue text-center">
+              <div className="floral-corner floral-pattern-1 floral-bottom-right"></div>
+              <div className="floral-corner floral-pattern-1 floral-top-left-small"></div>
+              <div className="closing-content" data-animate="zoom-in">
+                <p className="text-white-50 mb-4" style={{ whiteSpace: 'pre-line' }}>{data.hal8_deskripsi}</p>
+                <h2 className="title-names-cursive text-dark-gold mb-5" style={{ fontSize: '2.5rem' }}>{data.hal1_namaPasangan || "Nama Pasangan"}</h2>
+                
+                <div className="footer-credits mt-5 pt-4 border-top border-secondary">
+                  <p className="text-white-50 small mb-0">Made with ❤️ by</p>
+                  <h5 className="text-sage mt-1">{data.hal8_footer || "StoryKami"}</h5>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
         </div>
         
