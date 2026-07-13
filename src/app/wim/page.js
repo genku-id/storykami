@@ -13,6 +13,7 @@ export default function WIMDashboard() {
   const [invitations, setInvitations] = useState([]);
   
   const [slug, setSlug] = useState('');
+  const [templateName, setTemplateName] = useState('template-floral1');
   
   // ================= STATE FORM 8 HALAMAN =================
   const [formData, setFormData] = useState({
@@ -132,7 +133,7 @@ export default function WIMDashboard() {
 
     const payload = {
       slug: slugStr,
-      template_name: 'template-floral1',
+      template_name: templateName,
       data: { ...formData, ...uploadedUrls }
     };
 
@@ -191,6 +192,14 @@ export default function WIMDashboard() {
               <h3 style={{ marginBottom: '15px', color: '#334155' }}>🔗 Link Undangan (Slug)</h3>
               <div className={styles.formGroup}>
                 <input type="text" value={slug} onChange={e => setSlug(e.target.value)} className={styles.input} required placeholder="contoh: romeo-juliet" />
+              </div>
+
+              <h3 style={{ marginTop: '20px', marginBottom: '15px', color: '#334155' }}>🎨 Pilihan Template</h3>
+              <div className={styles.formGroup}>
+                <select value={templateName} onChange={e => setTemplateName(e.target.value)} className={styles.input}>
+                  <option value="template-floral1">Floral Elegance 1</option>
+                  <option value="template-floral2">Floral Elegance 2</option>
+                </select>
               </div>
             </div>
 
