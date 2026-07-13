@@ -25,16 +25,27 @@ export default function WIMDashboard() {
   const [isEditingAdmin, setIsEditingAdmin] = useState(false);
 
   useEffect(() => {
-    const savedSettings = localStorage.getItem('wim_admin_settings');
-    if (savedSettings) {
-      setAdminSettings(JSON.parse(savedSettings));
-    }
-  }, []);
+    if (isAuthenticated) loadInvitations();
+  }, [isAuthenticated]);
 
-  const saveAdminSettings = () => {
-    localStorage.setItem('wim_admin_settings', JSON.stringify(adminSettings));
-    setIsEditingAdmin(false);
-    alert('Pengaturan admin berhasil disimpan!');
+  const saveAdminSettings = async () => {
+    setStatusMsg('Menyimpan pengaturan admin...');
+    const payload = {
+      slug: '_wim_admin_settings',
+      template_name: 'settings',
+      data: adminSettings
+    };
+    const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
+    
+    if (error) {
+      alert(`Gagal menyimpan: ${error.message}`);
+      setStatusMsg('');
+    } else {
+      localStorage.setItem('wim_admin_settings', JSON.stringify(adminSettings));
+      setIsEditingAdmin(false);
+      setStatusMsg('Pengaturan admin berhasil disimpan!');
+      setTimeout(() => setStatusMsg(''), 3000);
+    }
   };
   
   // ================= STATE FORM 8 HALAMAN =================
@@ -83,13 +94,18 @@ export default function WIMDashboard() {
     hal3_fotoPria: null,
   });
 
-  useEffect(() => {
-    if (isAuthenticated) loadInvitations();
-  }, [isAuthenticated]);
-
   const loadInvitations = async () => {
     const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
-    if (data) setInvitations(data);
+    if (data) {
+      const adminData = data.find(inv => inv.slug === '_wim_admin_settings');
+      if (adminData && adminData.data) {
+        setAdminSettings(prev => ({ ...prev, ...adminData.data }));
+      } else {
+        const savedSettings = localStorage.getItem('wim_admin_settings');
+        if (savedSettings) setAdminSettings(JSON.parse(savedSettings));
+      }
+      setInvitations(data.filter(inv => inv.slug !== '_wim_admin_settings'));
+    }
   };
 
   const handleLogin = (e) => {
