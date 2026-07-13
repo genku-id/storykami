@@ -301,7 +301,13 @@ export default function WIMDashboard() {
               
               <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
                 <label className={styles.label}>Judul Thumbnail (Muncul saat link disebar)</label>
-                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="Undangan Pernikahan Romeo & Juliet" />
+                <input type="text" name="thumbnailJudul" value={formData.thumbnailJudul || ''} onChange={handleChange} className={styles.input} placeholder="The Wedding of [NAMA]|StoryKami" />
+              </div>
+              
+              <div className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                <label className={styles.label}>Deskripsi Thumbnail (Teks kecil di bawah judul)</label>
+                <input type="text" name="thumbnailDeskripsi" value={formData.thumbnailDeskripsi || ''} onChange={handleChange} className={styles.input} placeholder="Hadiri Pernikahan [NAMA] yaa" />
+                <small style={{ color: '#64748b' }}>Gunakan <b>[NAMA]</b> agar otomatis diganti dengan nama mempelai.</small>
               </div>
               
               <div className={styles.formGroup} style={{ marginBottom: '20px' }}>

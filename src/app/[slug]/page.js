@@ -20,8 +20,13 @@ export async function generateMetadata({ params }) {
   
   const namaPasangan = data.hal1_namaPasangan || data.coupleName || '';
   const defaultTitle = namaPasangan ? `Undangan Pernikahan ${namaPasangan} | StoryKami` : 'Undangan Pernikahan Digital | StoryKami';
-  const title = data.thumbnailJudul || defaultTitle;
-  const description = data.thumbnailJudul || (namaPasangan ? `Undangan Pernikahan Digital ${namaPasangan}` : 'Undangan Pernikahan Digital');
+  
+  let title = data.thumbnailJudul || defaultTitle;
+  title = title.replace(/\[NAMA\]/gi, namaPasangan);
+
+  const defaultDesc = namaPasangan ? `Hadiri Pernikahan ${namaPasangan} yaa` : 'Undangan Pernikahan Digital';
+  let description = data.thumbnailDeskripsi || defaultDesc;
+  description = description.replace(/\[NAMA\]/gi, namaPasangan);
   
   // Gunakan thumbnailFoto, jika tidak ada gunakan hal2_fotoCouple (Hero image) sebagai fallback
   const ogImage = data.thumbnailFoto || data.hal2_fotoCouple || null;
