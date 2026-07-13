@@ -62,10 +62,10 @@ export default function Floral1Template({ data }) {
       
           <div className="hero-content text-center">
             <div className="hero-image-container mb-4" data-animate="zoom-in">
-              <img src="/demo/template-floral1/assets/images/couple.png" alt="Couple" className="hero-couple-img" />
+              <img src={data.heroImage || "/demo/template-floral1/assets/images/couple.png"} alt="Couple" className="hero-couple-img" style={{ objectFit: 'cover' }} />
             </div>
             <h1 className="title-names text-sage mb-3 mt-4" data-animate="slide-right">{data.coupleName}</h1>
-            <p className="date-highlight mb-4" data-animate="slide-left">12 Desember 2026</p>
+            <p className="date-highlight mb-4" data-animate="slide-left">{data.weddingDate || "12 Desember 2026"}</p>
             
             <div className="countdown-container" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
               <div className="countdown-item">
@@ -100,8 +100,8 @@ export default function Floral1Template({ data }) {
           
           <div className="profiles-content" data-animate="fade-up">
             <p className="greeting text-dark mb-4" style={{ fontSize: '0.85rem', lineHeight: '1.6', fontStyle: 'italic', color: '#000', marginBottom: '30px' }}>
-              <strong>Assalamu'alaikum Warahmatullahi Wabarakatuh</strong><br/><br/>
-              Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah semoga ridho-Mu menyertai pernikahan putra-putri kami:
+              <strong>{data.greetingTitle || "Assalamu'alaikum Warahmatullahi Wabarakatuh"}</strong><br/><br/>
+              {data.greetingText || "Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah semoga ridho-Mu menyertai pernikahan putra-putri kami:"}
             </p>
 
             {/* Bride */}
@@ -109,12 +109,12 @@ export default function Floral1Template({ data }) {
               <div data-animate="slide-long-right">
                 <div className="profile-avatar-wrapper">
                   <div className="avatar-circle">
-                    <img src="/demo/template-floral1/assets/images/bride.png" alt={data.brideName} />
+                    <img src={data.brideImage || "/demo/template-floral1/assets/images/bride.png"} alt={data.brideName} style={{ objectFit: 'cover' }} />
                   </div>
                 </div>
               </div>
               <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.brideName}</h2>
-              <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putri Pertama dari<br/>Bapak Lorem Dan Ibu Ipsum</p>
+              <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putri dari<br/>{data.brideParents || "Bapak Lorem Dan Ibu Ipsum"}</p>
             </div>
 
             <div className="ampersand text-center" data-animate="zoom-in">&</div>
@@ -124,12 +124,12 @@ export default function Floral1Template({ data }) {
               <div data-animate="slide-long-left">
                 <div className="profile-avatar-wrapper">
                   <div className="avatar-circle">
-                    <img src="/demo/template-floral1/assets/images/groom.png" alt={data.groomName} />
+                    <img src={data.groomImage || "/demo/template-floral1/assets/images/groom.png"} alt={data.groomName} style={{ objectFit: 'cover' }} />
                   </div>
                 </div>
               </div>
               <h2 className="title-names mt-3" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>{data.groomName}</h2>
-              <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putra Pertama dari<br/>Bapak Lorem Dan Ibu Ipsum</p>
+              <p className="parents" data-animate="fade-up" style={{ transitionDelay: '0.4s' }}>Putra dari<br/>{data.groomParents || "Bapak Lorem Dan Ibu Ipsum"}</p>
             </div>
           </div>
           
@@ -137,20 +137,22 @@ export default function Floral1Template({ data }) {
         </section>
 
         {/* Quote */}
-        <section id="quote" className="section quote-section bg-dark-blue">
-          <div className="floral-corner floral-pattern-1 floral-middle-right"></div>
-          <div className="floral-corner floral-pattern-1 floral-bottom-left-large"></div>
-          
-          <div className="quote-content" data-animate="fade-up">
-            <div className="quote-image-card">
-              <img src="/demo/template-floral1/assets/images/couple.png" alt="Pasangan" className="quote-main-image" />
+        {data.showQuote !== false && (
+          <section id="quote" className="section quote-section bg-dark-blue">
+            <div className="floral-corner floral-pattern-1 floral-middle-right"></div>
+            <div className="floral-corner floral-pattern-1 floral-bottom-left-large"></div>
+            
+            <div className="quote-content" data-animate="fade-up">
+              <div className="quote-image-card">
+                <img src={data.quoteImage || data.heroImage || "/demo/template-floral1/assets/images/couple.png"} alt="Pasangan" className="quote-main-image" style={{ objectFit: 'cover' }} />
+              </div>
+              <div className="quote-text text-white mt-4">
+                <h3>{data.quoteTitle || "QS. Ar-Rum Ayat 21"}</h3>
+                <p className="arabic-text mt-3">{data.quoteText || "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ"}</p>
+              </div>
             </div>
-            <div className="quote-text text-white mt-4">
-              <h3>QS. Ar-Rum Ayat 21</h3>
-              <p className="arabic-text mt-3">وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ</p>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {data.showLoveStory !== false && (
           <section id="lovestory" className="section lovestory-section bg-dark-blue">
