@@ -317,7 +317,10 @@ export default function WIMDashboard() {
   return (
     <div className={styles.container} style={{ alignItems: 'flex-start', paddingTop: '40px', background: '#f0f2f5' }}>
       <div className={styles.card} style={{ maxWidth: '900px', width: '100%', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-        <h1 className={styles.title} style={{ color: '#1e293b' }}>✨ Wedding Invitation Manager</h1>
+        <h1 className={styles.title} style={{ color: '#1e293b', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/logo.png" alt="StoryKami Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+          Wedding Invitation Manager
+        </h1>
         
         <div className={styles.buttonGroup} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
           <button onClick={() => setActiveTab('pengaturan')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'pengaturan' ? '#3b82f6' : '#f1f5f9', color: activeTab === 'pengaturan' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
