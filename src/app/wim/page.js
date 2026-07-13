@@ -646,20 +646,20 @@ export default function WIMDashboard() {
               </div>
             </div>
 
-            {/* HALAMAN 9 */}
+            {/* HALAMAN 8 (UCAPAN) - internally uses hal9 */}
             <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal9 ? 1 : 0.5, marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>💬 Halaman 9 (Ucapan & RSVP)</h3>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>💬 Halaman 8 (Ucapan & RSVP)</h3>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
                   <input type="checkbox" name="show_hal9" checked={formData.show_hal9} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
                 </label>
               </div>
             </div>
 
-            {/* HALAMAN 8 */}
+            {/* HALAMAN 9 (FOOTER) - internally uses hal8 */}
             <div style={{ border: '1px solid #e2e8f0', padding: '20px', borderRadius: '10px', opacity: formData.show_hal8 ? 1 : 0.5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ color: '#0f172a', margin: 0 }}>👋 Halaman 8 (Footer)</h3>
+                <h3 style={{ color: '#0f172a', margin: 0 }}>👋 Halaman 9 (Footer)</h3>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
                   <input type="checkbox" name="show_hal8" checked={formData.show_hal8} onChange={handleChange} style={{ width: '18px', height: '18px' }} /> Tampilkan
                 </label>
