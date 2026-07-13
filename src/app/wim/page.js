@@ -65,7 +65,7 @@ export default function WIMDashboard() {
     // Halaman 4
     hal4_deskripsi: "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ\n\nDan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berfikir.\n(QS. Ar-Rum: 21)",
     // Halaman 5 (Acara Array)
-    hal5_acara: [{ nama: 'Akad Nikah', tanggal: '', jam: '', alamat: '', maps: '' }],
+    hal5_acara: [{ nama: 'Akad Nikah', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' }],
     // Halaman 6 (Cerita Array)
     hal6_cerita: [{ judul: 'Awal Pertemuan', tanggal: '', deskripsi: '' }],
     // Halaman 7 (Hadiah/Bank)
@@ -124,6 +124,23 @@ export default function WIMDashboard() {
     }));
   };
 
+  const formatTime = (val) => {
+    if (!val) return '';
+    const clean = val.replace(/[^\d:]/g, '');
+    if (!clean.includes(':')) {
+      if (clean.length === 1) return `0${clean}:00`;
+      if (clean.length === 2) return `${clean}:00`;
+      if (clean.length === 3) return `${clean.substring(0,2)}:${clean.substring(2)}0`;
+      if (clean.length >= 4) return `${clean.substring(0,2)}:${clean.substring(2,4)}`;
+    }
+    return clean;
+  };
+
+  const handleTimeBlur = (i, field, value) => {
+    const formatted = formatTime(value);
+    handleArrayChange('hal5_acara', i, field, formatted);
+  };
+
   const handleImageChange = (e) => {
     const { name, files } = e.target;
     if (files.length > 0) setImages(prev => ({ ...prev, [name]: files[0] }));
@@ -151,6 +168,19 @@ export default function WIMDashboard() {
     let finalFormData = { ...formData };
     if (finalFormData.hal1_namaPasangan) {
       finalFormData.hal1_namaPasangan = finalFormData.hal1_namaPasangan.replace(/\s+dan\s+/gi, ' & ');
+    }
+
+    // Auto-generate 'jam' string from jam_mulai and jam_selesai for backwards compatibility
+    if (finalFormData.hal5_acara) {
+      finalFormData.hal5_acara = finalFormData.hal5_acara.map(a => {
+        let jamStr = a.jam_mulai || '';
+        if (jamStr && a.jam_selesai) {
+           jamStr += ` - ${a.jam_selesai}`;
+        } else if (jamStr) {
+           jamStr += ` - Selesai`;
+        }
+        return { ...a, jam: jamStr || a.jam };
+      });
     }
 
     let uploadedUrls = {};
@@ -187,7 +217,20 @@ export default function WIMDashboard() {
     setSlug(inv.slug);
     setTemplateName(inv.template_name || 'template-floral1');
     setClientWa(inv.data.clientWa || '');
-    setFormData(prev => ({ ...prev, ...inv.data }));
+
+    // Migrate hal5_acara 'jam' to 'jam_mulai' and 'jam_selesai' if missing
+    let migratedData = { ...inv.data };
+    if (migratedData.hal5_acara) {
+      migratedData.hal5_acara = migratedData.hal5_acara.map(a => {
+        if (a.jam && !a.jam_mulai) {
+          const parts = a.jam.split('-').map(s => s.trim());
+          return { ...a, jam_mulai: parts[0] || '', jam_selesai: (parts[1] && parts[1].toLowerCase() !== 'selesai') ? parts[1] : '' };
+        }
+        return a;
+      });
+    }
+
+    setFormData(prev => ({ ...prev, ...migratedData }));
     setActiveTab('pengaturan');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -353,13 +396,16 @@ export default function WIMDashboard() {
                   <div className={styles.responsiveGrid}>
                     <input type="text" value={acara.nama} onChange={e => handleArrayChange('hal5_acara', i, 'nama', e.target.value)} className={styles.input} placeholder="Nama Acara (Akad/Resepsi)" />
                     <input type="text" value={acara.tanggal} onChange={e => handleArrayChange('hal5_acara', i, 'tanggal', e.target.value)} className={styles.input} placeholder="Tanggal" />
-                    <input type="text" value={acara.jam} onChange={e => handleArrayChange('hal5_acara', i, 'jam', e.target.value)} className={styles.input} placeholder="Jam (08:00 - Selesai)" />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <input type="text" value={acara.jam_mulai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_mulai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_mulai', e.target.value)} className={styles.input} placeholder="Mulai" />
+                      <input type="text" value={acara.jam_selesai || ''} onChange={e => handleArrayChange('hal5_acara', i, 'jam_selesai', e.target.value)} onBlur={e => handleTimeBlur(i, 'jam_selesai', e.target.value)} className={styles.input} placeholder="Selesai" />
+                    </div>
                     <input type="text" value={acara.alamat} onChange={e => handleArrayChange('hal5_acara', i, 'alamat', e.target.value)} className={styles.input} placeholder="Nama Tempat / Alamat Lengkap" />
                     <input type="url" value={acara.maps} onChange={e => handleArrayChange('hal5_acara', i, 'maps', e.target.value)} className={styles.input} placeholder="Link Google Maps" style={{ gridColumn: '1 / -1' }} />
                   </div>
                 </div>
               ))}
-              <button type="button" onClick={() => addArrayItem('hal5_acara', { nama: '', tanggal: '', jam: '', alamat: '', maps: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Acara Baru</button>
+              <button type="button" onClick={() => addArrayItem('hal5_acara', { nama: '', tanggal: '', jam_mulai: '', jam_selesai: '', alamat: '', maps: '' })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Acara Baru</button>
             </div>
 
             {/* HALAMAN 6 */}
