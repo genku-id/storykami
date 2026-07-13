@@ -6,6 +6,85 @@ import Script from 'next/script';
 export default function Floral1Template({ data }) {
   const [showCover, setShowCover] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ hari: '00', jam: '00', menit: '00', detik: '00' });
+
+  const parseIndonesianDate = (dateString) => {
+    if (!dateString) return null;
+    const months = {
+        'januari': 0, 'februari': 1, 'maret': 2, 'april': 3, 'mei': 4, 'juni': 5,
+        'juli': 6, 'agustus': 7, 'september': 8, 'oktober': 9, 'november': 10, 'desember': 11,
+        'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'jun': 5, 'jul': 6, 'agu': 7, 'sep': 8, 'okt': 9, 'nov': 10, 'des': 11
+    };
+    
+    const stdDate = new Date(dateString);
+    if (!isNaN(stdDate.getTime())) return stdDate;
+
+    let cleanStr = dateString.replace(/^(senin|selasa|rabu|kamis|jumat|sabtu|minggu)[,\s]+/i, '').trim();
+    const match = cleanStr.match(/(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+    if (match) {
+        const day = parseInt(match[1], 10);
+        const monthStr = match[2].toLowerCase();
+        const year = parseInt(match[3], 10);
+        const month = months[monthStr];
+        if (month !== undefined) {
+            return new Date(year, month, day, 0, 0, 0);
+        }
+    }
+    return null;
+  };
+
+  const getCalendarLink = () => {
+    const eventDate = parseIndonesianDate(data.hal2_tanggalAcara);
+    if (!eventDate) return "#";
+    
+    const year = eventDate.getFullYear();
+    const month = (eventDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = eventDate.getDate().toString().padStart(2, '0');
+    
+    const nextDayDate = new Date(eventDate);
+    nextDayDate.setDate(nextDayDate.getDate() + 1);
+    const nextYear = nextDayDate.getFullYear();
+    const nextMonth = (nextDayDate.getMonth() + 1).toString().padStart(2, '0');
+    const nextDay = nextDayDate.getDate().toString().padStart(2, '0');
+
+    const start = `${year}${month}${day}`;
+    const end = `${nextYear}${nextMonth}${nextDay}`;
+    const title = encodeURIComponent(`Pernikahan ${data.hal1_namaPasangan || 'Kami'}`);
+    const details = encodeURIComponent(`Turut mengundang ke acara pernikahan kami pada ${data.hal2_tanggalAcara}`);
+
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}`;
+  };
+
+  useEffect(() => {
+    const eventDate = parseIndonesianDate(data.hal2_tanggalAcara);
+    if (!eventDate) return;
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const distance = eventDate.getTime() - now;
+
+      if (distance < 0) {
+        setTimeLeft({ hari: '00', jam: '00', menit: '00', detik: '00' });
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setTimeLeft({
+        hari: days.toString().padStart(2, '0'),
+        jam: hours.toString().padStart(2, '0'),
+        menit: minutes.toString().padStart(2, '0'),
+        detik: seconds.toString().padStart(2, '0')
+      });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [data.hal2_tanggalAcara]);
 
   useEffect(() => {
     // Lock scroll on mount
@@ -166,14 +245,13 @@ export default function Floral1Template({ data }) {
                 <p className="date-highlight mb-4" data-animate="slide-left">{data.hal2_tanggalAcara || "Tanggal Acara"}</p>
                 
                 <div className="countdown-container" data-animate="fade-up" style={{ transitionDelay: '0.2s' }}>
-                    <div className="countdown-item"><span>00</span><p>Hari</p></div>
-                    <div className="countdown-item"><span>00</span><p>Jam</p></div>
-                    <div className="countdown-item"><span>00</span><p>Menit</p></div>
-                    <div className="countdown-item"><span>00</span><p>Detik</p></div>
+                    <div className="countdown-item"><span>{timeLeft.hari}</span><p>Hari</p></div>
+                    <div className="countdown-item"><span>{timeLeft.jam}</span><p>Jam</p></div>
+                    <div className="countdown-item"><span>{timeLeft.menit}</span><p>Menit</p></div>
+                    <div className="countdown-item"><span>{timeLeft.detik}</span><p>Detik</p></div>
                 </div>
                 
-                {/* Fallback button kalender, di dunia nyata href-nya harus di-generate */}
-                <a href="#" target="_blank" className="btn-secondary mt-4" style={{ textDecoration: 'none', transitionDelay: '0.4s' }} data-animate="fade-up">
+                <a href={getCalendarLink()} target="_blank" className="btn-secondary mt-4" style={{ textDecoration: 'none', transitionDelay: '0.4s' }} data-animate="fade-up">
                     <i className="fa-regular fa-calendar-check"></i> Simpan di Kalender
                 </a>
               </div>
