@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { supabase } from '@/utils/supabase';
 import Floral1Template from '@/components/templates/Floral1Template';
-
+import Floral2Template from '@/components/templates/Floral2Template';
 export const revalidate = 0; // Disable cache agar update dari WIM langsung terlihat
 
 export async function generateMetadata({ params }) {
@@ -39,6 +39,10 @@ export default async function InvitationPage({ params }) {
 
   if (template_name === 'template-floral1') {
     return <Floral1Template data={data} />;
+  }
+
+  if (template_name === 'template-floral2') {
+    return <Floral2Template data={data} />;
   }
 
   // Jika template belum dibuat / tidak ada
