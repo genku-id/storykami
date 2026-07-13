@@ -52,7 +52,7 @@ export default function WIMDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
   
-  const [activeTab, setActiveTab] = useState('pengaturan');
+  const [activeTab, setActiveTab] = useState('list');
   const [isLoading, setIsLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [invitations, setInvitations] = useState([]);
@@ -428,27 +428,26 @@ export default function WIMDashboard() {
           Wedding Invitation Manager
         </h1>
         
-        <div className={styles.buttonGroup} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-          <button onClick={() => setActiveTab('pengaturan')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'pengaturan' ? '#3b82f6' : '#f1f5f9', color: activeTab === 'pengaturan' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Pengaturan</span>
-          </button>
-          <button onClick={() => setActiveTab('list')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'list' ? '#10b981' : '#f1f5f9', color: activeTab === 'list' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Daftar Link</span>
-          </button>
-          <button onClick={() => setActiveTab('dashboard')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'dashboard' ? '#8b5cf6' : '#f1f5f9', color: activeTab === 'dashboard' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Dashboard</span>
-          </button>
-        </div>
+        {activeTab !== 'pengaturan' && (
+          <div className={styles.buttonGroup} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', gap: '10px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+            <button onClick={() => setActiveTab('list')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'list' ? '#10b981' : '#f1f5f9', color: activeTab === 'list' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Daftar Link</span>
+            </button>
+            <button onClick={() => setActiveTab('dashboard')} style={{ flex: 1, minWidth: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', background: activeTab === 'dashboard' ? '#8b5cf6' : '#f1f5f9', color: activeTab === 'dashboard' ? '#fff' : '#475569', padding: '10px', borderRadius: '8px', border: 'none', cursor: 'pointer', transition: '0.2s' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Dashboard Admin</span>
+            </button>
+          </div>
+        )}
 
         {activeTab === 'pengaturan' && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '15px' }}>
-            <button onClick={handleCreateNew} style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              Buat Undangan Baru
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <button type="button" onClick={() => setActiveTab('list')} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              Kembali
             </button>
+            <h2 style={{ fontSize: '1.2rem', color: '#0f172a', margin: 0 }}>Form Undangan</h2>
           </div>
         )}
 
@@ -722,7 +721,13 @@ export default function WIMDashboard() {
           </form>
         ) : activeTab === 'list' ? (
           <div>
-            <h3 style={{ marginBottom: '20px', color: '#0f172a' }}>Daftar Undangan Klien Aktif</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ color: '#0f172a', margin: 0 }}>Daftar Undangan Klien Aktif</h3>
+              <button onClick={handleCreateNew} style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Buat Undangan
+              </button>
+            </div>
             {invitations.length === 0 ? (
               <p style={{ color: '#64748b' }}>Belum ada undangan yang dibuat.</p>
             ) : (
