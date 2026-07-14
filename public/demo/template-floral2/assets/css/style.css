@@ -640,12 +640,12 @@ body.locked {
 .floral-top-profiles,
 .floral-bottom-profiles {
     position: absolute;
-    left: -10%;
-    width: 120%; /* Sedikit lebih lebar untuk menyembunyikan ujung gambar yang terpotong lurus */
+    left: 0;
+    width: 100%;
     height: 40vh;
     background-image: url('../images/backgroundbunga.png');
     background-size: 100% auto;
-    background-position: center -15vh;
+    background-position: center -26vh;
     background-repeat: no-repeat;
     z-index: 1;
     pointer-events: none;
