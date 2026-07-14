@@ -61,8 +61,9 @@ export default function DashboardLayout({ children }) {
     );
   }
 
-  const remaining = Math.max(0, session.quota - usedQuota);
-  const quotaPct = Math.min(100, (usedQuota / session.quota) * 100);
+  const quota = session?.isAdmin ? Infinity : (session?.quota || 0);
+  const remaining = quota === Infinity ? Infinity : Math.max(0, quota - usedQuota);
+  const quotaPct = quota === Infinity ? 0 : Math.min(100, (usedQuota / quota) * 100);
   const isActive = (item) => item.exact ? pathname === item.href : pathname.startsWith(item.href);
   const isBuatActive = pathname.startsWith('/wim/dashboard/buat');
 
@@ -146,14 +147,14 @@ export default function DashboardLayout({ children }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Kuota Undangan</span>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: remaining === 0 ? 'var(--danger)' : 'var(--text-primary)' }}>
-                {usedQuota}/{session.quota}
+                {usedQuota}/{quota === Infinity ? '∞' : quota}
               </span>
             </div>
             <div className="quota-bar" style={{ marginBottom: 6 }}>
               <div className="quota-fill" style={{ width: `${quotaPct}%`, background: quotaPct > 80 ? 'var(--danger)' : 'var(--accent-gradient)' }} />
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              {remaining > 0 ? `${remaining} slot tersedia` : 'Kuota habis'}
+              {remaining === Infinity ? 'Tak terbatas' : (remaining > 0 ? `${remaining} slot tersedia` : 'Kuota habis')}
             </div>
           </div>
         </div>
