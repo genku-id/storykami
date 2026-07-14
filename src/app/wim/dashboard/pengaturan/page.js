@@ -48,7 +48,7 @@ export default function PengaturanPage() {
     
     const fetchProfile = async () => {
       const slugKey = s.isAdmin ? '_wim_admin_settings' : `_reseller_${s.email.toLowerCase()}`;
-      const { data } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
+      const { data, error } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
       if (data && data.data) {
         setProfileData({
           nama: data.data.nama || data.data.adminName || s.nama,
@@ -60,6 +60,8 @@ export default function PengaturanPage() {
           paket: data.data.paket || s.paket || 'Starter',
           joinDate: data.data.joinDate || s.joinDate || new Date().toISOString()
         });
+      } else {
+        setProfileData(prev => ({ ...prev, nama: s.nama || '', email: s.email || '' }));
       }
     };
     fetchProfile();
@@ -244,12 +246,12 @@ export default function PengaturanPage() {
             </div>
             
             <div className="form-group">
-              <label className="wim-label">Email (Read-only)</label>
+              <label className="wim-label">Email</label>
               <input
                 className="wim-input"
                 value={profileData.email}
-                disabled
-                style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                readOnly
+                style={{ opacity: 0.7, backgroundColor: 'var(--bg-card)', cursor: 'not-allowed' }}
               />
             </div>
 
