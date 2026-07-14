@@ -57,7 +57,7 @@ export default function LoginPage() {
           role: 'admin',
           isAdmin: true
         }));
-        router.replace('/wim/admin'); // Admin goes directly to admin dashboard
+        router.replace('/wim/dashboard/admin'); // Admin goes directly to admin panel within dashboard
         setIsLoading(false);
         return;
       }

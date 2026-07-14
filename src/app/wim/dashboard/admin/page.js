@@ -89,7 +89,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div>
       {/* Toast */}
       {toast && (
         <div className={`toast toast-${toast.type}`}>
@@ -98,29 +98,17 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Header */}
-      <header style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', padding: '0 20px', minHeight: 64, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100, gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <img src="/logo.png" alt="StoryKami Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: '0.95rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)' }}>StoryKami WIM</div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Super Admin</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: 10, padding: '12px 0' }}>
-          <button onClick={() => router.push('/wim/dashboard')} className="btn btn-secondary btn-sm">
-            Dashboard Utama
-          </button>
-          <button onClick={handleLogout} className="btn btn-danger btn-sm">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Keluar
-          </button>
-        </div>
-      </header>
-
       <div className="page-container" style={{ maxWidth: 1100 }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-outfit)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            Admin Panel
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: 4 }}>
+            Kelola akses dan pendaftaran akun reseller
+          </p>
+        </div>
         {/* Stats */}
         <div className="stats-grid" style={{ marginBottom: 32 }}>
           {[
