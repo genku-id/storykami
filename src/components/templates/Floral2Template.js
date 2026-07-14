@@ -514,7 +514,7 @@ alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
 
           {/* ================= HALAMAN 9 (UCAPAN & RSVP) ================= */}
           {data.show_hal9 !== false && (
-            <section id="guestbook" className="section guestbook-section bg-red-dark" style={{ padding: '40px 15px' }}>
+            <section id="guestbook" className="section guestbook-section" style={{ padding: '40px 15px' }}>
                 <div data-animate="fade-up">
                     <Guestbook slug={data.slug} />
                 </div>
