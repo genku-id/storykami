@@ -58,11 +58,7 @@ export default function LoginPage() {
               isAdmin: user.role === 'admin',
               foto: user.foto || ''
             }));
-            if (user.role === 'admin') {
-              router.replace('/wim/dashboard/admin');
-            } else {
-              router.replace('/wim/dashboard');
-            }
+            router.replace('/wim/dashboard');
           } else {
             setError('Status akun tidak valid.');
           }
