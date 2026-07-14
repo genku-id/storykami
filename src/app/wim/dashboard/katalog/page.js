@@ -33,13 +33,13 @@ export default function KatalogPage() {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-        gap: '20px'
+        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+        gap: '16px'
       }}>
         {TEMPLATES.map(tpl => (
           <div key={tpl.id} style={{
             background: 'var(--bg-card)',
-            borderRadius: '16px',
+            borderRadius: '12px',
             border: '1px solid var(--border)',
             overflow: 'hidden',
             display: 'flex',
@@ -58,11 +58,11 @@ export default function KatalogPage() {
                 style={{ objectFit: 'cover', objectPosition: 'top' }}
               />
             </div>
-            <div style={{ padding: '20px' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>{tpl.title}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 20px 0' }}>{tpl.desc}</p>
+            <div style={{ padding: '12px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 2px 0', color: 'var(--text-primary)', lineHeight: 1.2 }}>{tpl.title}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: '0 0 12px 0' }}>{tpl.desc}</p>
               
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
                 <button 
                   onClick={() => handlePilih(tpl.id)}
                   style={{
@@ -70,9 +70,10 @@ export default function KatalogPage() {
                     background: '#000',
                     color: '#fff',
                     border: 'none',
-                    padding: '10px',
+                    padding: '8px',
                     borderRadius: '8px',
                     fontWeight: 600,
+                    fontSize: '0.8rem',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-outfit)',
                     transition: 'opacity 0.2s'
@@ -80,7 +81,7 @@ export default function KatalogPage() {
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 >
-                  Gunakan Tema
+                  Gunakan
                 </button>
               </div>
             </div>
