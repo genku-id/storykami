@@ -263,11 +263,10 @@ function BuatPage() {
 
     const payload = {
       slug: slugStr,
-      template_name: templateName,
-      template: templateName,
       data: { 
         ...finalFormData, 
         clientWa, 
+        template: templateName, // Save template selection inside data JSON
         ...uploadedUrls,
         resellerEmail: session?.email // Track ownership
       }
