@@ -263,25 +263,39 @@ export default function DashboardPage() {
                       )}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
                         <code style={{
                           background: 'var(--bg-card)', border: '1px solid var(--border)',
-                          borderRadius: 6, padding: '3px 8px', fontSize: '0.78rem', color: 'var(--text-accent)',
+                          borderRadius: 6, padding: '4px 8px', fontSize: '0.78rem', color: 'var(--text-accent)',
+                          display: 'block'
                         }}>
-                          /{inv.slug}
+                          storykami.my.id/{inv.slug}
                         </code>
-                        <button
-                          onClick={() => { navigator.clipboard.writeText(`https://storykami.my.id/${inv.slug}`); showToast('Link disalin!', 'info'); }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, display: 'flex' }}
-                          title="Salin link"
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        </button>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(`https://storykami.my.id/${inv.slug}`); showToast('Link disalin!', 'info'); }}
+                            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem' }}
+                            title="Salin link"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            Copy
+                          </button>
+                          <a
+                            href={`https://storykami.my.id/${inv.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', textDecoration: 'none' }}
+                            title="Lihat undangan"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            Preview
+                          </a>
+                        </div>
                       </div>
                     </td>
                     <td className="col-hide-mobile">
                       <span className="badge badge-info" style={{ fontSize: '0.72rem' }}>
-                        {TEMPLATE_LABELS[inv.template] || inv.template}
+                        {TEMPLATE_LABELS[inv.template || inv.data?.template] || inv.template || inv.data?.template || 'Floral 1'}
                       </span>
                     </td>
                     <td className="col-hide-mobile" style={{ fontSize: '0.78rem' }}>
