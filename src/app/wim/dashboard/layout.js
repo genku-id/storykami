@@ -66,7 +66,7 @@ export default function DashboardLayout({ children }) {
   const quotaPct = quota === Infinity ? 0 : Math.min(100, (usedQuota / quota) * 100);
   const normalizedPath = pathname.replace(/\/$/, '');
   const isActive = (item) => item.exact ? normalizedPath === item.href : normalizedPath.startsWith(item.href);
-  const isBuatActive = normalizedPath.startsWith('/wim/dashboard/buat');
+  const isBuatActive = normalizedPath.startsWith('/wim/dashboard/buat') || normalizedPath.startsWith('/wim/dashboard/katalog');
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-primary)' }}>
@@ -123,8 +123,8 @@ export default function DashboardLayout({ children }) {
             </a>
           )}
 
-          {/* Buat Undangan as special button */}
-          <a href="/wim/dashboard/buat" onClick={() => setSidebarOpen(false)} style={{
+          {/* Katalog Tema as special button */}
+          <a href="/wim/dashboard/katalog" onClick={() => setSidebarOpen(false)} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
             textDecoration: 'none', fontWeight: isBuatActive ? 700 : 500, fontSize: '0.875rem',
             color: isBuatActive ? '#fff' : 'var(--text-secondary)',

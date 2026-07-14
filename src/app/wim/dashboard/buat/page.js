@@ -74,7 +74,7 @@ function BuatPage() {
   const [session, setSession] = useState(null);
   const [step, setStep] = useState(1);
   const [slug, setSlug] = useState('');
-  const [templateName, setTemplateName] = useState('template-floral1');
+  const [templateName, setTemplateName] = useState(searchParams.get('template') || 'template-floral1');
   const [clientWa, setClientWa] = useState('');
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(false);
