@@ -5,55 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LinkTamu by StoryKami</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <header class="app-header">
-            <h1>StoryKami</h1>
+        <header class="app-header animate-fade">
+            <img src="../logo.png" alt="StoryKami" style="height: 56px; width: auto; margin-bottom: 0.25rem;">
+            <h1 style="margin-bottom: 0.25rem;">StoryKami</h1>
             <p>Guest Link Generator</p>
         </header>
 
-        <main class="app-main">
+        <main class="app-main animate-fade" style="animation-delay: 0.1s;">
             <!-- INPUT SECTION -->
             <section class="card input-section">
-                <h2>1. Pengaturan Undangan</h2>
+                <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">1. Pengaturan Undangan</h2>
                 
                 <div class="form-group">
-                    <label for="base-url">Link Utama Undangan (Base URL)</label>
-                    <input type="text" id="base-url" placeholder="contoh: storykami.netlify.app/milea-dilan" required>
-                    <small>Pastikan base URL benar. Parameter ?to= akan ditambahkan secara otomatis.</small>
+                    <label for="base-url" class="wim-label">Link Undangan</label>
+                    <input type="text" id="base-url" class="wim-input" placeholder="contoh: storykami.netlify.app/milea-dilan" required>
+                    <button id="btn-open-template" class="btn btn-sm btn-secondary" style="margin-top: 0.75rem; width: 100%;">Atur Template Pesan</button>
                 </div>
 
+                <h2 style="margin-top: 2.5rem;">2. Daftar Nama Tamu</h2>
                 <div class="form-group">
-                    <label for="message-template">Template Pesan WhatsApp</label>
-                    <textarea id="message-template" rows="12">Assalamualaikum Warahmatullahi Wabarakatuh
-
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i {{nama_tamu}} untuk menghadiri acara kami.
-
-Berikut link undangan kami, untuk info lengkap dari acara bisa kunjungi:
-
-{{link_undangan}}
-
-Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
-
-Mohon maaf perihal undangan hanya di bagikan melalui pesan ini.
-
-Terima kasih banyak atas perhatiannya. Alhamdulillah Jazakumullohu Khoiro
-
-Salam Hormat
-(nama mempelai)</textarea>
-                    <small>Gunakan tag <b>{{nama_tamu}}</b> dan <b>{{link_undangan}}</b> di dalam template.</small>
+                    <label for="guest-list" class="wim-label">Masukkan Daftar Nama (1 nama per baris)</label>
+                    <textarea id="guest-list" class="wim-input" rows="10" placeholder="Budi&#10;Andi & Istri&#10;Keluarga Bapak Candra"></textarea>
                 </div>
 
-                <h2>2. Daftar Nama Tamu</h2>
-                <div class="form-group">
-                    <label for="guest-list">Masukkan Daftar Nama (1 nama per baris)</label>
-                    <textarea id="guest-list" rows="10" placeholder="Budi&#10;Andi & Istri&#10;Keluarga Bapak Candra"></textarea>
-                    <small>Karakter khusus seperti "&" akan otomatis diubah menjadi "dan" agar aman untuk URL.</small>
-                </div>
-
-                <button id="btn-generate" class="btn btn-primary">Generate Links</button>
+                <button id="btn-generate" class="btn btn-primary" style="margin-top: 1rem;">Generate Links</button>
             </section>
 
             <!-- OUTPUT SECTION -->
@@ -61,12 +39,12 @@ Salam Hormat
                 <div class="output-header">
                     <h2>Hasil Generate (<span id="total-guests">0</span> Tamu)</h2>
                     <div class="search-box">
-                        <input type="text" id="search-input" placeholder="Cari nama tamu...">
+                        <input type="text" id="search-input" class="wim-input" placeholder="Cari nama tamu...">
                     </div>
                 </div>
 
                 <div class="table-container">
-                    <table id="guest-table">
+                    <table class="wim-table" id="guest-table">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -83,12 +61,51 @@ Salam Hormat
         </main>
     </div>
 
+    <!-- Modal Template -->
+    <div id="template-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box animate-fade">
+            <div class="modal-header">
+                <h3>Template Pesan WhatsApp</h3>
+                <button id="btn-close-modal" class="btn-icon modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="template-selector" class="wim-label">Opsi Teks Pengantar</label>
+                    <select id="template-selector" class="wim-input">
+                        <option value="muslim">Muslim</option>
+                        <option value="formal">Formal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea id="message-template" class="wim-input" rows="12">Assalamualaikum Warahmatullahi Wabarakatuh
+
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i {{nama_tamu}} untuk menghadiri acara kami.
+
+Berikut link undangan kami, untuk info lengkap dari acara bisa kunjungi:
+
+{{link_undangan}}
+
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
+
+Mohon maaf perihal undangan hanya di bagikan melalui pesan ini.
+
+Terima kasih banyak atas perhatiannya. Alhamdulillah Jazakumullohu Khoiro
+
+Salam Hormat
+(nama mempelai)</textarea>
+                    <small class="helper-text">Gunakan tag <b>{{nama_tamu}}</b> dan <b>{{link_undangan}}</b> di dalam template.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-save-modal" class="btn btn-primary btn-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Toast UI -->
     <div id="toast" class="toast">
-        <div class="toast-content">
-            <span class="toast-icon">✓</span>
-            <span id="toast-message">Berhasil Disalin!</span>
-        </div>
+        <span class="toast-icon">✓</span>
+        <span id="toast-message">Berhasil Disalin!</span>
     </div>
 
     <!-- Scripts (Modular approach) -->
