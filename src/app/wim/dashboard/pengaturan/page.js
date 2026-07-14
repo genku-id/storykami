@@ -57,7 +57,7 @@ export default function PengaturanPage() {
           password: data.data.password || '',
           foto: data.data.foto || s.foto || '',
           status: data.data.status || s.status || 'active',
-          paket: data.data.paket || s.paket || (s.isAdmin ? 'Supreme' : 'Starter'),
+          paket: s.isAdmin ? 'Supreme' : (data.data.paket || s.paket || 'Starter'),
           joinDate: data.data.joinDate || s.joinDate || new Date().toISOString()
         });
       } else {
@@ -99,6 +99,7 @@ export default function PengaturanPage() {
         nama: profileData.nama,
         password: profileData.password,
         foto: newFotoUrl,
+        paket: session.isAdmin ? 'Supreme' : existingData.paket,
       };
 
       await supabase.from('invitations').update({ data: updatedData }).eq('slug', slugKey);
