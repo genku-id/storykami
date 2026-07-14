@@ -107,7 +107,7 @@ export default function DashboardLayout({ children }) {
           ))}
 
           {session.isAdmin && (
-            <a href="/wim/admin" onClick={() => setSidebarOpen(false)} style={{
+            <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: 500, fontSize: '0.875rem',
               color: 'var(--text-secondary)',
