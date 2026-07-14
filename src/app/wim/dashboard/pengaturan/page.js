@@ -47,12 +47,11 @@ export default function PengaturanPage() {
     if (stored) setAdminSettings(JSON.parse(stored));
     
     const fetchProfile = async () => {
-      const slugKey = s.isAdmin ? '_wim_admin_settings' : `_reseller_${s.email.toLowerCase()}`;
-      const { data, error } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
+      const { data, error } = await supabase.from('wim_users').select('data').eq('email', s.email.toLowerCase()).single();
       if (data && data.data) {
         setProfileData({
-          nama: data.data.nama || data.data.adminName || s.nama,
-          email: data.data.email || s.email,
+          nama: data.data.nama || s.nama,
+          email: s.email.toLowerCase(),
           wa: data.data.wa || s.wa || '',
           password: data.data.password || '',
           foto: data.data.foto || s.foto || '',
@@ -90,8 +89,7 @@ export default function PengaturanPage() {
         }
       }
 
-      const slugKey = session.isAdmin ? '_wim_admin_settings' : `_reseller_${session.email.toLowerCase()}`;
-      const { data: existingRow } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
+      const { data: existingRow } = await supabase.from('wim_users').select('data').eq('email', session.email.toLowerCase()).single();
       const existingData = existingRow?.data || {};
 
       const updatedData = {
@@ -102,7 +100,7 @@ export default function PengaturanPage() {
         paket: session.isAdmin ? 'Supreme' : existingData.paket,
       };
 
-      await supabase.from('invitations').update({ data: updatedData }).eq('slug', slugKey);
+      await supabase.from('wim_users').update({ data: updatedData }).eq('email', session.email.toLowerCase());
       
       setProfileData(prev => ({ ...prev, foto: newFotoUrl }));
       setProfilePhotoFile(null);

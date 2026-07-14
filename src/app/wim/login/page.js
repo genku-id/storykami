@@ -39,51 +39,30 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // 1. Cek apakah ini login Admin
-      const { data: adminData } = await supabase.from('invitations').select('data').eq('slug', '_wim_admin_settings').single();
-      
-      let dbAdminEmail = 'admin@storykami.com';
-      let dbAdminPass = 'admin123';
-      
-      if (adminData && adminData.data) {
-        if (adminData.data.email) dbAdminEmail = adminData.data.email;
-        if (adminData.data.password) dbAdminPass = adminData.data.password;
-      }
-      
-      if (email.toLowerCase() === dbAdminEmail.toLowerCase() && password === dbAdminPass) {
-        localStorage.setItem('wim_session', JSON.stringify({ 
-          email: dbAdminEmail, 
-          nama: adminData?.data?.adminName || 'Admin SK',
-          role: 'admin',
-          isAdmin: true
-        }));
-        router.replace('/wim/dashboard/admin'); // Admin goes directly to admin panel within dashboard
-        setIsLoading(false);
-        return;
-      }
+      const { data: userRow } = await supabase.from('wim_users').select('data').eq('email', email.toLowerCase()).single();
 
-      // 2. Jika bukan admin, cek apakah ini login Reseller
-      const slugKey = `_reseller_${email.toLowerCase()}`;
-      const { data: resellerRow } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
-
-      if (resellerRow && resellerRow.data) {
-        const reseller = resellerRow.data;
-        if (reseller.password === password) {
-          // Cek status
-          if (reseller.status === 'pending') {
+      if (userRow && userRow.data) {
+        const user = userRow.data;
+        if (user.password === password) {
+          if (user.status === 'pending') {
             setError('Akun Anda masih menunggu persetujuan Admin.');
-          } else if (reseller.status === 'suspended') {
+          } else if (user.status === 'suspended') {
             setError('Akun Anda ditangguhkan. Silakan hubungi Admin.');
-          } else if (reseller.status === 'active') {
+          } else if (user.status === 'active') {
             localStorage.setItem('wim_session', JSON.stringify({ 
-              email: reseller.email, 
-              nama: reseller.nama,
-              role: 'reseller',
-              quota: reseller.quota,
-              paket: reseller.paket,
-              isAdmin: false
+              email: email.toLowerCase(), 
+              nama: user.nama,
+              role: user.role,
+              quota: user.quota,
+              paket: user.paket,
+              isAdmin: user.role === 'admin',
+              foto: user.foto || ''
             }));
-            router.replace('/wim/dashboard');
+            if (user.role === 'admin') {
+              router.replace('/wim/dashboard/admin');
+            } else {
+              router.replace('/wim/dashboard');
+            }
           } else {
             setError('Status akun tidak valid.');
           }

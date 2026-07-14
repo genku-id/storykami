@@ -47,8 +47,7 @@ export default function RegisterPage() {
     if (formData.password !== formData.confirmPassword) return 'Konfirmasi password tidak cocok.';
 
     // Check if email already exists in supabase
-    const slugKey = `_reseller_${formData.email.toLowerCase()}`;
-    const { data } = await supabase.from('invitations').select('id').eq('slug', slugKey).single();
+    const { data } = await supabase.from('wim_users').select('email').eq('email', formData.email.toLowerCase()).single();
     if (data) return 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.';
     
     return null;
@@ -80,8 +79,8 @@ export default function RegisterPage() {
       createdAt: new Date().toISOString()
     };
 
-    const { error: sbError } = await supabase.from('invitations').insert([{
-      slug: slugKey,
+    const { error: sbError } = await supabase.from('wim_users').insert([{
+      email: formData.email.toLowerCase(),
       data: newResellerData
     }]);
 

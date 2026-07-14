@@ -35,12 +35,14 @@ export default function AdminPage() {
   const loadData = async () => {
     // Load resellers
     const { data: rsData } = await supabase
-      .from('invitations')
-      .select('id, slug, data')
-      .like('slug', '_reseller_%');
+      .from('wim_users')
+      .select('email, data');
     
     if (rsData) {
-      setResellers(rsData.map(r => ({ dbId: r.id, slug: r.slug, ...r.data })));
+      const resellersOnly = rsData
+        .filter(r => r.data?.role === 'reseller')
+        .map(r => ({ dbEmail: r.email, ...r.data }));
+      setResellers(resellersOnly);
     }
 
     // Load invitations count (excluding _reseller and _wim_admin)
@@ -57,9 +59,9 @@ export default function AdminPage() {
     router.replace('/wim/login');
   };
 
-  const updateStatus = async (dbId, slug, data, status) => {
+  const updateStatus = async (email, data, status) => {
     const newData = { ...data, status };
-    const { error } = await supabase.from('invitations').update({ data: newData }).eq('id', dbId);
+    const { error } = await supabase.from('wim_users').update({ data: newData }).eq('email', email);
     if (!error) {
       loadData();
       showToast(`Akun berhasil diubah ke ${STATUS_LABELS[status]}!`);
@@ -185,9 +187,9 @@ export default function AdminPage() {
                   <tbody>
                     {filteredResellers.map(r => {
                       // Hapus atribut meta dari copy data untuk update
-                      const { dbId, slug, ...resellerData } = r;
+                      const { dbEmail, ...resellerData } = r;
                       return (
-                        <tr key={dbId}>
+                        <tr key={dbEmail}>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                               <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#fff', fontSize: '0.85rem', fontFamily: 'var(--font-outfit)', flexShrink: 0 }}>
@@ -217,17 +219,17 @@ export default function AdminPage() {
                           <td style={{ textAlign: 'center' }}>
                             <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
                               {r.status === 'pending' && (
-                                <button onClick={() => updateStatus(dbId, slug, resellerData, 'active')} className="btn btn-sm btn-icon btn-success" title="Approve">
+                                <button onClick={() => updateStatus(dbEmail, resellerData, 'active')} className="btn btn-sm btn-icon btn-success" title="Approve">
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
                                 </button>
                               )}
                               {r.status === 'active' && (
-                                <button onClick={() => updateStatus(dbId, slug, resellerData, 'suspended')} className="btn btn-sm btn-icon btn-danger" title="Suspend">
+                                <button onClick={() => updateStatus(dbEmail, resellerData, 'suspended')} className="btn btn-sm btn-icon btn-danger" title="Suspend">
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
                                 </button>
                               )}
                               {r.status === 'suspended' && (
-                                <button onClick={() => updateStatus(dbId, slug, resellerData, 'active')} className="btn btn-sm btn-icon btn-success" title="Reactivate">
+                                <button onClick={() => updateStatus(dbEmail, resellerData, 'active')} className="btn btn-sm btn-icon btn-success" title="Reactivate">
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15A9 9 0 0 0 18.36 18.36L23 14"/></svg>
                                 </button>
                               )}
