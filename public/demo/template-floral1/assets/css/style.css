@@ -38,11 +38,8 @@ body {
     font-family: var(--font-body);
     color: var(--text-dark);
     background-color: var(--sage-bg);
+    width: 100%;
     overflow-x: hidden;
-    max-width: 500px; /* Constrain to mobile proportion */
-    margin: 0 auto;
-    position: relative;
-    box-shadow: 0 0 30px rgba(0,0,0,0.1);
 }
 body.locked {
     overflow: hidden;
