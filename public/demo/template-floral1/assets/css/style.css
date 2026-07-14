@@ -537,7 +537,7 @@ body.locked {
 }
 .quote-main-image {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     display: block;
     object-fit: cover;
     border-radius: 10px;
@@ -631,7 +631,7 @@ body.locked {
     height: 40vh;
     background-image: url('../images/backgroundbunga.png');
     background-size: 100% auto;
-    background-position: center -15vh;
+    background-position: center -26vh;
     background-repeat: no-repeat;
     z-index: 1;
     pointer-events: none;
