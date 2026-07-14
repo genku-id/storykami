@@ -24,28 +24,35 @@ export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const sStr = localStorage.getItem('wim_session');
-    if (!sStr) { router.replace('/wim/login'); return; }
-    const s = JSON.parse(sStr);
-    
-    // Set default quota if admin
-    if (s.isAdmin) s.quota = 9999;
-    setSession(s);
-    
-    // Fetch invitation count
-    const fetchQuota = async () => {
-      const { data } = await supabase.from('invitations').select('slug, data');
-      if (data) {
-        const validData = data.filter(inv => !inv.slug.startsWith('_'));
-        if (s.isAdmin) {
-          setUsedQuota(validData.length);
-        } else {
-          const used = validData.filter(inv => inv.data?.resellerEmail === s.email).length;
-          setUsedQuota(used);
+    const fetchSession = () => {
+      const sStr = localStorage.getItem('wim_session');
+      if (!sStr) { router.replace('/wim/login'); return; }
+      const s = JSON.parse(sStr);
+      
+      // Set default quota if admin
+      if (s.isAdmin) s.quota = 9999;
+      setSession(s);
+      
+      // Fetch invitation count
+      const fetchQuota = async () => {
+        const { data } = await supabase.from('invitations').select('slug, data');
+        if (data) {
+          const validData = data.filter(inv => !inv.slug.startsWith('_'));
+          if (s.isAdmin) {
+            setUsedQuota(validData.length);
+          } else {
+            const used = validData.filter(inv => inv.data?.resellerEmail === s.email).length;
+            setUsedQuota(used);
+          }
         }
-      }
+      };
+      fetchQuota();
     };
-    fetchQuota();
+    
+    fetchSession();
+    
+    window.addEventListener('wim_session_updated', fetchSession);
+    return () => window.removeEventListener('wim_session_updated', fetchSession);
   }, [router]);
 
   const handleLogout = () => {
@@ -179,8 +186,12 @@ export default function DashboardLayout({ children }) {
 
         {/* User + Logout */}
         <div style={{ padding: '12px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-outfit)' }}>
-            {session.nama?.charAt(0)?.toUpperCase()}
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-outfit)', overflow: 'hidden' }}>
+            {session.foto ? (
+              <img src={session.foto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              session.nama?.charAt(0)?.toUpperCase()
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.nama}</div>
@@ -217,8 +228,12 @@ export default function DashboardLayout({ children }) {
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             {usedQuota}/{quota === Infinity ? '∞' : quota}
           </div>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-outfit)' }}>
-            {session.nama?.charAt(0)?.toUpperCase()}
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-outfit)', overflow: 'hidden' }}>
+            {session.foto ? (
+              <img src={session.foto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              session.nama?.charAt(0)?.toUpperCase()
+            )}
           </div>
         </div>
       </div>
