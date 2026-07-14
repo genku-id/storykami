@@ -430,22 +430,21 @@ export default function Floral1Template({ data }) {
                                 <img 
                                     src={getBankLogo(bank.namaBank)} 
                                     alt={bank.namaBank} 
-                                    style={{ height: '90px', objectFit: 'contain', maxWidth: '200px', marginBottom: '-15px', marginTop: '-20px' }} 
+                                    style={{ height: '85px', objectFit: 'contain', maxWidth: '200px', marginBottom: '-22px', marginTop: '-20px' }} 
                                     onError={(e) => { 
                                         e.target.style.display = 'none'; 
                                         if(e.target.nextSibling) e.target.nextSibling.style.display = 'inline-block'; 
                                     }} 
                                 />
                                 <div style={{
-                                  display: 'none',
-                                  background: '#475569',
-                                  color: '#fff',
-                                  padding: '8px 18px',
-                                  borderRadius: '30px',
-                                  fontWeight: '800',
-                                  fontSize: '0.9rem',
-                                  letterSpacing: '0.5px',
-                                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                                  fontSize: '0.65rem',
+                                  fontWeight: '700',
+                                  color: '#64748b',
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '1px',
+                                  position: 'relative',
+                                  zIndex: 2,
+                                  marginBottom: '-2px'
                                 }}>
                                   {bank.namaBank}
                                 </div>
