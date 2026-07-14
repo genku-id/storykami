@@ -96,7 +96,7 @@ export default function RegisterPage() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden', padding: 24,
+      background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden', padding: '24px 16px',
     }}>
       <Orb style={{ width: 500, height: 500, background: 'var(--accent)', top: -150, left: -150 }} />
       <Orb style={{ width: 400, height: 400, background: 'var(--accent-2)', bottom: -100, right: -100, animationDelay: '4s' }} />
@@ -124,7 +124,7 @@ export default function RegisterPage() {
 
         <div style={{
           background: 'var(--bg-secondary)', border: '1px solid var(--border)',
-          borderRadius: 20, padding: 32, backdropFilter: 'blur(20px)',
+          borderRadius: 20, padding: '32px 20px', backdropFilter: 'blur(20px)',
           boxShadow: '0 25px 60px rgba(0,0,0,0.08)',
         }}>
 

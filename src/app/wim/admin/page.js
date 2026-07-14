@@ -99,8 +99,8 @@ export default function AdminPage() {
       )}
 
       {/* Header */}
-      <header style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <header style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', padding: '0 20px', minHeight: 64, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100, gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0' }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <img src="/logo.png" alt="StoryKami Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
@@ -109,7 +109,7 @@ export default function AdminPage() {
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Super Admin</div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, padding: '12px 0' }}>
           <button onClick={() => router.push('/wim/dashboard')} className="btn btn-secondary btn-sm">
             Dashboard Utama
           </button>
@@ -120,17 +120,17 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto' }}>
+      <div className="page-container" style={{ maxWidth: 1100 }}>
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 32 }}>
+        <div className="stats-grid" style={{ marginBottom: 32 }}>
           {[
             { label: 'Total Reseller', val: stats.total, color: 'var(--accent)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
             { label: 'Reseller Aktif', val: stats.active, color: 'var(--success)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
             { label: 'Menunggu Approve', val: stats.pending, color: '#f59e0b', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
             { label: 'Total Undangan', val: stats.invitations, color: '#3b82f6', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> },
           ].map(s => (
-            <div key={s.label} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              <span style={{ fontSize: '1.8rem', color: s.color }}>{s.icon}</span>
+            <div key={s.label} className="stat-card-item">
+              <div className="stat-card-icon" style={{ fontSize: '1.8rem', color: s.color }}>{s.icon}</div>
               <div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: s.color, fontFamily: 'var(--font-outfit)', lineHeight: 1 }}>{s.val}</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>{s.label}</div>
