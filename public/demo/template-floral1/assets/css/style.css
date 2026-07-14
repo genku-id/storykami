@@ -32,6 +32,7 @@
 
 html {
     background-color: #e0e6e7; /* Background color for desktop margins */
+    overflow-x: hidden;
 }
 
 body {
@@ -39,7 +40,11 @@ body {
     color: var(--text-dark);
     background-color: var(--sage-bg);
     width: 100%;
-    overflow-x: hidden;
+    max-width: 414px; /* Ukuran standar layar HP */
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.15);
+    min-height: 100vh;
 }
 body.locked {
     overflow: hidden;
