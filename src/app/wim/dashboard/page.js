@@ -69,14 +69,16 @@ export default function DashboardPage() {
     if (!s.joinDate) s.joinDate = new Date().toISOString();
     setSession(s);
     
-    // Fetch all normal invitations (not starting with _)
-    const { data } = await supabase.from('invitations').select('*').not('slug', 'like', '\\_%').order('created_at', { ascending: false });
+    // Fetch all invitations
+    const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
     
     if (data) {
+      // Filter out system config and resellers
+      let filteredData = data.filter(inv => !inv.slug.startsWith('_'));
+      
       // Filter by reseller if not admin
-      let filteredData = data;
       if (!s.isAdmin) {
-        filteredData = data.filter(inv => inv.data?.resellerEmail === s.email);
+        filteredData = filteredData.filter(inv => inv.data?.resellerEmail === s.email);
       }
       
       setInvitations(filteredData.map(inv => ({

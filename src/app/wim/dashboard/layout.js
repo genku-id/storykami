@@ -34,12 +34,13 @@ export default function DashboardLayout({ children }) {
     
     // Fetch invitation count
     const fetchQuota = async () => {
-      const { data } = await supabase.from('invitations').select('data').not('slug', 'like', '\\_%');
+      const { data } = await supabase.from('invitations').select('slug, data');
       if (data) {
+        const validData = data.filter(inv => !inv.slug.startsWith('_'));
         if (s.isAdmin) {
-          setUsedQuota(data.length);
+          setUsedQuota(validData.length);
         } else {
-          const used = data.filter(inv => inv.data?.resellerEmail === s.email).length;
+          const used = validData.filter(inv => inv.data?.resellerEmail === s.email).length;
           setUsedQuota(used);
         }
       }
@@ -105,7 +106,7 @@ export default function DashboardLayout({ children }) {
           ))}
 
           {session.isAdmin && (
-            <a href="/admin" onClick={() => setSidebarOpen(false)} style={{
+            <a href="/wim/admin" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: 500, fontSize: '0.875rem',
               color: 'var(--text-secondary)',
