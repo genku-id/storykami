@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession } from '@/utils/mockData';
 
 export default function PengaturanPage() {
   const router = useRouter();
@@ -15,8 +14,9 @@ export default function PengaturanPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const s = getSession();
-    if (!s) { router.replace('/login'); return; }
+    const sStr = localStorage.getItem('wim_session');
+    if (!sStr) { router.replace('/wim/login'); return; }
+    const s = JSON.parse(sStr);
     setSession(s);
     const stored = localStorage.getItem(`wim_settings_${s.id}`);
     if (stored) setAdminSettings(JSON.parse(stored));
