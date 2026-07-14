@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }) {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.nama}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{session.isAdmin ? 'Admin' : session.paket}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{session.paket || (session.isAdmin ? 'Supreme' : 'Starter')}</div>
           </div>
           <button onClick={handleLogout} title="Keluar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 6, borderRadius: 6, transition: 'all 0.2s', display: 'flex', alignItems: 'center' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.color = 'var(--danger)'; }}

@@ -57,7 +57,7 @@ export default function PengaturanPage() {
           password: data.data.password || '',
           foto: data.data.foto || s.foto || '',
           status: data.data.status || s.status || 'active',
-          paket: data.data.paket || s.paket || 'Starter',
+          paket: data.data.paket || s.paket || (s.isAdmin ? 'Supreme' : 'Starter'),
           joinDate: data.data.joinDate || s.joinDate || new Date().toISOString()
         });
       } else {
@@ -122,11 +122,54 @@ export default function PengaturanPage() {
     setIsLoadingProfile(false);
   };
 
-  const handlePhotoSelect = (e) => {
+  const compressImage = (file, maxSizeKB, maxWidth = 1200) => {
+    return new Promise((resolve) => {
+      if (file.type === 'image/gif') return resolve(file);
+      if (file.size <= maxSizeKB * 1024) return resolve(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          let quality = 0.8;
+          const tryCompress = (q) => {
+            canvas.toBlob((blob) => {
+              if (!blob) return resolve(file);
+              if (blob.size <= maxSizeKB * 1024 || q <= 0.2) {
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: 'image/jpeg', lastModified: Date.now(),
+                });
+                resolve(newFile);
+              } else {
+                tryCompress(q - 0.2);
+              }
+            }, 'image/jpeg', q);
+          };
+          tryCompress(quality);
+        };
+      };
+    });
+  };
+
+  const handlePhotoSelect = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setProfilePhotoFile(file);
-      setProfilePhotoPreview(URL.createObjectURL(file));
+      const compressedFile = await compressImage(file, 1000); // 1MB
+      setProfilePhotoFile(compressedFile);
+      setProfilePhotoPreview(URL.createObjectURL(compressedFile));
     }
   };
 
