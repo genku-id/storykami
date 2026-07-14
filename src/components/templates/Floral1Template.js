@@ -430,7 +430,7 @@ export default function Floral1Template({ data }) {
                                 <img 
                                     src={getBankLogo(bank.namaBank)} 
                                     alt={bank.namaBank} 
-                                    style={{ height: '35px', objectFit: 'contain', maxWidth: '100px' }} 
+                                    style={{ height: '60px', objectFit: 'contain', maxWidth: '180px' }} 
                                     onError={(e) => { 
                                         e.target.style.display = 'none'; 
                                         if(e.target.nextSibling) e.target.nextSibling.style.display = 'inline-block'; 
