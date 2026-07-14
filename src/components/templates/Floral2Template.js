@@ -337,20 +337,18 @@ export default function Floral2Template({ data }) {
 
           {/* ================= HALAMAN 4 (DESKRIPSI/QUOTE) ================= */}
           {data.show_hal4 !== false && data.hal4_deskripsi && (
-            <section id="quote" className="section quote-section">
-                <div className="cloud cloud-1"></div>
-                <div className="cloud cloud-2"></div>
-                <div className="cloud cloud-3"></div>
-
-                <div className="floral-corner floral-pattern-1 floral-middle-right" style={{ filter: 'none', opacity: 0.6 }}></div>
-                <div className="floral-corner floral-pattern-1 floral-bottom-left-large" style={{ filter: 'none', opacity: 0.6 }}></div>
+            <section id="quote" className="section quote-section bg-red-dark">
+                <div className="floral-corner floral-pattern-1 floral-middle-right"></div>
+                <div className="floral-corner floral-pattern-1 floral-bottom-left-large"></div>
                 
                 <div className="quote-content" data-animate="fade-up">
                     <div className="quote-image-card">
-                        <img src={data.hal2_fotoCouple || "/demo/template-floral2/assets/images/couple.png"} alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
+                        <img src={data.hal2_fotoCouple || "/demo/template-floral2/assets/images/couple.png"} 
+alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
                     </div>
-                    <div className="quote-text text-dark mt-4">
-                        <p className="arabic-text mt-3" style={{ whiteSpace: 'pre-line', fontSize: '1rem', lineHeight: '1.8' }}>
+                    <div className="quote-text text-white mt-4">
+                        <p className="arabic-text mt-3" style={{ whiteSpace: 'pre-line', fontSize: '1rem', lineHeight: 
+'1.8' }}>
                             {data.hal4_deskripsi}
                         </p>
                     </div>

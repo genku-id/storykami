@@ -519,7 +519,7 @@ body.locked {
 .quote-section {
     position: relative;
     padding: 60px 20px;
-    background: linear-gradient(to bottom, #ffffff 0%, #fff0f0 60%, #fce8e8 100%);
+    background-color: var(--red-bg); /* Use the light blue background */
     z-index: 10;
     min-height: 80vh;
     height: auto;
