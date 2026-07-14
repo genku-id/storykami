@@ -27,13 +27,22 @@ export default function DashboardLayout({ children }) {
     const sStr = localStorage.getItem('wim_session');
     if (!sStr) { router.replace('/wim/login'); return; }
     const s = JSON.parse(sStr);
-    s.quota = 9999; // Unlimited for admin
+    
+    // Set default quota if admin
+    if (s.isAdmin) s.quota = 9999;
     setSession(s);
     
     // Fetch invitation count
     const fetchQuota = async () => {
-      const { count } = await supabase.from('invitations').select('*', { count: 'exact', head: true });
-      if (count !== null) setUsedQuota(Math.max(0, count - 1)); // -1 for admin settings
+      const { data } = await supabase.from('invitations').select('data').not('slug', 'like', '\\_%');
+      if (data) {
+        if (s.isAdmin) {
+          setUsedQuota(data.length);
+        } else {
+          const used = data.filter(inv => inv.data?.resellerEmail === s.email).length;
+          setUsedQuota(used);
+        }
+      }
     };
     fetchQuota();
   }, [router]);

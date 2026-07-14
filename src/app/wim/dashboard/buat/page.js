@@ -265,7 +265,12 @@ function BuatPage() {
       slug: slugStr,
       template_name: templateName,
       template: templateName,
-      data: { ...finalFormData, clientWa, ...uploadedUrls }
+      data: { 
+        ...finalFormData, 
+        clientWa, 
+        ...uploadedUrls,
+        resellerEmail: session?.email // Track ownership
+      }
     };
 
     const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
