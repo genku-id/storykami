@@ -425,11 +425,11 @@ export default function Floral2Template({ data }) {
                     <div key={idx} className="bank-card mt-4">
                         <div className="card-top-row">
                             <h3 className="bank-card-title">Wedding Gift</h3>
-                            <div className="bank-logo-container" style={{ margin: '15px 0 10px 0' }}>
+                            <div className="bank-logo-container" style={{ margin: '0 0 10px 0', textAlign: 'right' }}>
                                 <img 
                                     src={getBankLogo(bank.namaBank)} 
                                     alt={bank.namaBank} 
-                                    style={{ height: '60px', objectFit: 'contain', maxWidth: '180px' }} 
+                                    style={{ height: '90px', objectFit: 'contain', maxWidth: '200px', marginBottom: '-15px', marginTop: '-20px' }} 
                                     onError={(e) => { 
                                         e.target.style.display = 'none'; 
                                         if(e.target.nextSibling) e.target.nextSibling.style.display = 'inline-block'; 
@@ -448,7 +448,7 @@ export default function Floral2Template({ data }) {
                                 }}>
                                   {bank.namaBank}
                                 </div>
-                                <hr className="bank-divider" style={{ marginTop: '15px' }} />
+                                <hr className="bank-divider" style={{ marginTop: '5px' }} />
                             </div>
                         </div>
                         
