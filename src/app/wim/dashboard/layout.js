@@ -47,6 +47,24 @@ export default function DashboardLayout({ children }) {
         }
       };
       fetchQuota();
+
+      // Sync latest profile data from database across devices
+      const fetchLatestProfile = async () => {
+        const slugKey = s.isAdmin ? '_wim_admin_settings' : `_reseller_${s.email.toLowerCase()}`;
+        const { data } = await supabase.from('invitations').select('data').eq('slug', slugKey).single();
+        if (data && data.data) {
+          const updatedSession = { 
+            ...s, 
+            nama: data.data.nama || data.data.adminName || s.nama,
+            foto: data.data.foto || s.foto
+          };
+          if (updatedSession.nama !== s.nama || updatedSession.foto !== s.foto) {
+            setSession(updatedSession);
+            localStorage.setItem('wim_session', JSON.stringify(updatedSession));
+          }
+        }
+      };
+      fetchLatestProfile();
     };
     
     fetchSession();
