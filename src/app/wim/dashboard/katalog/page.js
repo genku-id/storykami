@@ -33,8 +33,8 @@ export default function KatalogPage() {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: '24px'
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: '20px'
       }}>
         {TEMPLATES.map(tpl => (
           <div key={tpl.id} style={{
