@@ -79,8 +79,8 @@ export default function DashboardLayout({ children }) {
       <aside className={`wim-sidebar-el ${sidebarOpen ? 'open' : ''}`}>
         {/* Logo */}
         <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-accent)', flexShrink: 0, overflow: 'hidden' }}>
-            <img src="/logo.png" alt="StoryKami Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: '#fff', padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-accent)', flexShrink: 0, overflow: 'hidden' }}>
+            <img src="/logo.png" alt="StoryKami Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)', lineHeight: 1.2 }}>StoryKami</div>
@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }) {
         </div>
 
         {/* Nav items */}
-        <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <nav style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 8 }}>Menu</div>
 
           {NAV_ITEMS.map(item => (
@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }) {
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: isActive(item) ? 700 : 500, fontSize: '0.875rem',
               color: isActive(item) ? '#fff' : 'var(--text-secondary)',
-              background: isActive(item) ? 'var(--accent-gradient)' : 'transparent',
+              background: isActive(item) ? '#000' : 'transparent',
               boxShadow: isActive(item) ? 'var(--shadow-accent)' : 'none',
               transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
             }}>
@@ -109,13 +109,13 @@ export default function DashboardLayout({ children }) {
           {session.isAdmin && (
             <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
-              textDecoration: 'none', fontWeight: 500, fontSize: '0.875rem',
-              color: 'var(--text-secondary)',
-              background: 'transparent',
+              textDecoration: 'none', fontWeight: pathname.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
+              color: pathname.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
+              background: pathname.startsWith('/wim/dashboard/admin') ? '#000' : 'transparent',
               boxShadow: 'none',
               transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
             }}>
-              <span style={{ opacity: 0.7 }}>
+              <span style={{ opacity: pathname.startsWith('/wim/dashboard/admin') ? 1 : 0.7 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </span>
               Admin Panel
@@ -127,17 +127,17 @@ export default function DashboardLayout({ children }) {
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
             textDecoration: 'none', fontWeight: isBuatActive ? 700 : 600, fontSize: '0.875rem',
             color: isBuatActive ? '#fff' : 'var(--text-accent)',
-            background: isBuatActive ? 'var(--accent-gradient)' : 'rgba(0,0,0,0.04)',
+            background: isBuatActive ? '#000' : 'rgba(0,0,0,0.04)',
             border: isBuatActive ? 'none' : '1px solid rgba(0,0,0,0.1)',
             boxShadow: isBuatActive ? 'var(--shadow-accent)' : 'none',
             transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)', marginTop: 4,
           }}>
             <span style={{ opacity: isBuatActive ? 1 : 0.8 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
             </span>
-            Buat Undangan
+            Katalog Tema
           </a>
         </nav>
 
@@ -151,7 +151,7 @@ export default function DashboardLayout({ children }) {
               </span>
             </div>
             <div className="quota-bar" style={{ marginBottom: 6 }}>
-              <div className="quota-fill" style={{ width: `${quotaPct}%`, background: quotaPct > 80 ? 'var(--danger)' : 'var(--accent-gradient)' }} />
+              <div className="quota-fill" style={{ width: `${quotaPct}%`, background: quotaPct > 80 ? 'var(--danger)' : '#000' }} />
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
               {remaining === Infinity ? 'Tak terbatas' : (remaining > 0 ? `${remaining} slot tersedia` : 'Kuota habis')}
@@ -161,12 +161,12 @@ export default function DashboardLayout({ children }) {
 
         {/* User + Logout */}
         <div style={{ padding: '12px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-outfit)' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-outfit)' }}>
             {session.nama?.charAt(0)?.toUpperCase()}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.nama}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Admin</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{session.isAdmin ? 'Admin' : session.paket}</div>
           </div>
           <button onClick={handleLogout} title="Keluar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 6, borderRadius: 6, transition: 'all 0.2s', display: 'flex', alignItems: 'center' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.color = 'var(--danger)'; }}
@@ -186,10 +186,8 @@ export default function DashboardLayout({ children }) {
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(99,102,241,0.4)' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
+          <div style={{ width: 32, height: 32, borderRadius: 10, background: '#fff', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+            <img src="/logo.png" alt="StoryKami Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <span style={{ fontWeight: 700, fontSize: '0.95rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)' }}>
             StoryKami WIM
@@ -199,9 +197,9 @@ export default function DashboardLayout({ children }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 20, padding: '4px 10px', fontSize: '0.7rem', fontWeight: 700, color: remaining === 0 ? 'var(--danger)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            {usedQuota}/{session.quota}
+            {usedQuota}/{quota === Infinity ? '∞' : quota}
           </div>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-outfit)' }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-outfit)' }}>
             {session.nama?.charAt(0)?.toUpperCase()}
           </div>
         </div>
