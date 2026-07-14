@@ -174,9 +174,9 @@ export default function LoginPage() {
           </h2>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 24 }}>
             Belum punya akun?{' '}
-            <span style={{ color: 'var(--text-muted)' }}>
-              Akses terbatas untuk Admin.
-            </span>
+            <a href="/wim/register" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
+              Daftar sebagai Reseller
+            </a>
           </p>
 
           {/* Error */}
