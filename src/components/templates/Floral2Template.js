@@ -3,29 +3,9 @@ import React, { useEffect, useState } from 'react';
 import Script from 'next/script';
 import Guestbook from '@/components/Guestbook';
 
-const BANK_STYLES = {
-  BCA: { bg: '#005baa', color: '#fff' },
-  MANDIRI: { bg: '#0f3c7e', color: '#f2a900' },
-  BNI: { bg: '#f15a23', color: '#fff' },
-  BRI: { bg: '#00529c', color: '#fff' },
-  BSI: { bg: '#00a39d', color: '#fff' },
-  CIMB: { bg: '#7a003c', color: '#fff' },
-  PERMATA: { bg: '#006c68', color: '#fff' },
-  JAGO: { bg: '#f37021', color: '#fff' },
-  SEABANK: { bg: '#ff6600', color: '#fff' },
-  JENIUS: { bg: '#00a8e1', color: '#fff' },
-  BLU: { bg: '#00a8e1', color: '#fff' },
-  NEO: { bg: '#ffde00', color: '#000' },
-  GOPAY: { bg: '#00aadc', color: '#fff' },
-  OVO: { bg: '#4c3494', color: '#fff' },
-  DANA: { bg: '#118ee9', color: '#fff' },
-  SHOPEEPAY: { bg: '#ee4d2d', color: '#fff' },
-  LINKAJA: { bg: '#e3000f', color: '#fff' },
-};
-
-const getBankStyle = (bankName) => {
+const getBankLogo = (bankName) => {
   const name = (bankName || '').toUpperCase().trim();
-  return BANK_STYLES[name] || { bg: '#475569', color: '#fff' };
+  return `/banks/${name}.png`;
 };
 
 export default function Floral2Template({ data }) {
@@ -446,15 +426,24 @@ export default function Floral2Template({ data }) {
                         <div className="card-top-row">
                             <h3 className="bank-card-title">Wedding Gift</h3>
                             <div className="bank-logo-container" style={{ margin: '15px 0 10px 0' }}>
+                                <img 
+                                    src={getBankLogo(bank.namaBank)} 
+                                    alt={bank.namaBank} 
+                                    style={{ height: '35px', objectFit: 'contain', maxWidth: '100px' }} 
+                                    onError={(e) => { 
+                                        e.target.style.display = 'none'; 
+                                        if(e.target.nextSibling) e.target.nextSibling.style.display = 'inline-block'; 
+                                    }} 
+                                />
                                 <div style={{
-                                  background: getBankStyle(bank.namaBank).bg,
-                                  color: getBankStyle(bank.namaBank).color,
+                                  display: 'none',
+                                  background: '#475569',
+                                  color: '#fff',
                                   padding: '8px 18px',
                                   borderRadius: '30px',
                                   fontWeight: '800',
                                   fontSize: '0.9rem',
                                   letterSpacing: '0.5px',
-                                  display: 'inline-block',
                                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
                                 }}>
                                   {bank.namaBank}
