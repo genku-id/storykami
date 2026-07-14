@@ -192,7 +192,7 @@ export default function AdminPage() {
                         <tr key={dbEmail}>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#fff', fontSize: '0.85rem', fontFamily: 'var(--font-outfit)', flexShrink: 0 }}>
+                              <div className="col-hide-mobile" style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#fff', fontSize: '0.85rem', fontFamily: 'var(--font-outfit)', flexShrink: 0 }}>
                                 {r.nama.charAt(0).toUpperCase()}
                               </div>
                               <div>
