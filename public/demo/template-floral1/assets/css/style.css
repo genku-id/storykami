@@ -510,7 +510,8 @@ body.locked {
     padding: 20px 20px;
     background-color: var(--sage-bg); /* Use the light blue background */
     z-index: 10;
-    height: 80vh;
+    min-height: 80vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
