@@ -93,7 +93,8 @@ export default function DashboardLayout({ children }) {
         <nav style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 8 }}>Menu</div>
 
-          {NAV_ITEMS.map(item => (
+          {/* 1. Beranda */}
+          {NAV_ITEMS.filter(item => item.label === 'Beranda').map(item => (
             <a key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: isActive(item) ? 700 : 500, fontSize: '0.875rem',
@@ -107,23 +108,7 @@ export default function DashboardLayout({ children }) {
             </a>
           ))}
 
-          {session.isAdmin && (
-            <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
-              display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
-              textDecoration: 'none', fontWeight: normalizedPath.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
-              color: normalizedPath.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
-              background: normalizedPath.startsWith('/wim/dashboard/admin') ? '#000' : 'transparent',
-              boxShadow: 'none',
-              transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
-            }}>
-              <span style={{ opacity: normalizedPath.startsWith('/wim/dashboard/admin') ? 1 : 0.7 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </span>
-              Admin Panel
-            </a>
-          )}
-
-          {/* Katalog Tema as special button */}
+          {/* 2. Katalog Tema */}
           <a href="/wim/dashboard/katalog" onClick={() => setSidebarOpen(false)} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
             textDecoration: 'none', fontWeight: isBuatActive ? 700 : 500, fontSize: '0.875rem',
@@ -140,6 +125,38 @@ export default function DashboardLayout({ children }) {
             </span>
             Katalog Tema
           </a>
+
+          {/* 3. Admin Panel */}
+          {session.isAdmin && (
+            <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
+              textDecoration: 'none', fontWeight: normalizedPath.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
+              color: normalizedPath.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
+              background: normalizedPath.startsWith('/wim/dashboard/admin') ? '#000' : 'transparent',
+              boxShadow: 'none',
+              transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
+            }}>
+              <span style={{ opacity: normalizedPath.startsWith('/wim/dashboard/admin') ? 1 : 0.7 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </span>
+              Admin Panel
+            </a>
+          )}
+
+          {/* 4. Setelan */}
+          {NAV_ITEMS.filter(item => item.label === 'Setelan').map(item => (
+            <a key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
+              textDecoration: 'none', fontWeight: isActive(item) ? 700 : 500, fontSize: '0.875rem',
+              color: isActive(item) ? '#fff' : 'var(--text-secondary)',
+              background: isActive(item) ? '#000' : 'transparent',
+              boxShadow: isActive(item) ? 'var(--shadow-accent)' : 'none',
+              transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
+            }}>
+              <span style={{ opacity: isActive(item) ? 1 : 0.7 }}>{item.icon}</span>
+              {item.label}
+            </a>
+          ))}
         </nav>
 
         {/* Quota */}
