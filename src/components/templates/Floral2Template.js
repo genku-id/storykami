@@ -366,7 +366,7 @@ alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
               
               <div className="events-content">
                   {acaraList.map((acara, idx) => (
-                    <div key={idx} className="event-card-pill bg-dark-blue" data-animate="zoom-in" style={{ transitionDelay: `${idx * 0.2}s` }}>
+                    <div key={idx} className="event-card-pill bg-red-dark" data-animate="zoom-in" style={{ transitionDelay: `${idx * 0.2}s` }}>
                         <div className="card-floral card-floral-tl"></div>
                         <div className="card-floral card-floral-mr"></div>
                         <div className="card-floral card-floral-bl"></div>
@@ -396,7 +396,7 @@ alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
 
           {/* ================= HALAMAN 6 (CERITA) ================= */}
           {data.show_hal6 !== false && ceritaList.length > 0 && (
-            <section id="lovestory" className="section lovestory-section bg-dark-blue">
+            <section id="lovestory" className="section lovestory-section bg-red-dark">
                 <h2 className="section-title text-white text-center mb-5" data-animate="fade-up">Love Story</h2>
                 
                 <div className="story-frame" data-animate="zoom-in">
@@ -419,7 +419,7 @@ alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
 
           {/* ================= HALAMAN 7 (HADIAH) ================= */}
           {data.show_hal7 !== false && (bankList.length > 0 || data.hal7_alamatKado) && (
-            <section id="gift" className="section gift-section bg-dark-blue">
+            <section id="gift" className="section gift-section bg-red-dark">
               <div className="gift-section-header text-center text-white mb-4" data-animate="fade-up" style={{ marginTop: '-30px' }}>
                   <i className="fa-solid fa-gift fa-3x mb-2"></i>
                   <h2 className="section-title text-white" style={{ color: 'white', fontSize: '1.5rem' }}>Wedding Gift</h2>
@@ -514,7 +514,7 @@ alt="Quote" className="quote-main-image" style={{ objectFit: 'cover' }} />
 
           {/* ================= HALAMAN 9 (UCAPAN & RSVP) ================= */}
           {data.show_hal9 !== false && (
-            <section id="guestbook" className="section guestbook-section bg-light-blue" style={{ padding: '40px 15px' }}>
+            <section id="guestbook" className="section guestbook-section bg-red-dark" style={{ padding: '40px 15px' }}>
                 <div data-animate="fade-up">
                     <Guestbook slug={data.slug} />
                 </div>
