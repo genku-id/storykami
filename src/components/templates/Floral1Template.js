@@ -8,6 +8,13 @@ const getBankLogo = (bankName) => {
   return `/banks/${name}.png`;
 };
 
+const formatBankName = (bankName) => {
+  const name = (bankName || '').toUpperCase().trim();
+  const eWallets = ['GOPAY', 'OVO', 'DANA', 'SHOPEEPAY', 'LINKAJA'];
+  if (eWallets.includes(name) || name.includes('BANK')) return name;
+  return `BANK ${name}`;
+};
+
 export default function Floral1Template({ data }) {
   const [showCover, setShowCover] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -446,7 +453,7 @@ export default function Floral1Template({ data }) {
                                   zIndex: 2,
                                   marginBottom: '-2px'
                                 }}>
-                                  {bank.namaBank}
+                                  {formatBankName(bank.namaBank)}
                                 </div>
                                 <hr className="bank-divider" style={{ marginTop: '5px' }} />
                             </div>
