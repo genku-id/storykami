@@ -680,9 +680,9 @@ textarea.wim-input {
     padding: 14px !important;
   }
 
-  /* Stats 3 columns on mobile (side by side) */
+  /* Stats 4 columns on mobile (side by side) */
   .stats-grid {
-    grid-template-columns: 1fr 1fr 1fr !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 8px !important;
   }
 
