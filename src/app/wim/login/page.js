@@ -259,25 +259,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo account hint */}
-          <div style={{
-            marginTop: 24,
-            padding: '12px 14px',
-            background: 'var(--success-bg)',
-            border: '1px solid var(--success-border)',
-            borderRadius: 10,
-            fontSize: '0.78rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.6,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-accent)', fontWeight: 600, marginBottom: 4 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-              Info Login Admin
-            </div>
-            Jika Anda belum mengubahnya, gunakan:<br/>
-            Email: <code style={{ color: 'var(--text-primary)', background: 'var(--bg-input)', padding: '1px 6px', borderRadius: 4 }}>admin@storykami.com</code><br/>
-            Password: <code style={{ color: 'var(--text-primary)', background: 'var(--bg-input)', padding: '1px 6px', borderRadius: 4 }}>admin123</code>
-          </div>
+
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 20 }}>
