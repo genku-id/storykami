@@ -64,8 +64,9 @@ export default function DashboardLayout({ children }) {
   const quota = session?.isAdmin ? Infinity : (session?.quota || 0);
   const remaining = quota === Infinity ? Infinity : Math.max(0, quota - usedQuota);
   const quotaPct = quota === Infinity ? 0 : Math.min(100, (usedQuota / quota) * 100);
-  const isActive = (item) => item.exact ? pathname === item.href : pathname.startsWith(item.href);
-  const isBuatActive = pathname.startsWith('/wim/dashboard/buat');
+  const normalizedPath = pathname.replace(/\/$/, '');
+  const isActive = (item) => item.exact ? normalizedPath === item.href : normalizedPath.startsWith(item.href);
+  const isBuatActive = normalizedPath.startsWith('/wim/dashboard/buat');
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-primary)' }}>
@@ -109,13 +110,13 @@ export default function DashboardLayout({ children }) {
           {session.isAdmin && (
             <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
-              textDecoration: 'none', fontWeight: pathname.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
-              color: pathname.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
-              background: pathname.startsWith('/wim/dashboard/admin') ? '#000' : 'transparent',
+              textDecoration: 'none', fontWeight: normalizedPath.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
+              color: normalizedPath.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
+              background: normalizedPath.startsWith('/wim/dashboard/admin') ? '#000' : 'transparent',
               boxShadow: 'none',
               transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
             }}>
-              <span style={{ opacity: pathname.startsWith('/wim/dashboard/admin') ? 1 : 0.7 }}>
+              <span style={{ opacity: normalizedPath.startsWith('/wim/dashboard/admin') ? 1 : 0.7 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </span>
               Admin Panel
@@ -125,12 +126,12 @@ export default function DashboardLayout({ children }) {
           {/* Buat Undangan as special button */}
           <a href="/wim/dashboard/buat" onClick={() => setSidebarOpen(false)} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
-            textDecoration: 'none', fontWeight: isBuatActive ? 700 : 600, fontSize: '0.875rem',
-            color: isBuatActive ? '#fff' : 'var(--text-accent)',
-            background: isBuatActive ? '#000' : 'rgba(0,0,0,0.04)',
-            border: isBuatActive ? 'none' : '1px solid rgba(0,0,0,0.1)',
+            textDecoration: 'none', fontWeight: isBuatActive ? 700 : 500, fontSize: '0.875rem',
+            color: isBuatActive ? '#fff' : 'var(--text-secondary)',
+            background: isBuatActive ? '#000' : 'transparent',
+            border: 'none',
             boxShadow: isBuatActive ? 'var(--shadow-accent)' : 'none',
-            transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)', marginTop: 4,
+            transition: 'all 0.2s ease', fontFamily: 'var(--font-outfit)',
           }}>
             <span style={{ opacity: isBuatActive ? 1 : 0.8 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
