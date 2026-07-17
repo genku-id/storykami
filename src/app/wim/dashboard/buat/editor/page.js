@@ -191,6 +191,18 @@ function RepeaterField({ field, items, onChange }) {
           
           <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
             {field.sub_fields.map(sf => {
+              if (sf.type === 'select') {
+                return (
+                  <FieldGroup key={sf.id} label={sf.label}>
+                    <select className="wim-input" style={{ padding: '8px 12px', fontSize: '0.85rem' }} value={item[sf.id] || ''} onChange={e => handleChange(idx, sf.id, e.target.value)}>
+                      <option value="">Pilih...</option>
+                      {sf.options?.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </FieldGroup>
+                )
+              }
               if (sf.type === 'textarea') {
                  return (
                    <FieldGroup key={sf.id} label={sf.label}>
@@ -609,6 +621,30 @@ function EditorPage() {
                     );
                   }
                   
+                  if (f.type === 'select') {
+                    return (
+                      <FieldGroup key={f.id} label={f.label}>
+                        <select
+                          className="wim-input"
+                          style={{ padding: '10px 12px', fontSize: '0.85rem' }}
+                          value={f.id?.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id] || ''}
+                          onChange={e => setFormData(p => {
+                          const newD = { ...p };
+                          const parts = f.id ? f.id.split('.') : f.id.split('.');
+                          if (parts.length === 1) newD[parts[0]] = e.target.value;
+                          else {
+                            newD[parts[0]] = { ...newD[parts[0]], [parts[1]]: e.target.value };
+                          }
+                          return newD;
+                        })}>
+                          <option value="">Pilih...</option>
+                          {f.options?.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      </FieldGroup>
+                    );
+                  }
                   if (f.type === 'textarea') {
                     return (
                       <FieldGroup key={f.id} label={f.label}>
