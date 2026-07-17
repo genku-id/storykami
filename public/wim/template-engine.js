@@ -543,11 +543,7 @@
         html = html.replace(/<button id="btn-audio" class="btn-audio">\s*<i class="fa-solid fa-volume-xmark"><\/i>\s*<\/button>/g, '');
         // Re-insert it right before <main id="main-content">
         html = html.replace('<main id="main-content">', `<!-- Floating Audio Button -->\n    <button id="btn-audio" class="btn-audio">\n        <i class="fa-solid fa-volume-xmark"></i>\n    </button>\n\n    <main id="main-content">`);
-        html = html.replace(/(<span class="cover-slide-in-left">)[\s\S]*?(<\/span>)/, `$1${htmlEscape((data.brideName || "").charAt(0).toUpperCase())}$2`);
-        html = html.replace(/(<span class="cover-slide-in-right">)[\s\S]*?(<\/span>)/, `$1${htmlEscape((data.groomName || "").charAt(0).toUpperCase())}$2`);
-        html = html.replace(/(<h2 class="title-names-cursive">)[\s\S]*?(<\/h2>)/, `$1${htmlEscape(data.coverName || "Dilan & Milea")}$2`);
         html = html.replace(/(<h3 class="guest-name text-serif">)[\s\S]*?(<\/h3>)/, `$1${htmlEscape(data.guestName)}$2`);
-        html = html.replace(/(<h1 class="title-names text-sage mb-3 mt-4"[^>]*>)[\s\S]*?(<\/h1>)/, `$1${htmlEscape(data.coverName || "Dilan & Milea")}$2`);
         if (data.weddingDateText) {
             html = html.replace(/(<p class="date-highlight mb-4"[^>]*>)[\s\S]*?(<\/p>)/, `$1${htmlEscape(data.weddingDateText)}$2`);
         } else {
