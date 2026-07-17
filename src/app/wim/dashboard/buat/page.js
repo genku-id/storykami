@@ -315,54 +315,61 @@ function BuatPage() {
           </FieldGroup>
 
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: 12 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
               <input 
                 type="checkbox" 
                 checked={useCustomThumbnail} 
                 onChange={(e) => setUseCustomThumbnail(e.target.checked)} 
-                style={{ width: 14, height: 14, accentColor: 'var(--accent)' }}
+                style={{ width: 16, height: 16, accentColor: 'var(--text-primary)' }}
               />
-              Atur Thumbnail Khusus Saat Di-Share
+              Atur Tampilan Link Saat Di-Share (Opsional)
             </label>
             {useCustomThumbnail && (
-              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ position: 'relative', width: 64, height: 64, borderRadius: 8, border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                    {getPreviewUrl('thumbnailFoto') ? (
-                      <>
-                        <img src={getPreviewUrl('thumbnailFoto')} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: 2, right: 2, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, cursor: 'pointer', fontSize: 10 }}>&times;</button>
-                      </>
-                    ) : (
-                      <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>+</span>
-                    )}
-                    {!getPreviewUrl('thumbnailFoto') && <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                    Akan otomatis dikompres<br/>(Optimal: ~250KB)
-                  </div>
-                </div>
+              <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 20 }}>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <FieldGroup label="Judul Thumbnail">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                  <FieldGroup label="Judul Link">
                     <input 
                       className="wim-input" 
-                      style={{ padding: '8px 12px', fontSize: '0.85rem' }} 
-                      placeholder="The Wedding of..." 
+                      style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
+                      placeholder="Contoh: The Wedding of Budi & Sari" 
                       value={thumbnailJudul} 
                       onChange={e => setThumbnailJudul(e.target.value)} 
                     />
                   </FieldGroup>
-                  <FieldGroup label="Deskripsi Thumbnail">
+                  <FieldGroup label="Deskripsi Link">
                     <input 
                       className="wim-input" 
-                      style={{ padding: '8px 12px', fontSize: '0.85rem' }} 
-                      placeholder="Hadiri Pernikahan..." 
+                      style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
+                      placeholder="Contoh: Hadiri pernikahan kami..." 
                       value={thumbnailDeskripsi} 
                       onChange={e => setThumbnailDeskripsi(e.target.value)} 
                     />
                   </FieldGroup>
                 </div>
+
+                <div style={{ borderTop: '1px dashed var(--border)', paddingTop: 16 }}>
+                  <FieldGroup label="Gambar Thumbnail Khusus (Opsional)">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                      <div style={{ position: 'relative', width: 80, height: 80, borderRadius: 8, border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, background: 'var(--bg-secondary)' }}>
+                        {getPreviewUrl('thumbnailFoto') ? (
+                          <>
+                            <img src={getPreviewUrl('thumbnailFoto')} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>&times;</button>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>+</span>
+                        )}
+                        {!getPreviewUrl('thumbnailFoto') && <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                        Kosongkan jika ingin menggunakan gambar default.<br/>
+                        Akan otomatis dikompres (Optimal: ~250KB)
+                      </div>
+                    </div>
+                  </FieldGroup>
+                </div>
+
               </div>
             )}
           </div>
