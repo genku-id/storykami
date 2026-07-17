@@ -574,6 +574,11 @@
         html = replaceNth(html, /(<div class="social-icons mt-3">\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerInstagramUrl || "#")}$2`);
         html = replaceNth(html, /(<div class="social-icons mt-3">[\s\S]*?<a href="[^"]*">[\s\S]*?<\/a>\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerWhatsappUrl || "#")}$2`);
 
+        
+        const defaultQuoteText = "Dan Di Antara Tanda-Tanda (Kebesaran)-Nya Ialah Dia Menciptakan Pasangan-Pasangan Untukmu Dari Jenismu Sendiri, Agar Kamu Cenderung Dan Merasa Tenteram Kepadanya, Dan Dia Menjadikan Di Antaramu Rasa Kasih Sayang. Sungguh, Pada Yang Demikian Itu Benar-Benar Terdapat Tanda-Tanda (Kebesaran Allah) Bagi Kaum Yang Berpikir.";
+        const finalQuoteText = data.quoteText || defaultQuoteText;
+        html = html.replace(/(<p class="translation[^>]*>)([\s\S]*?)(<\/p>)/, `$1"${htmlEscape(finalQuoteText)}"$3`);
+
         if (!data.sections.profiles) html = removeSectionById(html, "profiles");
         if (!data.sections.quote) html = removeSectionById(html, "quote");
         if (!data.sections.guestbook) html = removeSectionById(html, "guestbook");
