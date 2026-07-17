@@ -594,6 +594,35 @@ function EditorPage() {
                 </div>
               ))}
 
+              {/* Presets */}
+              {activeModalPage.presets && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 600, marginBottom: 8, color: "var(--accent)" }}>Pilih Template Cepat:</div>
+                  <select
+                    className="wim-input"
+                    style={{ padding: '10px 12px', fontSize: '0.85rem', width: '100%', cursor: 'pointer' }}
+                    onChange={(e) => {
+                      const preset = activeModalPage.presets.find(p => p.name === e.target.value);
+                      if (preset) {
+                        setFormData(p => {
+                          const newD = { ...p };
+                          for (const key of Object.keys(preset.values)) {
+                            newD[key] = preset.values[key];
+                          }
+                          return newD;
+                        });
+                      }
+                    }}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>Pilih...</option>
+                    {activeModalPage.presets.map((preset, idx) => (
+                      <option key={idx} value={preset.name}>{preset.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Text Fields */}
               <div style={{ display: 'grid', gap: 16 }}>
                 {activeModalPage.fields.map(f => {
