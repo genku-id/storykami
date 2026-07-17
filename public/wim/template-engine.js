@@ -514,6 +514,27 @@
         const data = normalizeData(rawData);
         let html = templateHtml;
 
+        // --- COUPLE NAMES & INITIALS ---
+        const coverName = data.coverName || "Dilan & Milea";
+        const coverInitials = data.coverInitials || "MD";
+        const initial1 = coverInitials.charAt(0) || "M";
+        const initial2 = coverInitials.length > 1 ? coverInitials.charAt(1) : "D";
+        
+        // Replace Cover monogram
+        html = html.replace(/(<span class="cover-slide-in-left">)[\s\S]*?(<\/span>)/, `$1${htmlEscape(initial1)}$2`);
+        html = html.replace(/(<span class="cover-slide-in-right">)[\s\S]*?(<\/span>)/, `$1${htmlEscape(initial2)}$2`);
+        
+        // Replace Cover Name (<h2 class="title-names-cursive">)
+        html = html.replace(/(<h2 class="title-names-cursive"[^>]*>)[\s\S]*?(<\/h2>)/, `$1${htmlEscape(coverName)}$2`);
+        
+        // Replace Hero Name (inside <section id="hero" ... <h1 class="title-names ...">)
+        html = html.replace(/(<section id="hero"[\s\S]*?<h1 class="title-names[^>]*>)[\s\S]*?(<\/h1>)/, `$1${htmlEscape(coverName)}$2`);
+        
+        // Replace Closing Name (<h1 id="closing-couple-names">)
+        html = html.replace(/(<h1 id="closing-couple-names"[^>]*>)[\s\S]*?(<\/h1>)/, `$1${htmlEscape(coverName)}$2`);
+        // -------------------------------
+
+
         html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>Undangan Pernikahan ${htmlEscape(data.coupleName)} | ${htmlEscape(data.brandName)}</title>`);
         html = html.replace(/(<meta name="description" content="[^"]*">)/, `$1`);
 
@@ -569,7 +590,7 @@
         html = html.replace(/(<p class="comments-count[\s\S]*?>)[\s\S]*?(<\/p>)/, `$1
                         <i class="fa-solid fa-comments"></i> 0 Ucapan
                     $2`);
-        html = html.replace(/(<h1 id="closing-couple-names" class="title-names mt-4"[^>]*>)[\s\S]*?(<\/h1>)/, `$1${htmlEscape(data.coupleName)}$2`);
+
         html = html.replace(/(<footer[\s\S]*?<h3>)[\s\S]*?(<\/h3>)/, `$1${htmlEscape((data.brandName || "").toUpperCase())}$2`);
         html = html.replace(/(<p class="made-with mt-4">)Made with <i class="fa-solid fa-heart text-red"><\/i> by [\s\S]*?(<\/p>)/, `$1Made with <i class="fa-solid fa-heart text-red"></i> by ${htmlEscape(data.brandName)}$2`);
         html = replaceNth(html, /(<div class="social-icons mt-3">\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerInstagramUrl || "#")}$2`);
