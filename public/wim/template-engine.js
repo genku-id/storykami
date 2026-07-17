@@ -269,6 +269,11 @@
     }
 
     function getGiftAccounts(gift) {
+        if (Array.isArray(gift.accounts) && gift.accounts.length > 0) {
+            return gift.accounts.filter((bank) => {
+                return bank && ["name", "logoUrl", "number", "owner"].some((key) => String(bank[key] || "").trim());
+            });
+        }
         return [gift.bank1, gift.bank2].filter((bank) => {
             return bank && ["name", "logoUrl", "number", "owner"].some((key) => String(bank[key] || "").trim());
         });
