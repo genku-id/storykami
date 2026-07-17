@@ -230,6 +230,7 @@
     function normalizeEvent(event) {
         const normalized = Object.assign({
             title: "",
+            date: "",
             dateText: "",
             startTime: "",
             endTime: "",
@@ -237,6 +238,9 @@
             address: "",
             mapsUrl: ""
         }, event || {});
+        if (normalized.date && !normalized.dateText) {
+            normalized.dateText = formatDateId(normalized.date, true);
+        }
         normalized.timeText = eventTimeText(normalized);
         return normalized;
     }
@@ -300,6 +304,9 @@
         data.sections = Object.assign({}, DEFAULT_DATA.sections, data.sections || {});
         data.projectName = slugify(data.projectName || `${data.brideName}-${data.groomName}`);
         data.coupleName = [data.brideName, data.groomName].filter(Boolean).join(" & ") || "Undangan";
+        if (data.weddingDate && !data.weddingDateText) {
+            data.weddingDateText = formatDateId(data.weddingDate, false);
+        }
         data.events = normalizeEvents(data.events);
         data.stories = normalizeStories(data.stories);
         data.calendarUrl = calendarUrl(data);
