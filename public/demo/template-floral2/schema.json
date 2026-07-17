@@ -196,12 +196,6 @@
       "allow_toggle": true,
       "fields": [
         {
-          "id": "gift.whatsappNumber",
-          "label": "Nomor WA Klien (Penerima Konfirmasi)",
-          "type": "text",
-          "placeholder": "6281234..."
-        },
-        {
           "id": "separator_3",
           "label": "Rekening Bank / E-Wallet",
           "type": "separator"
@@ -245,6 +239,12 @@
               "id": "owner",
               "label": "Atas Nama",
               "type": "text"
+            },
+            {
+              "id": "whatsapp",
+              "label": "No. WA Konfirmasi",
+              "type": "text",
+              "placeholder": "6281234..."
             }
           ]
         },

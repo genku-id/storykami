@@ -286,11 +286,11 @@
     function getGiftAccounts(gift) {
         if (Array.isArray(gift.accounts) && gift.accounts.length > 0) {
             return gift.accounts.filter((bank) => {
-                return bank && ["name", "logoUrl", "number", "owner"].some((key) => String(bank[key] || "").trim());
+                return bank && ["name", "logoUrl", "number", "owner", "whatsapp"].some((key) => String(bank[key] || "").trim());
             });
         }
         return [gift.bank1, gift.bank2].filter((bank) => {
-            return bank && ["name", "logoUrl", "number", "owner"].some((key) => String(bank[key] || "").trim());
+            return bank && ["name", "logoUrl", "number", "owner", "whatsapp"].some((key) => String(bank[key] || "").trim());
         });
     }
 
@@ -331,8 +331,9 @@
         data.stories = normalizeStories(data.stories);
         data.calendarUrl = calendarUrl(data);
         data.countdownAt = data.weddingDate ? `${data.weddingDate}T${(data.events[0] && data.events[0].startTime) || "09:00"}:00+07:00` : "";
-        data.gift.confirmGiftUrl = whatsappLink(data.gift.whatsappNumber, "Halo saya telah mengirimkan hadiah pernikahan");
-        data.gift.confirmPackageUrl = whatsappLink(data.gift.whatsappNumber, "Halo saya telah mengirimkan kado");
+        
+        const firstBankWa = (data.gift.accounts && data.gift.accounts[0] && data.gift.accounts[0].whatsapp) || data.gift.whatsappNumber;
+        data.gift.confirmPackageUrl = firstBankWa ? whatsappLink(firstBankWa, "Halo saya telah mengirimkan kado") : "";
         return data;
     }
 
@@ -405,8 +406,10 @@
 
     function buildGiftCards(data) {
         const gift = data.gift;
-        const confirmGift = gift.confirmGiftUrl ? `
-                                <a href="${attrEscape(gift.confirmGiftUrl)}" target="_blank" class="btn-bank btn-wa">
+        const bankWa = bank.whatsapp || gift.whatsappNumber;
+            const confirmUrl = bankWa ? whatsappLink(bankWa, "Halo, saya telah mengirimkan hadiah pernikahan") : "";
+            const confirmGift = confirmUrl ? `
+                                <a href="${attrEscape(confirmUrl)}" target="_blank" class="btn-bank btn-wa">
                                     <i class="fa-brands fa-whatsapp"></i> Konfirmasi WhatsApp
                                 </a>` : "";
         const confirmPackage = gift.confirmPackageUrl ? `
