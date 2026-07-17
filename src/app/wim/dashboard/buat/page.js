@@ -391,8 +391,8 @@ function BuatPage() {
 
       {/* Modal Katalog Tema */}
       {isTemplateModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: 0 }}>
-          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: '100vw', borderRadius: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100vh', maxHeight: '100vh', animation: 'slideUp 0.3s ease-out' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 1000, borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'auto', maxHeight: '85vh', animation: 'slideUp 0.3s ease-out', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
             
             <div style={{ padding: '20px 32px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
               <div>
