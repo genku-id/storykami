@@ -20,7 +20,7 @@ function transformData(flatData) {
     images: {}
   };
 
-  const basic = ['brideName', 'groomName', 'weddingDate', 'weddingDateText', 'audioUrl', 'audioTimestamp', 'brideParents', 'groomParents', 'brideInstagram', 'groomInstagram'];
+  const basic = ['brideName', 'groomName', 'weddingDate', 'weddingDateText', 'audioUrl', 'audioTimestamp', 'brideParents', 'groomParents', 'brideInstagram', 'groomInstagram', 'coverName', 'coverInitials'];
   basic.forEach(k => {
     if (flatData[k] !== undefined && flatData[k] !== '') result[k] = flatData[k];
   });
