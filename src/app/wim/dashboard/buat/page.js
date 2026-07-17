@@ -241,7 +241,7 @@ function BuatPage() {
   if (!session) return null;
 
   return (
-    <div className="page-container" style={{ maxWidth: 640, padding: '16px' }}>
+    <div className="page-container" style={{ maxWidth: 900, padding: '16px 24px' }}>
       {toast && (
         <div className={`toast toast-${toast.type}`}>
           {toast.msg}
