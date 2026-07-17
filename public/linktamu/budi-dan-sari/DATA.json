@@ -1,0 +1,67 @@
+{
+  "projectName": "budi-dan-sari",
+  "guestName": "Nama Tamu",
+  "brideName": "Dika",
+  "groomName": "Riyan",
+  "brideParents": "Putri Pertama dari\nBapak Lorem Dan Ibu Ipsum",
+  "groomParents": "Putra Pertama dari\nBapak Lorem Dan Ibu Ipsum",
+  "brideInstagram": "akun_dika",
+  "groomInstagram": "akun_riyan",
+  "weddingDate": "2026-12-12",
+  "weddingDateText": "12 Desember 2026",
+  "audioUrl": "https://youtu.be/QcuAbb3fpcI?si=JNZOui3-_zrV8SsG",
+  "brandName": "StoryKami",
+  "footerInstagramUrl": "#",
+  "footerWhatsappUrl": "#",
+  "sections": {
+    "profiles": true,
+    "quote": true,
+    "events": true,
+    "loveStory": true,
+    "gift": true,
+    "guestbook": true,
+    "closing": true,
+    "footer": true
+  },
+  "events": [],
+  "stories": [
+    {
+      "title": "Awal Pertemuan",
+      "date": "4 Februari 2019",
+      "text": "Takdir mempertemukan kami di sebuah acara kampus. Awalnya hanya sebatas perkenalan biasa, namun tawa dan obrolan ringan malam itu menyisakan kesan yang tak biasa. Dari sana, segalanya mulai berubah."
+    },
+    {
+      "title": "Langkah Pertama",
+      "date": "10 Maret 2019",
+      "text": "Setelah beberapa kali saling bertukar cerita, akhirnya keberanian itu muncul. Sebuah ajakan sederhana untuk makan siang berdua menjadi langkah awal dari kisah kami. Sejak hari itu, waktu terasa lebih berharga saat dihabiskan bersama."
+    },
+    {
+      "title": "Ujian Waktu",
+      "date": "7 November 2021",
+      "text": "Hubungan kami tak selalu mudah. Jarak, waktu, dan kesibukan sempat membuat semuanya terasa sulit. Tapi justru di sanalah kami belajar tentang kesabaran, pengertian, dan komitmen. Setiap rindu dan air mata menjadi bukti bahwa cinta ini layak diperjuangkan."
+    }
+  ],
+  "gift": {
+    "whatsappNumber": "6281234567890",
+    "bank1": {
+      "name": "BCA",
+      "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg",
+      "number": "0012345678",
+      "owner": "DILAN PRATAMA"
+    },
+    "bank2": {
+      "name": "BSI",
+      "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Bank_Syariah_Indonesia.svg",
+      "number": "9876543210",
+      "owner": "MILLEA KHADEEJA"
+    },
+    "physicalAddress": "JL. alamat rumah",
+    "receiver": "alamat kado",
+    "confirmGiftUrl": "https://wa.me/6281234567890?text=Halo%20saya%20telah%20mengirimkan%20hadiah%20pernikahan",
+    "confirmPackageUrl": "https://wa.me/6281234567890?text=Halo%20saya%20telah%20mengirimkan%20kado"
+  },
+  "images": {},
+  "coupleName": "Dika & Riyan",
+  "calendarUrl": "",
+  "countdownAt": "2026-12-12T09:00:00+07:00"
+}

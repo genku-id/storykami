@@ -15,7 +15,13 @@ const formatBankName = (bankName) => {
   return `BANK ${name}`;
 };
 
-export default function Floral2Template({ data }) {
+export default function Floral2Template({ data: rawData }) {
+  // Normalize data field names since the dashboard updated them
+  const data = {
+    ...rawData,
+    hal2_tanggalAcara: rawData.weddingDate || rawData.hal2_tanggalAcara || '',
+    hal1_youtubeLink: rawData.audioUrl || rawData.hal1_youtubeLink || ''
+  };
   const [showCover, setShowCover] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ hari: '00', jam: '00', menit: '00', detik: '00' });
@@ -211,7 +217,8 @@ export default function Floral2Template({ data }) {
                       fs: 0,
                       cc_load_policy: 0,
                       iv_load_policy: 3,
-                      autohide: 0
+                      autohide: 0,
+                      start: data.audioTimestamp || 0
                     }
                   });
                 };
