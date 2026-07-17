@@ -406,12 +406,7 @@
 
     function buildGiftCards(data) {
         const gift = data.gift;
-        const bankWa = bank.whatsapp || gift.whatsappNumber;
-            const confirmUrl = bankWa ? whatsappLink(bankWa, "Halo, saya telah mengirimkan hadiah pernikahan") : "";
-            const confirmGift = confirmUrl ? `
-                                <a href="${attrEscape(confirmUrl)}" target="_blank" class="btn-bank btn-wa">
-                                    <i class="fa-brands fa-whatsapp"></i> Konfirmasi WhatsApp
-                                </a>` : "";
+
         const confirmPackage = gift.confirmPackageUrl ? `
                             <a href="${attrEscape(gift.confirmPackageUrl)}" target="_blank" class="btn-bank btn-wa px-4 py-2">
                                 <i class="fa-brands fa-whatsapp"></i> Konfirmasi WhatsApp
@@ -419,6 +414,12 @@
 
         const accountCards = getGiftAccounts(gift).map((bank, index) => {
             const rekId = `rek-gift-${index + 1}`;
+            const bankWa = bank.whatsapp || gift.whatsappNumber;
+            const confirmUrl = bankWa ? whatsappLink(bankWa, "Halo, saya telah mengirimkan hadiah pernikahan") : "";
+            const confirmGift = confirmUrl ? `
+                                <a href="${attrEscape(confirmUrl)}" target="_blank" class="btn-bank btn-wa">
+                                    <i class="fa-brands fa-whatsapp"></i> Konfirmasi WhatsApp
+                                </a>` : "";
             return `
                 <div class="bank-card${index > 0 ? " mt-4" : ""}">
                     <div class="card-top-row">
