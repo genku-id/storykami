@@ -268,6 +268,21 @@
         return stories.map(normalizeStory).filter(hasStoryContent);
     }
 
+    function getBankLogo(bankName) {
+        if (!bankName) return null;
+        const name = bankName.toUpperCase().trim();
+        const svgBanks = ["BCA", "BRI", "DANA", "GOPAY", "LINKAJA", "OVO"];
+        const pngBanks = ["BLU", "BNI", "BSI", "CIMB", "JAGO", "JENIUS", "MANDIRI", "NEO", "PERMATA", "SEABANK", "SHOPEEPAY"];
+        
+        for (const b of svgBanks) {
+            if (name.includes(b)) return "/banks/" + b + ".svg";
+        }
+        for (const b of pngBanks) {
+            if (name.includes(b)) return "/banks/" + b + ".png";
+        }
+        return null;
+    }
+
     function getGiftAccounts(gift) {
         if (Array.isArray(gift.accounts) && gift.accounts.length > 0) {
             return gift.accounts.filter((bank) => {
@@ -406,7 +421,7 @@
                     <div class="card-top-row">
                         <h3 class="bank-card-title">Wedding Gift</h3>
                         <div class="bank-logo-container">
-                            ${bank.logoUrl ? `<img src="${attrEscape(bank.logoUrl)}" alt="${attrEscape(bank.name || "Bank")}" class="bank-logo">` : `<strong>${htmlEscape(bank.name || "Bank")}</strong>`}
+                            ${(bank.logoUrl || getBankLogo(bank.name)) ? `<img src="${attrEscape(bank.logoUrl || getBankLogo(bank.name))}" alt="${attrEscape(bank.name || "Bank")}" class="bank-logo">` : `<strong>${htmlEscape(bank.name || "Bank")}</strong>`}
                             <hr class="bank-divider">
                         </div>
                     </div>
