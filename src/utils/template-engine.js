@@ -332,8 +332,8 @@
         data.calendarUrl = calendarUrl(data);
         data.countdownAt = data.weddingDate ? `${data.weddingDate}T${(data.events[0] && data.events[0].startTime) || "09:00"}:00+07:00` : "";
         
-        const firstBankWa = (data.gift.accounts && data.gift.accounts[0] && data.gift.accounts[0].whatsapp) || data.gift.whatsappNumber;
-        data.gift.confirmPackageUrl = firstBankWa ? whatsappLink(firstBankWa, "Halo saya telah mengirimkan kado") : "";
+        const physicalWa = data.gift.physicalWhatsapp || data.gift.whatsappNumber;
+        data.gift.confirmPackageUrl = physicalWa ? whatsappLink(physicalWa, "Halo saya telah mengirimkan kado fisik") : "";
         return data;
     }
 
