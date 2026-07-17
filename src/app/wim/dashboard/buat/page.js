@@ -241,7 +241,7 @@ function BuatPage() {
   if (!session) return null;
 
   return (
-    <div className="page-container" style={{ maxWidth: '100%', margin: '0 auto', padding: '16px 24px' }}>
+    <div className="page-container" style={{ maxWidth: '100%', margin: '0 auto', padding: '16px 24px', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column' }}>
       {toast && (
         <div className={`toast toast-${toast.type}`}>
           {toast.msg}
@@ -249,24 +249,24 @@ function BuatPage() {
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <button
           onClick={() => router.push('/wim/dashboard')}
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'var(--font-outfit)' }}
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600, fontFamily: 'var(--font-outfit)' }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Batal
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Kembali
         </button>
         <div>
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-outfit)', margin: 0 }}>
-            Pengaturan Awal
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-outfit)', margin: 0 }}>
+            Pengaturan Awal Undangan
           </h1>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 2 }}>Lengkapi data dasar sebelum mendesain undangan</p>
         </div>
       </div>
 
-      {/* Compact Form */}
-      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 12, padding: 16, marginBottom: 20 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ background: 'var(--bg-card)', borderRadius: 16, border: '1px solid var(--border)', padding: '24px 32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, flex: 1 }}>
           
           <FieldGroup label="Tema Undangan *">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -392,15 +392,15 @@ function BuatPage() {
 
       {/* Modal Katalog Tema */}
       {isTemplateModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: '24px' }}>
-          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 1000, borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '85vh', maxHeight: 800, boxShadow: '0 20px 40px rgba(0,0,0,0.3)', animation: 'slideUp 0.3s ease-out' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: 0 }}>
+          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: '100vw', borderRadius: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100vh', maxHeight: '100vh', animation: 'slideUp 0.3s ease-out' }}>
             
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
+            <div style={{ padding: '20px 32px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)', fontWeight: 800 }}>Katalog Tema Undangan</h3>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 4 }}>Pilih kategori dan temukan desain yang paling cocok</p>
+                <h3 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)', fontWeight: 800 }}>Katalog Tema Undangan</h3>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: 4 }}>Pilih kategori dan temukan desain yang paling cocok untuk kerjamu</p>
               </div>
-              <button onClick={() => setIsTemplateModalOpen(false)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.5rem', cursor: 'pointer', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', transition: '0.2s' }}>&times;</button>
+              <button onClick={() => setIsTemplateModalOpen(false)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.8rem', cursor: 'pointer', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', transition: '0.2s' }}>&times;</button>
             </div>
 
             <div style={{ display: 'flex', gap: 12, padding: '16px 24px', borderBottom: '1px solid var(--border)', overflowX: 'auto', flexShrink: 0, background: 'var(--bg-card)', scrollbarWidth: 'none' }}>
