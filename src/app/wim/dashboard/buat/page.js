@@ -241,7 +241,7 @@ function BuatPage() {
   if (!session) return null;
 
   return (
-    <div className="page-container" style={{ maxWidth: 900, padding: '16px 24px' }}>
+    <div className="page-container" style={{ maxWidth: '100%', margin: '0 auto', padding: '16px 24px' }}>
       {toast && (
         <div className={`toast toast-${toast.type}`}>
           {toast.msg}
@@ -382,6 +382,7 @@ function BuatPage() {
 
       {/* Action */}
       <button onClick={handleSubmit} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '10px 16px', fontSize: '0.9rem', borderRadius: 8 }}>
+      <button onClick={handleSubmit} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '12px 16px', fontSize: '1rem', borderRadius: 8, marginTop: 24 }}>
         {isLoading ? (
           <><div className="spinner" style={{ width: 16, height: 16 }} /> Mempersiapkan...</>
         ) : (
@@ -391,27 +392,26 @@ function BuatPage() {
 
       {/* Modal Katalog Tema */}
       {isTemplateModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 640, borderTopLeftRadius: 20, borderTopRightRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '85vh', boxShadow: '0 -10px 40px rgba(0,0,0,0.3)', animation: 'slideUp 0.3s ease-out' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 1000, borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '85vh', maxHeight: 800, boxShadow: '0 20px 40px rgba(0,0,0,0.3)', animation: 'slideUp 0.3s ease-out' }}>
             
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)' }}>Katalog Tema Undangan</h3>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>Pilih kategori dan temukan desain yang tepat</p>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)', fontWeight: 800 }}>Katalog Tema Undangan</h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 4 }}>Pilih kategori dan temukan desain yang paling cocok</p>
               </div>
-              <button onClick={() => setIsTemplateModalOpen(false)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.4rem', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>&times;</button>
+              <button onClick={() => setIsTemplateModalOpen(false)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.5rem', cursor: 'pointer', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', transition: '0.2s' }}>&times;</button>
             </div>
 
-            <div style={{ display: 'flex', gap: 8, padding: '12px 16px', borderBottom: '1px solid var(--border)', overflowX: 'auto', flexShrink: 0, background: 'var(--bg-card)', scrollbarWidth: 'none' }}>
+            <div style={{ display: 'flex', gap: 12, padding: '16px 24px', borderBottom: '1px solid var(--border)', overflowX: 'auto', flexShrink: 0, background: 'var(--bg-card)', scrollbarWidth: 'none' }}>
               {TEMPLATE_CATEGORIES.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
-                    padding: '8px 16px', borderRadius: 20, border: 'none', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-                    background: activeCategory === cat.id ? 'var(--accent)' : 'var(--bg-secondary)',
-                    color: activeCategory === cat.id ? '#fff' : 'var(--text-secondary)',
-                    transition: '0.2s'
+                    padding: '8px 20px', borderRadius: 24, border: 'none', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', transition: '0.2s',
+                    background: activeCategory === cat.id ? 'var(--text-primary)' : 'var(--bg-secondary)',
+                    color: activeCategory === cat.id ? 'var(--bg-card)' : 'var(--text-secondary)'
                   }}
                 >
                   {cat.name}
@@ -419,9 +419,9 @@ function BuatPage() {
               ))}
             </div>
 
-            <div style={{ padding: 20, overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 16, background: 'var(--bg-secondary)', paddingBottom: 40 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 24, alignContent: 'start' }}>
               {TEMPLATE_CATEGORIES.find(c => c.id === activeCategory)?.templates.map(t => (
-                <div
+                <div 
                   key={t.val}
                   onClick={() => {
                     setTemplateName(t.val);
@@ -429,21 +429,20 @@ function BuatPage() {
                     if (errors.templateName) setErrors(p => ({ ...p, templateName: null }));
                   }}
                   style={{
-                    cursor: 'pointer', borderRadius: 12, border: `2px solid ${templateName === t.val ? 'var(--accent)' : 'transparent'}`, padding: 6,
-                    background: templateName === t.val ? 'var(--bg-card)' : 'transparent', transition: '0.2s'
+                    cursor: 'pointer', borderRadius: 16, border: `2px solid ${templateName === t.val ? 'var(--text-primary)' : 'transparent'}`, padding: 8,
+                    background: templateName === t.val ? 'var(--bg-card)' : 'transparent', transition: '0.2s',
+                    boxShadow: templateName === t.val ? '0 8px 20px rgba(0,0,0,0.08)' : 'none'
                   }}
                 >
-                  <div style={{ width: '100%', height: 180, borderRadius: 8, overflow: 'hidden', background: 'var(--bg-card)', border: '1px solid var(--border)', marginBottom: 10, position: 'relative' }}>
+                  <div style={{ width: '100%', aspectRatio: '9/16', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-card)', border: '1px solid var(--border)', marginBottom: 12, position: 'relative' }}>
                     <img src={t.img} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {templateName === t.val && (
-                      <div style={{ position: 'absolute', top: 8, right: 8, background: 'var(--accent)', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      <div style={{ position: 'absolute', top: 12, right: 12, background: 'var(--text-primary)', color: 'var(--bg-card)', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                       </div>
                     )}
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: '0.8rem', color: templateName === t.val ? 'var(--accent)' : 'var(--text-primary)', textAlign: 'center', lineHeight: 1.2 }}>
-                    {t.name}
-                  </div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, textAlign: 'center', color: 'var(--text-primary)' }}>{t.name}</div>
                 </div>
               ))}
             </div>
