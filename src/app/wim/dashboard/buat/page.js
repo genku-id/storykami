@@ -315,7 +315,7 @@ function BuatPage() {
           </FieldGroup>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-            <FieldGroup label="Judul Link (Opsional)">
+            <FieldGroup label="Judul Link">
               <input 
                 className="wim-input" 
                 style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
@@ -324,7 +324,7 @@ function BuatPage() {
                 onChange={e => setThumbnailJudul(e.target.value)} 
               />
             </FieldGroup>
-            <FieldGroup label="Deskripsi Link (Opsional)">
+            <FieldGroup label="Deskripsi Link">
               <input 
                 className="wim-input" 
                 style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
@@ -343,7 +343,7 @@ function BuatPage() {
                 onChange={(e) => setUseCustomThumbnail(e.target.checked)} 
                 style={{ width: 16, height: 16, accentColor: 'var(--text-primary)' }}
               />
-              Ganti Gambar Thumbnail Default (Opsional)
+              Ganti Gambar Thumbnail Default
             </label>
             {useCustomThumbnail && (
               <div style={{ marginTop: 16, borderTop: '1px dashed var(--border)', paddingTop: 16 }}>
