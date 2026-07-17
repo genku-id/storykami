@@ -195,9 +195,10 @@ export default function Floral1Template({ data }) {
             <Script
               id="youtube-api"
               src="https://www.youtube.com/iframe_api"
-              onReady={() => {
-                window.onYouTubeIframeAPIReady = () => {
-                  window.player = new YT.Player('youtube-audio-player', {
+              strategy="afterInteractive"
+              onLoad={() => {
+                const initPlayer = () => {
+                  window.player = new window.YT.Player('youtube-audio-player', {
                     height: '0',
                     width: '0',
                     videoId: ytId,
@@ -214,7 +215,12 @@ export default function Floral1Template({ data }) {
                     }
                   });
                 };
-                if (window.YT && window.YT.Player) window.onYouTubeIframeAPIReady();
+
+                if (window.YT && window.YT.Player) {
+                  initPlayer();
+                } else {
+                  window.onYouTubeIframeAPIReady = initPlayer;
+                }
               }}
             />
           </div>
