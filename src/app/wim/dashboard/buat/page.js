@@ -418,7 +418,7 @@ function BuatPage() {
               ))}
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 24, alignContent: 'start' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 16, alignContent: 'start' }}>
               {TEMPLATE_CATEGORIES.find(c => c.id === activeCategory)?.templates.map(t => (
                 <div 
                   key={t.val}
