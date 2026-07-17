@@ -381,7 +381,6 @@ function BuatPage() {
       </div>
 
       {/* Action */}
-      <button onClick={handleSubmit} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '10px 16px', fontSize: '0.9rem', borderRadius: 8 }}>
       <button onClick={handleSubmit} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '12px 16px', fontSize: '1rem', borderRadius: 8, marginTop: 24 }}>
         {isLoading ? (
           <><div className="spinner" style={{ width: 16, height: 16 }} /> Mempersiapkan...</>
