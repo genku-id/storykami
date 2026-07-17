@@ -575,9 +575,19 @@
         html = replaceNth(html, /(<div class="social-icons mt-3">[\s\S]*?<a href="[^"]*">[\s\S]*?<\/a>\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerWhatsappUrl || "#")}$2`);
 
         
-        const defaultQuoteText = "Dan Di Antara Tanda-Tanda (Kebesaran)-Nya Ialah Dia Menciptakan Pasangan-Pasangan Untukmu Dari Jenismu Sendiri, Agar Kamu Cenderung Dan Merasa Tenteram Kepadanya, Dan Dia Menjadikan Di Antaramu Rasa Kasih Sayang. Sungguh, Pada Yang Demikian Itu Benar-Benar Terdapat Tanda-Tanda (Kebesaran Allah) Bagi Kaum Yang Berpikir.";
-        const finalQuoteText = data.quoteText || defaultQuoteText;
-        html = html.replace(/(<p class="translation[^>]*>)([\s\S]*?)(<\/p>)/, `$1"${htmlEscape(finalQuoteText)}"$3`);
+        const title = data.quoteTitle || "QS. Ar-Rum Ayat 21";
+        const arabic = data.quoteArabic !== undefined ? data.quoteArabic : "?????? ???????????? ???? ?????? ????? ????? ??????????? ?????????? ??????????????? ????????? ???????? ????????? ?????????? ?????????? ? ????? ??? ??????? ?????????? ????????? ??????????????";
+        const text = data.quoteText || "Dan Di Antara Tanda-Tanda (Kebesaran)-Nya Ialah Dia Menciptakan Pasangan-Pasangan Untukmu Dari Jenismu Sendiri, Agar Kamu Cenderung Dan Merasa Tenteram Kepadanya, Dan Dia Menjadikan Di Antaramu Rasa Kasih Sayang. Sungguh, Pada Yang Demikian Itu Benar-Benar Terdapat Tanda-Tanda (Kebesaran Allah) Bagi Kaum Yang Berpikir.";
+
+        html = html.replace(/(<div class="quote-text[^>]*>[\s\S]*?<h3>)([\s\S]*?)(<\/h3>)/, `$1${htmlEscape(title)}$3`);
+        
+        if (arabic) {
+            html = html.replace(/(<p class="arabic-text[^>]*>)([\s\S]*?)(<\/p>)/, `$1${htmlEscape(arabic)}$3`);
+        } else {
+            html = html.replace(/\s*<p class="arabic-text[^>]*>[\s\S]*?<\/p>/, "");
+        }
+        
+        html = html.replace(/(<p class="translation[^>]*>)([\s\S]*?)(<\/p>)/, `$1"${htmlEscape(text)}"$3`);
 
         if (!data.sections.profiles) html = removeSectionById(html, "profiles");
         if (!data.sections.quote) html = removeSectionById(html, "quote");
