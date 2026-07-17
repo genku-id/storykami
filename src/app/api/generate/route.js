@@ -126,7 +126,7 @@ export async function POST(req) {
         upsert: true
       });
 
-    return NextResponse.json({ success: true, url: `/linktamu/${slug}` });
+    return NextResponse.json({ success: true, url: `/${slug}` });
 
   } catch (error) {
     console.error('API Generate Error:', error);
