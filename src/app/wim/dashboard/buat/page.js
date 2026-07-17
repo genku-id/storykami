@@ -241,7 +241,7 @@ function BuatPage() {
   if (!session) return null;
 
   return (
-    <div className="page-container" style={{ maxWidth: '100%', margin: '0 auto', padding: '16px 24px', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column' }}>
+    <div className="page-container" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto', padding: '16px 24px', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column' }}>
       {toast && (
         <div className={`toast toast-${toast.type}`}>
           {toast.msg}
