@@ -215,7 +215,26 @@
             {
               "id": "name",
               "label": "Nama Bank / E-Wallet (BCA/Dana)",
-              "type": "text"
+              "type": "select",
+              "options": [
+                "BCA",
+                "BLU",
+                "BNI",
+                "BRI",
+                "BSI",
+                "CIMB",
+                "DANA",
+                "GOPAY",
+                "JAGO",
+                "JENIUS",
+                "LINKAJA",
+                "MANDIRI",
+                "NEO",
+                "OVO",
+                "PERMATA",
+                "SEABANK",
+                "SHOPEEPAY"
+              ]
             },
             {
               "id": "number",
