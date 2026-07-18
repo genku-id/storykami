@@ -18,8 +18,8 @@
         weddingDateText: "12 Desember 2026",
         audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
         brandName: "StoryKami",
-        footerInstagramUrl: "#",
-        footerWhatsappUrl: "#",
+        footerInstagramUrl: "https://www.instagram.com/storykami.id?igsh=eWlyY3k2dmFybTI0",
+        footerWhatsappUrl: "https://wa.me/6285179813540",
         sections: {
             profiles: true,
             quote: true,
