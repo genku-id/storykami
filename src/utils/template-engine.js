@@ -505,6 +505,93 @@
         return html.replace("</body>", `${script}\n</body>`);
     }
 
+    // Sisipkan guestbook LIVE (fetch & simpan ucapan ke Supabase) + CSS scroll
+    function injectGuestbookScript(html, data) {
+        const supabaseUrl = ((typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_SUPABASE_URL) || '').replace(/\/rest\/v1\/?$/, '');
+        const supabaseAnon = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || '';
+        const slug = data.slug || data.projectName || '';
+
+        const css = `
+    <style>
+      .comments-list { max-height: 260px; }
+    </style>`;
+
+        const script = `
+    <script>
+    (function () {
+      var SUPABASE_URL = ${JSON.stringify(supabaseUrl)};
+      var SUPABASE_ANON = ${JSON.stringify(supabaseAnon)};
+      var SLUG = ${JSON.stringify(slug)};
+      if (!SUPABASE_URL || !SLUG) return;
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src; s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      function escapeHtml(v) {
+        return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function renderItem(w) {
+        var time = w.created_at ? new Date(w.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' }) : '';
+        return '<div class="comment-item">'
+          + '<img src="/demo/template-floral1/assets/images/logo.png" class="comment-avatar-img" alt="Logo">'
+          + '<div class="comment-bubble">'
+          + '<h4 class="comment-name">' + escapeHtml(w.nama) + '</h4>'
+          + '<p class="comment-text">' + escapeHtml(w.ucapan) + '</p>'
+          + (time ? '<span class="time">' + time + '</span>' : '')
+          + '</div></div>';
+      }
+
+      function updateCount(n) {
+        var c = document.querySelector('.comments-count');
+        if (c) c.innerHTML = '<i class="fa-solid fa-comments"></i> ' + n + ' Ucapan';
+      }
+
+      loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2').then(function () {
+        var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+        var list = document.querySelector('.comments-list');
+        var form = document.getElementById('guestbook-form');
+
+        sb.from('guestbook').select('*').eq('invitation_slug', SLUG).order('created_at', { ascending: false }).then(function (res) {
+          if (res.error) return;
+          var rows = res.data || [];
+          if (list) {
+            list.innerHTML = rows.map(renderItem).join('');
+          }
+          updateCount(rows.length);
+        });
+
+        if (form) {
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var nameInput = form.querySelector('input');
+            var textInput = form.querySelector('textarea');
+            var name = nameInput ? nameInput.value.trim() : '';
+            var text = textInput ? textInput.value.trim() : '';
+            if (!name || !text) return;
+            sb.from('guestbook').insert([{ invitation_slug: SLUG, nama: name, kehadiran: 'Hadir', ucapan: text }]).then(function (r) {
+              if (r.error) { alert('Gagal mengirim ucapan: ' + r.error.message); return; }
+              if (list) list.insertAdjacentHTML('afterbegin', renderItem({ nama: name, ucapan: text, created_at: new Date().toISOString() }));
+              var cur = parseInt((document.querySelector('.comments-count') || {}).textContent) || 0;
+              updateCount(cur + 1);
+              form.reset();
+              if (typeof showCustomToast === 'function') showCustomToast('Ucapan Terkirim!');
+              else alert('Ucapan Terkirim!');
+            });
+          });
+        }
+      });
+    })();
+    <\/script>`;
+
+        return html.replace("</body>", `${css}\n${script}\n</body>`);
+    }
+
     function buildHtml(templateHtml, rawData) {
         const data = normalizeData(rawData);
         let html = templateHtml;
@@ -616,6 +703,7 @@
         // Bust browser cache for script.js by adding a timestamp
         html = html.replace(/assets\/js\/script\.js\?v=\d+/, `assets/js/script.js?v=${Date.now()}`);
 
+        html = injectGuestbookScript(html, data);
         return injectGuestQueryScript(html);
     }
 
