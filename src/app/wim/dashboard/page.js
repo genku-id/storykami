@@ -64,23 +64,23 @@ export default function DashboardPage() {
     const sStr = localStorage.getItem('wim_session');
     if (!sStr) { router.replace('/wim/login'); return; }
     const s = JSON.parse(sStr);
-    
+
     // Set default if empty
     if (!s.joinDate) s.joinDate = new Date().toISOString();
     setSession(s);
-    
+
     // Fetch all invitations
     const { data } = await supabase.from('invitations').select('*').order('created_at', { ascending: false });
-    
+
     if (data) {
       // Filter out system config and resellers
       let filteredData = data.filter(inv => !inv.slug.startsWith('_'));
-      
+
       // Filter by reseller if not admin
       if (!s.isAdmin) {
         filteredData = filteredData.filter(inv => inv.data?.resellerEmail === s.email);
       }
-      
+
       setInvitations(filteredData.map(inv => ({
         id: inv.id,
         slug: inv.slug,
@@ -98,7 +98,21 @@ export default function DashboardPage() {
 
   const confirmDeleteAction = async () => {
     if (!confirmDelete) return;
-    await supabase.from('invitations').delete().eq('id', confirmDelete.id);
+    try {
+      const res = await fetch('/api/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: confirmDelete.slug }),
+      });
+      const resData = await res.json();
+      if (!res.ok) {
+        showToast(`Gagal hapus: ${resData.error}`, 'error');
+        return;
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan sistem', 'error');
+      return;
+    }
     setConfirmDelete(null);
     load();
     showToast(`Undangan berhasil dihapus.`, 'success');

@@ -4,8 +4,13 @@ import Script from 'next/script';
 import Guestbook from '@/components/Guestbook';
 
 const getBankLogo = (bankName) => {
+  if (!bankName) return null;
   const name = (bankName || '').toUpperCase().trim();
-  return `/banks/${name}.png`;
+  const banks = ["BCA", "BLU", "BNI", "BRI", "BSI", "CIMB", "DANA", "GOPAY", "JAGO", "JENIUS", "LINKAJA", "MANDIRI", "NEO", "OVO", "PERMATA", "SEABANK", "SHOPEEPAY"];
+  for (const b of banks) {
+    if (name.includes(b)) return `/banks/${b}.webp`;
+  }
+  return null;
 };
 
 const formatBankName = (bankName) => {
@@ -17,11 +22,71 @@ const formatBankName = (bankName) => {
 
 export default function Floral1Template({ data: rawData }) {
   // Normalize data field names since the dashboard updated them
+  // Normalisasi: editor & engine menggunakan field standar (coverName, weddingDate,
+  // audioUrl, brideName, events[], stories[], gift{}). Komponen ini menggunakan
+  // konvensi hal1_*..hal9_*. Kita petakan keduanya agar kompatibel ke belakang & depan.
+  const events = rawData.events || [];
+  const stories = rawData.stories || [];
+  const gift = rawData.gift || {};
+  const giftAccounts = Array.isArray(gift.accounts) && gift.accounts.length
+    ? gift.accounts
+    : [gift.bank1, gift.bank2].filter(Boolean);
+
+  const coupleName = rawData.coverName || rawData.coupleName || `${rawData.brideName || ''} & ${rawData.groomName || ''}`.trim();
+  const weddingDateText = rawData.weddingDateText || rawData.weddingDate || '';
+
   const data = {
     ...rawData,
-    hal2_tanggalAcara: rawData.weddingDate || rawData.hal2_tanggalAcara || '',
-    hal1_youtubeLink: rawData.audioUrl || rawData.hal1_youtubeLink || ''
+    hal1_namaPasangan: coupleName || rawData.hal1_namaPasangan,
+    hal1_youtubeLink: rawData.audioUrl || rawData.hal1_youtubeLink,
+    hal2_tanggalAcara: weddingDateText || rawData.hal2_tanggalAcara,
+    hal2_fotoCouple: rawData.coupleImage || rawData.hal2_fotoCouple,
+    hal3_namaWanita: rawData.brideName || rawData.hal3_namaWanita,
+    hal3_ortuWanita: rawData.brideParents || rawData.hal3_ortuWanita,
+    hal3_igWanita: rawData.brideInstagram || rawData.hal3_igWanita,
+    hal3_fotoWanita: rawData.brideImage || rawData.hal3_fotoWanita,
+    hal3_namaPria: rawData.groomName || rawData.hal3_namaPria,
+    hal3_ortuPria: rawData.groomParents || rawData.hal3_ortuPria,
+    hal3_igPria: rawData.groomInstagram || rawData.hal3_igPria,
+    hal3_fotoPria: rawData.groomImage || rawData.hal3_fotoPria,
+    hal3_kataPengantar: rawData.openingText || rawData.hal3_kataPengantar,
+    hal4_deskripsi: rawData.quoteText || rawData.quote || rawData.hal4_deskripsi,
+    hal5_acara: events.map(e => ({
+      nama: e.title,
+      tanggal: e.dateText || (e.date ? e.date : ''),
+      jam: e.timeText || (e.startTime ? `Pukul ${e.startTime.replace(':','.')} WIB` : ''),
+      alamat: [e.locationName, e.address].filter(Boolean).join(' '),
+      maps: e.mapsUrl
+    })),
+    hal6_cerita: stories.map(s => ({ judul: s.title, deskripsi: s.text, tanggal: s.date })),
+    hal7_bank: giftAccounts.map(b => ({
+      namaBank: b.name,
+      rekening: b.number,
+      atasNama: b.owner,
+      wa: b.whatsapp
+    })),
+    hal7_alamatKado: gift.physicalAddress || (gift.receiver ? `${gift.physicalAddress} - ${gift.receiver}` : ''),
+    hal7_waKado: gift.physicalWhatsapp || gift.whatsappNumber,
+    hal8_deskripsi: rawData.closingText || rawData.hal8_deskripsi,
+    slug: rawData.slug
   };
+
+  // Petakan toggle sections (engine) -> show_hal* (komponen)
+  const sections = rawData.sections || {};
+  const sectionMap = {
+    cover: 'show_hal1',
+    hero: 'show_hal2',
+    profiles: 'show_hal3',
+    quote: 'show_hal4',
+    events: 'show_hal5',
+    loveStory: 'show_hal6',
+    gift: 'show_hal7',
+    guestbook: 'show_hal9',
+    closing: 'show_hal8'
+  };
+  Object.keys(sectionMap).forEach(key => {
+    if (sections[key] === false) data[sectionMap[key]] = false;
+  });
   const [showCover, setShowCover] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ hari: '00', jam: '00', menit: '00', detik: '00' });
@@ -541,7 +606,7 @@ export default function Floral1Template({ data: rawData }) {
                     <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3.5rem', color: 'black' }}>Terima Kasih</h1>
                     <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text-dark)', maxWidth: '320px', margin: '0 auto', fontWeight: 500 }}>
                         <p>{data.hal8_deskripsi || "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami."}</p>
-                        <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+                        <p className="mt-3">Wassalamu&apos;alaikum Wr. Wb.</p>
                     </div>
                     
                     <h1 id="closing-couple-names" className="title-names mt-4" data-animate="fade-up" style={{ animationDelay: '0.2s' }}>{data.hal1_namaPasangan || "Nama Pasangan"}</h1>

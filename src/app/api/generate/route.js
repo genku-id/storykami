@@ -12,37 +12,39 @@ const supabaseAdmin = createClient(
 
 const BUCKET = 'linktamu';
 
-// Transform flat form data to nested JSON for engine
+// The editor stores data already in the engine's nested shape (defined by schema.json),
+// e.g. coverName, brideName, weddingDate, events[], stories[], gift{accounts[]}, etc.
+// We only need to ensure a few wrapper fields exist and forward everything else verbatim
+// so the engine's normalizeData/migrateInput can process it.
 function transformData(flatData) {
-  const result = {
-    events: [],
-    gift: { bank1: {}, bank2: {} },
-    images: {}
-  };
+  const result = Object.assign({}, flatData);
 
-  const basic = ['brideName', 'groomName', 'weddingDate', 'weddingDateText', 'audioUrl', 'audioTimestamp', 'brideParents', 'groomParents', 'brideInstagram', 'groomInstagram', 'coverName', 'coverInitials'];
-  basic.forEach(k => {
-    if (flatData[k] !== undefined && flatData[k] !== '') result[k] = flatData[k];
-  });
+  // Pastikan struktur dasar ada agar engine tidak error
+  if (!result.gift || typeof result.gift !== 'object') {
+    result.gift = { bank1: {}, bank2: {}, accounts: [] };
+  }
+  if (!Array.isArray(result.events)) result.events = [];
+  if (!Array.isArray(result.stories)) result.stories = [];
 
-  const akad = {}; const resepsi = {};
+  // Dukung juga format lama (flat akad_/resepsi_/gift_*) bila masih digunakan
+  const akad = {};
+  const resepsi = {};
   Object.keys(flatData).forEach(k => {
     if (k.startsWith('akad_')) akad[k.replace('akad_', '')] = flatData[k];
     if (k.startsWith('resepsi_')) resepsi[k.replace('resepsi_', '')] = flatData[k];
   });
-  if (Object.keys(akad).length > 0) result.events.push(akad);
-  if (Object.keys(resepsi).length > 0) result.events.push(resepsi);
+  if (Object.keys(akad).length > 0 && result.events.length === 0) result.events.push(akad);
+  if (Object.keys(resepsi).length > 0 && result.events.length === 0) result.events.push(resepsi);
 
-  Object.keys(flatData).forEach(k => {
-    if (k.startsWith('gift_bank1_')) result.gift.bank1[k.replace('gift_bank1_', '')] = flatData[k];
-    else if (k.startsWith('gift_bank2_')) result.gift.bank2[k.replace('gift_bank2_', '')] = flatData[k];
-    else if (k.startsWith('gift_')) result.gift[k.replace('gift_', '')] = flatData[k];
-  });
+  if (!result.gift.accounts || !Array.isArray(result.gift.accounts)) {
+    if (result.gift.bank1 || result.gift.bank2) {
+      result.gift.accounts = [result.gift.bank1, result.gift.bank2].filter(Boolean);
+    } else {
+      result.gift.accounts = [];
+    }
+  }
 
-  if (flatData.coverFoto) result.images.coverFoto = flatData.coverFoto;
-  if (flatData.coupleFoto) result.images.coupleFoto = flatData.coupleFoto;
-
-  result.projectName = flatData.slug || 'undangan';
+  result.projectName = flatData.slug || result.projectName || 'undangan';
   return result;
 }
 

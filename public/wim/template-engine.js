@@ -556,8 +556,13 @@
             html = html.replace(/\s*<a href="[^"]*" target="_blank" class="btn-secondary mt-4"[\s\S]*?<\/a>/, "");
         }
 
-        html = html.replace(/<img src="assets\/images\/bride\.png" alt="[^"]*">/, `<img src="assets/images/bride.png" alt="${attrEscape(data.brideName)}">`);
-        html = html.replace(/<img src="assets\/images\/groom\.png" alt="[^"]*">/, `<img src="assets/images/groom.png" alt="${attrEscape(data.groomName)}">`);
+        const coupleSrc = data.coupleImage && /^https?:\/\//.test(data.coupleImage) ? data.coupleImage : "assets/images/couple.png";
+        const brideSrc = data.brideImage && /^https?:\/\//.test(data.brideImage) ? data.brideImage : "assets/images/bride.png";
+        const groomSrc = data.groomImage && /^https?:\/\//.test(data.groomImage) ? data.groomImage : "assets/images/groom.png";
+
+        html = html.replace(/(<img src=")assets\/images\/bride\.png(" alt="[^"]*")([^>]*>)/, `$1${attrEscape(brideSrc)}$2 alt="${attrEscape(data.brideName)}"$3`);
+        html = html.replace(/(<img src=")assets\/images\/groom\.png(" alt="[^"]*")([^>]*>)/, `$1${attrEscape(groomSrc)}$2 alt="${attrEscape(data.groomName)}"$3`);
+        html = html.replace(/(<img src=")assets\/images\/couple\.png(" alt="[^"]*")([^>]*>)/g, `$1${attrEscape(coupleSrc)}$2 alt="${attrEscape(data.coupleName || data.coverName || "Pasangan")}"$3`);
         html = replaceNth(html, /(<h2 class="title-names mt-3"[^>]*>)[\s\S]*?(<\/h2>)/g, 0, `$1${htmlEscape(data.brideName)}$2`);
         html = replaceNth(html, /(<h2 class="title-names mt-3"[^>]*>)[\s\S]*?(<\/h2>)/g, 1, `$1${htmlEscape(data.groomName)}$2`);
         html = replaceNth(html, /(<p class="parents"[^>]*>)[\s\S]*?(<\/p>)/g, 0, data.brideParents ? `$1${linesToHtml(data.brideParents)}$2` : "");
@@ -593,7 +598,7 @@
         html = replaceNth(html, /(<div class="social-icons mt-3">[\s\S]*?<a href="[^"]*">[\s\S]*?<\/a>\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerWhatsappUrl || "#")}$2`);
 
         
-        const rawQuote = data.quoteText || "?????? ????????? ???? ?????? ?????? ????? ???????????? ?????????? ??????????????? ????????? ?????????????????? ?????????? ???????????\n\n\"Dan Di Antara Tanda-Tanda (Kebesaran)-Nya Ialah Dia Menciptakan Pasangan-Pasangan Untukmu Dari Jenismu Sendiri, Agar Kamu Cenderung Dan Merasa Tenteram Kepadanya, Dan Dia Menjadikan Di Antaramu Rasa Kasih Sayang. Sungguh, Pada Yang Demikian Itu Benar-Benar Terdapat Tanda-Tanda (Kebesaran Allah) Bagi Kaum Yang Berpikir.\"";
+        const rawQuote = data.quoteText || "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ\n\n\"Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.\"";
         
         let quoteHtml = rawQuote.split("\n").map(line => {
             if (!line.trim()) return "";

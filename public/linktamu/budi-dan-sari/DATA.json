@@ -1,12 +1,14 @@
 {
   "projectName": "budi-dan-sari",
   "guestName": "Nama Tamu",
-  "brideName": "Dika",
-  "groomName": "Riyan",
+  "coverName": "Budi & Sari",
+  "coverInitials": "BS",
+  "brideName": "Sari",
+  "groomName": "Budi",
   "brideParents": "Putri Pertama dari\nBapak Lorem Dan Ibu Ipsum",
   "groomParents": "Putra Pertama dari\nBapak Lorem Dan Ibu Ipsum",
-  "brideInstagram": "akun_dika",
-  "groomInstagram": "akun_riyan",
+  "brideInstagram": "akun_sari",
+  "groomInstagram": "akun_budi",
   "weddingDate": "2026-12-12",
   "weddingDateText": "12 Desember 2026",
   "audioUrl": "https://youtu.be/QcuAbb3fpcI?si=JNZOui3-_zrV8SsG",
@@ -23,7 +25,28 @@
     "closing": true,
     "footer": true
   },
-  "events": [],
+  "events": [
+    {
+      "title": "Akad Nikah",
+      "date": "2026-12-12",
+      "dateText": "Sabtu, 12 Desember 2026",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "locationName": "Masjid Agung Al-Hikmah",
+      "address": "Jl. Contoh Alamat No. 123, Kota, Provinsi",
+      "mapsUrl": "https://maps.google.com"
+    },
+    {
+      "title": "Resepsi",
+      "date": "2026-12-12",
+      "dateText": "Sabtu, 12 Desember 2026",
+      "startTime": "11:00",
+      "endTime": "14:00",
+      "locationName": "Hotel Amaris",
+      "address": "Jl. Karet Pasar Baru Barat V No.92, Jakarta Pusat",
+      "mapsUrl": "https://maps.google.com"
+    }
+  ],
   "stories": [
     {
       "title": "Awal Pertemuan",
@@ -43,6 +66,20 @@
   ],
   "gift": {
     "whatsappNumber": "6281234567890",
+    "accounts": [
+      {
+        "name": "BCA",
+        "number": "0012345678",
+        "owner": "DILAN PRATAMA",
+        "whatsapp": "6281234567890"
+      },
+      {
+        "name": "BSI",
+        "number": "9876543210",
+        "owner": "MILLEA KHADEEJA",
+        "whatsapp": "6281234567890"
+      }
+    ],
     "bank1": {
       "name": "BCA",
       "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg",
@@ -57,11 +94,10 @@
     },
     "physicalAddress": "JL. alamat rumah",
     "receiver": "alamat kado",
-    "confirmGiftUrl": "https://wa.me/6281234567890?text=Halo%20saya%20telah%20mengirimkan%20hadiah%20pernikahan",
-    "confirmPackageUrl": "https://wa.me/6281234567890?text=Halo%20saya%20telah%20mengirimkan%20kado"
+    "physicalWhatsapp": "6281234567890"
   },
   "images": {},
-  "coupleName": "Dika & Riyan",
+  "coupleName": "Budi & Sari",
   "calendarUrl": "",
   "countdownAt": "2026-12-12T09:00:00+07:00"
 }
