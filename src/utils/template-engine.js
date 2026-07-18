@@ -524,14 +524,6 @@
       var SLUG = ${JSON.stringify(slug)};
       if (!SUPABASE_URL || !SLUG) return;
 
-      function loadScript(src) {
-        return new Promise(function (resolve, reject) {
-          var s = document.createElement('script');
-          s.src = src; s.onload = resolve; s.onerror = reject;
-          document.head.appendChild(s);
-        });
-      }
-
       function escapeHtml(v) {
         return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
@@ -552,40 +544,50 @@
         if (c) c.innerHTML = '<i class="fa-solid fa-comments"></i> ' + n + ' Ucapan';
       }
 
-      loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2').then(function () {
-        var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-        var list = document.querySelector('.comments-list');
-        var form = document.getElementById('guestbook-form');
+      function api(path, opts) {
+        opts = opts || {};
+        opts.headers = Object.assign({
+          'apikey': SUPABASE_ANON,
+          'Authorization': 'Bearer ' + SUPABASE_ANON,
+          'Content-Type': 'application/json'
+        }, opts.headers || {});
+        return fetch(SUPABASE_URL + '/rest/v1/' + path, opts).then(function (r) { return r.json(); });
+      }
 
-        sb.from('guestbook').select('*').eq('invitation_slug', SLUG).order('created_at', { ascending: false }).then(function (res) {
-          if (res.error) return;
-          var rows = res.data || [];
-          if (list) {
-            list.innerHTML = rows.map(renderItem).join('');
-          }
+      var list = document.querySelector('.comments-list');
+      var form = document.getElementById('guestbook-form');
+
+      api('guestbook?select=*&invitation_slug=eq.' + encodeURIComponent(SLUG) + '&order=created_at.desc')
+        .then(function (rows) {
+          if (!Array.isArray(rows)) return;
+          if (list) list.innerHTML = rows.map(renderItem).join('');
           updateCount(rows.length);
-        });
+        })
+        .catch(function (e) { console.error('guestbook load failed', e); });
 
-        if (form) {
-          form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var nameInput = form.querySelector('input');
-            var textInput = form.querySelector('textarea');
-            var name = nameInput ? nameInput.value.trim() : '';
-            var text = textInput ? textInput.value.trim() : '';
-            if (!name || !text) return;
-            sb.from('guestbook').insert([{ invitation_slug: SLUG, nama: name, kehadiran: 'Hadir', ucapan: text }]).then(function (r) {
-              if (r.error) { alert('Gagal mengirim ucapan: ' + r.error.message); return; }
-              if (list) list.insertAdjacentHTML('afterbegin', renderItem({ nama: name, ucapan: text, created_at: new Date().toISOString() }));
-              var cur = parseInt((document.querySelector('.comments-count') || {}).textContent) || 0;
-              updateCount(cur + 1);
-              form.reset();
-              if (typeof showCustomToast === 'function') showCustomToast('Ucapan Terkirim!');
-              else alert('Ucapan Terkirim!');
-            });
-          });
-        }
-      });
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var nameInput = form.querySelector('input');
+          var textInput = form.querySelector('textarea');
+          var name = nameInput ? nameInput.value.trim() : '';
+          var text = textInput ? textInput.value.trim() : '';
+          if (!name || !text) return;
+          api('guestbook', {
+            method: 'POST',
+            headers: { 'Prefer': 'return=representation' },
+            body: JSON.stringify([{ invitation_slug: SLUG, nama: name, kehadiran: 'Hadir', ucapan: text }])
+          }).then(function (res) {
+            var saved = Array.isArray(res) ? res[0] : null;
+            if (list) list.insertAdjacentHTML('afterbegin', renderItem(saved || { nama: name, ucapan: text, created_at: new Date().toISOString() }));
+            var cur = parseInt((document.querySelector('.comments-count') || {}).textContent) || 0;
+            updateCount(cur + 1);
+            form.reset();
+            if (typeof showCustomToast === 'function') showCustomToast('Ucapan Terkirim!');
+            else alert('Ucapan Terkirim!');
+          }).catch(function (e) { alert('Gagal mengirim ucapan'); console.error(e); });
+        });
+      }
     })();
     <\/script>`;
 
