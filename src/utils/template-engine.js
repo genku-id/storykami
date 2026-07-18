@@ -678,8 +678,12 @@
 
         html = html.replace(/(<footer[\s\S]*?<h3>)[\s\S]*?(<\/h3>)/, `$1${htmlEscape((data.brandName || "").toUpperCase())}$2`);
         html = html.replace(/(<p class="made-with mt-4">)Made with <i class="fa-solid fa-heart text-red"><\/i> by [\s\S]*?(<\/p>)/, `$1Made with <i class="fa-solid fa-heart text-red"></i> by ${htmlEscape(data.brandName)}$2`);
-        html = replaceNth(html, /(<div class="social-icons mt-3">\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerInstagramUrl || "#")}$2`);
-        html = replaceNth(html, /(<div class="social-icons mt-3">[\s\S]*?<a href="[^"]*">[\s\S]*?<\/a>\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerWhatsappUrl || "#")}$2`);
+        if (data.footerInstagramUrl && data.footerInstagramUrl !== "#") {
+            html = replaceNth(html, /(<div class="social-icons mt-3">\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerInstagramUrl)}$2`);
+        }
+        if (data.footerWhatsappUrl && data.footerWhatsappUrl !== "#") {
+            html = replaceNth(html, /(<div class="social-icons mt-3">[\s\S]*?<a href="[^"]*">[\s\S]*?<\/a>\s*<a href=")[^"]*(">)/, 0, `$1${attrEscape(data.footerWhatsappUrl)}$2`);
+        }
 
         
         const rawQuote = data.quoteText || "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ\n\n\"Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.\"";
