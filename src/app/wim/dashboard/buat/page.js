@@ -6,29 +6,19 @@ import { supabase } from '@/utils/supabase';
 const TEMPLATE_CATEGORIES = [
   {
     id: 'floral', name: 'Floral',
-    templates: [
-      { val: 'template-floral1', name: 'Floral Elegance 1', img: '/images/floral1_preview.png' },
-      { val: 'template-floral2', name: 'Floral Elegance 2', img: '/images/floral2_preview.png' }
-    ]
+    templates: []
   },
   {
     id: 'minimalis', name: 'Minimalis',
-    templates: [
-      { val: 'template-minimalis1', name: 'Minimalis White', img: '/images/floral1_preview.png' },
-      { val: 'template-minimalis2', name: 'Minimalis Dark', img: '/images/floral2_preview.png' }
-    ]
+    templates: []
   },
   {
     id: 'modern', name: 'Modern',
-    templates: [
-      { val: 'template-modern1', name: 'Modern Abstract', img: '/images/floral1_preview.png' }
-    ]
+    templates: []
   },
   {
     id: 'tradisional', name: 'Tradisional',
-    templates: [
-      { val: 'template-daerahJawa', name: 'Jawa Klasik', img: '/images/jawa_preview.png' }
-    ]
+    templates: []
   }
 ];
 
