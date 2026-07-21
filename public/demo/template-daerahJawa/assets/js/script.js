@@ -152,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnOpen) {
         btnOpen.addEventListener('click', function() {
             document.body.classList.remove('locked');
+            var bottomNav = document.querySelector('.bottom-nav');
+            if (bottomNav) bottomNav.classList.add('visible');
             var mainContent = document.getElementById('main-content');
             if (mainContent) {
                 window.scrollTo({ top: mainContent.offsetTop, behavior: 'smooth' });
