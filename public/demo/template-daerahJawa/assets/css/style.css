@@ -169,7 +169,7 @@ body.locked {
 .jawa-wayang {
     width: 490px; /* Diperkecil lagi 5px */
     object-fit: contain;
-    animation: sway-wayang 13s ease-in-out infinite;
+    animation: sway-wayang 8.5s ease-in-out infinite;
 }
 
 /* Ornamen bawah sama dengan atas */
@@ -499,3 +499,84 @@ body.locked {
     color: #dfcfb9;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
+
+/* ===== GIFT CARDS (WIM Engine Generated) ===== */
+.bank-card {
+    background-color: #fdf5e6;
+    border: 1px solid #4a2c16;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 10;
+}
+.card-top-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.bank-logo-container {
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 60px;
+}
+.bank-logo {
+    max-height: 25px;
+    max-width: 60px;
+    object-fit: contain;
+}
+.bank-info {
+    text-align: left;
+}
+.bank-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #4a2c16;
+    margin: 0 0 3px 0;
+}
+.account-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+.account-number-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+.account-number {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    letter-spacing: 1px;
+}
+.btn-copy {
+    background-color: #4a2c16;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-copy:hover {
+    background-color: #2a1608;
+}
+/* ============================================== */

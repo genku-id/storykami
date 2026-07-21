@@ -483,6 +483,9 @@
     }
 
     function replaceGiftSection(html, data) {
+        if (html.includes("<!-- END_GIFT_CONTAINER -->")) {
+            return html.replace(/(<div class="gift-container"[^>]*>\s*)[\s\S]*?(<\/div>\s*<!-- END_GIFT_CONTAINER -->)/, function(match, start, end) { return start + buildGiftCards(data) + end; });
+        }
         return html.replace(/(<div class="gift-container"[^>]*>\s*)[\s\S]*?(\s*<\/div>\s*<\/section>)/, function (match, start, end) {
             return `${start}${buildGiftCards(data)}${end}`;
         });
@@ -513,7 +516,14 @@
 
         const css = `
     <style>
-      .comments-list { max-height: 260px; }
+      .comments-list { 
+        max-height: 350px; 
+        overflow-y: scroll;
+        scrollbar-width: none; /* Firefox */
+      }
+      .comments-list::-webkit-scrollbar { 
+        display: none; /* Chrome, Safari */
+      }
     </style>`;
 
         const script = `

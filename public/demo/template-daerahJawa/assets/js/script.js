@@ -1,288 +1,278 @@
-// Prevent browser from restoring scroll position on reload which causes getting stuck
+// Prevent browser from restoring scroll position on reload
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Force scroll to top when page loads
-    window.scrollTo(0, 0);
-    // 1. Open Invitation & Audio Logic
-    const btnOpen = document.getElementById('btn-open');
-    const coverPage = document.getElementById('cover-page');
-    const mainContent = document.getElementById('main-content');
-    const btnAudio = document.getElementById('btn-audio');
-    
-    // Create audio element (using a placeholder royalty-free instrumental link since the user will set it later)
-    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-    audio.loop = true;
-    let isPlaying = false;
+// ============================================================
+// AUDIO CONFIGURATION (diisi otomatis oleh template engine)
+// ============================================================
+var AUDIO_URL = 'https://youtu.be/igFxGRMQYiM';
+var AUDIO_START = 0;
+// ============================================================
 
-    btnOpen.addEventListener('click', () => {
-        // Unlock scroll by removing locked class from body
-        document.body.classList.remove('locked');
-        
-        // Sembunyikan tombol setelah ditekan
-        btnOpen.style.display = 'none';
-        
-        // Scroll to the main content area (hero section)
-        const heroSection = document.getElementById('main-content');
-        window.scrollTo({
-            top: heroSection.offsetTop,
-            behavior: 'smooth'
-        });
-        
-        // Play audio
-        audio.play().then(() => {
-            isPlaying = true;
-            btnAudio.classList.add('playing');
-            btnAudio.innerHTML = '<i class="fa-solid fa-music"></i>';
-        }).catch(err => {
-            console.log("Audio play failed: ", err);
-        });
+// --- YouTube Player Setup (HARUS di global scope, bukan di dalam setTimeout) ---
+var _ytPlayer = null;
+var _ytReady = false;
+var _playQueued = false;
+var _isPlaying = false;
+var _htmlAudio = null;
 
-    });
+var _ytMatch = AUDIO_URL.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
 
-    // Audio toggle button
-    btnAudio.addEventListener('click', () => {
-        if (isPlaying) {
-            audio.pause();
-            btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-            btnAudio.classList.remove('playing');
-        } else {
-            audio.play();
-            btnAudio.innerHTML = '<i class="fa-solid fa-music"></i>';
-            btnAudio.classList.add('playing');
+if (_ytMatch) {
+    // Sisipkan div player tersembunyi langsung ke body
+    var ytContainer = document.createElement('div');
+    ytContainer.id = 'wim-yt-container';
+    ytContainer.style.cssText = 'position:fixed;width:1px;height:1px;top:-10px;left:-10px;opacity:0.01;pointer-events:none;z-index:-1;overflow:hidden;';
+    var ytDiv = document.createElement('div');
+    ytDiv.id = 'wim-yt-player';
+    ytContainer.appendChild(ytDiv);
+    document.head.appendChild(ytContainer); // pasang di head agar tersedia sebelum body locked
+
+    // Load YouTube IFrame API
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScript = document.getElementsByTagName('script')[0];
+    firstScript.parentNode.insertBefore(tag, firstScript);
+
+    // Callback GLOBAL â?" harus di luar setTimeout agar tidak terlewat
+    window.onYouTubeIframeAPIReady = function() {
+        // Pastikan container sudah ada di body
+        if (!document.getElementById('wim-yt-container')) {
+            document.body.appendChild(ytContainer);
         }
-        isPlaying = !isPlaying;
-    });
+        _ytPlayer = new YT.Player('wim-yt-player', {
+            height: '1',
+            width: '1',
+            videoId: _ytMatch[1],
+            playerVars: {
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                rel: 0,
+                playsinline: 1,
+                mute: 0
+            },
+            events: {
+                onReady: function(e) {
+                    _ytReady = true;
+                    e.target.unMute();
+                    e.target.setVolume(100);
+                    if (_playQueued) {
+                        e.target.seekTo(AUDIO_START || 0);
+                        e.target.playVideo();
+                        _playQueued = false;
+                        _setAudioPlaying(true);
+                    }
+                },
+                onStateChange: function(e) {
+                    // Loop otomatis
+                    if (e.data === YT.PlayerState.ENDED) {
+                        e.target.seekTo(AUDIO_START || 0);
+                        e.target.playVideo();
+                    }
+                    // Sinkronkan state tombol
+                    if (e.data === YT.PlayerState.PLAYING) {
+                        _setAudioPlaying(true);
+                    } else if (e.data === YT.PlayerState.PAUSED) {
+                        _setAudioPlaying(false);
+                    }
+                }
+            }
+        });
+    };
+} else if (AUDIO_URL) {
+    // Fallback: HTML5 Audio untuk MP3 biasa
+    _htmlAudio = new Audio(AUDIO_URL);
+    _htmlAudio.loop = true;
+}
 
-    // 2. Countdown Logic
-    const weddingDateElement = document.getElementById('wedding-date');
-    const targetDateString = weddingDateElement ? weddingDateElement.getAttribute('data-date') : 'December 12, 2026 09:00:00';
-    const targetDate = new Date(targetDateString).getTime();
+function _setAudioPlaying(playing) {
+    _isPlaying = playing;
+    var btn = document.getElementById('btn-audio');
+    if (!btn) return;
+    if (playing) {
+        btn.classList.add('playing');
+        btn.innerHTML = '<i class="fa-solid fa-music"></i>';
+    } else {
+        btn.classList.remove('playing');
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+    }
+}
 
-    const updateCountdown = () => {
-        const now = new Date().getTime();
-        const distance = targetDate - now;
+function _playAudio() {
+    if (_ytMatch) {
+        if (_ytReady && _ytPlayer && typeof _ytPlayer.playVideo === 'function') {
+            var state = _ytPlayer.getPlayerState();
+            // Jika belum diputar sama sekali, seek ke start dulu
+            if (state !== 1 && state !== 2) {
+                _ytPlayer.seekTo(AUDIO_START || 0);
+            }
+            _ytPlayer.unMute();
+            _ytPlayer.setVolume(100);
+            _ytPlayer.playVideo();
+            _setAudioPlaying(true);
+        } else {
+            // YT belum siap, antre
+            _playQueued = true;
+            _setAudioPlaying(true); // tampilkan icon playing duluan
+        }
+    } else if (_htmlAudio) {
+        if (_htmlAudio.readyState === 0) {
+            _htmlAudio.currentTime = AUDIO_START || 0;
+        }
+        _htmlAudio.play().catch(function(e) { console.log('Audio play failed', e); });
+        _setAudioPlaying(true);
+    }
+}
 
+function _pauseAudio() {
+    _playQueued = false;
+    if (_ytMatch) {
+        if (_ytReady && _ytPlayer && typeof _ytPlayer.pauseVideo === 'function') {
+            _ytPlayer.pauseVideo();
+        }
+    } else if (_htmlAudio) {
+        _htmlAudio.pause();
+    }
+    _setAudioPlaying(false);
+}
+
+// ============================================================
+// MAIN INIT â?" setelah DOM siap
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    window.scrollTo(0, 0);
+
+    var btnOpen = document.getElementById('btn-open');
+    var btnAudio = document.getElementById('btn-audio');
+
+    // Tombol Buka Undangan
+    if (btnOpen) {
+        btnOpen.addEventListener('click', function() {
+            document.body.classList.remove('locked');
+            var mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                window.scrollTo({ top: mainContent.offsetTop, behavior: 'smooth' });
+            }
+            // Mulai putar musik â?" ini adalah user gesture sehingga browser mengizinkan
+            _playAudio();
+        });
+    }
+
+    // Tombol toggle Audio
+    if (btnAudio) {
+        btnAudio.addEventListener('click', function() {
+            if (_isPlaying) {
+                _pauseAudio();
+            } else {
+                _playAudio();
+            }
+        });
+    }
+
+    // Countdown
+    var targetDate = new Date('December 12, 2026 09:00:00').getTime();
+    function updateCountdown() {
+        var now = new Date().getTime();
+        var distance = targetDate - now;
+        var d = document.getElementById('days');
+        var h = document.getElementById('hours');
+        var m = document.getElementById('minutes');
+        var s = document.getElementById('seconds');
+        if (!d) return;
         if (distance < 0) {
-            document.getElementById('days').innerText = '00';
-            document.getElementById('hours').innerText = '00';
-            document.getElementById('minutes').innerText = '00';
-            document.getElementById('seconds').innerText = '00';
+            d.innerText = h.innerText = m.innerText = s.innerText = '00';
             return;
         }
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        document.getElementById('days').innerText = days.toString().padStart(2, '0');
-        document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
-    };
-
+        d.innerText = Math.floor(distance / 86400000).toString().padStart(2, '0');
+        h.innerText = Math.floor((distance % 86400000) / 3600000).toString().padStart(2, '0');
+        m.innerText = Math.floor((distance % 3600000) / 60000).toString().padStart(2, '0');
+        s.innerText = Math.floor((distance % 60000) / 1000).toString().padStart(2, '0');
+    }
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // 3. Scroll Animations (Intersection Observer)
-    const animateElements = document.querySelectorAll('[data-animate]');
-    
-    const observerOptions = {
-        threshold: 0.1, // Trigger when 10% of element is visible
-        rootMargin: "0px 0px -50px 0px"
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    // Scroll Animations
+    var animateElements = document.querySelectorAll('[data-animate]');
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
             } else {
                 entry.target.classList.remove('is-visible');
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    animateElements.forEach(function(el) { observer.observe(el); });
 
-    animateElements.forEach(el => {
-        observer.observe(el);
-    });
-
-    // 4. Form submission mockup
-    const guestbookFormOld = document.getElementById('guestbook-form');
-    // Removed old alert logic
-    
-    // Initialize audio icon state
-    btnAudio.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-});
-
-// Global function for Copy to Clipboard
-function copyRekening(elementId) {
-    const rekeningText = document.getElementById(elementId).textContent.trim();
-    
-    // Use modern clipboard API
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(rekeningText).then(() => {
-            showCustomToast("Berhasil disalin");
-        }).catch(err => {
-            console.error('Gagal menyalin text: ', err);
-            fallbackCopyTextToClipboard(rekeningText);
-        });
-    } else {
-        fallbackCopyTextToClipboard(rekeningText);
-    }
-}
-
-function fallbackCopyTextToClipboard(text) {
-    const tempInput = document.createElement('textarea');
-    tempInput.value = text;
-    tempInput.style.position = 'fixed'; // Prevent scrolling to bottom
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    try {
-        document.execCommand('copy');
-        showCustomToast("Berhasil disalin");
-    } catch (err) {
-        console.error('Fallback copy gagal: ', err);
-    }
-    document.body.removeChild(tempInput);
-}
-
-function showCustomToast(message) {
-    // Check if toast already exists, remove it
-    let existingToast = document.getElementById('custom-toast-popup');
-    if (existingToast) {
-        existingToast.remove();
-    }
-    
-    // Create new toast element
-    const toast = document.createElement('div');
-    toast.id = 'custom-toast-popup';
-    toast.className = 'custom-toast';
-    toast.innerHTML = `
-        <div class="toast-icon"><img src="logo.webp" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;"></div>
-        <div class="toast-text">${message}</div>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Trigger animation
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    
-    // Remove after 2 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 400); // Wait for transition to finish
-    }, 2000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Dynamic Guest Name from URL Parameter (?to=)
-    const urlParams = new URLSearchParams(window.location.search);
-    const guestNameParam = urlParams.get('to') || urlParams.get('invitation');
-    const guestNameCover = document.querySelector('.guest-name');
-    
-    if (guestNameCover) {
-        if (guestNameParam) {
-            // Basic sanitization
-            const sanitizedName = guestNameParam.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            guestNameCover.innerHTML = sanitizedName;
-        } else {
-            // Default fallback if no parameter is provided
-            // We keep the original HTML value if it's already generated by WIM, 
-            // but for safety we can default to "Tamu Undangan" if it's empty
-            if (!guestNameCover.innerHTML.trim()) {
-                guestNameCover.innerHTML = "Tamu Undangan";
-            }
-        }
+    // Guest name from URL
+    var urlParams = new URLSearchParams(window.location.search);
+    var guestNameParam = urlParams.get('to') || urlParams.get('invitation');
+    var guestNameEl = document.querySelector('.guest-name');
+    if (guestNameEl && guestNameParam) {
+        guestNameEl.innerHTML = guestNameParam.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    } else if (guestNameEl && !guestNameEl.innerHTML.trim()) {
+        guestNameEl.innerHTML = 'Tamu Undangan';
     }
 
-    // Fill guestbook name from cover guest name
-    const guestNameInput = document.getElementById('guestbook-name-input');
-    if (guestNameCover && guestNameInput) {
-        guestNameInput.value = guestNameCover.innerText.trim();
+    // Guestbook name autofill
+    var guestNameInput = document.getElementById('guestbook-name-input');
+    if (guestNameEl && guestNameInput) {
+        guestNameInput.value = guestNameEl.innerText.trim();
     }
-    
-    // Sync couple names on closing page from cover page
-    const coverCoupleNames = document.querySelector('.cover-content .title-names-cursive');
-    const closingCoupleNames = document.getElementById('closing-couple-names');
-    if (coverCoupleNames && closingCoupleNames) {
-        closingCoupleNames.innerText = coverCoupleNames.innerText.trim();
-    }
-    
-    // Handle guestbook form submission
-    const guestbookForm = document.getElementById('guestbook-form');
+
+    // Guestbook form submit
+    var guestbookForm = document.getElementById('guestbook-form');
     if (guestbookForm) {
-        guestbookForm.addEventListener('submit', (e) => {
+        guestbookForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            // Show custom toast with logo
-            showCustomToast("Ucapan Terkirim!");
-            // Reset the textarea (leaving name intact as it is readonly)
-            const textarea = guestbookForm.querySelector('textarea');
+            showCustomToast('Ucapan Terkirim!');
+            var textarea = guestbookForm.querySelector('textarea');
             if (textarea) textarea.value = '';
         });
     }
 });
 
-
-// Bottom Navigation Logic
-document.addEventListener('DOMContentLoaded', () => {
-    const bottomNav = document.querySelector('.bottom-nav');
-    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-    const btnOpen = document.getElementById('btn-open');
-    
-    // Smooth scroll for nav items
-    navItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            if(targetSection) {
-                targetSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-
-    if(btnOpen && bottomNav) {
-        btnOpen.addEventListener('click', () => {
-            setTimeout(() => {
-                bottomNav.classList.add('visible');
-                const btnAudio = document.getElementById('btn-audio');
-                if (btnAudio) btnAudio.classList.add('visible');
-            }, 800);
-        });
+// ============================================================
+// UTILITIES
+// ============================================================
+function copyRekening(elementId) {
+    var el = document.getElementById(elementId);
+    if (!el) return;
+    var text = el.textContent.trim();
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+            showCustomToast('Berhasil disalin');
+        }).catch(function() { fallbackCopyTextToClipboard(text); });
+    } else {
+        fallbackCopyTextToClipboard(text);
     }
+}
 
-    // Intersection Observer to highlight active nav item
-    const observerOptions = {
-        root: null,
-        rootMargin: '-30% 0px -70% 0px', // Trigger when section is in top 30% of viewport
-        threshold: 0
-    };
+function fallbackCopyTextToClipboard(text) {
+    var tmp = document.createElement('textarea');
+    tmp.value = text;
+    tmp.style.position = 'fixed';
+    document.body.appendChild(tmp);
+    tmp.select();
+    try { document.execCommand('copy'); showCustomToast('Berhasil disalin'); } catch(e) {}
+    document.body.removeChild(tmp);
+}
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                navItems.forEach(nav => {
-                    nav.classList.remove('active');
-                    if (nav.getAttribute('href') === `#${id}`) {
-                        nav.classList.add('active');
-                    }
-                });
-            }
-        });
-    }, observerOptions);
+function showCustomToast(message) {
+    var existing = document.getElementById('custom-toast-popup');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.id = 'custom-toast-popup';
+    toast.className = 'custom-toast';
+    toast.innerHTML = '<div class="toast-icon"><img src="assets/images/logo.png" style="width:60px;height:60px;border-radius:50%;object-fit:cover;"></div><div class="toast-text">' + message + '</div>';
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 400);
+    }, 2000);
+}
 
-    const sections = document.querySelectorAll('.section');
-    sections.forEach(sec => {
-        if(sec.getAttribute('id')) {
-            observer.observe(sec);
-        }
-    });
-});
