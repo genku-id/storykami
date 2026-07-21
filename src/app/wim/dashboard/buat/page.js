@@ -23,6 +23,12 @@ const TEMPLATE_CATEGORIES = [
     templates: [
       { val: 'template-modern1', name: 'Modern Abstract', img: '/images/floral1_preview.png' }
     ]
+  },
+  {
+    id: 'tradisional', name: 'Tradisional',
+    templates: [
+      { val: 'template-daerahJawa', name: 'Jawa Klasik', img: '/images/jawa_preview.png' }
+    ]
   }
 ];
 

@@ -14,6 +14,12 @@ const TEMPLATES = [
     title: 'Floral Elegance 2',
     demo: '/demo/template-floral2/index.html?to=Tamu+Demo',
     preview: '/images/floral2_preview.png',
+  },
+  {
+    id: 'template-daerahJawa',
+    title: 'Jawa Klasik',
+    demo: '/demo/template-daerahJawa/index.html?to=Tamu+Demo',
+    preview: '/images/jawa_preview.png',
   }
 ];
 

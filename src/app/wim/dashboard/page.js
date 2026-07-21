@@ -6,6 +6,7 @@ import { supabase } from '@/utils/supabase';
 const TEMPLATE_LABELS = {
   'template-floral1': 'Floral Elegance 1',
   'template-floral2': 'Floral Elegance 2',
+  'template-daerahJawa': 'Jawa Klasik',
 };
 
 function StatCard({ icon, label, value, sub, accentColor }) {

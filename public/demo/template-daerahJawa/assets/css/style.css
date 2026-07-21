@@ -1,0 +1,501 @@
+/* Jawa Theme Styles - Cover Page Only */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+body {
+    margin: 0 auto; /* Tengah pada layar desktop */
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    max-width: 414px; /* Lebar standar layar HP (misal iPhone) */
+    background-color: #2c2c2c; /* Warna latar untuk sisi luar (di desktop) */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Bayangan untuk memberi efek device */
+}
+
+body.locked {
+    overflow: hidden;
+}
+
+/* Base Cover Section */
+#cover-page {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    max-height: 100svh;
+    background-color: #2a2a2a; /* Fallback */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Base Cover Section */
+#cover-page {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    max-height: 100svh;
+    background: radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%);
+    overflow: hidden; /* Dikembalikan agar isi cover tidak bocor ke bawah */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transform: translateY(-100%); /* Mulai dari atas */
+    animation: dropScreen 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; /* Efek turun dilambatkan */
+}
+
+/* Ornaments */
+.jawa-top-border {
+    position: absolute;
+    top: -51px; /* Dinaikkan lagi 3px */
+    left: 0;
+    width: 300%;
+    height: 130px; /* Diperkecil lagi 5px */
+    background: url('../images/top_border_jawa.webp?v=2') repeat-x top left;
+    background-size: auto 100%;
+    z-index: 5;
+    animation: moveBorder 150s linear infinite alternate;
+}
+
+@keyframes moveBorder {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes moveBorderBottom {
+    0% { transform: scaleY(-1) translateX(0); }
+    100% { transform: scaleY(-1) translateX(-50%); }
+}
+
+.jawa-gunungan-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 3;
+    margin-top: -90px; /* Diturunkan lagi 10px */
+    margin-bottom: 7px; /* Jarak persis 7px di atas The Wedding Of */
+    opacity: 1; /* Jadikan 100% solid */
+    filter: contrast(150%) brightness(80%); /* Hitamnya diperpekat, yang terang tetap natural */
+}
+
+.jawa-gunungan {
+    width: 80px; /* Diperkecil lagi 5px */
+    margin: 0 20px; /* Dijauhkan 5px lagi ke kiri dan kanan */
+}
+
+.jawa-gunungan.left {
+    transform: rotate(-40deg); /* Kemiringan ditambah 5 derajat */
+    animation: pulse-gunungan-left 2s ease-in-out infinite;
+}
+
+.jawa-gunungan.right {
+    transform: rotate(40deg); /* Kemiringan ditambah 5 derajat */
+    animation: pulse-gunungan-right 2s ease-in-out infinite;
+}
+
+.jawa-cloud {
+    width: 90px; /* Diperkecil lagi 5px */
+    position: absolute;
+    opacity: 0.85;
+}
+
+.jawa-cloud.left {
+    left: calc(-10% + 45px); /* Didekatkan 5px lagi */
+    top: 30px; /* Naik 20px */
+    animation: pulse-cloud 2s ease-in-out infinite;
+}
+
+.jawa-cloud.right {
+    right: calc(-10% + 45px); /* Didekatkan 5px lagi */
+    top: 60px;
+    animation: pulse-cloud 2s ease-in-out infinite;
+}
+
+/* Text Content */
+.cover-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin-top: 0px; /* Tulisan dinaikkan lagi */
+}
+
+.wedding-text {
+    text-align: center;
+    width: 100%;
+}
+
+.subtitle {
+    margin-top: 0; /* Reset margin karena jarak sudah diatur oleh gunungan-container */
+}
+
+.title-names-cursive {
+    margin-top: 0; /* Reset margin */
+}
+
+.text-serif {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Wayang and Bottom */
+.jawa-bottom-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 350px;
+    z-index: 5;
+}
+
+/* Efek gradasi gelap sudah dihapus */
+
+.wayang-wrapper {
+    position: absolute;
+    bottom: -5px; /* Diturunkan lagi 5px */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Diposisikan di tengah */
+    padding: 0; 
+    box-sizing: border-box;
+    z-index: 4;
+}
+
+.jawa-wayang {
+    width: 490px; /* Diperkecil lagi 5px */
+    object-fit: contain;
+    animation: sway-wayang 13s ease-in-out infinite;
+}
+
+/* Ornamen bawah sama dengan atas */
+.jawa-bottom-border {
+    position: absolute;
+    bottom: -15px; /* Diturunkan hingga melewati batas layar (dipotong) */
+    left: 0;
+    width: 300%;
+    height: 130px; /* Diperkecil lagi 5px */
+    background: url('../images/top_border_jawa.webp?v=2') repeat-x top left;
+    background-size: auto 100%;
+    transform: scaleY(-1); /* Balik secara vertikal agar mengarah ke atas */
+    z-index: 5;
+    animation: moveBorderBottom 150s linear infinite alternate-reverse; /* Animasi bergerak terbalik dari atas dengan scaleY terjaga */
+}
+
+/* Animations */
+.cover-fade-up-1, .cover-fade-up-2, .cover-fade-up-3 {
+    animation: fadeUp 1s ease-out forwards;
+    opacity: 0;
+}
+
+.cover-fade-up-1 { animation-delay: 1.5s; }
+.cover-fade-up-2 { animation-delay: 1.8s; }
+.cover-fade-up-3 { animation-delay: 2.1s; }
+
+@keyframes dropScreen {
+    from { transform: translateY(-120dvh); } /* Dipertinggi dari -100vh agar pasti di luar layar */
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-gunungan-left {
+    0% { transform: rotate(-40deg) scale(1); }
+    50% { transform: rotate(-40deg) scale(1.12); }
+    100% { transform: rotate(-40deg) scale(1); }
+}
+
+@keyframes pulse-gunungan-right {
+    0% { transform: rotate(40deg) scale(1); }
+    50% { transform: rotate(40deg) scale(1.12); }
+    100% { transform: rotate(40deg) scale(1); }
+}
+
+@keyframes pulse-cloud {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.11); }
+    100% { transform: scale(1); }
+}
+
+@keyframes sway-wayang {
+    0% { transform: translateX(-12px); }
+    50% { transform: translateX(12px); }
+    100% { transform: translateX(-12px); }
+}
+
+/* Hero Section (Halaman 2) */
+#hero {
+    position: relative;
+    width: 100%;
+    min-height: calc(100svh + 40px); /* Ditambah secara signifikan agar melarnya terlihat */
+    padding: 20px 0; /* Memberi ruang ekstra di tengah */
+    background: radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Sembunyikan ornamen yang meluap */
+    z-index: 10;
+}
+
+#hero .jawa-top-border {
+    top: -38px; /* Diturunkan lagi 3px khusus untuk halaman hero */
+}
+
+/* Quote Section (Halaman 3) */
+#quote .jawa-top-border {
+    top: -30px; /* Dinaikkan secara signifikan agar potongannya jelas terlihat */
+}
+
+#quote {
+    position: relative;
+    width: 100%;
+    background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%); /* Halaman dibuat lebih gelap */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+    z-index: 10;
+    padding-bottom: 205px; /* Dinaikkan lagi 15px */
+    padding-top: 130px; /* Cukup untuk tinggi border (100px) + ~1.5 enter */
+}
+
+#quote .quote-content-wrapper {
+    position: relative;
+    z-index: 3; /* Diturunkan z-indexnya agar berada di belakang wayang (z-index wayang = 4/5) */
+    width: calc(100% - 40px); /* 20px margin kiri-kanan */
+    max-width: 450px;
+    background: radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%); /* Warna terang yang awal */
+    padding: 15px 15px; /* Padding atas bawah dikecilkan */
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    margin: 0 auto;
+}
+#profiles {
+    position: relative;
+    width: 100%;
+    background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+    z-index: 10;
+    padding-bottom: 90px; /* Wayang menumpuk di atas kotak */
+    padding-top: 50px; /* Ornamen atas menumpuk di atas kotak */
+}
+
+#profiles .profiles-content-wrapper {
+    position: relative;
+    z-index: 3;
+    width: calc(100% - 50px); /* 25px margin kiri-kanan */
+    max-width: 580px; /* Melebar ke hampir seluruh layar mobile */
+    background: radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%);
+    padding: 30px 15px; /* Padding cukup agar tidak sesak */
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    margin: 0 auto;
+}
+
+#lovestory {
+    position: relative;
+    width: 100%;
+    background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+    z-index: 10;
+    padding-bottom: 90px; /* Wayang menumpuk di atas kotak */
+    padding-top: 50px; /* Ornamen atas menumpuk di atas kotak */
+}
+
+#lovestory .lovestory-content-wrapper {
+    position: relative;
+    z-index: 3;
+    width: calc(100% - 50px); /* 25px margin kiri-kanan */
+    max-width: 580px; /* Melebar ke hampir seluruh layar mobile */
+    background-color: #fdf5e6; /* Warna putih cream */
+    padding: 30px 15px; /* Padding cukup agar tidak sesak */
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    margin: 0 auto 120px auto; /* Margin bawah 120px agar tidak menabrak wayang */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    margin-top: 0px; /* Diturunkan lagi 10px */
+}
+
+/* Audio Button */
+.btn-audio {
+    position: fixed;
+    bottom: 90px; /* 2x tinggi elemen (45px) */
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #4e342e;
+    color: #dfcfb9;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.btn-audio.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@keyframes spin-audio {
+    100% { transform: rotate(360deg); }
+}
+
+.btn-audio.playing i {
+    animation: spin-audio 4s linear infinite;
+}
+
+/* Transparansi Ornamen */
+.jawa-top-border,
+.jawa-bottom-border {
+    opacity: 0.9;
+}
+
+.btn-audio i {
+    font-size: 1.2rem;
+    transition: 0.3s;
+}
+
+/* Arch Frame Couple */
+.hero-arch-frame {
+    width: 115px; /* Diperlebar lagi */
+    height: 140px;
+    background-color: #fff;
+    border: 2px solid #2a2a2a;
+    border-radius: 52px 52px 0 0;
+    overflow: hidden;
+    position: absolute; /* Agar gunungan tidak bergeser */
+    bottom: 45px; /* Dinaikkan lagi */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* Di depan gunungan */
+}
+
+.hero-arch-frame img.hero-couple-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Dark Countdown */
+.countdown-item.style-dark {
+    background-color: #1a1a1a;
+    color: #fff;
+    width: 55px; /* Diperkecil lagi 5px */
+    height: 60px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.countdown-item.style-dark span {
+    font-size: 1.2rem; /* Disesuaikan dengan ukuran kotak */
+    font-weight: 700;
+    line-height: 1.1;
+    font-family: 'Playfair Display', serif;
+}
+
+.countdown-item.style-dark p {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+@media screen and (min-width: 500px) {
+    #cover-page {
+        height: auto;
+        aspect-ratio: 9 / 19.5;
+    }
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 8px 15px;
+    background: rgba(223, 207, 185, 0.7); /* Translucent beige */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.bottom-nav.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.bottom-nav .nav-item {
+    color: #4a2c16;
+    font-size: 1.1rem;
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.bottom-nav .nav-item:hover {
+    color: #2a2a2a;
+}
+
+.bottom-nav .nav-item.active {
+    background-color: #4a2c16;
+    color: #dfcfb9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}

@@ -75,6 +75,23 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Card 3 */}
+            <div className={styles.card}>
+              <div className={styles.cardImageWrapper}>
+                <Image 
+                  src="/images/jawa_preview.png" 
+                  alt="Jawa Klasik Preview" 
+                  fill 
+                  style={{objectFit: 'cover', objectPosition: 'top'}} 
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>Jawa Klasik</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Adat Tradisional & Elegan</p>
+                <a href="/demo/template-daerahJawa/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
