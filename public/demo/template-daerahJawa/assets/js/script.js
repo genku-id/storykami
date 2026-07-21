@@ -27,7 +27,7 @@ if (_ytMatch) {
     var ytDiv = document.createElement('div');
     ytDiv.id = 'wim-yt-player';
     ytContainer.appendChild(ytDiv);
-    document.head.appendChild(ytContainer); // pasang di head agar tersedia sebelum body locked
+    document.body.appendChild(ytContainer); // pasang di body agar tersedia sebelum body locked
 
     // Load YouTube IFrame API
     var tag = document.createElement('script');

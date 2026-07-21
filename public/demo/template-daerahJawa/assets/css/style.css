@@ -503,80 +503,138 @@ body.locked {
 
 /* ===== GIFT CARDS (WIM Engine Generated) ===== */
 .bank-card {
-    background-color: #fdf5e6;
-    border: 1px solid #4a2c16;
-    border-radius: 12px;
-    padding: 20px;
+    background-color: #f3ece1;
+    border: 1px solid #e0d5c1;
+    border-radius: 16px;
+    padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     position: relative;
     z-index: 10;
 }
 .card-top-row {
     display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-.bank-logo-container {
-    background-color: #fff;
-    padding: 5px 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 60px;
-}
-.bank-logo {
-    max-height: 25px;
-    max-width: 60px;
-    object-fit: contain;
-}
-.bank-info {
-    text-align: left;
-}
-.bank-name {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #4a2c16;
-    margin: 0 0 3px 0;
-}
-.account-name {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0;
-}
-.account-number-container {
-    display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #ffffff;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    margin-bottom: 25px;
 }
-.account-number {
-    font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
+.bank-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #333;
     margin: 0;
-    letter-spacing: 1px;
 }
-.btn-copy {
-    background-color: #4a2c16;
-    color: #fff;
+.bank-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 140px;
+    background: transparent;
+    padding: 0;
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.8rem;
+}
+.bank-logo {
+    max-height: 25px;
+    max-width: 80px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+.bank-divider {
+    width: 100%;
+    border: none;
+    border-top: 2px solid #111;
+    margin: 0;
+    opacity: 1;
+}
+.card-body-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.card-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    width: 45%;
+}
+.card-icon {
+    font-size: 4rem;
+    color: #111;
+    margin-bottom: 5px;
+}
+.card-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+.btn-bank {
+    width: 100%;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     transition: all 0.3s ease;
 }
+.btn-copy {
+    background-color: #111;
+    color: #fff;
+}
 .btn-copy:hover {
-    background-color: #2a1608;
+    background-color: #333;
+}
+.btn-wa {
+    background-color: #5c8526;
+    color: #fff;
+}
+.btn-wa:hover {
+    background-color: #4a6b1f;
+}
+.card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    width: 50%;
+}
+.bank-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+.bank-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #555;
+    margin: 0;
+}
+.bank-label.mt-2 {
+    margin-top: 15px !important;
+}
+.bank-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+.bank-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
 }
 /* ============================================== */
