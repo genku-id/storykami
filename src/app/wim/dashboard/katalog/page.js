@@ -2,26 +2,7 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-const TEMPLATES = [
-  {
-    id: 'template-floral1',
-    title: 'Floral Elegance 1',
-    demo: '/demo/template-floral1/index.html?to=Tamu+Demo',
-    preview: '/images/floral1_preview.png',
-  },
-  {
-    id: 'template-floral2',
-    title: 'Floral Elegance 2',
-    demo: '/demo/template-floral2/index.html?to=Tamu+Demo',
-    preview: '/images/floral2_preview.png',
-  },
-  {
-    id: 'template-daerahJawa',
-    title: 'Jawa Klasik',
-    demo: '/demo/template-daerahJawa/index.html?to=Tamu+Demo',
-    preview: '/images/jawa_preview.png',
-  }
-];
+const TEMPLATES = [];
 
 export default function KatalogPage() {
   const router = useRouter();
