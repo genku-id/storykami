@@ -1,0 +1,238 @@
+/* Minangkabau Theme Styles - Cover Page Only */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+/* Songket color palette:
+   maroon  #6b1414 / #7a1f1f
+   gold    #f6d365 / #d4af37
+   black   #1c1410
+   cream   #fdf5e6
+*/
+
+body {
+    margin: 0 auto; /* Tengah pada layar desktop */
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    max-width: 414px; /* Lebar standar layar HP (misal iPhone) */
+    background-color: #2c2c2c; /* Warna latar untuk sisi luar (di desktop) */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Bayangan untuk memberi efek device */
+}
+
+body.locked {
+    overflow: hidden;
+}
+
+/* Base Cover Section */
+#cover-page {
+    position: relative;
+    width: 100%;
+    height: 100dvh; /* Pastikan selalu pas dengan layar di HP (Dynamic Viewport) */
+    max-height: 100dvh;
+    background: radial-gradient(circle at 50% 40%, #7a1f1f 0%, #4a0d0d 100%);
+    overflow: hidden !important; /* Kunci rapat agar tidak bisa scroll/memanjang */
+    touch-action: none; /* Cegah gesture scroll memanjang di HP */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transform: translateY(-100%); /* Mulai dari atas */
+    animation: dropScreen 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; /* Efek turun */
+}
+
+/* Songket gold thread texture overlay */
+#cover-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.12;
+    background-image:
+        repeating-linear-gradient(45deg, #f6d365 0, #f6d365 1px, transparent 1px, transparent 14px),
+        repeating-linear-gradient(-45deg, #f6d365 0, #f6d365 1px, transparent 1px, transparent 14px);
+    z-index: 1;
+}
+
+/* ============ Songket Border (Top) ============ */
+.minang-top-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 46px;
+    z-index: 5;
+    background:
+        /* baris rombus songket */
+        repeating-linear-gradient(45deg, transparent 0 9px, #f6d365 9px 11px),
+        repeating-linear-gradient(-45deg, transparent 0 9px, #f6d365 9px 11px),
+        linear-gradient(to bottom, #1c1410, #6b1414);
+    border-bottom: 3px solid #d4af37;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* ============ Songket Border (Bottom) ============ */
+.minang-bottom-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+}
+
+.minang-bottom-border {
+    width: 100%;
+    height: 46px;
+    background:
+        repeating-linear-gradient(45deg, transparent 0 9px, #f6d365 9px 11px),
+        repeating-linear-gradient(-45deg, transparent 0 9px, #f6d365 9px 11px),
+        linear-gradient(to top, #1c1410, #6b1414);
+    border-top: 3px solid #d4af37;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
+}
+
+/* ============ Rumah Gadang & Marawa ============ */
+.minang-header-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 3;
+    margin-top: -20px;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
+}
+
+/* Rumah Gadang: badan + gonjong (atap runcing) */
+.rumah-gadang {
+    position: relative;
+    width: 180px;
+    height: 90px;
+}
+
+.rumah-body {
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 40px;
+    background: linear-gradient(to bottom, #8a2a2a, #5a1414);
+    border: 2px solid #d4af37;
+    border-radius: 4px 4px 8px 8px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+}
+
+/* Gonjong (atap tanduk runcing) dibentuk dari segitiga melengkung */
+.gonjong {
+    position: absolute;
+    bottom: 34px;
+    width: 0;
+    height: 0;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-bottom: 46px solid #f6d365;
+    filter: drop-shadow(0 -1px 0 #d4af37);
+}
+
+.gonjong-1 { left: 4px;   transform: skewX(14deg) scaleX(0.7); }
+.gonjong-2 { left: 46px;  transform: skewX(6deg)  scaleX(0.85); bottom: 40px; }
+.gonjong-3 { right: 46px; transform: skewX(-6deg) scaleX(0.85); bottom: 40px; }
+.gonjong-4 { right: 4px;  transform: skewX(-14deg) scaleX(0.7); }
+
+/* Marawa (bendera tiga warna adat: hitam, merah, kuning) */
+.marawa {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 6px;
+    animation: sway-marawa 4s ease-in-out infinite;
+}
+
+.marawa-left  { align-items: flex-end;   transform-origin: bottom right; }
+.marawa-right { align-items: flex-start; transform-origin: bottom left; animation-delay: 0.5s; }
+
+.marawa-flag {
+    display: block;
+    width: 34px;
+    height: 10px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.flag-red   { background: #c62828; }
+.flag-black { background: #1c1410; }
+.flag-gold  { background: #f6d365; }
+
+.marawa-left .marawa-flag  { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 20% 50%); }
+.marawa-right .marawa-flag { clip-path: polygon(0 0, 100% 0, 80% 50%, 100% 100%, 0 100%); }
+
+/* ============ Text Content ============ */
+.cover-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin-top: 0px;
+}
+
+.subtitle {
+    margin-top: 0;
+}
+
+.title-names-cursive {
+    margin-top: 0;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.text-serif {
+    font-family: 'Playfair Display', serif;
+}
+
+.guest-name {
+    color: #f6d365;
+}
+
+.btn-cover:hover {
+    background-color: #fff !important;
+    color: #6b1414 !important;
+}
+
+/* ============ Animations ============ */
+.cover-fade-up-1, .cover-fade-up-2, .cover-fade-up-3 {
+    animation: fadeUp 1s ease-out forwards;
+    opacity: 0;
+}
+
+.cover-fade-up-1 { animation-delay: 0.8s; }
+.cover-fade-up-2 { animation-delay: 1.1s; }
+.cover-fade-up-3 { animation-delay: 1.4s; }
+
+@keyframes dropScreen {
+    from { transform: translateY(-100vh); }
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes sway-marawa {
+    0%   { transform: rotate(-3deg); }
+    50%  { transform: rotate(3deg); }
+    100% { transform: rotate(-3deg); }
+}
+
+@media screen and (min-width: 500px) {
+    #cover-page {
+        height: auto;
+        aspect-ratio: 9 / 19.5;
+    }
+}

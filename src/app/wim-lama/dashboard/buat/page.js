@@ -6,9 +6,7 @@ import { supabase } from '@/utils/supabase';
 const TEMPLATE_CATEGORIES = [
   {
     id: 'floral', name: 'Floral',
-    templates: [
-      { val: 'floral1', name: 'Floral 1', img: '/assets/images/thumbnail-floral1.png' }
-    ]
+    templates: []
   },
   {
     id: 'minimalis', name: 'Minimalis',

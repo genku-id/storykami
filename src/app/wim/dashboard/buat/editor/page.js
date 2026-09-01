@@ -1,765 +1,382 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import JawaTemplate from '@/components/wim-baru/JawaTemplate';
+import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 
-function FieldGroup({ label, children }) {
+// --- Komponen Accordion Item ---
+function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children }) {
   return (
-    <div className="form-group" style={{ marginBottom: 12 }}>
-      {label && <label className="wim-label" style={{ marginBottom: 6, fontSize: '0.82rem', display: 'block' }}>{label}</label>}
-      {children}
-    </div>
-  );
-}
-
-function YoutubeScrubber({ value, timestamp, onChange, onTimestampChange }) {
-  const [videoId, setVideoId] = useState(null);
-  const [duration, setDuration] = useState(0);
-  const [player, setPlayer] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const playerId = 'yt-player-scrubber';
-
-  useEffect(() => {
-    if (!value) { setVideoId(null); return; }
-    const match = value.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-    if (match) setVideoId(match[1]);
-    else setVideoId(null);
-  }, [value]);
-
-  useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      if (firstScriptTag && firstScriptTag.parentNode) {
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      } else {
-        document.head.appendChild(tag);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!videoId) {
-      if (player && typeof player.destroy === 'function') {
-        player.destroy();
-        setPlayer(null);
-      }
-      return;
-    }
-
-    const initPlayer = () => {
-      if (player && typeof player.destroy === 'function') player.destroy();
-      const newPlayer = new window.YT.Player(playerId, {
-        height: '10',
-        width: '10',
-        videoId: videoId,
-        playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1 },
-        events: {
-          onReady: (e) => {
-            setDuration(e.target.getDuration());
-            setPlayer(e.target);
-          },
-          onStateChange: (e) => {
-            if (e.data === window.YT.PlayerState.PLAYING) setIsPlaying(true);
-            else setIsPlaying(false);
-          }
-        }
-      });
-    };
-
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
-    }
-
-    return () => {
-       if (player && typeof player.destroy === 'function') {
-         player.destroy();
-       }
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoId]);
-
-  const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
-
-  useEffect(() => {
-    let interval;
-    if (isPlaying && player && typeof player.getCurrentTime === 'function') {
-      interval = setInterval(() => {
-        setCurrentPlaybackTime(player.getCurrentTime());
-      }, 500);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, player]);
-
-  const togglePlay = () => {
-    if (!player) return;
-    if (isPlaying) {
-      player.pauseVideo();
-    } else {
-      player.seekTo(timestamp || 0);
-      player.playVideo();
-    }
-  };
-
-  const handleSlider = (e) => {
-    const val = parseInt(e.target.value, 10);
-    onTimestampChange(val);
-    if (player) {
-      player.seekTo(val);
-      if (!isPlaying) player.playVideo();
-    }
-  };
-  
-  const formatTime = (secs) => {
-    if (!secs || isNaN(secs)) return "0:00";
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  return (
-    <div>
-      <input type="text" className="wim-input" style={{ padding: '8px 12px', fontSize: '0.85rem', width: '100%' }} placeholder="https://www.youtube.com/watch?v=..." value={value || ''} onChange={e => onChange(e.target.value)} />
-      
-      {videoId && (
-        <div style={{ marginTop: 12, background: 'var(--bg-card)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)' }}>
-          <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
-            <div id={playerId}></div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <button type="button" onClick={togglePlay} style={{ background: 'var(--accent)', color: '#fff', border: 'none', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-              {isPlaying ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-              )}
-            </button>
-            <div style={{ flex: 1, paddingTop: 6 }}>
-               <input type="range" min="0" max={duration || 100} value={timestamp || 0} onChange={handleSlider} style={{ width: '100%', accentColor: 'var(--accent)', cursor: 'pointer' }} />
-               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>
-                 <span style={{ color: 'var(--accent)' }}>
-                   Mulai: {formatTime(timestamp || 0)}
-                   {isPlaying && <span style={{ color: 'var(--text-muted)', marginLeft: 8 }}>| Diputar: {formatTime(currentPlaybackTime)}</span>}
-                 </span>
-                 <span>Total: {formatTime(duration)}</span>
-               </div>
+    <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+      <div 
+        style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? '#f8fafc' : '#fff', borderBottom: isOpen ? '1px solid #eee' : 'none' }}
+        onClick={onClick}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {icon && <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>{icon}</span>}
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: '#334155' }}>{title}</h2>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} onClick={e => e.stopPropagation()}>
+          {/* Toggle Switch */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: '#64748b' }}>
+            <div style={{
+              width: 36, height: 20, background: visibility ? '#3b82f6' : '#cbd5e1', borderRadius: 20, position: 'relative', transition: '0.2s'
+            }}>
+              <div style={{
+                width: 16, height: 16, background: '#fff', borderRadius: '50%', position: 'absolute', top: 2, left: visibility ? 18 : 2, transition: '0.2s'
+              }}/>
             </div>
-          </div>
+            <input 
+              type="checkbox" 
+              checked={visibility} 
+              onChange={(e) => onToggleVisibility(pageKey, e.target.checked)}
+              style={{ display: 'none' }}
+            />
+            {visibility ? 'Aktif' : 'Disembunyikan'}
+          </label>
+          {/* Chevron */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }}>
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
         </div>
-      )}
-    </div>
-  );
-}
-
-
-function RepeaterField({ field, items, onChange }) {
-  const handleAdd = () => {
-    const newItem = {};
-    field.sub_fields.forEach(sf => newItem[sf.id] = '');
-    onChange([...(items || []), newItem]);
-  };
-
-  const handleRemove = (idx) => {
-    const newItems = [...items];
-    newItems.splice(idx, 1);
-    onChange(newItems);
-  };
-
-  const handleChange = (idx, key, val) => {
-    const newItems = [...items];
-    newItems[idx] = { ...newItems[idx], [key]: val };
-    onChange(newItems);
-  };
-
-  const itemsArr = Array.isArray(items) ? items : [];
-
-  return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-      <label style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, display: 'block' }}>{field.label}</label>
-      
-      {itemsArr.map((item, idx) => (
-        <div key={idx} style={{ background: 'var(--bg-secondary)', border: '1px dashed var(--border)', borderRadius: 8, padding: 16, marginBottom: 16, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: -12, left: 16, background: 'var(--accent)', color: '#fff', fontSize: '0.75rem', padding: '2px 8px', borderRadius: 12, fontWeight: 600 }}>
-            {field.item_title || 'Item'} {idx + 1}
-          </div>
-          <button type="button" onClick={() => handleRemove(idx)} style={{ position: 'absolute', top: 12, right: 12, background: '#fee2e2', color: '#ef4444', border: 'none', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </button>
-          
-          <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
-            {field.sub_fields.map(sf => {
-              if (sf.type === 'select') {
-                return (
-                  <FieldGroup key={sf.id} label={sf.label}>
-                    <select className="wim-input" style={{ padding: '8px 12px', fontSize: '0.85rem' }} value={item[sf.id] || ''} onChange={e => handleChange(idx, sf.id, e.target.value)}>
-                      <option value="">Pilih...</option>
-                      {sf.options?.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  </FieldGroup>
-                )
-              }
-              if (sf.type === 'textarea') {
-                 return (
-                   <FieldGroup key={sf.id} label={sf.label}>
-                     <textarea className="wim-input" style={{ padding: '8px 12px', fontSize: '0.85rem', minHeight: 60 }} value={item[sf.id] || ''} onChange={e => handleChange(idx, sf.id, e.target.value)} />
-                   </FieldGroup>
-                 )
-              }
-              return (
-                <FieldGroup key={sf.id} label={sf.label}>
-                  <input type={sf.type === 'date' ? 'date' : sf.type === 'time' ? 'time' : 'text'} className="wim-input" style={{ padding: '8px 12px', fontSize: '0.85rem' }} value={item[sf.id] || ''} onChange={e => handleChange(idx, sf.id, e.target.value)} />
-                </FieldGroup>
-              )
-            })}
-          </div>
-        </div>
-      ))}
-
-      <button type="button" onClick={handleAdd} className="btn" style={{ background: 'var(--bg-secondary)', border: '1px dashed var(--accent)', color: 'var(--accent)', width: '100%', padding: '10px', borderRadius: 8, fontSize: '0.85rem', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah {field.item_title || 'Item'}
-      </button>
-    </div>
-  );
-}
-
-function EditorPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const slug = searchParams.get('slug');
-
-  const [session, setSession] = useState(null);
-  const [invitation, setInvitation] = useState(null);
-  const [schema, setSchema] = useState(null);
-  const [formData, setFormData] = useState({});
-  const [usePhotos, setUsePhotos] = useState({});
-  const [images, setImages] = useState({});
-  const [existingImages, setExistingImages] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState(null);
-
-  const [activeModalPage, setActiveModalPage] = useState(null);
-
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  useEffect(() => {
-    const sStr = localStorage.getItem('wim_session');
-    if (!sStr) { router.replace('/wim/login'); return; }
-    setSession(JSON.parse(sStr));
-
-    if (slug) {
-      const loadData = async () => {
-        const { data: inv } = await supabase.from('invitations').select('*').eq('slug', slug).single();
-        if (inv) {
-          setInvitation(inv);
-          const initialData = inv.data || {};
-          if (!initialData.sections) initialData.sections = {};
-          setFormData(initialData);
-          
-          const currentPhotos = {};
-          const currentExistingImages = {};
-          if (inv.data) {
-             Object.keys(inv.data).forEach(key => {
-               if (key.endsWith('Foto') && inv.data[key]) {
-                  currentPhotos[key] = true;
-                  currentExistingImages[key] = inv.data[key];
-               }
-             });
-          }
-          setUsePhotos(currentPhotos);
-          setExistingImages(currentExistingImages);
-
-          const tName = inv.template_name || inv.template;
-          if (tName) {
-            try {
-              const res = await fetch(`/demo/${tName}/schema.json?t=${Date.now()}`);
-              if (res.ok) {
-                const s = await res.json();
-                setSchema(s);
-              }
-            } catch (err) {
-              console.error("Gagal load schema:", err);
-            }
-          }
-        }
-      };
-      loadData();
-    }
-  }, [router, slug]);
-
-  const compressImage = (file, maxSizeKB, maxWidth = 1200) => {
-    return new Promise((resolve) => {
-      if (file.type === 'image/gif') return resolve(file);
-      if (file.size <= maxSizeKB * 1024) return resolve(file);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          let quality = 0.8;
-          const tryCompress = (q) => {
-            canvas.toBlob((blob) => {
-              if (!blob) return resolve(file);
-              if (blob.size <= maxSizeKB * 1024 || q <= 0.2) {
-                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg', lastModified: Date.now() });
-                resolve(newFile);
-              } else { tryCompress(q - 0.2); }
-            }, 'image/jpeg', q);
-          };
-          tryCompress(quality);
-        };
-      };
-    });
-  };
-
-  const handleImageChange = async (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      showToast('Memproses foto...', 'info');
-      const compressedFile = await compressImage(files[0], 290);
-      setImages(prev => ({ ...prev, [name]: compressedFile }));
-    }
-  };
-
-  const getPreviewUrl = (name) => {
-    if (images[name]) return URL.createObjectURL(images[name]);
-    if (existingImages[name]) return existingImages[name];
-    return null;
-  };
-
-  const uploadImageToSupabase = async (file, slugName, prefix) => {
-    if (!file) return null;
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${slugName}-${prefix}-${Date.now()}.${fileExt}`;
-    const { error: uploadError } = await supabase.storage.from('wim-assets').upload(fileName, file);
-    if (uploadError) return null;
-    const { data } = supabase.storage.from('wim-assets').getPublicUrl(fileName);
-    return data.publicUrl;
-  };
-
-  const handleGenerate = async () => {
-    setIsLoading(true);
-    showToast('Menyimpan data dan memproses foto...', 'info');
-
-    let uploadedUrls = { ...existingImages };
-    for (const key of Object.keys(usePhotos)) {
-      if (usePhotos[key] && images[key]) {
-        const url = await uploadImageToSupabase(images[key], slug, key);
-        if (url) uploadedUrls[key] = url;
-      } else if (!usePhotos[key]) {
-        uploadedUrls[key] = null;
-      }
-    }
-
-    const finalData = { ...formData };
-    Object.keys(uploadedUrls).forEach(k => {
-      finalData[k] = uploadedUrls[k];
-    });
-
-    const { error } = await supabase
-      .from('invitations')
-      .update({ data: finalData })
-      .eq('slug', slug);
-
-    if (error) {
-      showToast('Gagal menyimpan ke database', 'error');
-      setIsLoading(false);
-      return;
-    }
-
-    showToast('Generate HTML Template...', 'info');
-
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, template: invitation.template_name, data: finalData })
-      });
-      const resData = await res.json();
-
-      if (res.ok) {
-        showToast('Undangan berhasil dibuat!', 'success');
-        setTimeout(() => router.push('/wim/dashboard'), 1500);
-      } else {
-        showToast(`Gagal Generate: ${resData.error}`, 'error');
-      }
-    } catch (err) {
-      showToast('Terjadi kesalahan sistem', 'error');
-    }
-    
-    setIsLoading(false);
-  };
-
-  const saveDraft = async () => {
-    showToast('Menyimpan draf...', 'info');
-    const { error } = await supabase
-      .from('invitations')
-      .update({ data: formData })
-      .eq('slug', slug);
-      
-    if (error) showToast('Gagal simpan draf', 'error');
-    else showToast('Draf disimpan!', 'success');
-  };
-
-  const handlePreview = () => {
-    const tName = invitation?.template_name || invitation?.template;
-    if (tName) {
-      window.open(`/demo/${tName}/index.html`, '_blank');
-    }
-  };
-
-  if (!schema) {
-    return (
-      <div className="page-container" style={{ maxWidth: 640, padding: '16px', textAlign: 'center', marginTop: 50 }}>
-        <div className="spinner" style={{ width: 24, height: 24, margin: '0 auto 16px' }} />
-        <p style={{ color: 'var(--text-secondary)' }}>Memuat Pengaturan Template...</p>
       </div>
-    );
-  }
-
-  return (
-    <div className="page-container" style={{ flex: 1, width: '100%', maxWidth: 1000, padding: '16px', paddingBottom: 100, margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
-      {toast && (
-        <div className={`toast toast-${toast.type}`}>
-          {toast.msg}
+      {isOpen && (
+        <div style={{ padding: '1.5rem' }}>
+          {children}
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <button
-          onClick={() => router.push(`/wim/dashboard/buat?edit=${slug}`)}
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'var(--font-outfit)' }}
+// --- Helper Input ---
+function InputField({ label, value, onChange, type = "text", placeholder = "", options = [] }) {
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.3rem', color: '#4a5568' }}>{label}</label>
+      {type === "textarea" ? (
+        <textarea 
+          value={value} 
+          onChange={onChange}
+          placeholder={placeholder}
+          rows={3}
+          style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px', resize: 'vertical' }}
+        />
+      ) : type === "select" ? (
+        <select
+          value={value}
+          onChange={onChange}
+          style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px', backgroundColor: '#fff' }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Kembali
-        </button>
-        <div>
-          <h1 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-outfit)', margin: 0 }}>
-            Isian Template
-          </h1>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>{schema.name} - {slug}</p>
-        </div>
-      </div>
-
-      {/* List of Pages (Trigger for Modals) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-        {schema.pages.map((page, idx) => (
-          <div 
-            key={page.id} 
-            onClick={() => setActiveModalPage(page)}
-            style={{ 
-              background: 'var(--bg-secondary)', border: '1px solid var(--border)', 
-              borderRadius: 12, padding: '16px', display: 'flex', alignItems: 'center', 
-              justifyContent: 'space-between', cursor: 'pointer', transition: 'all 0.2s',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent)'}
-            onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ background: 'var(--bg-card)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: 10, border: '1px solid var(--border)', flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: page.icon }} />
-              <div>
-                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)' }}>
-                  {idx + 1}. {page.title}
-                </h3>
-                <p style={{ margin: '4px 0 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>Klik untuk mengatur isi halaman</p>
-              </div>
-            </div>
-            <div style={{ background: 'var(--bg-card)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Floating Bottom Action */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--bg-card)', borderTop: '1px solid var(--border)', padding: '12px 16px', display: 'flex', gap: 12, zIndex: 10, boxShadow: '0 -4px 20px rgba(0,0,0,0.05)', justifyContent: 'center' }}>
-        <div style={{ display: 'flex', gap: 12, width: '100%', maxWidth: 1000 }}>
-          <button onClick={handlePreview} className="btn" style={{ flex: 1, padding: '12px', fontSize: '0.85rem', borderRadius: 8, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Preview
-          </button>
-          <button onClick={saveDraft} disabled={isLoading} className="btn" style={{ flex: 1, padding: '12px', fontSize: '0.85rem', borderRadius: 8, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontWeight: 600 }}>
-            Simpan Draf
-          </button>
-          <button onClick={handleGenerate} disabled={isLoading} className="btn btn-primary" style={{ flex: 1.5, padding: '12px', fontSize: '0.9rem', borderRadius: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
-            {isLoading ? (
-              <><div className="spinner" style={{ width: 16, height: 16 }} /> Tunggu...</>
-            ) : (
-              <>Generate <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg></>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Popup Modal for Page Content */}
-      {activeModalPage && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: '0 10px' }}>
-          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 640, borderTopLeftRadius: 20, borderTopRightRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90%', boxShadow: '0 -10px 40px rgba(0,0,0,0.3)', animation: 'slideUp 0.3s ease-out' }}>
-            
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24 }} dangerouslySetInnerHTML={{ __html: activeModalPage.icon }} />
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)' }}>{activeModalPage.title}</h3>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>Isi data untuk halaman ini</p>
-                </div>
-              </div>
-              <button onClick={() => setActiveModalPage(null)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.4rem', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>&times;</button>
-            </div>
-
-            <div style={{ flex: 1, padding: 20, overflowY: 'auto', background: 'var(--bg-secondary)', minHeight: 0 }}>
-              
-              {/* Page Toggle */}
-              {activeModalPage.allow_toggle && (
-                <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '14px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 700 }}>Tampilkan Halaman Ini</h4>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>Matikan jika Anda tidak ingin menggunakan fitur ini</p>
-                  </div>
-                  <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                    <div style={{ position: 'relative', width: 44, height: 24 }}>
-                      <input 
-                        type="checkbox" 
-                        checked={formData.sections?.[activeModalPage.id] !== false} 
-                        onChange={(e) => setFormData(p => ({ ...p, sections: { ...(p.sections || {}), [activeModalPage.id]: e.target.checked } }))} 
-                        style={{ opacity: 0, width: 0, height: 0 }}
-                      />
-                      <span style={{ position: 'absolute', cursor: 'pointer', inset: 0, background: formData.sections?.[activeModalPage.id] !== false ? 'var(--accent)' : 'var(--border)', borderRadius: 24, transition: '0.4s' }}></span>
-                      <span style={{ position: 'absolute', content: '""', height: 18, width: 18, left: formData.sections?.[activeModalPage.id] !== false ? 22 : 4, bottom: 3, background: '#fff', borderRadius: '50%', transition: '0.4s' }}></span>
-                    </div>
-                  </label>
-                </div>
-              )}
-
-              
-              {/* Photo Toggle */}
-              {activeModalPage.photos && activeModalPage.photos.map(photo => (
-                <div key={photo.name} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, marginBottom: 20 }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                    <input 
-                      type="checkbox" 
-                      checked={!!usePhotos[photo.name]} 
-                      onChange={(e) => setUsePhotos(p => ({ ...p, [photo.name]: e.target.checked }))} 
-                      style={{ width: 16, height: 16, accentColor: 'var(--accent)' }}
-                    />
-                    {photo.label}
-                  </label>
-                  
-                  {usePhotos[photo.name] ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
-                      <div style={{ position: 'relative', width: 80, height: 80, borderRadius: 8, border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                        {getPreviewUrl(photo.name) ? (
-                          <>
-                            <img src={getPreviewUrl(photo.name)} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <button type="button" onClick={() => {
-                              setImages(p => { const n = {...p}; delete n[photo.name]; return n; });
-                              setExistingImages(p => { const n = {...p}; delete n[photo.name]; return n; });
-                            }} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', fontSize: 10 }}>&times;</button>
-                          </>
-                        ) : (
-                          <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>+</span>
-                        )}
-                        {!getPreviewUrl(photo.name) && <input type="file" accept="image/*" name={photo.name} onChange={handleImageChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                        Akan otomatis dikompres<br/>(Maksimal file ~250KB)
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ marginTop: 8, fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                      {photo.defaultText} akan digunakan.
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* Presets */}
-              {activeModalPage.presets && (
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 600, marginBottom: 8, color: "var(--accent)" }}>Pilih Template Cepat:</div>
-                  <select
-                    className="wim-input"
-                    style={{ padding: '10px 12px', fontSize: '0.85rem', width: '100%', cursor: 'pointer' }}
-                    onChange={(e) => {
-                      const preset = activeModalPage.presets.find(p => p.name === e.target.value);
-                      if (preset) {
-                        setFormData(p => {
-                          const newD = { ...p };
-                          for (const key of Object.keys(preset.values)) {
-                            newD[key] = preset.values[key];
-                          }
-                          return newD;
-                        });
-                      }
-                    }}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>Pilih...</option>
-                    {activeModalPage.presets.map((preset, idx) => (
-                      <option key={idx} value={preset.name}>{preset.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Text Fields */}
-              <div style={{ display: 'grid', gap: 16 }}>
-                {activeModalPage.fields.map(f => {
-                  if (f.type === 'separator') {
-                    return <div key={f.id} style={{ borderBottom: '1px dashed var(--border)', margin: '16px 0 8px 0', position: 'relative' }}><span style={{ position: 'absolute', top: -10, left: 10, background: 'var(--bg-secondary)', padding: '0 8px', fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 700, fontFamily: 'var(--font-outfit)' }}>{f.label}</span></div>;
-                  }
-
-                  
-                  if (f.type === 'repeater') {
-                    return (
-                      <RepeaterField 
-                        key={f.id} 
-                        field={f} 
-                        items={f.id.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id]} 
-                        onChange={(val) => {
-                          setFormData(p => {
-                            const newD = { ...p };
-                            const parts = f.id.split('.');
-                            if (parts.length === 1) newD[parts[0]] = val;
-                            else newD[parts[0]] = { ...newD[parts[0]], [parts[1]]: val };
-                            return newD;
-                          });
-                        }}
-                      />
-                    );
-                  }
-                  
-                  if (f.type === 'select') {
-                    return (
-                      <FieldGroup key={f.id} label={f.label}>
-                        <select
-                          className="wim-input"
-                          style={{ padding: '10px 12px', fontSize: '0.85rem' }}
-                          value={f.id?.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id] || ''}
-                          onChange={e => setFormData(p => {
-                          const newD = { ...p };
-                          const parts = f.id ? f.id.split('.') : f.id.split('.');
-                          if (parts.length === 1) newD[parts[0]] = e.target.value;
-                          else {
-                            newD[parts[0]] = { ...newD[parts[0]], [parts[1]]: e.target.value };
-                          }
-                          return newD;
-                        })}>
-                          <option value="">Pilih...</option>
-                          {f.options?.map(opt => (
-                            <option key={opt} value={opt}>{opt}</option>
-                          ))}
-                        </select>
-                      </FieldGroup>
-                    );
-                  }
-                  if (f.type === 'textarea') {
-                    return (
-                      <FieldGroup key={f.id} label={f.label}>
-                        <textarea
-                          className="wim-input"
-                          style={{ padding: '10px 12px', fontSize: '0.85rem', minHeight: 80, resize: 'vertical' }}
-                          placeholder={f.placeholder}
-                          value={f.id?.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id] || ''}
-                          onChange={e => setFormData(p => {
-                          const newD = { ...p };
-                          const parts = f.id ? f.id.split('.') : f.id.split('.');
-                          if (parts.length === 1) newD[parts[0]] = e.target.value;
-                          else {
-                            newD[parts[0]] = { ...newD[parts[0]], [parts[1]]: e.target.value };
-                          }
-                          return newD;
-                        })}
-                        />
-                      </FieldGroup>
-                    );
-                  }
-
-                  if (f.type === 'youtube_audio') {
-                    return (
-                      <FieldGroup key={f.id} label={f.label}>
-                        <YoutubeScrubber
-                          value={f.id?.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id]}
-                          timestamp={formData['audioTimestamp']}
-                          onChange={val => setFormData(p => ({ ...p, [f.id]: val }))}
-                          onTimestampChange={val => setFormData(p => ({ ...p, audioTimestamp: val }))}
-                        />
-                      </FieldGroup>
-                    );
-                  }
-
-                  return (
-                    <FieldGroup key={f.id} label={f.label}>
-                      <input
-                        type={f.type === 'date' ? 'date' : 'text'}
-                        className="wim-input"
-                        style={{ padding: '8px 12px', fontSize: '0.85rem' }}
-                        placeholder={f.placeholder}
-                        value={f.id?.includes('.') ? formData[f.id.split('.')[0]]?.[f.id.split('.')[1]] : formData[f.id] || ''}
-                        onChange={e => setFormData(p => {
-                          const newD = { ...p };
-                          const parts = f.id ? f.id.split('.') : f.id.split('.');
-                          if (parts.length === 1) newD[parts[0]] = e.target.value;
-                          else {
-                            newD[parts[0]] = { ...newD[parts[0]], [parts[1]]: e.target.value };
-                          }
-                          return newD;
-                        })}
-                      />
-                    </FieldGroup>
-                  );
-                })}
-              </div>
-              <div style={{ height: 40 }} />
-
-            </div>
-            
-            <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
-              <button onClick={() => setActiveModalPage(null)} className="btn btn-primary" style={{ padding: '10px 24px', fontSize: '0.9rem', borderRadius: 8 }}>
-                Simpan & Tutup
-              </button>
-            </div>
-
-          </div>
-        </div>
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      ) : (
+        <input 
+          type={type} 
+          value={value} 
+          onChange={onChange}
+          placeholder={placeholder}
+          style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px' }}
+        />
       )}
-
-      {/* Slide Up Animation Style */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideUp {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}} />
     </div>
   );
 }
 
-export default function EditorPageWrapper() {
+export default function FormGenerator() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug') || 'test-slug';
+  
+  const [data, setData] = useState(defaultInvitationData);
+  const [openAccordion, setOpenAccordion] = useState('cover');
+  const [showPreview, setShowPreview] = useState(false); // Modal state
+
+  // Load existing data if edit
+  useEffect(() => {
+    const loadData = async () => {
+      if (slug) {
+        const { data: dbData } = await supabase.from('invitations').select('data').eq('slug', slug).single();
+        if (dbData && dbData.data) {
+          setData(prev => ({ 
+            ...prev, 
+            ...dbData.data,
+            pageVisibility: { ...prev.pageVisibility, ...(dbData.data.pageVisibility || {}) }
+          }));
+        }
+      }
+    };
+    loadData();
+  }, [slug]);
+
+  // Auto-save debounced
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (slug) {
+        await supabase.from('invitations').update({ data: data }).eq('slug', slug);
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [data, slug]);
+
+  const handleChange = (path, value) => {
+    const keys = path.split('.');
+    setData(prev => {
+      const newData = { ...prev };
+      let current = newData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {}; // fallback
+        current[keys[i]] = Array.isArray(current[keys[i]]) ? [...current[keys[i]]] : { ...current[keys[i]] };
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newData;
+    });
+  };
+
+  const handleToggleVisibility = (pageKey, value) => {
+    setData(prev => ({
+      ...prev,
+      pageVisibility: {
+        ...prev.pageVisibility,
+        [pageKey]: value
+      }
+    }));
+  };
+
+  const isVisible = (pageKey) => data.pageVisibility[pageKey] ?? true;
+
+  // --- Repeater Handlers: Love Story ---
+  const handleAddStory = () => {
+    setData(prev => ({
+      ...prev,
+      ceritaCinta: [...(prev.ceritaCinta || []), { tanggal: '', judul: '', cerita: '' }]
+    }));
+  };
+  const handleRemoveStory = (index) => {
+    setData(prev => ({
+      ...prev,
+      ceritaCinta: prev.ceritaCinta.filter((_, i) => i !== index)
+    }));
+  };
+  const handleStoryChange = (index, field, value) => {
+    setData(prev => {
+      const newStories = [...prev.ceritaCinta];
+      newStories[index] = { ...newStories[index], [field]: value };
+      return { ...prev, ceritaCinta: newStories };
+    });
+  };
+
+  // --- Repeater Handlers: Gift Accounts ---
+  const handleAddAccount = () => {
+    setData(prev => ({
+      ...prev,
+      hadiahDigital: {
+        ...prev.hadiahDigital,
+        accounts: [...(prev.hadiahDigital?.accounts || []), { name: 'BCA', number: '', owner: '', whatsapp: '' }]
+      }
+    }));
+  };
+  const handleRemoveAccount = (index) => {
+    setData(prev => ({
+      ...prev,
+      hadiahDigital: {
+        ...prev.hadiahDigital,
+        accounts: prev.hadiahDigital.accounts.filter((_, i) => i !== index)
+      }
+    }));
+  };
+  const handleAccountChange = (index, field, value) => {
+    setData(prev => {
+      const newAccs = [...(prev.hadiahDigital?.accounts || [])];
+      newAccs[index] = { ...newAccs[index], [field]: value };
+      return { ...prev, hadiahDigital: { ...prev.hadiahDigital, accounts: newAccs } };
+    });
+  };
+
+  const bankOptions = ["BCA","BLU","BNI","BRI","BSI","CIMB","DANA","GOPAY","JAGO","JENIUS","LINKAJA","MANDIRI","NEO","OVO","PERMATA","SEABANK","SHOPEEPAY"];
+
   return (
-    <Suspense fallback={<div style={{ padding: 16, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Memuat...</div>}>
-      <EditorPage />
-    </Suspense>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', background: '#f1f5f9', fontFamily: 'sans-serif' }}>
+      
+      {/* Editor Main Container (Full Width) */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem 6rem 1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <a href="/wim/dashboard/buat" style={{ textDecoration: 'none', color: '#475569', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Kembali
+            </a>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a', margin: 0, paddingLeft: '1rem', borderLeft: '1px solid #cbd5e1' }}>Editor Undangan</h1>
+          </div>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', background: '#e2e8f0', padding: '4px 12px', borderRadius: 20 }}>
+            Tersimpan Otomatis
+          </span>
+        </div>
+
+        {/* Layout Grid 2 Kolom */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>} title="1. Halaman Cover" pageKey="cover" isOpen={openAccordion === 'cover'} onClick={() => setOpenAccordion(openAccordion === 'cover' ? '' : 'cover')} visibility={isVisible('cover')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Nama Panggilan Wanita (Inisial)" value={data.mempelai.wanita.namaPanggilan} onChange={e => handleChange('mempelai.wanita.namaPanggilan', e.target.value)} />
+          <InputField label="Nama Panggilan Pria (Inisial)" value={data.mempelai.pria.namaPanggilan} onChange={e => handleChange('mempelai.pria.namaPanggilan', e.target.value)} />
+          <InputField label="Tautan Musik Latar (YouTube/MP3)" type="url" value={data.musikUrl || ''} onChange={e => handleChange('musikUrl', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>} title="2. Halaman Hero" pageKey="hero" isOpen={openAccordion === 'hero'} onClick={() => setOpenAccordion(openAccordion === 'hero' ? '' : 'hero')} visibility={isVisible('hero')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Tanggal Acara Utama" type="date" value={data.acara.akad.tanggal} onChange={e => handleChange('acara.akad.tanggal', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>} title="3. Halaman Profil" pageKey="profiles" isOpen={openAccordion === 'profiles'} onClick={() => setOpenAccordion(openAccordion === 'profiles' ? '' : 'profiles')} visibility={isVisible('profiles')} onToggleVisibility={handleToggleVisibility}>
+          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Wanita</h3>
+          <InputField label="Nama Lengkap" value={data.mempelai.wanita.namaLengkap} onChange={e => handleChange('mempelai.wanita.namaLengkap', e.target.value)} />
+          <InputField label="Nama Ayah" value={data.mempelai.wanita.namaAyah} onChange={e => handleChange('mempelai.wanita.namaAyah', e.target.value)} />
+          <InputField label="Nama Ibu" value={data.mempelai.wanita.namaIbu} onChange={e => handleChange('mempelai.wanita.namaIbu', e.target.value)} />
+          <InputField label="Username Instagram" value={data.mempelai.wanita.instagram} onChange={e => handleChange('mempelai.wanita.instagram', e.target.value)} />
+
+          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Pria</h3>
+          <InputField label="Nama Lengkap" value={data.mempelai.pria.namaLengkap} onChange={e => handleChange('mempelai.pria.namaLengkap', e.target.value)} />
+          <InputField label="Nama Ayah" value={data.mempelai.pria.namaAyah} onChange={e => handleChange('mempelai.pria.namaAyah', e.target.value)} />
+          <InputField label="Nama Ibu" value={data.mempelai.pria.namaIbu} onChange={e => handleChange('mempelai.pria.namaIbu', e.target.value)} />
+          <InputField label="Username Instagram" value={data.mempelai.pria.instagram} onChange={e => handleChange('mempelai.pria.instagram', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>} title="4. Halaman Quotes" pageKey="quote" isOpen={openAccordion === 'quote'} onClick={() => setOpenAccordion(openAccordion === 'quote' ? '' : 'quote')} visibility={isVisible('quote')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Sumber Quote" value={data.kutipan.sumber} onChange={e => handleChange('kutipan.sumber', e.target.value)} />
+          <InputField label="Isi Quote" type="textarea" value={data.kutipan.teks} onChange={e => handleChange('kutipan.teks', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>} title="5. Halaman Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
+          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Akad Nikah</h3>
+          <InputField label="Waktu Mulai" type="time" value={data.acara.akad.waktuMulai} onChange={e => handleChange('acara.akad.waktuMulai', e.target.value)} />
+          <InputField label="Waktu Selesai" type="time" value={data.acara.akad.waktuSelesai} onChange={e => handleChange('acara.akad.waktuSelesai', e.target.value)} />
+          <InputField label="Lokasi/Gedung" value={data.acara.akad.lokasi} onChange={e => handleChange('acara.akad.lokasi', e.target.value)} />
+          <InputField label="Alamat Lengkap" type="textarea" value={data.acara.akad.alamatLengkap} onChange={e => handleChange('acara.akad.alamatLengkap', e.target.value)} />
+          <InputField label="Link Google Maps" type="url" value={data.acara.akad.linkMap} onChange={e => handleChange('acara.akad.linkMap', e.target.value)} />
+
+          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Resepsi</h3>
+          <InputField label="Waktu Mulai" type="time" value={data.acara.resepsi.waktuMulai} onChange={e => handleChange('acara.resepsi.waktuMulai', e.target.value)} />
+          <InputField label="Waktu Selesai" type="time" value={data.acara.resepsi.waktuSelesai} onChange={e => handleChange('acara.resepsi.waktuSelesai', e.target.value)} />
+          <InputField label="Lokasi/Gedung" value={data.acara.resepsi.lokasi} onChange={e => handleChange('acara.resepsi.lokasi', e.target.value)} />
+          <InputField label="Alamat Lengkap" type="textarea" value={data.acara.resepsi.alamatLengkap} onChange={e => handleChange('acara.resepsi.alamatLengkap', e.target.value)} />
+          <InputField label="Link Google Maps" type="url" value={data.acara.resepsi.linkMap} onChange={e => handleChange('acara.resepsi.linkMap', e.target.value)} />
+          <InputField label="Foto Resepsi" value={data.foto?.resepsi || ''} onChange={e => handleChange('foto.resepsi', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>} title="6. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
+          {data.ceritaCinta?.map((cerita, index) => (
+            <div key={index} style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '1rem', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Cerita #{index + 1}</h4>
+                <button onClick={() => handleRemoveStory(index)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
+              </div>
+              <InputField label="Judul Cerita" value={cerita.judul} onChange={e => handleStoryChange(index, 'judul', e.target.value)} />
+              <InputField label="Tanggal / Tahun" value={cerita.tanggal} onChange={e => handleStoryChange(index, 'tanggal', e.target.value)} />
+              <InputField label="Isi Cerita" type="textarea" value={cerita.cerita} onChange={e => handleStoryChange(index, 'cerita', e.target.value)} />
+            </div>
+          ))}
+          <button onClick={handleAddStory} style={{ width: '100%', padding: '0.75rem', background: '#e2e8f0', border: '1px dashed #cbd5e1', borderRadius: '8px', color: '#475569', cursor: 'pointer', fontWeight: 500 }}>
+            + Tambah Cerita
+          </button>
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>} title="7. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
+           {data.hadiahDigital?.accounts?.map((acc, idx) => (
+             <div key={idx} style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '1rem', background: '#f8fafc' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                 <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Rekening #{idx + 1}</h4>
+                 <button onClick={() => handleRemoveAccount(idx)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
+               </div>
+               <InputField label="Nama Bank / E-Wallet" type="select" options={bankOptions} value={acc.name} onChange={e => handleAccountChange(idx, 'name', e.target.value)} />
+               <InputField label="Nomor Rekening / HP" value={acc.number} onChange={e => handleAccountChange(idx, 'number', e.target.value)} />
+               <InputField label="Atas Nama" value={acc.owner} onChange={e => handleAccountChange(idx, 'owner', e.target.value)} />
+             </div>
+           ))}
+           <button onClick={handleAddAccount} style={{ width: '100%', padding: '0.75rem', background: '#e2e8f0', border: '1px dashed #cbd5e1', borderRadius: '8px', color: '#475569', cursor: 'pointer', fontWeight: 500, marginBottom: '2rem' }}>
+             + Tambah Rekening
+           </button>
+
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Kirim Kado Fisik</h3>
+           <InputField label="Nama Penerima Paket" value={data.hadiahDigital?.receiver || ''} onChange={e => handleChange('hadiahDigital.receiver', e.target.value)} />
+           <InputField label="Alamat Pengiriman" type="textarea" value={data.hadiahDigital?.physicalAddress || ''} onChange={e => handleChange('hadiahDigital.physicalAddress', e.target.value)} />
+           <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>} title="8. Ucapan & Doa (Guestbook)" pageKey="guestbook" isOpen={openAccordion === 'guestbook'} onClick={() => setOpenAccordion(openAccordion === 'guestbook' ? '' : 'guestbook')} visibility={isVisible('guestbook')} onToggleVisibility={handleToggleVisibility}>
+           <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '1rem', borderRadius: 8 }}>
+             <p style={{ fontSize: '0.9rem', color: '#1e40af', margin: 0 }}>
+               <strong>Info:</strong> Fitur Ucapan terhubung langsung ke tabel Supabase dan akan ditampilkan secara otomatis.
+             </p>
+           </div>
+        </AccordionItem>
+
+        <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>} title="9. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Kata Penutup & Salam" type="textarea" value={data.penutup || "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.\n\nWassalamu'alaikum Wr. Wb."} onChange={e => handleChange('penutup', e.target.value)} />
+        </AccordionItem>
+
+        </div> {/* End of Layout Grid */}
+
+      </div>
+
+      {/* Floating Preview Button */}
+      {!showPreview && (
+        <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
+          <button 
+            onClick={() => setShowPreview(true)}
+            style={{ 
+              background: '#0f172a', color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '30px',
+              fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)', cursor: 'pointer', transition: 'transform 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Lihat Preview Undangan
+          </button>
+        </div>
+      )}
+
+      {/* Modal Preview Full Screen Mockup */}
+      {showPreview && (
+        <div style={{ 
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)', zIndex: 1000, 
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          {/* Close Button Floating */}
+          <button 
+            onClick={() => setShowPreview(false)}
+            style={{
+              position: 'absolute', top: '2rem', right: '2rem', background: '#ef4444', color: '#fff',
+              border: 'none', width: 50, height: 50, borderRadius: '50%', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(239,68,68,0.4)',
+              transition: '0.2s', zIndex: 1010
+            }}
+            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+            title="Tutup Preview"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+
+          {/* Mockup HP Container */}
+          <div style={{
+            height: '90vh', aspectRatio: '9/16', background: '#fff', borderRadius: '36px', overflow: 'hidden',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', position: 'relative', border: '8px solid #1e293b'
+          }}>
+            {/* Notch */}
+            <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '150px', height: '28px', background: '#1e293b', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', zIndex: 50 }} />
+            
+            <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+              <JawaTemplate data={data} slug={slug} isVisible={isVisible} />
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 }
