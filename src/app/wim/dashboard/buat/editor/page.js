@@ -373,7 +373,7 @@ export default function FormGenerator() {
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '150px', height: '28px', background: '#1e293b', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', zIndex: 50 }} />
             
             <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-              {templateName === 'jawa' ? (
+              {templateName === 'template-daerahJawa' || templateName === 'jawa' ? (
                 <JawaTemplate data={data} slug={slug} isVisible={isVisible} />
               ) : (
                 <Floral1Template data={data} slug={slug} isVisible={isVisible} />

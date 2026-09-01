@@ -21,7 +21,7 @@ const TEMPLATE_CATEGORIES = [
   {
     id: 'tradisional', name: 'Tradisional',
     templates: [
-      { val: 'jawa', name: 'Jawa', img: '/assets/images/jawa_landscape_joglo.png' }
+      { val: 'template-daerahJawa', name: 'Jawa', img: '/assets/images/jawa_landscape_joglo.png' }
     ]
   }
 ];
