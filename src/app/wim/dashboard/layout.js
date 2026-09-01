@@ -135,7 +135,7 @@ export default function DashboardLayout({ children }) {
             ))}
 
             {/* 2. Katalog Tema */}
-            <a href="/wim/dashboard/katalog" onClick={() => setSidebarOpen(false)} style={{
+            <a href="/wim/dashboard/buat" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: isBuatActive ? 700 : 500, fontSize: '0.875rem',
               color: isBuatActive ? '#fff' : 'var(--text-secondary)',

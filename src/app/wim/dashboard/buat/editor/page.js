@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
@@ -87,6 +88,7 @@ function InputField({ label, value, onChange, type = "text", placeholder = "", o
 export default function FormGenerator() {
   const searchParams = useSearchParams();
   const slug = searchParams.get('slug') || 'test-slug';
+  const templateName = searchParams.get('template') || 'floral1';
   
   const [data, setData] = useState(defaultInvitationData);
   const [openAccordion, setOpenAccordion] = useState('cover');
@@ -371,7 +373,11 @@ export default function FormGenerator() {
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '150px', height: '28px', background: '#1e293b', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', zIndex: 50 }} />
             
             <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-              <JawaTemplate data={data} slug={slug} isVisible={isVisible} />
+              {templateName === 'jawa' ? (
+                <JawaTemplate data={data} slug={slug} isVisible={isVisible} />
+              ) : (
+                <Floral1Template data={data} slug={slug} isVisible={isVisible} />
+              )}
             </div>
           </div>
         </div>

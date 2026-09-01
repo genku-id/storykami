@@ -20,7 +20,9 @@ const TEMPLATE_CATEGORIES = [
   },
   {
     id: 'tradisional', name: 'Tradisional',
-    templates: []
+    templates: [
+      { val: 'jawa', name: 'Jawa', img: '/assets/images/jawa_landscape_joglo.png' }
+    ]
   }
 ];
 
