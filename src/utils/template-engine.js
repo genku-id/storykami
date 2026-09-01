@@ -216,6 +216,55 @@
         if (!input || typeof input !== "object") return {};
         const output = Object.assign({}, input);
 
+        // --- MIGRATION DARI WIM FORMAT (wimDataContract) KE ENGINE FORMAT ---
+        if (input.mempelai) {
+            if (input.mempelai.wanita) {
+                output.brideName = input.mempelai.wanita.namaPanggilan || output.brideName;
+                output.brideParents = `Putri ${input.mempelai.wanita.urutanAnak || ''} dari\nBapak ${input.mempelai.wanita.namaAyah || ''} & Ibu ${input.mempelai.wanita.namaIbu || ''}`;
+                output.brideInstagram = input.mempelai.wanita.instagram || output.brideInstagram;
+                output.brideImage = input.mempelai.wanita.fotoUtama || output.brideImage;
+            }
+            if (input.mempelai.pria) {
+                output.groomName = input.mempelai.pria.namaPanggilan || output.groomName;
+                output.groomParents = `Putra ${input.mempelai.pria.urutanAnak || ''} dari\nBapak ${input.mempelai.pria.namaAyah || ''} & Ibu ${input.mempelai.pria.namaIbu || ''}`;
+                output.groomInstagram = input.mempelai.pria.instagram || output.groomInstagram;
+                output.groomImage = input.mempelai.pria.fotoUtama || output.groomImage;
+            }
+            output.coverName = `${output.brideName || ''} & ${output.groomName || ''}`.trim();
+        }
+
+        if (input.acara) {
+            output.events = [];
+            if (input.acara.akad) {
+                output.events.push({
+                    title: "Akad Nikah",
+                    date: input.acara.akad.tanggal,
+                    startTime: input.acara.akad.waktuMulai,
+                    endTime: input.acara.akad.waktuSelesai,
+                    locationName: input.acara.akad.lokasi,
+                    locationAddress: input.acara.akad.alamatLengkap,
+                    mapUrl: input.acara.akad.linkMap
+                });
+                output.weddingDate = input.acara.akad.tanggal;
+            }
+            if (input.acara.resepsi) {
+                output.events.push({
+                    title: "Resepsi",
+                    date: input.acara.resepsi.tanggal,
+                    startTime: input.acara.resepsi.waktuMulai,
+                    endTime: input.acara.resepsi.waktuSelesai,
+                    locationName: input.acara.resepsi.lokasi,
+                    locationAddress: input.acara.resepsi.alamatLengkap,
+                    mapUrl: input.acara.resepsi.linkMap
+                });
+                if (!output.weddingDate) output.weddingDate = input.acara.resepsi.tanggal;
+            }
+        }
+
+        if (input.music && input.music.audioUrl) {
+           output.audioUrl = input.music.audioUrl;
+        }
+
         if (input.events && !Array.isArray(input.events)) {
             const eventKeys = Object.keys(input.events);
             const orderedKeys = ["akad", "resepsi"]
