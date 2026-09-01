@@ -1,11 +1,15 @@
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <>
       {/* Navigation */}
-      <nav className={styles.navbar}>
+      <nav className={styles.navbar} style={{position: 'relative'}}>
         <div className={styles.brandContainer}>
           <Image src="/logo.png" alt="StoryKami Logo" width={70} height={70} style={{objectFit: 'contain'}} />
           <div className={styles.brandText}>
@@ -13,10 +17,20 @@ export default function Home() {
             <span className={styles.brandSub}>digital invitation</span>
           </div>
         </div>
-        <div className={styles.navLinks}>
-          <a href="#katalog">Katalog</a>
-          <a href="#harga">Harga</a>
-          <a href="#reseller">Reseller</a>
+        
+        {/* Hamburger Menu Button */}
+        <button 
+          className={styles.mobileMenuBtn} 
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle Menu"
+        >
+          ☰
+        </button>
+
+        <div className={`${styles.navLinks} ${menuOpen ? styles.mobileNavActive : ''}`}>
+          <a href="#katalog" onClick={() => setMenuOpen(false)}>Katalog</a>
+          <a href="#harga" onClick={() => setMenuOpen(false)}>Harga</a>
+          <a href="#reseller" onClick={() => setMenuOpen(false)}>Reseller</a>
         </div>
       </nav>
 

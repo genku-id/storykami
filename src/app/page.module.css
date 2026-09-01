@@ -263,3 +263,29 @@
   .navLinks { display: none; }
   .priceCard.popular { transform: scale(1); }
 }
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary);
+}
+.mobileNavActive {
+  display: flex !important;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .mobileMenuBtn {
+    display: block;
+  }
+}
