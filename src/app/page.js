@@ -67,25 +67,7 @@ export default function Home() {
               <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>Floral Elegance 1</h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Minimalis & Romantis</p>
-                {/* Asumsikan template dihosting di /template/template-floral1/index.html */}
-                <a href="/demo/template-floral1/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className={styles.card}>
-              <div className={styles.cardImageWrapper}>
-                <Image 
-                  src="/images/floral2_preview.png" 
-                  alt="Floral Elegance 2 Preview" 
-                  fill 
-                  style={{objectFit: 'cover', objectPosition: 'top'}} 
-                />
-              </div>
-              <div className={styles.cardContent}>
-                <h3 className={styles.cardTitle}>Floral Elegance 2</h3>
-                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Vintage & Estetik</p>
-                <a href="/demo/template-floral2/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+                <a href="/demo/floral1" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
               </div>
             </div>
 
@@ -102,7 +84,7 @@ export default function Home() {
               <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>Jawa Klasik</h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Adat Tradisional & Elegan</p>
-                <a href="/demo/template-daerahJawa/index.html?to=Tamu+Demo" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+                <a href="/demo/template-daerahJawa" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
               </div>
             </div>
 
