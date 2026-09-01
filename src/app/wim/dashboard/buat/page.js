@@ -1,470 +1,446 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Floral1Template from '@/components/wim-baru/Floral1Template';
+import JawaTemplate from '@/components/wim-baru/JawaTemplate';
+import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 
-const TEMPLATE_CATEGORIES = [
-  {
-    id: 'floral', name: 'Floral',
-    templates: [
-      { val: 'floral1', name: 'Floral 1', img: '/assets/images/thumbnail-floral1.png' }
-    ]
-  },
-  {
-    id: 'minimalis', name: 'Minimalis',
-    templates: []
-  },
-  {
-    id: 'modern', name: 'Modern',
-    templates: []
-  },
-  {
-    id: 'tradisional', name: 'Tradisional',
-    templates: [
-      { val: 'template-daerahJawa', name: 'Jawa', img: '/assets/images/jawa_landscape_joglo.png' }
-    ]
-  }
-];
-
-function FieldGroup({ label, children }) {
+// --- Komponen Accordion Item ---
+function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
   return (
-    <div className="form-group" style={{ marginBottom: 0 }}>
-      {label && <label className="wim-label" style={{ marginBottom: 6, fontSize: '0.82rem' }}>{label}</label>}
-      {children}
+    <div style={{ background: 'var(--bg-card)', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', marginBottom: '1rem', border: '1px solid var(--border)' }}>
+      <div 
+        style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'var(--bg-primary)' : 'var(--bg-card)', borderBottom: isOpen ? '1px solid var(--border)' : 'none' }}
+        onClick={onClick}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {icon && <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>{icon}</span>}
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{title}</h2>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} onClick={e => e.stopPropagation()}>
+          {/* Toggle Switch */}
+          {!hideToggle && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              <div style={{
+                width: 36, height: 20, background: visibility ? 'var(--success)' : 'var(--border-hover)', borderRadius: 20, position: 'relative', transition: '0.2s'
+              }}>
+                <div style={{
+                  width: 16, height: 16, background: 'var(--bg-card)', borderRadius: '50%', position: 'absolute', top: 2, left: visibility ? 18 : 2, transition: '0.2s'
+                }}/>
+              </div>
+              <input 
+                type="checkbox" 
+                checked={visibility} 
+                onChange={(e) => onToggleVisibility(pageKey, e.target.checked)}
+                style={{ display: 'none' }}
+              />
+              {visibility ? 'Aktif' : 'Disembunyikan'}
+            </label>
+          )}
+          {/* Chevron */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }}>
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      {isOpen && (
+        <div style={{ padding: '1.5rem' }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
 
-function BuatPage() {
+// --- Helper Input ---
+function InputField({ label, value, onChange, type = "text", placeholder = "", options = [], disabled = false }) {
+  return (
+    <div className="form-group" style={{ marginBottom: '1rem' }}>
+      <label className="wim-label" style={{ marginBottom: '0.3rem' }}>{label}</label>
+      {type === "textarea" ? (
+        <textarea 
+          value={value} 
+          onChange={onChange}
+          placeholder={placeholder}
+          rows={3}
+          disabled={disabled}
+          className="wim-input"
+          style={{ resize: 'vertical' }}
+        />
+      ) : type === "select" ? (
+        <select
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          className="wim-input"
+        >
+          {options.map(opt => <option key={opt.val || opt} value={opt.val || opt}>{opt.name || opt}</option>)}
+        </select>
+      ) : (
+        <input 
+          type={type} 
+          value={value} 
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="wim-input"
+        />
+      )}
+    </div>
+  );
+}
+
+const TEMPLATE_OPTIONS = [
+  { val: 'floral1', name: 'Floral Elegance 1' },
+  { val: 'template-daerahJawa', name: 'Jawa Klasik' }
+];
+
+export default function UnifiedEditor() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editId = searchParams.get('edit');
-
-  const [session, setSession] = useState(null);
-  const [slug, setSlug] = useState('');
-  const [templateName, setTemplateName] = useState(''); // DIKOSONGKAN SAAT AWAL
-  const [clientWa, setClientWa] = useState('');
-  const [thumbnailJudul, setThumbnailJudul] = useState('');
-  const [thumbnailDeskripsi, setThumbnailDeskripsi] = useState('');
+  const editId = searchParams.get('edit'); // Jika ada, berarti mode Edit
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [toast, setToast] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [useCustomThumbnail, setUseCustomThumbnail] = useState(false);
-  const [images, setImages] = useState({ thumbnailFoto: null });
-  const [existingThumbnailUrl, setExistingThumbnailUrl] = useState('');
+  const [slug, setSlug] = useState('');
+  const [templateName, setTemplateName] = useState('floral1');
+  const [data, setData] = useState(defaultInvitationData);
+  const [openAccordion, setOpenAccordion] = useState('pengaturan');
+  const [showPreview, setShowPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Loading awal
 
-  // Modal Catalog State
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('floral');
-
-  const allTemplates = TEMPLATE_CATEGORIES.flatMap(c => c.templates);
-  const selectedTemplate = allTemplates.find(t => t.val === templateName);
-
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
-  };
-
+  // Load existing data if edit
   useEffect(() => {
-    const sStr = localStorage.getItem('wim_session');
-    if (!sStr) { router.replace('/wim/login'); return; }
-    setSession(JSON.parse(sStr));
-
-    if (editId) {
-      const loadEdit = async () => {
-        const { data } = await supabase.from('invitations').select('*').eq('slug', editId).single();
-        if (data) {
-          setSlug(data.slug);
-          setTemplateName(data.template_name || data.template || '');
-          setClientWa(data.data?.clientWa || '');
-          setThumbnailJudul(data.data?.thumbnailJudul || '');
-          setThumbnailDeskripsi(data.data?.thumbnailDeskripsi || '');
-          if (data.data?.thumbnailFoto) {
-            setUseCustomThumbnail(true);
-            setExistingThumbnailUrl(data.data.thumbnailFoto);
+    const loadData = async () => {
+      if (editId) {
+        const { data: dbData } = await supabase.from('invitations').select('*').eq('slug', editId).single();
+        if (dbData) {
+          setSlug(dbData.slug);
+          setTemplateName(dbData.template_name || dbData.template || 'floral1');
+          
+          if (dbData.data) {
+            setData(prev => ({ 
+              ...prev, 
+              ...dbData.data,
+              pageVisibility: { ...prev.pageVisibility, ...(dbData.data.pageVisibility || {}) }
+            }));
           }
+        } else {
+          alert('Data tidak ditemukan!');
+          router.push('/wim/dashboard');
         }
-      };
-      loadEdit();
-    }
-  }, [router, editId]);
+      }
+      setIsLoading(false);
+    };
+    loadData();
+  }, [editId, router]);
 
-  const compressImage = (file, maxSizeKB, maxWidth = 1200) => {
-    return new Promise((resolve) => {
-      if (file.type === 'image/gif') return resolve(file);
-      if (file.size <= maxSizeKB * 1024) return resolve(file);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          let quality = 0.8;
-          const tryCompress = (q) => {
-            canvas.toBlob((blob) => {
-              if (!blob) return resolve(file);
-              if (blob.size <= maxSizeKB * 1024 || q <= 0.2) {
-                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg', lastModified: Date.now() });
-                resolve(newFile);
-              } else { tryCompress(q - 0.2); }
-            }, 'image/jpeg', q);
-          };
-          tryCompress(quality);
-        };
-      };
+  const handleChange = (path, value) => {
+    setData(prev => {
+      const newData = { ...prev };
+      const keys = path.split('.');
+      let current = newData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newData;
     });
   };
 
-  const handleImageChange = async (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      showToast('Memproses foto...', 'info');
-      const compressedFile = await compressImage(files[0], 290);
-      setImages(prev => ({ ...prev, [name]: compressedFile }));
-    }
+  const handleToggleVisibility = (pageKey, isVisible) => {
+    setData(prev => ({
+      ...prev,
+      pageVisibility: { ...prev.pageVisibility, [pageKey]: isVisible }
+    }));
+  };
+  
+  const isVisible = (pageKey) => {
+    return data.pageVisibility?.[pageKey] !== false;
   };
 
-  const getPreviewUrl = (name) => {
-    if (images[name]) return URL.createObjectURL(images[name]);
-    if (name === 'thumbnailFoto' && existingThumbnailUrl) return existingThumbnailUrl;
-    return null;
-  };
-
-  const handleRemoveImage = (name) => {
-    if (images[name]) setImages(prev => { const newImgs = { ...prev }; delete newImgs[name]; return newImgs; });
-    if (name === 'thumbnailFoto') setExistingThumbnailUrl('');
-  };
-
-  const uploadImageToSupabase = async (file, slugName, prefix) => {
-    if (!file) return null;
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${slugName}-${prefix}-${Date.now()}.${fileExt}`;
-    const { error: uploadError } = await supabase.storage.from('wim-assets').upload(fileName, file);
-    if (uploadError) return null;
-    const { data } = supabase.storage.from('wim-assets').getPublicUrl(fileName);
-    return data.publicUrl;
-  };
-
-  const validateForm = () => {
-    const errs = {};
-    if (!slug.trim()) errs.slug = 'Slug wajib diisi';
-    else if (!/^[a-z0-9-]+$/.test(slug)) errs.slug = 'Hanya huruf kecil, angka, dan strip (-) diperbolehkan';
-    
-    if (!templateName) errs.templateName = 'Anda harus memilih tema terlebih dahulu';
-    
-    return errs;
-  };
-
-  const handleSubmit = async () => {
-    const errs = validateForm();
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      if (errs.templateName) showToast(errs.templateName, 'error');
-      else showToast('Mohon lengkapi data wajib', 'error');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleSave = async () => {
+    if (!slug || slug.trim() === '') {
+      alert("Tautan/Slug tidak boleh kosong!");
+      setOpenAccordion('pengaturan');
       return;
     }
-
-    setIsLoading(true);
-    showToast('Memverifikasi data...', 'info');
-
-    const slugStr = slug.toLowerCase().replace(/\s+/g, '-');
-
-    if (!editId || editId !== slugStr) {
+    
+    // Format slug
+    const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    
+    setIsSaving(true);
+    
+    // Cek duplikasi jika membuat baru atau mengubah slug
+    if (!editId || editId !== cleanSlug) {
       const { data: existingData } = await supabase
         .from('invitations')
         .select('slug')
-        .eq('slug', slugStr)
+        .eq('slug', cleanSlug)
         .maybeSingle();
 
       if (existingData) {
-        setErrors(prev => ({ ...prev, slug: 'Slug ini sudah dipakai, silakan gunakan yang lain.' }));
-        showToast('Slug sudah terpakai oleh pengguna lain', 'error');
-        setIsLoading(false);
+        alert('Tautan (Slug) ini sudah dipakai oleh pengguna lain. Silakan ganti dengan yang lain.');
+        setSlug(editId || ''); // Kembalikan ke asal jika edit
+        setOpenAccordion('pengaturan');
+        setIsSaving(false);
         return;
       }
     }
 
-    let uploadedUrls = {};
-    if (useCustomThumbnail && images.thumbnailFoto) {
-      uploadedUrls.thumbnailFoto = await uploadImageToSupabase(images.thumbnailFoto, slugStr, 'thumbnail');
-    } else if (useCustomThumbnail && existingThumbnailUrl) {
-      uploadedUrls.thumbnailFoto = existingThumbnailUrl;
-    }
-
-    // Ambil data lama agar tidak terhapus jika sedang edit
-    let oldData = {};
-    if (editId) {
-      const { data: currentDb } = await supabase.from('invitations').select('data').eq('slug', slugStr).single();
-      if (currentDb && currentDb.data) {
-        oldData = currentDb.data;
-      }
-    }
-    
     const payload = {
-      slug: slugStr,
+      slug: cleanSlug,
       template_name: templateName,
-      data: { 
-        ...oldData, // Preserve existing editor data
-        clientWa, 
-        template: templateName,
-        thumbnailJudul,
-        thumbnailDeskripsi,
-        thumbnailFoto: useCustomThumbnail ? uploadedUrls.thumbnailFoto : null,
-        resellerEmail: session?.email
+      data: {
+        ...data,
+        template: templateName
       }
     };
 
-    const { error } = await supabase.from('invitations').upsert(payload, { onConflict: 'slug' });
-
-    setIsLoading(false);
-    if (error) {
-      showToast(`Gagal: ${error.message}`, 'error');
+    if (editId) {
+      // Update data
+      const { error } = await supabase.from('invitations').update(payload).eq('slug', editId);
+      if (error) {
+        alert("Gagal menyimpan: " + error.message);
+      } else {
+        router.push('/wim/dashboard');
+      }
     } else {
-      showToast('Tersimpan! Mengalihkan ke editor...', 'success');
-      setTimeout(() => router.push(`/wim/dashboard/buat/editor?slug=${slugStr}`), 1200);
+      // Insert baru
+      const { error } = await supabase.from('invitations').insert([payload]);
+      if (error) {
+        alert("Gagal membuat undangan: " + error.message);
+      } else {
+        router.push('/wim/dashboard');
+      }
     }
+    setIsSaving(false);
   };
 
-  if (!session) return null;
+  if (isLoading) {
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>Loading...</div>;
+  }
 
-  return (
-    <div className="page-container" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto', padding: '16px 24px', minHeight: 'calc(100vh - 76px)', display: 'flex', flexDirection: 'column' }}>
-      {toast && (
-        <div className={`toast toast-${toast.type}`}>
-          {toast.msg}
-        </div>
-      )}
-
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <button
-          onClick={() => router.push('/wim/dashboard')}
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600, fontFamily: 'var(--font-outfit)' }}
+  // Handle Fullscreen Preview
+  if (showPreview) {
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: '#111', overflowY: 'auto' }}>
+        <button 
+          onClick={() => setShowPreview(false)}
+          style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 10000, background: 'var(--bg-card)', color: 'var(--text-primary)', border: 'none', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Kembali
+          Tutup Preview ✕
         </button>
-        <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-outfit)', margin: 0 }}>
-            Pengaturan Awal Undangan
-          </h1>
-          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 2 }}>Lengkapi data dasar sebelum mendesain undangan</p>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+          {templateName === 'floral1' ? (
+            <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} />
+          ) : (
+            <JawaTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} />
+          )}
         </div>
       </div>
+    );
+  }
 
-      <div style={{ background: 'var(--bg-card)', borderRadius: 16, border: '1px solid var(--border)', padding: '24px 32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, flex: 1 }}>
-          
-          <FieldGroup label="Tema Undangan *">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div 
-                onClick={() => setIsTemplateModalOpen(true)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 12,
-                  padding: '8px 12px', 
-                  background: errors.templateName ? '#fef2f2' : 'var(--bg-card)', 
-                  border: `1px solid ${errors.templateName ? 'var(--danger)' : 'var(--border)'}`,
-                  borderRadius: 8, cursor: 'pointer', transition: '0.2s'
-                }}
-              >
-                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: selectedTemplate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                  {selectedTemplate ? selectedTemplate.name : 'Pilih Tema...'}
-                </span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" color="var(--text-muted)"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-              {selectedTemplate && (
-                <img 
-                  src={selectedTemplate.img} 
-                  alt="cover" 
-                  style={{ width: 28, height: 38, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border)', flexShrink: 0, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} 
-                />
-              )}
-            </div>
-            {errors.templateName && <span style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>{errors.templateName}</span>}
-          </FieldGroup>
-
-          <FieldGroup label="Slug Link *">
-            <div className="wim-input" style={{ display: 'flex', alignItems: 'center', padding: 0, overflow: 'hidden', border: errors.slug ? '1px solid var(--danger)' : undefined }}>
-              <span style={{ padding: '8px 2px 8px 12px', color: 'var(--text-secondary)', fontSize: '0.85rem', fontFamily: 'inherit', userSelect: 'none' }}>
-                storykami.my.id/
-              </span>
-              <input
-                style={{ flex: 1, padding: '8px 12px 8px 0', fontSize: '0.85rem', fontFamily: 'inherit', border: 'none', background: 'transparent', outline: 'none', color: 'var(--text-primary)', width: '100%' }}
-                placeholder="budi-sari"
-                value={slug}
-                onChange={e => {
-                  setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'));
-                  if (errors.slug) setErrors(p => ({ ...p, slug: null }));
-                }}
-              />
-            </div>
-            {errors.slug && <span style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>{errors.slug}</span>}
-          </FieldGroup>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-            <FieldGroup label="Judul Link">
-              <input 
-                className="wim-input" 
-                style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
-                placeholder="Contoh: The Wedding of Budi & Sari" 
-                value={thumbnailJudul} 
-                onChange={e => setThumbnailJudul(e.target.value)} 
-              />
-            </FieldGroup>
-            <FieldGroup label="Deskripsi Link">
-              <input 
-                className="wim-input" 
-                style={{ padding: '10px 14px', fontSize: '0.85rem' }} 
-                placeholder="Contoh: Hadiri pernikahan kami..." 
-                value={thumbnailDeskripsi} 
-                onChange={e => setThumbnailDeskripsi(e.target.value)} 
-              />
-            </FieldGroup>
-          </div>
-
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: 12 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-              <input 
-                type="checkbox" 
-                checked={useCustomThumbnail} 
-                onChange={(e) => setUseCustomThumbnail(e.target.checked)} 
-                style={{ width: 16, height: 16, accentColor: 'var(--text-primary)' }}
-              />
-              Ganti Gambar Thumbnail Default
-            </label>
-            {useCustomThumbnail && (
-              <div style={{ marginTop: 16, borderTop: '1px dashed var(--border)', paddingTop: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ position: 'relative', width: 80, height: 80, borderRadius: 8, border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, background: 'var(--bg-secondary)' }}>
-                    {getPreviewUrl('thumbnailFoto') ? (
-                      <>
-                        <img src={getPreviewUrl('thumbnailFoto')} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button type="button" onClick={() => handleRemoveImage('thumbnailFoto')} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>&times;</button>
-                      </>
-                    ) : (
-                      <span style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>+</span>
-                    )}
-                    {!getPreviewUrl('thumbnailFoto') && <input type="file" accept="image/*" name="thumbnailFoto" onChange={handleImageChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    Gambar akan muncul saat link disebar ke sosmed.<br/>
-                    Otomatis dikompres (Optimal: ~250KB)
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <FieldGroup label="No. WhatsApp Klien">
-            <input 
-              className="wim-input" 
-              style={{ padding: '8px 12px', fontSize: '0.85rem' }} 
-              placeholder="628123456789" 
-              value={clientWa} 
-              onChange={e => setClientWa(e.target.value)} 
-            />
-          </FieldGroup>
-
-        </div>
-      </div>
-
-      {/* Action */}
-      <button onClick={handleSubmit} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: '12px 16px', fontSize: '1rem', borderRadius: 8, marginTop: 24 }}>
-        {isLoading ? (
-          <><div className="spinner" style={{ width: 16, height: 16 }} /> Mempersiapkan...</>
-        ) : (
-          <>Lanjutkan ke Editor <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg></>
-        )}
-      </button>
-
-      {/* Modal Katalog Tema */}
-      {isTemplateModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', padding: '24px' }}>
-          <div style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: 1000, borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: 'auto', maxHeight: '85vh', animation: 'slideUp 0.3s ease-out', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-            
-            <div style={{ padding: '20px 32px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'var(--font-outfit)', color: 'var(--text-primary)', fontWeight: 800 }}>Katalog Tema Undangan</h3>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: 4 }}>Pilih kategori dan temukan desain yang paling cocok untuk kerjamu</p>
-              </div>
-              <button onClick={() => setIsTemplateModalOpen(false)} style={{ background: 'var(--bg-secondary)', border: 'none', fontSize: '1.8rem', cursor: 'pointer', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', transition: '0.2s' }}>&times;</button>
-            </div>
-
-            <div style={{ display: 'flex', gap: 12, padding: '16px 24px', borderBottom: '1px solid var(--border)', overflowX: 'auto', flexShrink: 0, background: 'var(--bg-card)', scrollbarWidth: 'none' }}>
-              {TEMPLATE_CATEGORIES.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  style={{
-                    padding: '8px 20px', borderRadius: 24, border: 'none', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', transition: '0.2s',
-                    background: activeCategory === cat.id ? 'var(--text-primary)' : 'var(--bg-secondary)',
-                    color: activeCategory === cat.id ? 'var(--bg-card)' : 'var(--text-secondary)'
-                  }}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 16, alignContent: 'start' }}>
-              {TEMPLATE_CATEGORIES.find(c => c.id === activeCategory)?.templates.map(t => (
-                <div 
-                  key={t.val}
-                  onClick={() => {
-                    setTemplateName(t.val);
-                    setIsTemplateModalOpen(false);
-                    if (errors.templateName) setErrors(p => ({ ...p, templateName: null }));
-                  }}
-                  style={{
-                    cursor: 'pointer', borderRadius: 16, border: `2px solid ${templateName === t.val ? 'var(--text-primary)' : 'transparent'}`, padding: 8,
-                    background: templateName === t.val ? 'var(--bg-card)' : 'transparent', transition: '0.2s',
-                    boxShadow: templateName === t.val ? '0 8px 20px rgba(0,0,0,0.08)' : 'none'
-                  }}
-                >
-                  <div style={{ width: '100%', aspectRatio: '9/16', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-card)', border: '1px solid var(--border)', marginBottom: 12, position: 'relative' }}>
-                    <img src={t.img} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    {templateName === t.val && (
-                      <div style={{ position: 'absolute', top: 12, right: 12, background: 'var(--text-primary)', color: 'var(--bg-card)', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, textAlign: 'center', color: 'var(--text-primary)' }}>{t.name}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Slide Up Animation Style */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideUp {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}} />
-    </div>
-  );
-}
-
-export default function BuatPageWrapper() {
   return (
-    <Suspense fallback={<div style={{ padding: 16, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Memuat...</div>}>
-      <BuatPage />
-    </Suspense>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', background: 'var(--bg-primary)', fontFamily: 'inherit' }}>
+      
+      {/* Header Editor */}
+      <div style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <a href="/wim/dashboard" style={{ textDecoration: 'none', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Kembali
+            </a>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0, paddingLeft: '1rem', borderLeft: '1px solid var(--border)' }}>
+              {editId ? 'Edit Undangan' : 'Buat Undangan Baru'}
+            </h1>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              onClick={() => setShowPreview(true)}
+              className="btn btn-secondary"
+            >
+              Lihat Preview
+            </button>
+            <button 
+              onClick={handleSave}
+              disabled={isSaving}
+              className="btn btn-primary"
+            >
+              {isSaving ? 'Menyimpan...' : 'Simpan & Kembali'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Container */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1rem 6rem 1rem' }}>
+        
+        {/* Accordion 1: Pengaturan Link & Template */}
+        <AccordionItem title="1. Pengaturan Dasar" hideToggle={true} pageKey="pengaturan" isOpen={openAccordion === 'pengaturan'} onClick={() => setOpenAccordion(openAccordion === 'pengaturan' ? '' : 'pengaturan')}>
+           <InputField label="Tautan Undangan (Slug)" value={slug} onChange={e => setSlug(e.target.value)} placeholder="contoh: budi-dan-sari" />
+           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>URL akan menjadi: storykami.my.id/<strong>{slug || '...'}</strong></p>
+           
+           <InputField label="Pilihan Template" type="select" options={TEMPLATE_OPTIONS} value={templateName} onChange={e => setTemplateName(e.target.value)} />
+           
+           <InputField label="No WhatsApp Klien" value={data.clientWa || ''} onChange={e => handleChange('clientWa', e.target.value)} placeholder="628123456789" />
+           
+           <h3 style={{ fontSize: '1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Tampilan Thumbnail Link (SEO)</h3>
+           <InputField label="Judul Thumbnail" value={data.thumbnailJudul || ''} onChange={e => handleChange('thumbnailJudul', e.target.value)} placeholder="Undangan Pernikahan Budi & Sari" />
+           <InputField label="Deskripsi Singkat" type="textarea" value={data.thumbnailDeskripsi || ''} onChange={e => handleChange('thumbnailDeskripsi', e.target.value)} placeholder="Tanpa mengurangi rasa hormat, kami mengundang..." />
+           <InputField label="URL Foto Thumbnail" value={data.thumbnailFoto || ''} onChange={e => handleChange('thumbnailFoto', e.target.value)} placeholder="https://..." />
+        </AccordionItem>
+
+        {/* Accordion 2: Cover */}
+        <AccordionItem title="2. Cover Halaman Depan" pageKey="cover" isOpen={openAccordion === 'cover'} onClick={() => setOpenAccordion(openAccordion === 'cover' ? '' : 'cover')} visibility={isVisible('cover')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Nama Panggilan Kedua Mempelai" value={data.coverName || ''} onChange={e => handleChange('coverName', e.target.value)} placeholder="Budi & Sari" />
+          <InputField label="Inisial Mempelai" value={data.coverInitials || ''} onChange={e => handleChange('coverInitials', e.target.value)} placeholder="BS" />
+        </AccordionItem>
+
+        {/* Accordion 3: Profil Mempelai */}
+        <AccordionItem title="3. Profil Mempelai" pageKey="profiles" isOpen={openAccordion === 'profiles'} onClick={() => setOpenAccordion(openAccordion === 'profiles' ? '' : 'profiles')} visibility={isVisible('profiles')} onToggleVisibility={handleToggleVisibility}>
+           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Mempelai Wanita</h3>
+           <InputField label="Nama Lengkap Wanita" value={data.mempelai.wanita.namaLengkap} onChange={e => handleChange('mempelai.wanita.namaLengkap', e.target.value)} />
+           <InputField label="Nama Panggilan Wanita" value={data.mempelai.wanita.namaPanggilan} onChange={e => handleChange('mempelai.wanita.namaPanggilan', e.target.value)} />
+           <InputField label="Nama Bapak" value={data.mempelai.wanita.namaAyah} onChange={e => handleChange('mempelai.wanita.namaAyah', e.target.value)} />
+           <InputField label="Nama Ibu" value={data.mempelai.wanita.namaIbu} onChange={e => handleChange('mempelai.wanita.namaIbu', e.target.value)} />
+           <InputField label="Urutan Anak (contoh: Putri ke-2)" value={data.mempelai.wanita.urutanAnak} onChange={e => handleChange('mempelai.wanita.urutanAnak', e.target.value)} />
+           <InputField label="Username Instagram" value={data.mempelai.wanita.instagram} onChange={e => handleChange('mempelai.wanita.instagram', e.target.value)} />
+           <InputField label="Link Foto (URL)" value={data.mempelai.wanita.fotoUtama} onChange={e => handleChange('mempelai.wanita.fotoUtama', e.target.value)} />
+
+           <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
+
+           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Mempelai Pria</h3>
+           <InputField label="Nama Lengkap Pria" value={data.mempelai.pria.namaLengkap} onChange={e => handleChange('mempelai.pria.namaLengkap', e.target.value)} />
+           <InputField label="Nama Panggilan Pria" value={data.mempelai.pria.namaPanggilan} onChange={e => handleChange('mempelai.pria.namaPanggilan', e.target.value)} />
+           <InputField label="Nama Bapak" value={data.mempelai.pria.namaAyah} onChange={e => handleChange('mempelai.pria.namaAyah', e.target.value)} />
+           <InputField label="Nama Ibu" value={data.mempelai.pria.namaIbu} onChange={e => handleChange('mempelai.pria.namaIbu', e.target.value)} />
+           <InputField label="Urutan Anak (contoh: Putra sulung)" value={data.mempelai.pria.urutanAnak} onChange={e => handleChange('mempelai.pria.urutanAnak', e.target.value)} />
+           <InputField label="Username Instagram" value={data.mempelai.pria.instagram} onChange={e => handleChange('mempelai.pria.instagram', e.target.value)} />
+           <InputField label="Link Foto (URL)" value={data.mempelai.pria.fotoUtama} onChange={e => handleChange('mempelai.pria.fotoUtama', e.target.value)} />
+        </AccordionItem>
+
+        {/* Accordion 4: Jadwal Acara */}
+        <AccordionItem title="4. Jadwal Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
+          <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Akad Nikah</h3>
+          <InputField label="Tanggal (YYYY-MM-DD)" type="date" value={data.acara.akad.tanggal} onChange={e => handleChange('acara.akad.tanggal', e.target.value)} />
+          <InputField label="Waktu Mulai" type="time" value={data.acara.akad.waktuMulai} onChange={e => handleChange('acara.akad.waktuMulai', e.target.value)} />
+          <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 10:00" value={data.acara.akad.waktuSelesai} onChange={e => handleChange('acara.akad.waktuSelesai', e.target.value)} />
+          <InputField label="Lokasi/Gedung" value={data.acara.akad.lokasi} onChange={e => handleChange('acara.akad.lokasi', e.target.value)} />
+          <InputField label="Alamat Lengkap" type="textarea" value={data.acara.akad.alamatLengkap} onChange={e => handleChange('acara.akad.alamatLengkap', e.target.value)} />
+          <InputField label="Link Google Maps" type="url" value={data.acara.akad.linkMap} onChange={e => handleChange('acara.akad.linkMap', e.target.value)} />
+
+          <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
+
+          <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Resepsi Pernikahan</h3>
+          <InputField label="Tanggal (YYYY-MM-DD)" type="date" value={data.acara.resepsi.tanggal} onChange={e => handleChange('acara.resepsi.tanggal', e.target.value)} />
+          <InputField label="Waktu Mulai" type="time" value={data.acara.resepsi.waktuMulai} onChange={e => handleChange('acara.resepsi.waktuMulai', e.target.value)} />
+          <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 14:00" value={data.acara.resepsi.waktuSelesai} onChange={e => handleChange('acara.resepsi.waktuSelesai', e.target.value)} />
+          <InputField label="Lokasi/Gedung" value={data.acara.resepsi.lokasi} onChange={e => handleChange('acara.resepsi.lokasi', e.target.value)} />
+          <InputField label="Alamat Lengkap" type="textarea" value={data.acara.resepsi.alamatLengkap} onChange={e => handleChange('acara.resepsi.alamatLengkap', e.target.value)} />
+          <InputField label="Link Google Maps" type="url" value={data.acara.resepsi.linkMap} onChange={e => handleChange('acara.resepsi.linkMap', e.target.value)} />
+        </AccordionItem>
+
+        {/* Accordion 5: Love Story */}
+        <AccordionItem title="5. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
+          {data.ceritaCinta?.map((cerita, index) => (
+            <div key={index} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Cerita #{index + 1}</h4>
+                <button 
+                  onClick={() => {
+                    const newCerita = [...data.ceritaCinta];
+                    newCerita.splice(index, 1);
+                    handleChange('ceritaCinta', newCerita);
+                  }} 
+                  style={{ background: '#ef4444', color: 'var(--bg-card)', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
+                >Hapus</button>
+              </div>
+              <InputField label="Judul Cerita" value={cerita.judul} onChange={e => {
+                const newCerita = [...data.ceritaCinta];
+                newCerita[index].judul = e.target.value;
+                handleChange('ceritaCinta', newCerita);
+              }} />
+              <InputField label="Tanggal / Tahun" value={cerita.tanggal} onChange={e => {
+                const newCerita = [...data.ceritaCinta];
+                newCerita[index].tanggal = e.target.value;
+                handleChange('ceritaCinta', newCerita);
+              }} />
+              <InputField label="Isi Cerita" type="textarea" value={cerita.cerita} onChange={e => {
+                const newCerita = [...data.ceritaCinta];
+                newCerita[index].cerita = e.target.value;
+                handleChange('ceritaCinta', newCerita);
+              }} />
+            </div>
+          ))}
+          <button 
+            onClick={() => {
+              handleChange('ceritaCinta', [...(data.ceritaCinta || []), { judul: '', tanggal: '', cerita: '' }]);
+            }} 
+            style={{ width: '100%', padding: '0.75rem', background: 'var(--border)', border: '1px dashed var(--border-hover)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500 }}
+          >
+            + Tambah Cerita
+          </button>
+        </AccordionItem>
+
+        {/* Accordion 6: Wedding Gift */}
+        <AccordionItem title="6. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
+           {data.hadiahDigital?.accounts?.map((acc, idx) => (
+             <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                 <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-primary)' }}>Rekening #{idx + 1}</h4>
+                 <button 
+                  onClick={() => {
+                    const newAcc = [...data.hadiahDigital.accounts];
+                    newAcc.splice(idx, 1);
+                    handleChange('hadiahDigital.accounts', newAcc);
+                  }} 
+                  style={{ background: '#ef4444', color: 'var(--bg-card)', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
+                 >Hapus</button>
+               </div>
+               <InputField label="Nama Bank / E-Wallet" type="select" options={["BCA", "Mandiri", "BNI", "BRI", "BSI", "GoPay", "OVO", "Dana", "ShopeePay"]} value={acc.name} onChange={e => {
+                  const newAcc = [...data.hadiahDigital.accounts];
+                  newAcc[idx].name = e.target.value;
+                  handleChange('hadiahDigital.accounts', newAcc);
+               }} />
+               <InputField label="Nomor Rekening / HP" value={acc.number} onChange={e => {
+                  const newAcc = [...data.hadiahDigital.accounts];
+                  newAcc[idx].number = e.target.value;
+                  handleChange('hadiahDigital.accounts', newAcc);
+               }} />
+               <InputField label="Atas Nama" value={acc.owner} onChange={e => {
+                  const newAcc = [...data.hadiahDigital.accounts];
+                  newAcc[idx].owner = e.target.value;
+                  handleChange('hadiahDigital.accounts', newAcc);
+               }} />
+             </div>
+           ))}
+           <button 
+             onClick={() => {
+               const currentAccs = data.hadiahDigital?.accounts || [];
+               handleChange('hadiahDigital.accounts', [...currentAccs, { name: 'BCA', number: '', owner: '' }]);
+             }} 
+             style={{ width: '100%', padding: '0.75rem', background: 'var(--border)', border: '1px dashed var(--border-hover)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500, marginBottom: '2rem' }}
+           >
+             + Tambah Rekening
+           </button>
+
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Kirim Kado Fisik</h3>
+           <InputField label="Nama Penerima Paket" value={data.hadiahDigital?.receiver || ''} onChange={e => handleChange('hadiahDigital.receiver', e.target.value)} />
+           <InputField label="Alamat Pengiriman" type="textarea" value={data.hadiahDigital?.physicalAddress || ''} onChange={e => handleChange('hadiahDigital.physicalAddress', e.target.value)} />
+           <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
+        </AccordionItem>
+
+        {/* Accordion 7: Penutup */}
+        <AccordionItem title="7. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+          <InputField label="Kata Penutup & Salam" type="textarea" value={data.penutup || ''} onChange={e => handleChange('penutup', e.target.value)} />
+        </AccordionItem>
+
+      </div>
+    </div>
   );
 }
