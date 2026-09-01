@@ -1,6 +1,5 @@
 import React from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { redirect } from 'next/navigation';
 
 // Import Templates
 import Floral1Template from '@/components/wim-baru/Floral1Template';
@@ -46,8 +45,15 @@ export default async function InvitationPage({ params }) {
     return <JawaTemplate data={data} slug={slug} isVisible={() => true} />;
   }
 
-  // Jika menggunakan template lama yang belum berbasis React, arahkan ke rute legacy
-  redirect(`/legacy/${slug}`);
+  // Jika menggunakan template lama atau tidak dikenal
+  return (
+    <div style={{ fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', margin: 0, background: '#f0f4f8' }}>
+      <div style={{ textAlign: 'center', padding: '40px', background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <h1 style={{ color: '#4a7c7e', marginBottom: '8px' }}>Template Tidak Ditemukan</h1>
+        <p style={{ color: '#666' }}>Template <strong>{template}</strong> tidak lagi didukung di sistem baru.</p>
+      </div>
+    </div>
+  );
 }
 
 export async function generateMetadata({ params }) {
