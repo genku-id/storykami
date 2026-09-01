@@ -92,7 +92,13 @@ export async function GET(request, { params }) {
       );
     }
 
-    const built = engine.buildHtml(templateHtml, engine.normalizeData(data));
+    let built = engine.buildHtml(templateHtml, engine.normalizeData(data));
+
+    // Patch HTML: ubah path assets agar mengarah ke /demo/[template]/assets/
+    built = built
+      .replace(/href="assets\/css\/style\.css[^"]*"/g, `href="/demo/${template}/assets/css/style.css"`)
+      .replace(/src="assets\/images\//g, `src="/demo/${template}/assets/images/`)
+      .replace(/src="assets\/js\/script\.js/g, `src="/demo/${template}/assets/js/script.js`);
 
     const namaPasangan =
       data.coverName || data.coupleName || `${data.brideName || ''} & ${data.groomName || ''}`.trim() || '';
