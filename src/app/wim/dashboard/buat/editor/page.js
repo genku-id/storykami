@@ -9,23 +9,23 @@ import { supabase } from '@/utils/supabase';
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children }) {
   return (
-    <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+    <div style={{ background: 'var(--bg-card)', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
       <div 
-        style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? '#f8fafc' : '#fff', borderBottom: isOpen ? '1px solid #eee' : 'none' }}
+        style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'var(--bg-primary)' : 'var(--bg-card)', borderBottom: isOpen ? '1px solid #eee' : 'none' }}
         onClick={onClick}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {icon && <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>{icon}</span>}
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: '#334155' }}>{title}</h2>
+          {icon && <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>{icon}</span>}
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>{title}</h2>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} onClick={e => e.stopPropagation()}>
           {/* Toggle Switch */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: '#64748b' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
             <div style={{
-              width: 36, height: 20, background: visibility ? '#3b82f6' : '#cbd5e1', borderRadius: 20, position: 'relative', transition: '0.2s'
+              width: 36, height: 20, background: visibility ? 'var(--accent)' : 'var(--border-hover)', borderRadius: 20, position: 'relative', transition: '0.2s'
             }}>
               <div style={{
-                width: 16, height: 16, background: '#fff', borderRadius: '50%', position: 'absolute', top: 2, left: visibility ? 18 : 2, transition: '0.2s'
+                width: 16, height: 16, background: 'var(--bg-card)', borderRadius: '50%', position: 'absolute', top: 2, left: visibility ? 18 : 2, transition: '0.2s'
               }}/>
             </div>
             <input 
@@ -55,20 +55,20 @@ function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onTo
 function InputField({ label, value, onChange, type = "text", placeholder = "", options = [] }) {
   return (
     <div style={{ marginBottom: '1rem' }}>
-      <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.3rem', color: '#4a5568' }}>{label}</label>
+      <label className="wim-label">{label}</label>
       {type === "textarea" ? (
         <textarea 
           value={value} 
           onChange={onChange}
           placeholder={placeholder}
           rows={3}
-          style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px', resize: 'vertical' }}
+          className="wim-input" style={{resize: "vertical"}}
         />
       ) : type === "select" ? (
         <select
           value={value}
           onChange={onChange}
-          style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px', backgroundColor: '#fff' }}
+          className="wim-input"
         >
           {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
@@ -199,19 +199,19 @@ export default function FormGenerator() {
   const bankOptions = ["BCA","BLU","BNI","BRI","BSI","CIMB","DANA","GOPAY","JAGO","JENIUS","LINKAJA","MANDIRI","NEO","OVO","PERMATA","SEABANK","SHOPEEPAY"];
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', background: '#f1f5f9', fontFamily: 'sans-serif' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', background: 'var(--bg-primary)', fontFamily: 'inherit' }}>
       
       {/* Editor Main Container (Full Width) */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem 6rem 1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <a href="/wim/dashboard/buat" style={{ textDecoration: 'none', color: '#475569', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+            <a href="/wim/dashboard/buat" style={{ textDecoration: 'none', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
               Kembali
             </a>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a', margin: 0, paddingLeft: '1rem', borderLeft: '1px solid #cbd5e1' }}>Editor Undangan</h1>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0, paddingLeft: '1rem', borderLeft: '1px solid var(--border)' }}>Editor Undangan</h1>
           </div>
-          <span style={{ fontSize: '0.85rem', color: '#64748b', background: '#e2e8f0', padding: '4px 12px', borderRadius: 20 }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', background: 'var(--border)', padding: '4px 12px', borderRadius: 20 }}>
             Tersimpan Otomatis
           </span>
         </div>
@@ -231,13 +231,13 @@ export default function FormGenerator() {
         </AccordionItem>
 
         <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>} title="3. Halaman Profil" pageKey="profiles" isOpen={openAccordion === 'profiles'} onClick={() => setOpenAccordion(openAccordion === 'profiles' ? '' : 'profiles')} visibility={isVisible('profiles')} onToggleVisibility={handleToggleVisibility}>
-          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Wanita</h3>
+          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Wanita</h3>
           <InputField label="Nama Lengkap" value={data.mempelai.wanita.namaLengkap} onChange={e => handleChange('mempelai.wanita.namaLengkap', e.target.value)} />
           <InputField label="Nama Ayah" value={data.mempelai.wanita.namaAyah} onChange={e => handleChange('mempelai.wanita.namaAyah', e.target.value)} />
           <InputField label="Nama Ibu" value={data.mempelai.wanita.namaIbu} onChange={e => handleChange('mempelai.wanita.namaIbu', e.target.value)} />
           <InputField label="Username Instagram" value={data.mempelai.wanita.instagram} onChange={e => handleChange('mempelai.wanita.instagram', e.target.value)} />
 
-          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Pria</h3>
+          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Mempelai Pria</h3>
           <InputField label="Nama Lengkap" value={data.mempelai.pria.namaLengkap} onChange={e => handleChange('mempelai.pria.namaLengkap', e.target.value)} />
           <InputField label="Nama Ayah" value={data.mempelai.pria.namaAyah} onChange={e => handleChange('mempelai.pria.namaAyah', e.target.value)} />
           <InputField label="Nama Ibu" value={data.mempelai.pria.namaIbu} onChange={e => handleChange('mempelai.pria.namaIbu', e.target.value)} />
@@ -250,14 +250,14 @@ export default function FormGenerator() {
         </AccordionItem>
 
         <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>} title="5. Halaman Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
-          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Akad Nikah</h3>
+          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Akad Nikah</h3>
           <InputField label="Waktu Mulai" type="time" value={data.acara.akad.waktuMulai} onChange={e => handleChange('acara.akad.waktuMulai', e.target.value)} />
           <InputField label="Waktu Selesai" type="time" value={data.acara.akad.waktuSelesai} onChange={e => handleChange('acara.akad.waktuSelesai', e.target.value)} />
           <InputField label="Lokasi/Gedung" value={data.acara.akad.lokasi} onChange={e => handleChange('acara.akad.lokasi', e.target.value)} />
           <InputField label="Alamat Lengkap" type="textarea" value={data.acara.akad.alamatLengkap} onChange={e => handleChange('acara.akad.alamatLengkap', e.target.value)} />
           <InputField label="Link Google Maps" type="url" value={data.acara.akad.linkMap} onChange={e => handleChange('acara.akad.linkMap', e.target.value)} />
 
-          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Resepsi</h3>
+          <h3 style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Resepsi</h3>
           <InputField label="Waktu Mulai" type="time" value={data.acara.resepsi.waktuMulai} onChange={e => handleChange('acara.resepsi.waktuMulai', e.target.value)} />
           <InputField label="Waktu Selesai" type="time" value={data.acara.resepsi.waktuSelesai} onChange={e => handleChange('acara.resepsi.waktuSelesai', e.target.value)} />
           <InputField label="Lokasi/Gedung" value={data.acara.resepsi.lokasi} onChange={e => handleChange('acara.resepsi.lokasi', e.target.value)} />
@@ -268,39 +268,39 @@ export default function FormGenerator() {
 
         <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>} title="6. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
           {data.ceritaCinta?.map((cerita, index) => (
-            <div key={index} style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '1rem', background: '#f8fafc' }}>
+            <div key={index} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Cerita #{index + 1}</h4>
-                <button onClick={() => handleRemoveStory(index)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
+                <button onClick={() => handleRemoveStory(index)} style={{ background: '#ef4444', color: 'var(--bg-card)', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
               </div>
               <InputField label="Judul Cerita" value={cerita.judul} onChange={e => handleStoryChange(index, 'judul', e.target.value)} />
               <InputField label="Tanggal / Tahun" value={cerita.tanggal} onChange={e => handleStoryChange(index, 'tanggal', e.target.value)} />
               <InputField label="Isi Cerita" type="textarea" value={cerita.cerita} onChange={e => handleStoryChange(index, 'cerita', e.target.value)} />
             </div>
           ))}
-          <button onClick={handleAddStory} style={{ width: '100%', padding: '0.75rem', background: '#e2e8f0', border: '1px dashed #cbd5e1', borderRadius: '8px', color: '#475569', cursor: 'pointer', fontWeight: 500 }}>
+          <button onClick={handleAddStory} style={{ width: '100%', padding: '0.75rem', background: 'var(--border)', border: '1px dashed #cbd5e1', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500 }}>
             + Tambah Cerita
           </button>
         </AccordionItem>
 
         <AccordionItem icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>} title="7. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
-           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
            {data.hadiahDigital?.accounts?.map((acc, idx) => (
-             <div key={idx} style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '1rem', background: '#f8fafc' }}>
+             <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                  <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Rekening #{idx + 1}</h4>
-                 <button onClick={() => handleRemoveAccount(idx)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
+                 <button onClick={() => handleRemoveAccount(idx)} style={{ background: '#ef4444', color: 'var(--bg-card)', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}>Hapus</button>
                </div>
                <InputField label="Nama Bank / E-Wallet" type="select" options={bankOptions} value={acc.name} onChange={e => handleAccountChange(idx, 'name', e.target.value)} />
                <InputField label="Nomor Rekening / HP" value={acc.number} onChange={e => handleAccountChange(idx, 'number', e.target.value)} />
                <InputField label="Atas Nama" value={acc.owner} onChange={e => handleAccountChange(idx, 'owner', e.target.value)} />
              </div>
            ))}
-           <button onClick={handleAddAccount} style={{ width: '100%', padding: '0.75rem', background: '#e2e8f0', border: '1px dashed #cbd5e1', borderRadius: '8px', color: '#475569', cursor: 'pointer', fontWeight: 500, marginBottom: '2rem' }}>
+           <button onClick={handleAddAccount} style={{ width: '100%', padding: '0.75rem', background: 'var(--border)', border: '1px dashed #cbd5e1', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500, marginBottom: '2rem' }}>
              + Tambah Rekening
            </button>
 
-           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Kirim Kado Fisik</h3>
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>Kirim Kado Fisik</h3>
            <InputField label="Nama Penerima Paket" value={data.hadiahDigital?.receiver || ''} onChange={e => handleChange('hadiahDigital.receiver', e.target.value)} />
            <InputField label="Alamat Pengiriman" type="textarea" value={data.hadiahDigital?.physicalAddress || ''} onChange={e => handleChange('hadiahDigital.physicalAddress', e.target.value)} />
            <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
@@ -328,7 +328,7 @@ export default function FormGenerator() {
           <button 
             onClick={() => setShowPreview(true)}
             style={{ 
-              background: '#0f172a', color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '30px',
+              background: '#0f172a', color: 'var(--bg-card)', border: 'none', padding: '14px 28px', borderRadius: '30px',
               fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px',
               boxShadow: '0 10px 25px rgba(0,0,0,0.2)', cursor: 'pointer', transition: 'transform 0.2s'
             }}
@@ -352,7 +352,7 @@ export default function FormGenerator() {
           <button 
             onClick={() => setShowPreview(false)}
             style={{
-              position: 'absolute', top: '2rem', right: '2rem', background: '#ef4444', color: '#fff',
+              position: 'absolute', top: '2rem', right: '2rem', background: '#ef4444', color: 'var(--bg-card)',
               border: 'none', width: 50, height: 50, borderRadius: '50%', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(239,68,68,0.4)',
               transition: '0.2s', zIndex: 1010
@@ -366,7 +366,7 @@ export default function FormGenerator() {
 
           {/* Mockup HP Container */}
           <div style={{
-            height: '90vh', aspectRatio: '9/16', background: '#fff', borderRadius: '36px', overflow: 'hidden',
+            height: '90vh', aspectRatio: '9/16', background: 'var(--bg-card)', borderRadius: '36px', overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', position: 'relative', border: '8px solid #1e293b'
           }}>
             {/* Notch */}
