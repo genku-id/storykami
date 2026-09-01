@@ -54,7 +54,7 @@ body.locked {
     left: 0;
     width: 300%;
     height: 130px; /* Diperkecil lagi 5px */
-    background: url('/assets/images/top_border_jawa.webp?v=2') repeat-x top left;
+    background: url('/assets/templates/jawa/top_border_jawa.webp?v=2') repeat-x top left;
     background-size: auto 100%;
     z-index: 5;
     animation: moveBorder 150s linear infinite alternate;
@@ -179,7 +179,7 @@ body.locked {
     left: 0;
     width: 300%;
     height: 130px; /* Diperkecil lagi 5px */
-    background: url('/assets/images/top_border_jawa.webp?v=2') repeat-x top left;
+    background: url('/assets/templates/jawa/top_border_jawa.webp?v=2') repeat-x top left;
     background-size: auto 100%;
     transform: scaleY(-1); /* Balik secara vertikal agar mengarah ke atas */
     z-index: 5;
@@ -638,3 +638,4 @@ body.locked {
     text-transform: uppercase;
 }
 /* ============================================== */
+

@@ -450,3 +450,4 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
     </div>
   );
 }
+

@@ -86,7 +86,7 @@
     background-position: top center;
 }
 .wim-template-floral1 .floral-pattern-1 {
-    background-image: url('/assets/images/floral1.png') !important;
+    background-image: url('/assets/templates/floral1/floral1.png') !important;
     filter: brightness(0) invert(1);
 }
 .wim-template-floral1 .floral-corner {
@@ -282,7 +282,7 @@ body.locked #main-content,
     width: 100%;
     min-height: 115svh;
     background: 
-        url('/assets/images/backgroundbunga.png') center -15vh / 100% auto no-repeat,
+        url('/assets/templates/floral1/backgroundbunga.png') center -15vh / 100% auto no-repeat,
         linear-gradient(to bottom, #dbeafe 0%, #eff6ff 60%, #ffffff 100%);
     z-index: 10;
     overflow-x: hidden;
@@ -306,7 +306,7 @@ body.locked #main-content,
     left: 0;
     width: 100%;
     height: 40vh;
-    background-image: url('/assets/images/backgroundbunga.png');
+    background-image: url('/assets/templates/floral1/backgroundbunga.png');
     background-size: 100% auto;
     background-position: center -26vh;
     background-repeat: no-repeat;
@@ -429,7 +429,7 @@ body.locked #main-content,
     align-items: center;
     padding: 80px 20px;
     background: 
-        url('/assets/images/backgroundbunga.png') center calc(-25vh + 10px) / 100% auto no-repeat,
+        url('/assets/templates/floral1/backgroundbunga.png') center calc(-25vh + 10px) / 100% auto no-repeat,
         linear-gradient(to bottom, #dbeafe 0%, #eff6ff 60%, #ffffff 100%);
     position: relative;
     overflow: hidden;
@@ -440,7 +440,7 @@ body.locked #main-content,
     left: 0;
     width: 100%;
     height: 40vh;
-    background-image: url('/assets/images/backgroundbunga.png');
+    background-image: url('/assets/templates/floral1/backgroundbunga.png');
     background-size: 100% auto;
     background-position: center -26vh;
     background-repeat: no-repeat;
@@ -631,7 +631,7 @@ body.locked #main-content,
     left: 0;
     width: 100%;
     height: 40vh;
-    background-image: url('/assets/images/backgroundbunga.png');
+    background-image: url('/assets/templates/floral1/backgroundbunga.png');
     background-size: 100% auto;
     background-position: center -15vh;
     background-repeat: no-repeat;
@@ -812,7 +812,7 @@ body.locked #main-content,
 }
 .wim-template-floral1 .card-floral {
     position: absolute;
-    background-image: url('/assets/images/floral1.png');
+    background-image: url('/assets/templates/floral1/floral1.png');
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.4;
@@ -1288,3 +1288,4 @@ body.locked #main-content,
     font-weight: 600;
     color: #333;
 }
+

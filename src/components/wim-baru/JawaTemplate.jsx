@@ -153,15 +153,15 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             <div className="jawa-top-border"></div>
             
             <div className="jawa-gunungan-container">
-                <img src="/assets/images/cloud_jawa.webp" className="jawa-cloud left" alt="cloud" />
-                <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
+                <img src="/assets/templates/jawa/cloud_jawa.webp" className="jawa-cloud left" alt="cloud" />
+                <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
                 
                 <div className="hero-arch-frame">
                     <img src={data.galeri?.[0] || "/assets/images/couple.png"} alt="Couple" className="hero-couple-img" />
                 </div>
                 
-                <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
-                <img src="/assets/images/cloud_jawa.webp" className="jawa-cloud right" alt="cloud" />
+                <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
+                <img src="/assets/templates/jawa/cloud_jawa.webp" className="jawa-cloud right" alt="cloud" />
             </div>
 
             <div className="cover-content">
@@ -185,7 +185,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
 
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -200,15 +200,15 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             <div className="jawa-top-border"></div>
             
             <div className="jawa-gunungan-container" style={{ marginTop: '-15px' }}>
-                <img src="/assets/images/cloud_jawa.webp" className="jawa-cloud left" alt="cloud" />
-                <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
+                <img src="/assets/templates/jawa/cloud_jawa.webp" className="jawa-cloud left" alt="cloud" />
+                <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
                 
                 <div className="hero-arch-frame">
                     <img src={data.galeri?.[0] || "/assets/images/couple.png"} alt="Couple" className="hero-couple-img" />
                 </div>
                 
-                <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
-                <img src="/assets/images/cloud_jawa.webp" className="jawa-cloud right" alt="cloud" />
+                <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
+                <img src="/assets/templates/jawa/cloud_jawa.webp" className="jawa-cloud right" alt="cloud" />
             </div>
             
             <button id="btn-audio" className={`btn-audio visible ${isPlaying ? 'playing' : ''}`} onClick={() => setIsPlaying(!isPlaying)}>
@@ -251,7 +251,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -270,7 +270,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -291,11 +291,11 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                 <div className="profile-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                     <div data-animate="slide-long-right">
                         <div className="jawa-gunungan-container" style={{ marginTop: '80px', marginBottom: 0, transformOrigin: 'center', animation: 'pulseFrame 4s infinite ease-in-out' }}>
-                            <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
+                            <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
                             <div className="hero-arch-frame">
                                 <img src={mempelai?.wanita?.fotoUtama || "/assets/images/bride.png"} alt="Wanita" className="hero-couple-img" />
                             </div>
-                            <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
+                            <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
                         </div>
                     </div>
                     <h2 className="title-names" data-animate="fade-up" style={{ transitionDelay: '0.2s', marginTop: '5px', marginBottom: '2px', fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', fontSize: '3rem' }}>{mempelai?.wanita?.namaPanggilan}</h2>
@@ -305,11 +305,11 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
 
                 <div className="ampersand text-center" data-animate="zoom-in" style={{ margin: '0px auto 10px auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '95%', gap: '15px' }}>
                     <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(74, 44, 22, 0.3)', position: 'relative' }}>
-                        <img src="/assets/images/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '0px', top: '4px', width: '100px', animation: 'pulseCloudLeft 3s infinite ease-in-out' }} />
+                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '0px', top: '4px', width: '100px', animation: 'pulseCloudLeft 3s infinite ease-in-out' }} />
                     </div>
                     <span style={{ fontFamily: '"Oleo Script", cursive', color: '#4a2c16', position: 'relative', zIndex: 2, fontSize: '3rem' }}>&amp;</span>
                     <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(74, 44, 22, 0.3)', position: 'relative' }}>
-                        <img src="/assets/images/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', right: '0px', bottom: '4px', width: '100px', transform: 'scale(-1, 1)', animation: 'pulseCloudRight 3s infinite ease-in-out' }} />
+                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', right: '0px', bottom: '4px', width: '100px', transform: 'scale(-1, 1)', animation: 'pulseCloudRight 3s infinite ease-in-out' }} />
                     </div>
                 </div>
 
@@ -317,11 +317,11 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                 <div className="profile-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                     <div data-animate="slide-long-left">
                         <div className="jawa-gunungan-container" style={{ marginTop: '90px', marginBottom: 0, transformOrigin: 'center', animation: 'pulseFrame 4s infinite ease-in-out' }}>
-                            <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
+                            <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan left" alt="gunungan" />
                             <div className="hero-arch-frame">
                                 <img src={mempelai?.pria?.fotoUtama || "/assets/images/groom.png"} alt="Pria" className="hero-couple-img" />
                             </div>
-                            <img src="/assets/images/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
+                            <img src="/assets/templates/jawa/gunungan_jawa.webp" className="jawa-gunungan right" alt="gunungan" />
                         </div>
                     </div>
                     <h2 className="title-names" data-animate="fade-up" style={{ transitionDelay: '0.2s', marginTop: '5px', marginBottom: '2px', fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', fontSize: '3rem' }}>{mempelai?.pria?.namaPanggilan}</h2>
@@ -331,7 +331,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -370,7 +370,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                       Pukul {acara?.akad?.waktuMulai} - {acara?.akad?.waktuSelesai} {acara?.akad?.zonaWaktu}
                     </p>
                     <div className="event-location-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '5px' }}>
-                        <img src="/assets/images/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
+                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
                         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
                             <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', fontWeight: 700, color: '#2a2a2a', marginBottom: '2px' }}>Lokasi</p>
                             <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', fontWeight: 700, color: '#2a2a2a', marginBottom: 0 }}>{acara?.akad?.lokasi}</p>
@@ -406,7 +406,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                       Pukul {acara?.resepsi?.waktuMulai} - {acara?.resepsi?.waktuSelesai} {acara?.resepsi?.zonaWaktu}
                     </p>
                     <div className="event-location-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '5px' }}>
-                        <img src="/assets/images/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
+                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
                         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
                             <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', fontWeight: 700, color: '#2a2a2a', marginBottom: '2px' }}>Lokasi</p>
                             <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', fontWeight: 700, color: '#2a2a2a', marginBottom: 0 }}>{acara?.resepsi?.lokasi}</p>
@@ -418,7 +418,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -451,7 +451,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -517,7 +517,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -569,7 +569,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">
-                    <img src="/assets/images/wayang.webp" className="jawa-wayang center" alt="wayang" />
+                    <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
                 </div>
                 <div className="jawa-bottom-border"></div>
             </div>
@@ -594,3 +594,4 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
     </div>
   );
 }
+
