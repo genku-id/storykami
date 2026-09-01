@@ -152,7 +152,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <button
-          onClick={() => router.push('/wim/dashboard/buat')}
+          onClick={() => router.push('/wim/dashboard/baru')}
           className="btn btn-primary"
           style={{ flexShrink: 0 }}
           disabled={remaining === 0}
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                 : `Tidak ada undangan yang cocok dengan "${search}"`}
             </div>
             {invitations.length === 0 && remaining > 0 && (
-              <button onClick={() => router.push('/wim/dashboard/buat')} className="btn btn-primary">
+              <button onClick={() => router.push('/wim/dashboard/baru')} className="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Buat Undangan
               </button>
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                         {/* Edit */}
                         <button
                           title="Edit"
-                          onClick={() => router.push(`/wim/dashboard/buat?edit=${inv.slug}`)}
+                          onClick={() => router.push(`/wim/dashboard/manage/${inv.slug}`)}
                           style={{ background: 'var(--info-bg)', color: 'var(--info)', border: '1px solid var(--info-border)', borderRadius: 8, padding: 7, cursor: 'pointer', display: 'flex', transition: '0.2s' }}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
