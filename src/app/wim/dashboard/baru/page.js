@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/utils/supabase';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 
@@ -9,10 +9,13 @@ const TEMPLATE_OPTIONS = [
   { val: 'template-daerahJawa', name: 'Jawa Klasik' }
 ];
 
-export default function BuatBaruPage() {
+function BuatBaruForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTemplate = searchParams.get('template') || 'floral1';
+
   const [slug, setSlug] = useState('');
-  const [templateName, setTemplateName] = useState('floral1');
+  const [templateName, setTemplateName] = useState(initialTemplate);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -101,5 +104,13 @@ export default function BuatBaruPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function BuatBaruPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BuatBaruForm />
+    </Suspense>
   );
 }
