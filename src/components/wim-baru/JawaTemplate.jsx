@@ -113,16 +113,18 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
     return () => observer.disconnect();
   }, [pageVisibility, data, isLocked]);
 
-  const handleKirimUcapan = async (e) => {
-    e.preventDefault();
-    if (!namaTamu || !ucapan) return;
+  const handleKonfirmasiHadir = async () => {
+    if (!namaTamu || !namaTamu.trim()) {
+      alert('Silakan masukkan nama Anda terlebih dahulu.');
+      return;
+    }
     setIsSubmitting(true);
     
     const newComment = {
       invitation_slug: slug,
-      nama: namaTamu,
-      ucapan: ucapan,
-      kehadiran: kehadiran
+      nama: namaTamu.trim(),
+      ucapan: ucapan ? ucapan.trim() : '',
+      kehadiran: 'Hadir'
     };
     
     const { data: inserted, error } = await supabase
@@ -130,10 +132,50 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
       .insert([newComment])
       .select();
       
-    if (!error && inserted) {
-      setComments(prev => [inserted[0], ...prev]);
-      setNamaTamu('');
+    if (!error && inserted && inserted.length > 0) {
+      if (newComment.ucapan) {
+        setComments(prev => [inserted[0], ...prev]);
+        alert('Terima kasih! Konfirmasi kehadiran dan ucapan Anda berhasil dikirim.');
+      } else {
+        alert('Terima kasih! Konfirmasi kehadiran Anda berhasil disimpan.');
+      }
       setUcapan('');
+    } else {
+      alert('Gagal mengirim konfirmasi kehadiran. Silakan coba lagi.');
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleKirimUcapan = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!namaTamu || !namaTamu.trim()) {
+      alert('Silakan masukkan nama Anda terlebih dahulu.');
+      return;
+    }
+    if (!ucapan || !ucapan.trim()) {
+      alert('Silakan tulis ucapan dan doa restu Anda terlebih dahulu.');
+      return;
+    }
+    setIsSubmitting(true);
+    
+    const newComment = {
+      invitation_slug: slug,
+      nama: namaTamu.trim(),
+      ucapan: ucapan.trim(),
+      kehadiran: 'Hadir'
+    };
+    
+    const { data: inserted, error } = await supabase
+      .from('guestbook')
+      .insert([newComment])
+      .select();
+      
+    if (!error && inserted && inserted.length > 0) {
+      setComments(prev => [inserted[0], ...prev]);
+      alert('Terima kasih atas ucapan dan doa restunya!');
+      setUcapan('');
+    } else {
+      alert('Gagal mengirim ucapan. Silakan coba lagi.');
     }
     setIsSubmitting(false);
   };
@@ -509,31 +551,93 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                 <div className="guestbook-container" data-animate="zoom-in">
                     <form className="guestbook-form" onSubmit={handleKirimUcapan} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         <input type="text" className="form-control" placeholder="Nama Tamu" required value={namaTamu} onChange={e => setNamaTamu(e.target.value)} style={{ padding: '12px 15px', borderRadius: '8px', border: '1px solid #ccc', fontFamily: '"Inter", sans-serif', fontSize: '0.9rem' }} />
-                        <textarea className="form-control" rows="3" placeholder="Tulis ucapan dan doa..." maxLength="300" required value={ucapan} onChange={e => setUcapan(e.target.value)} style={{ padding: '12px 15px', borderRadius: '8px', border: '1px solid #ccc', fontFamily: '"Inter", sans-serif', fontSize: '0.9rem', resize: 'vertical' }}></textarea>
-                        <button type="submit" className="btn btn-primary" disabled={isSubmitting} style={{ backgroundColor: '#4a2c16', color: '#ffffff', border: 'none', padding: '12px', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer' }}>
-                            {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
-                        </button>
+                        <textarea className="form-control" rows="3" placeholder="Tulis ucapan dan doa restu..." maxLength="300" value={ucapan} onChange={e => setUcapan(e.target.value)} style={{ padding: '12px 15px', borderRadius: '8px', border: '1px solid #ccc', fontFamily: '"Inter", sans-serif', fontSize: '0.9rem', resize: 'vertical' }}></textarea>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                onClick={handleKonfirmasiHadir}
+                                disabled={isSubmitting}
+                                style={{
+                                    flex: 1,
+                                    minWidth: '140px',
+                                    backgroundColor: '#7c9b9f',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    padding: '12px 16px',
+                                    borderRadius: '8px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                <i className="fa-solid fa-circle-check"></i> Konfirmasi Hadir
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                style={{
+                                    flex: 1,
+                                    minWidth: '140px',
+                                    backgroundColor: '#4a2c16',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    padding: '12px 16px',
+                                    borderRadius: '8px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                <i className="fa-solid fa-paper-plane"></i> {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
+                            </button>
+                        </div>
                     </form>
 
                     <div className="comments-wrapper mt-4">
-                        <p className="comments-count text-dark mb-3" style={{ fontWeight: 600, fontSize: '0.95rem', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px' }}>
-                            <i className="fa-solid fa-comments"></i> {comments.length} Ucapan
-                        </p>
-                        <div className="comments-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                            {comments.map((msg, i) => (
-                                <div className="comment-item" key={msg.id || i} style={{ display: 'flex', gap: '15px', marginBottom: '15px', padding: '15px', backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: '12px' }}>
-                                    <img src="/assets/images/logo.png" className="comment-avatar-img" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-                                    <div className="comment-bubble" style={{ flex: 1 }}>
-                                        <h4 className="comment-name" style={{ margin: '0 0 5px 0', fontSize: '0.95rem', color: '#2a2a2a', fontWeight: 600 }}>{msg.nama}</h4>
-                                        <p className="comment-text" style={{ margin: '0 0 5px 0', fontSize: '0.85rem', color: '#444', lineHeight: '1.4' }}>{msg.ucapan}</p>
-                                        <small className="time text-muted" style={{ fontSize: '0.75rem', color: '#777' }}>{new Date(msg.created_at).toLocaleDateString('id-ID')}</small>
-                                    </div>
-                                </div>
-                            ))}
-                            {comments.length === 0 && (
-                                <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#666' }}>Belum ada ucapan.</p>
-                            )}
-                        </div>
+                        {(() => {
+                          const visibleComments = comments.filter(c => c && c.ucapan && c.ucapan.trim() !== '');
+                          return (
+                            <>
+                              <p className="comments-count text-dark mb-3" style={{ fontWeight: 600, fontSize: '0.95rem', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px' }}>
+                                  <i className="fa-solid fa-comments"></i> {visibleComments.length} Ucapan
+                              </p>
+                              <div className="comments-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                  {visibleComments.map((msg, i) => (
+                                      <div className="comment-item" key={msg.id || i} style={{ display: 'flex', gap: '15px', marginBottom: '15px', padding: '15px', backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: '12px' }}>
+                                          <img src="/assets/images/logo.png" className="comment-avatar-img" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                                          <div className="comment-bubble" style={{ flex: 1 }}>
+                                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                                                <h4 className="comment-name" style={{ margin: 0, fontSize: '0.95rem', color: '#2a2a2a', fontWeight: 600 }}>{msg.nama}</h4>
+                                                {msg.kehadiran && (
+                                                  <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '10px', backgroundColor: '#e6f4ea', color: '#137333', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                                    <i className="fa-solid fa-circle-check"></i> {msg.kehadiran}
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <p className="comment-text" style={{ margin: '0 0 5px 0', fontSize: '0.85rem', color: '#444', lineHeight: '1.4' }}>{msg.ucapan}</p>
+                                              <small className="time text-muted" style={{ fontSize: '0.75rem', color: '#777' }}>{new Date(msg.created_at).toLocaleDateString('id-ID')}</small>
+                                          </div>
+                                      </div>
+                                  ))}
+                                  {visibleComments.length === 0 && (
+                                      <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#666' }}>Belum ada ucapan.</p>
+                                  )}
+                              </div>
+                            </>
+                          );
+                        })()}
                     </div>
                 </div>
             </div>

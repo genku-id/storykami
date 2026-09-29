@@ -537,12 +537,14 @@ export default function SubDashboardManage() {
                   <div key={c.id} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        <strong style={{ color: 'var(--text-primary)' }}>{c.name}</strong>
-                        <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: c.attendance === 'Hadir' ? 'var(--success-bg)' : '#fef2f2', color: c.attendance === 'Hadir' ? 'var(--success)' : '#dc2626' }}>
-                          {c.attendance}
+                        <strong style={{ color: 'var(--text-primary)' }}>{c.nama || c.name || 'Tamu'}</strong>
+                        <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: (c.kehadiran || c.attendance) === 'Hadir' ? 'var(--success-bg, #e6f4ea)' : '#fef2f2', color: (c.kehadiran || c.attendance) === 'Hadir' ? 'var(--success, #137333)' : '#dc2626' }}>
+                          {c.kehadiran || c.attendance || 'Hadir'}
                         </span>
                       </div>
-                      <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{c.message}</p>
+                      <p style={{ margin: 0, color: (c.ucapan || c.message) ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: '0.9rem', fontStyle: (c.ucapan || c.message) ? 'normal' : 'italic' }}>
+                        {c.ucapan || c.message || '(Hanya konfirmasi kehadiran)'}
+                      </p>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.5rem' }}>{new Date(c.created_at).toLocaleString('id-ID')}</span>
                     </div>
                     <button 
