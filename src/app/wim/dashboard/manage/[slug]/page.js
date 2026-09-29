@@ -522,6 +522,7 @@ export default function SubDashboardManage() {
                 value={data.penutupFoto || ''}
                 onChange={url => handleChange('penutupFoto', url)}
                 slug={slug || 'undangan'}
+                showWhatsappPreview={false}
               />
 
               <InputField 

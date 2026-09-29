@@ -610,6 +610,7 @@ function UnifiedEditor() {
             value={data.penutupFoto || ''}
             onChange={url => handleChange('penutupFoto', url)}
             slug={slug || 'undangan'}
+            showWhatsappPreview={false}
           />
 
           <InputField 

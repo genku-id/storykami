@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 
 export const DEFAULT_COUPLE_THUMBNAIL = '/assets/images/couple.png';
 
-export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', label = '', description = '' }) {
+export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', label = '', description = '', showWhatsappPreview = true }) {
   const displayLabel = label || title || 'Foto Thumbnail Link (WhatsApp & Medsos)';
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -188,7 +188,9 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 0.75rem 0' }}>
             {isDefault
               ? 'Jika tidak mengunggah foto, sistem otomatis menggunakan foto default couple.'
-              : 'Foto ini akan muncul sebagai gambar preview saat tautan undangan dibagikan di WhatsApp/Facebook.'}
+              : (showWhatsappPreview
+                  ? 'Foto ini akan muncul sebagai gambar preview saat tautan undangan dibagikan di WhatsApp/Facebook.'
+                  : 'Foto ini akan digunakan sebagai gambar latar belakang pada bagian penutup.')}
           </p>
 
           {/* Tombol Aksi */}
@@ -261,40 +263,42 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
       )}
 
       {/* Simulasi Tampilan WhatsApp Preview Card */}
-      <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border)' }}>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 600 }}>
-          Simulasi Preview di WhatsApp:
-        </p>
-        <div style={{
-          maxWidth: '340px',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center'
-        }}>
-          <img
-            src={activeImage}
-            alt="WA Preview"
-            style={{ width: '80px', height: '80px', objectFit: 'cover', flexShrink: 0 }}
-            onError={(e) => { e.currentTarget.src = DEFAULT_COUPLE_THUMBNAIL; }}
-          />
-          <div style={{ padding: '8px 10px', overflow: 'hidden' }}>
-            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {title || 'Undangan Pernikahan'}
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px' }}>
-              {description || 'Tanpa mengurangi rasa hormat, kami mengundang...'}
-            </div>
-            <div style={{ fontSize: '0.68rem', color: '#059669', marginTop: '4px', fontWeight: 500 }}>
-              storykami.my.id
+      {showWhatsappPreview && (
+        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border)' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 600 }}>
+            Simulasi Preview di WhatsApp:
+          </p>
+          <div style={{
+            maxWidth: '340px',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            <img
+              src={activeImage}
+              alt="WA Preview"
+              style={{ width: '80px', height: '80px', objectFit: 'cover', flexShrink: 0 }}
+              onError={(e) => { e.currentTarget.src = DEFAULT_COUPLE_THUMBNAIL; }}
+            />
+            <div style={{ padding: '8px 10px', overflow: 'hidden' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {title || 'Undangan Pernikahan'}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px' }}>
+                {description || 'Tanpa mengurangi rasa hormat, kami mengundang...'}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#059669', marginTop: '4px', fontWeight: 500 }}>
+                storykami.my.id
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
