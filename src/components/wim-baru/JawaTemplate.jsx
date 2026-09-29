@@ -9,7 +9,9 @@ import { parseDate, formatIndonesianDate, getDateParts } from '@/utils/dateHelpe
 import WeddingGiftCard from './WeddingGiftCard';
 import WeddingPhysicalGiftCard from './WeddingPhysicalGiftCard';
 
-export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
+export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '', isDemo: isDemoProp }) {
+  const isDemo = Boolean(isDemoProp) || slug === 'demo' || slug === 'preview' || (typeof slug === 'string' && (slug.startsWith('demo') || slug.includes('demo'))) || (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo'));
+  const demoStorageKey = `storykami_demo_guestbook_${slug || 'demo'}`;
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
   const acaraList = normalizeAcara(acara);
   const mainEvent = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
@@ -81,7 +83,24 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
   }, [acara]);
 
   useEffect(() => {
-    // Fetch comments from Supabase guestbook
+    if (isDemo) {
+      // Mode Demo: Ambil data ucapan khusus dari localStorage perangkat ini saja
+      try {
+        if (typeof window !== 'undefined') {
+          const localData = localStorage.getItem(demoStorageKey);
+          if (localData) {
+            setComments(JSON.parse(localData));
+          } else {
+            setComments([]);
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memuat guestbook demo:', err);
+      }
+      return;
+    }
+
+    // Fetch comments from Supabase guestbook untuk undangan live asli
     const fetchComments = async () => {
       if (!slug) return;
       const { data: dbComments } = await supabase
@@ -95,7 +114,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
       }
     };
     fetchComments();
-  }, [slug]);
+  }, [slug, isDemo, demoStorageKey]);
 
   // Observer untuk efek animasi saat scroll (data-animate)
   useEffect(() => {
@@ -121,11 +140,35 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
     setIsSubmitting(true);
     
     const newComment = {
+      id: isDemo ? `demo-${Date.now()}` : undefined,
       invitation_slug: slug,
       nama: namaTamu.trim(),
       ucapan: ucapan ? ucapan.trim() : '',
-      kehadiran: 'Hadir'
+      kehadiran: 'Hadir',
+      created_at: new Date().toISOString()
     };
+
+    if (isDemo) {
+      try {
+        if (typeof window !== 'undefined') {
+          const currentList = JSON.parse(localStorage.getItem(demoStorageKey) || '[]');
+          const updated = [newComment, ...currentList];
+          localStorage.setItem(demoStorageKey, JSON.stringify(updated));
+        }
+        if (newComment.ucapan) {
+          setComments(prev => [newComment, ...prev]);
+          alert('Terima kasih! Konfirmasi kehadiran dan ucapan Anda berhasil dikirim (Mode Demo: Tersimpan di HP Anda).');
+        } else {
+          setComments(prev => [newComment, ...prev]);
+          alert('Terima kasih! Konfirmasi kehadiran Anda berhasil disimpan (Mode Demo: Tersimpan di HP Anda).');
+        }
+        setUcapan('');
+      } catch (e) {
+        console.error('Error saving demo guestbook:', e);
+      }
+      setIsSubmitting(false);
+      return;
+    }
     
     const { data: inserted, error } = await supabase
       .from('guestbook')
@@ -159,11 +202,30 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
     setIsSubmitting(true);
     
     const newComment = {
+      id: isDemo ? `demo-${Date.now()}` : undefined,
       invitation_slug: slug,
       nama: namaTamu.trim(),
       ucapan: ucapan.trim(),
-      kehadiran: 'Hadir'
+      kehadiran: 'Hadir',
+      created_at: new Date().toISOString()
     };
+
+    if (isDemo) {
+      try {
+        if (typeof window !== 'undefined') {
+          const currentList = JSON.parse(localStorage.getItem(demoStorageKey) || '[]');
+          const updated = [newComment, ...currentList];
+          localStorage.setItem(demoStorageKey, JSON.stringify(updated));
+        }
+        setComments(prev => [newComment, ...prev]);
+        alert('Terima kasih atas ucapan dan doa restunya! (Mode Demo: Tersimpan di HP Anda)');
+        setUcapan('');
+      } catch (e) {
+        console.error('Error saving demo guestbook:', e);
+      }
+      setIsSubmitting(false);
+      return;
+    }
     
     const { data: inserted, error } = await supabase
       .from('guestbook')
