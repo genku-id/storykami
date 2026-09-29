@@ -652,14 +652,31 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
 
         {/* Closing Section */}
         {isVisible('closing') && (
-          <section id="closing" className="section closing-section text-center" style={{ backgroundColor: '#2c2c2c', color: '#dfcfb9', padding: '60px 20px' }}>
-            <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3rem', fontFamily: '"Oleo Script", cursive' }}>Terima Kasih</h1>
-            <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '320px', margin: '0 auto' }}>
-              <p>Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.</p>
-              <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+          <section 
+            id="closing" 
+            className="section closing-section text-center" 
+            style={{ 
+              backgroundColor: '#2c2c2c', 
+              color: '#dfcfb9', 
+              padding: '60px 20px',
+              backgroundImage: data.penutupFoto ? `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${data.penutupFoto})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3rem', fontFamily: '"Oleo Script", cursive' }}>
+              {data.penutupJudul || 'Terima Kasih'}
+            </h1>
+            <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: '1.6', maxWidth: '360px', margin: '0 auto', whiteSpace: 'pre-line' }}>
+              {data.penutup || (
+                <>
+                  <p>Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.</p>
+                  <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+                </>
+              )}
             </div>
             <h1 className="title-names mt-4" data-animate="fade-up" style={{ fontFamily: '"Oleo Script", cursive', marginTop: '20px', fontSize: '2.5rem' }}>
-              {mempelai?.wanita?.namaPanggilan} &amp; {mempelai?.pria?.namaPanggilan}
+              {data.penutupMempelai || ((mempelai?.wanita?.namaPanggilan && mempelai?.pria?.namaPanggilan) ? `${mempelai.wanita.namaPanggilan} & ${mempelai.pria.namaPanggilan}` : 'Mempelai')}
             </h1>
           </section>
         )}

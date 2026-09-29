@@ -179,5 +179,11 @@ export const defaultInvitationData = {
     physicalAddress: "Jl. Merdeka No.1, Jakarta Pusat",
     receiver: "Rizky Pratama",
     physicalWhatsapp: "6281234567890"
-  }
+  },
+
+  // Penutup Undangan
+  penutupJudul: "Terima Kasih",
+  penutup: "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.\n\nWassalamu'alaikum Wr. Wb.",
+  penutupMempelai: "",
+  penutupFoto: ""
 };

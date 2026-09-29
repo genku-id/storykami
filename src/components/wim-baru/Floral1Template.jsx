@@ -516,15 +516,42 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
 
         {/* Closing Section */}
         {isVisible('closing') && (
-          <section id="closing" className="section closing-section text-center">
+          <section 
+            id="closing" 
+            className="section closing-section text-center"
+            style={{
+              backgroundImage: `url(${data.penutupFoto || data.closingFoto || '/assets/images/couple.png'})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top'
+            }}
+          >
             <div className="closing-gradient-overlay">
-              <h1 className="title-names text-sage mb-2" data-animate="fade-up" style={{ fontSize: '3.5rem' }}>Terima Kasih</h1>
-              <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-dark)', maxWidth: '320px', margin: '0 auto', fontWeight: 500 }}>
-                <p>Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.</p>
-                <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+              <h1 
+                className="title-names mb-2" 
+                data-animate="fade-up" 
+                style={{ fontSize: '3.5rem', color: '#1a1a1a', fontWeight: 700 }}
+              >
+                {data.penutupJudul || 'Terima Kasih'}
+              </h1>
+              <div 
+                className="mt-2" 
+                data-animate="fade-up" 
+                style={{ fontSize: '0.95rem', lineHeight: 1.6, color: '#1a1a1a', maxWidth: '360px', margin: '0 auto', fontWeight: 500, whiteSpace: 'pre-line' }}
+              >
+                {data.penutup || (
+                  <>
+                    <p>Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.</p>
+                    <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
+                  </>
+                )}
               </div>
-              <h1 id="closing-couple-names" className="title-names text-sage mt-4" data-animate="fade-up" style={{ animationDelay: '0.2s', fontSize: '2.5rem' }}>
-                {mempelai?.wanita?.namaPanggilan} &amp; {mempelai?.pria?.namaPanggilan}
+              <h1 
+                id="closing-couple-names" 
+                className="title-names mt-4" 
+                data-animate="fade-up" 
+                style={{ animationDelay: '0.2s', fontSize: '2.5rem', color: '#1a1a1a', fontWeight: 700 }}
+              >
+                {data.penutupMempelai || ((mempelai?.wanita?.namaPanggilan && mempelai?.pria?.namaPanggilan) ? `${mempelai.wanita.namaPanggilan} & ${mempelai.pria.namaPanggilan}` : 'Mempelai')}
               </h1>
             </div>
           </section>

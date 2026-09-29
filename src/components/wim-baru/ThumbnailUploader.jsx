@@ -3,7 +3,8 @@ import React, { useState, useRef } from 'react';
 
 export const DEFAULT_COUPLE_THUMBNAIL = '/assets/images/couple.png';
 
-export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', description = '' }) {
+export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', label = '', description = '' }) {
+  const displayLabel = label || title || 'Foto Thumbnail Link (WhatsApp & Medsos)';
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef(null);
@@ -72,9 +73,14 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
       background: 'var(--bg-primary)',
       border: '1px solid var(--border)',
     }}>
-      <label className="wim-label" style={{ marginBottom: '0.6rem', display: 'block', fontWeight: 600 }}>
-        Foto Thumbnail Link (WhatsApp &amp; Medsos)
+      <label className="wim-label" style={{ marginBottom: description ? '0.3rem' : '0.6rem', display: 'block', fontWeight: 600 }}>
+        {displayLabel}
       </label>
+      {description && (
+        <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+          {description}
+        </p>
+      )}
 
       {/* Input File Hidden */}
       <input

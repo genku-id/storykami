@@ -604,7 +604,35 @@ function UnifiedEditor() {
 
         {/* Accordion 7: Penutup */}
         <AccordionItem title="7. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
-          <InputField label="Kata Penutup & Salam" type="textarea" value={data.penutup || ''} onChange={e => handleChange('penutup', e.target.value)} />
+          <ThumbnailUploader
+            label="Foto Latar Belakang / Gambar Couple Penutup"
+            description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
+            value={data.penutupFoto || ''}
+            onChange={url => handleChange('penutupFoto', url)}
+            slug={slug || 'undangan'}
+          />
+
+          <InputField 
+            label="Judul Penutup (Bagian Atas)" 
+            placeholder="Contoh: Terima Kasih" 
+            value={data.penutupJudul !== undefined ? data.penutupJudul : 'Terima Kasih'} 
+            onChange={e => handleChange('penutupJudul', e.target.value)} 
+          />
+
+          <InputField 
+            label="Kalimat Penutup & Salam (Bagian Tengah)" 
+            type="textarea" 
+            placeholder="Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.&#10;&#10;Wassalamu'alaikum Wr. Wb." 
+            value={data.penutup !== undefined ? data.penutup : "Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.\n\nWassalamu'alaikum Wr. Wb."} 
+            onChange={e => handleChange('penutup', e.target.value)} 
+          />
+
+          <InputField 
+            label="Nama Mempelai Penutup (Bagian Bawah - Opsional)" 
+            placeholder={`Otomatis dari profil: ${(data.mempelai?.wanita?.namaPanggilan && data.mempelai?.pria?.namaPanggilan) ? `${data.mempelai.wanita.namaPanggilan} & ${data.mempelai.pria.namaPanggilan}` : 'Nama Mempelai'}`} 
+            value={data.penutupMempelai || ''} 
+            onChange={e => handleChange('penutupMempelai', e.target.value)} 
+          />
         </AccordionItem>
 
       </div>
