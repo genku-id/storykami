@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
 
 const NAV_ITEMS = [
@@ -121,7 +122,7 @@ export default function DashboardLayout({ children }) {
 
             {/* 1. Beranda */}
             {NAV_ITEMS.filter(item => item.label === 'Beranda').map(item => (
-              <a key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
+              <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
                 textDecoration: 'none', fontWeight: isActive(item) ? 700 : 500, fontSize: '0.875rem',
                 color: isActive(item) ? '#fff' : 'var(--text-secondary)',
@@ -131,11 +132,11 @@ export default function DashboardLayout({ children }) {
               }}>
                 <span style={{ opacity: isActive(item) ? 1 : 0.7 }}>{item.icon}</span>
                 {item.label}
-              </a>
+              </Link>
             ))}
 
             {/* 2. Katalog Tema */}
-            <a href="/wim/dashboard/katalog" onClick={() => setSidebarOpen(false)} style={{
+            <Link href="/wim/dashboard/katalog" onClick={() => setSidebarOpen(false)} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
               textDecoration: 'none', fontWeight: isKatalogActive ? 700 : 500, fontSize: '0.875rem',
               color: isKatalogActive ? '#fff' : 'var(--text-secondary)',
@@ -150,11 +151,11 @@ export default function DashboardLayout({ children }) {
                 </svg>
               </span>
               Katalog Tema
-            </a>
+            </Link>
 
             {/* 3. Admin Panel */}
             {session.isAdmin && (
-              <a href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
+              <Link href="/wim/dashboard/admin" onClick={() => setSidebarOpen(false)} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
                 textDecoration: 'none', fontWeight: normalizedPath.startsWith('/wim/dashboard/admin') ? 700 : 500, fontSize: '0.875rem',
                 color: normalizedPath.startsWith('/wim/dashboard/admin') ? '#fff' : 'var(--text-secondary)',
@@ -166,12 +167,12 @@ export default function DashboardLayout({ children }) {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </span>
                 Admin Panel
-              </a>
+              </Link>
             )}
 
             {/* 4. Setelan */}
             {NAV_ITEMS.filter(item => item.label === 'Setelan').map(item => (
-              <a key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
+              <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10,
                 textDecoration: 'none', fontWeight: isActive(item) ? 700 : 500, fontSize: '0.875rem',
                 color: isActive(item) ? '#fff' : 'var(--text-secondary)',
@@ -181,7 +182,7 @@ export default function DashboardLayout({ children }) {
               }}>
                 <span style={{ opacity: isActive(item) ? 1 : 0.7 }}>{item.icon}</span>
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 

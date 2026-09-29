@@ -47,6 +47,17 @@ body.locked {
     animation: dropScreen 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; /* Efek turun dilambatkan */
 }
 
+.wim-template-jawa .cover-page.slide-up,
+#cover-page.slide-up {
+    animation: none !important;
+    transform: translateY(-100%) !important;
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+}
+
 /* Ornaments */
 .jawa-top-border {
     position: absolute;

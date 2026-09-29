@@ -118,6 +118,12 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
   const handleBukaUndangan = () => {
     setIsLocked(false);
     setIsPlaying(true);
+    setTimeout(() => {
+      const hero = document.getElementById('hero') || document.getElementById('main-content');
+      if (hero) {
+        hero.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -149,7 +155,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
 
       {/* Cover Section */}
       {isVisible('cover') && (
-        <section id="cover-page" className="section cover-page text-center">
+        <section id="cover-page" className={`section cover-page text-center ${!isLocked ? 'slide-up' : ''}`}>
             <div className="jawa-top-border"></div>
             
             <div className="jawa-gunungan-container">
