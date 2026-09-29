@@ -64,7 +64,7 @@ export default function WeddingGiftCard({
     : `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
 
   const cardBg = '#edf0f2';
-  const primaryColor = '#7588a1';
+  const primaryColor = '#7c9b9f';
 
   return (
     <div
