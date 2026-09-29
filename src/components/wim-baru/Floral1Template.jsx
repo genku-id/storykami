@@ -5,15 +5,35 @@ import '@/app/wim/floral1.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 
-export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp }) {
+export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
   
-  // Gunakan state untuk comments (ucapan)
+  // Ambil nama tamu dari props atau URL (?to=... / ?u=... / ?nama=...)
+  const [tamuName, setTamuName] = useState(guestName || 'Nama Tamu');
   const [comments, setComments] = useState([]);
-  const [namaTamu, setNamaTamu] = useState('');
+  const [namaTamu, setNamaTamu] = useState(guestName || '');
   const [ucapan, setUcapan] = useState('');
   const [kehadiran, setKehadiran] = useState('Hadir');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (guestName) {
+      setTamuName(guestName);
+      setNamaTamu(guestName);
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const urlGuest = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest');
+      if (urlGuest && urlGuest.trim()) {
+        const decoded = urlGuest.trim();
+        setTamuName(decoded);
+        setNamaTamu(decoded);
+      } else {
+        setTamuName('Nama Tamu');
+      }
+    }
+  }, [guestName]);
 
   // State untuk Cover Lock dan Audio
   const [isLocked, setIsLocked] = useState(true);
@@ -146,7 +166,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
             </div>
             <div className="guest-info cover-fade-up-2">
               <p className="kepada-yth text-serif">Kepada Yth:</p>
-              <h3 className="guest-name text-serif">Nama Tamu</h3>
+              <h3 className="guest-name text-serif">{tamuName}</h3>
             </div>
             <button type="button" id="btn-open" className="btn-cover cover-fade-up-3" onClick={handleBukaUndangan}>
               <i className="fa-solid fa-envelope"></i> BUKA UNDANGAN

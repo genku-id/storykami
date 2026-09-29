@@ -7,8 +7,11 @@ import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 
 export const revalidate = 60; // ISR cache tiap 60 detik
 
-export default async function InvitationPage({ params }) {
+export default async function InvitationPage({ params, searchParams }) {
   const { slug } = await params;
+  const sParams = (await searchParams) || {};
+  const guestRaw = sParams?.to || sParams?.u || sParams?.nama || sParams?.guest || '';
+  const guestName = guestRaw ? decodeURIComponent(String(guestRaw).replace(/\+/g, ' ')).trim() : '';
 
   // Inisialisasi Supabase Server Client
   const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
@@ -38,11 +41,11 @@ export default async function InvitationPage({ params }) {
 
   // Render berdasarkan template yang menggunakan Framework (React)
   if (template === 'floral1') {
-    return <Floral1Template data={data} slug={slug} />;
+    return <Floral1Template data={data} slug={slug} guestName={guestName} />;
   }
   
   if (template === 'template-daerahJawa') {
-    return <JawaTemplate data={data} slug={slug} />;
+    return <JawaTemplate data={data} slug={slug} guestName={guestName} />;
   }
 
   // Jika menggunakan template lama atau tidak dikenal
@@ -56,8 +59,11 @@ export default async function InvitationPage({ params }) {
   );
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
+  const sParams = (await searchParams) || {};
+  const guestRaw = sParams?.to || sParams?.u || sParams?.nama || sParams?.guest || '';
+  const guestName = guestRaw ? decodeURIComponent(String(guestRaw).replace(/\+/g, ' ')).trim() : '';
   
   const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -70,7 +76,10 @@ export async function generateMetadata({ params }) {
     `${data.mempelai?.wanita?.namaPanggilan || data.brideName || ''} & ${data.mempelai?.pria?.namaPanggilan || data.groomName || ''}`.trim() || 'Pasangan';
     
   const title = (data.thumbnailJudul || `Undangan Pernikahan ${namaPasangan} | StoryKami`).replace(/\[NAMA\]/gi, namaPasangan);
-  const description = (data.thumbnailDeskripsi || `Hadiri Pernikahan ${namaPasangan}`).replace(/\[NAMA\]/gi, namaPasangan);
+  let description = (data.thumbnailDeskripsi || `Hadiri Pernikahan ${namaPasangan}`).replace(/\[NAMA\]/gi, namaPasangan);
+  if (guestName) {
+    description = `Kepada Yth. ${guestName}. ${description}`;
+  }
   const DEFAULT_THUMBNAIL = 'https://storykami.my.id/assets/images/couple.png';
   let image = data.thumbnailFoto || data.coupleImage || data.hal2_fotoCouple || DEFAULT_THUMBNAIL;
   if (image && image.startsWith('/')) {

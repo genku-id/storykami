@@ -5,15 +5,35 @@ import '@/app/wim/jawa.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 
-export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp }) {
+export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
   
-  // Gunakan state untuk comments (ucapan)
+  // Ambil nama tamu dari props atau URL (?to=... / ?u=... / ?nama=...)
+  const [tamuName, setTamuName] = useState(guestName || 'Nama Tamu');
   const [comments, setComments] = useState([]);
-  const [namaTamu, setNamaTamu] = useState('');
+  const [namaTamu, setNamaTamu] = useState(guestName || '');
   const [ucapan, setUcapan] = useState('');
   const [kehadiran, setKehadiran] = useState('Hadir');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (guestName) {
+      setTamuName(guestName);
+      setNamaTamu(guestName);
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const urlGuest = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest');
+      if (urlGuest && urlGuest.trim()) {
+        const decoded = urlGuest.trim();
+        setTamuName(decoded);
+        setNamaTamu(decoded);
+      } else {
+        setTamuName('Nama Tamu');
+      }
+    }
+  }, [guestName]);
 
   // State untuk Cover Lock dan Audio
   const [isLocked, setIsLocked] = useState(true);
@@ -165,7 +185,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                 
                 <div className="guest-info cover-fade-up-2 mt-4" style={{ color: '#2a2a2a' }}>
                     <p className="kepada-yth text-serif" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '5px' }}>Kepada Yth:</p>
-                    <h3 className="guest-name text-serif" style={{ fontSize: '1.2rem', marginBottom: '5px', fontWeight: 500 }}>Nama Tamu</h3>
+                    <h3 className="guest-name text-serif" style={{ fontSize: '1.2rem', marginBottom: '5px', fontWeight: 500 }}>{tamuName}</h3>
                     <p className="text-serif" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Ditempat</p>
                 </div>
                 
