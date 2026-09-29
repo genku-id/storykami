@@ -123,7 +123,7 @@ export default function WeddingPhysicalGiftCard({
         </p>
         <p
           style={{
-            margin: phone ? '0 0 8px 0' : '0',
+            margin: 0,
             fontFamily: '"Inter", sans-serif',
             fontSize: '1rem',
             color: '#1a1a1a',
@@ -133,19 +133,6 @@ export default function WeddingPhysicalGiftCard({
         >
           Penerima: {receiver || '-'}
         </p>
-        {phone && (
-          <p
-            style={{
-              margin: 0,
-              fontFamily: '"Inter", sans-serif',
-              fontSize: '0.95rem',
-              color: '#4b5563',
-              lineHeight: 1.5
-            }}
-          >
-            No HP: {phone}
-          </p>
-        )}
       </div>
 
       {/* Action Buttons */}
