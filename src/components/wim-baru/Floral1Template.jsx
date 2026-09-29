@@ -4,6 +4,7 @@ import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/floral1.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
+import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 
 export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -202,7 +203,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                 <div className="countdown-item"><span>{String(timeLeft.menit).padStart(2, '0')}</span><p>Menit</p></div>
                 <div className="countdown-item"><span>{String(timeLeft.detik).padStart(2, '0')}</span><p>Detik</p></div>
               </div>
-              <a href={acara?.akad?.linkMap || '#'} target="_blank" rel="noreferrer" className="btn-secondary mt-4" style={{ textDecoration: 'none', transitionDelay: '0.4s' }} data-animate="fade-up">
+              <a href={getGoogleCalendarUrl(data, slug, 'main')} target="_blank" rel="noreferrer" className="btn-secondary mt-4" style={{ textDecoration: 'none', transitionDelay: '0.4s' }} data-animate="fade-up">
                 <i className="fa-regular fa-calendar-check"></i> Simpan di Kalender
               </a>
             </div>

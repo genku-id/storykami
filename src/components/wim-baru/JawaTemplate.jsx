@@ -4,6 +4,7 @@ import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/jawa.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
+import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 
 export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -255,7 +256,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                     </div>
                 </div>
                 
-                <a href={acara?.akad?.linkMap || '#'} target="_blank" rel="noreferrer" className="btn-cover" style={{ margin: '0 auto', display: 'block', width: 'fit-content', backgroundColor: '#4e342e', border: '1px solid #4e342e', color: '#fdf5e6', borderRadius: '30px', padding: '6px 16px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: '0.3s', textDecoration: 'none' }}>
+                <a href={getGoogleCalendarUrl(data, slug, 'main')} target="_blank" rel="noreferrer" className="btn-cover" style={{ margin: '0 auto', display: 'block', width: 'fit-content', backgroundColor: '#4e342e', border: '1px solid #4e342e', color: '#fdf5e6', borderRadius: '30px', padding: '6px 16px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: '0.3s', textDecoration: 'none' }}>
                     <i className="fa-regular fa-calendar-check"></i> SIMPAN DI KALENDER
                 </a>
             </div>
