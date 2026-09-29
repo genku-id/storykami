@@ -6,6 +6,7 @@ import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate } from '@/utils/dateHelper';
+import WeddingGiftCard from './WeddingGiftCard';
 
 export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -340,33 +341,12 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
             <div className="gift-container" data-animate="zoom-in">
               {/* E-Wallet / Bank Accounts */}
               {data.hadiahDigital?.accounts?.map((acc, idx) => (
-                <div className="bank-card mb-4" key={idx}>
-                  <div className="card-top-row">
-                    <h3 className="bank-card-title">Transfer</h3>
-                    <div className="bank-logo-container">
-                      <h4 style={{ margin: 0, fontWeight: 'bold' }}>{acc.name}</h4>
-                      <hr className="bank-divider" />
-                    </div>
-                  </div>
-                  <div className="card-body-row">
-                    <div className="card-left">
-                      <i className="fa-solid fa-credit-card card-icon"></i>
-                      <div className="card-buttons">
-                        <button className="btn-bank btn-copy" onClick={() => navigator.clipboard.writeText(acc.number)}>
-                          <i className="fa-regular fa-copy"></i> Salin NO
-                        </button>
-                      </div>
-                    </div>
-                    <div className="card-right">
-                      <div className="bank-details-wrapper">
-                        <p className="bank-label">No. Rekening / HP</p>
-                        <p className="bank-number" style={{ userSelect: 'all' }}>{acc.number}</p>
-                        <p className="bank-label mt-2">Atas Nama</p>
-                        <p className="bank-name">{acc.owner}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <WeddingGiftCard
+                  key={idx}
+                  account={acc}
+                  mempelai={mempelai}
+                  fallbackWa={data.clientWa || data.hadiahDigital?.physicalWhatsapp}
+                />
               ))}
 
               {/* Physical Gift */}

@@ -564,7 +564,7 @@ function UnifiedEditor() {
                   style={{ background: '#ef4444', color: 'var(--bg-card)', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
                  >Hapus</button>
                </div>
-               <InputField label="Nama Bank / E-Wallet" type="select" options={["BCA", "Mandiri", "BNI", "BRI", "BSI", "GoPay", "OVO", "Dana", "ShopeePay"]} value={acc.name} onChange={e => {
+               <InputField label="Nama Bank / E-Wallet" type="select" options={["BCA", "Mandiri", "BNI", "BRI", "BSI", "CIMB", "Jago", "Jenius", "SeaBank", "Blu", "GoPay", "OVO", "Dana", "ShopeePay", "LinkAja"]} value={acc.name} onChange={e => {
                   const newAcc = [...data.hadiahDigital.accounts];
                   newAcc[idx].name = e.target.value;
                   handleChange('hadiahDigital.accounts', newAcc);
@@ -579,12 +579,17 @@ function UnifiedEditor() {
                   newAcc[idx].owner = e.target.value;
                   handleChange('hadiahDigital.accounts', newAcc);
                }} />
+               <InputField label="No. WhatsApp Konfirmasi Pemilik (Opsional)" placeholder="Contoh: 081234567890" value={acc.whatsapp || ''} onChange={e => {
+                  const newAcc = [...data.hadiahDigital.accounts];
+                  newAcc[idx].whatsapp = e.target.value;
+                  handleChange('hadiahDigital.accounts', newAcc);
+               }} />
              </div>
            ))}
            <button 
              onClick={() => {
                const currentAccs = data.hadiahDigital?.accounts || [];
-               handleChange('hadiahDigital.accounts', [...currentAccs, { name: 'BCA', number: '', owner: '' }]);
+               handleChange('hadiahDigital.accounts', [...currentAccs, { name: 'BCA', number: '', owner: '', whatsapp: '' }]);
              }} 
              style={{ width: '100%', padding: '0.75rem', background: 'var(--border)', border: '1px dashed var(--border-hover)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500, marginBottom: '2rem' }}
            >

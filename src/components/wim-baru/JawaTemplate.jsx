@@ -6,6 +6,7 @@ import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate, getDateParts } from '@/utils/dateHelper';
+import WeddingGiftCard from './WeddingGiftCard';
 
 export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -465,25 +466,12 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                 <div className="gift-container" data-animate="zoom-in">
                     {/* Accounts */}
                     {data.hadiahDigital?.accounts?.map((acc, idx) => (
-                      <div key={idx} className="bank-card" style={{ backgroundColor: '#fdf5e6', borderRadius: '15px', padding: '25px', boxShadow: '0 5px 15px rgba(0,0,0,0.05)', marginBottom: '25px' }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                  <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.2rem', color: '#2a2a2a', marginBottom: '15px', fontWeight: 600 }}>Transfer</h3>
-                                  <i className="fa-solid fa-credit-card" style={{ fontSize: '4rem', color: '#111', marginBottom: '25px' }}></i>
-                                  <button onClick={() => navigator.clipboard.writeText(acc.number)} style={{ backgroundColor: '#111', border: 'none', padding: '8px 20px', borderRadius: '10px', cursor: 'pointer', color: '#fff', fontSize: '0.85rem', fontWeight: 500, fontFamily: '"Inter", sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px', width: '100%' }}>
-                                      <i className="fa-regular fa-copy"></i> Salin
-                                  </button>
-                              </div>
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textAlign: 'right' }}>
-                                  <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>{acc.name}</h4>
-                                  <hr style={{ borderTop: '2px solid #111', width: '100%', margin: '10px 0 25px 0' }} />
-                                  <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1rem', color: '#2a2a2a', margin: '0 0 5px 0' }}>No. Rekening</p>
-                                  <p style={{ fontFamily: '"Inter", sans-serif', fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a', margin: '0 0 20px 0' }}>{acc.number}</p>
-                                  <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1rem', color: '#2a2a2a', margin: '0 0 5px 0' }}>Atas Nama</p>
-                                  <p style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.95rem', fontWeight: 700, color: '#2a2a2a', margin: 0, textTransform: 'uppercase' }}>{acc.owner}</p>
-                              </div>
-                          </div>
-                      </div>
+                      <WeddingGiftCard
+                        key={idx}
+                        account={acc}
+                        mempelai={mempelai}
+                        fallbackWa={data.clientWa || data.hadiahDigital?.physicalWhatsapp}
+                      />
                     ))}
 
                     {/* Physical Gift */}
