@@ -1,9 +1,9 @@
 
 :root {
     
-    --sage-dark: #6C8E93;
-    --sage: #7B9FA4;
-    --sage-light: #8CAEB3;
+    --sage-dark: #8093af;
+    --sage: #8093af;
+    --sage-light: #9bb0cb;
     --sage-bg: #EAF0F1; 
     --gold: #D4AF37;
     --text-dark: #2C3E50;
@@ -209,7 +209,7 @@
 }
 
 .wim-template-floral1 .btn-secondary {
-    background-color: var(--sage-dark);
+    background-color: #8093af;
     color: var(--white);
     padding: 8px 20px;
     border-radius: 8px;
@@ -217,6 +217,10 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.3s ease;
+}
+.wim-template-floral1 .btn-secondary:hover {
+    background-color: #6a7d99;
 }
 
 .wim-template-floral1 .btn-outline-white {
@@ -251,7 +255,7 @@ body.locked #main-content,
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--sage-dark);
+    background-color: #8093af;
     color: white;
     z-index: 999;
     display: flex;
@@ -326,7 +330,7 @@ body.locked #main-content,
 .wim-template-floral1 .monogram-large {
     font-family: var(--font-names), 'Great Vibes', cursive;
     font-size: 6.4rem;
-    color: #1a1a1a;
+    color: #8093af;
     line-height: 1;
     margin-bottom: 2.5rem;
     font-weight: normal;
@@ -359,7 +363,7 @@ body.locked #main-content,
 .wim-template-floral1 .title-names-cursive {
     font-family: var(--font-names), 'Great Vibes', cursive;
     font-size: 2.8rem;
-    color: #2c2c2c;
+    color: #8093af;
     margin: 0;
     font-weight: normal;
     font-style: italic;
@@ -379,9 +383,10 @@ body.locked #main-content,
     font-size: 1.4rem;
     font-weight: 600;
     margin: 0 0 25px 0;
+    color: #8093af;
 }
 .wim-template-floral1 .btn-cover {
-    background-color: #79949f;
+    background-color: #8093af;
     color: #fff;
     border: 2px solid #fff;
     padding: 9px 18px;
@@ -397,7 +402,7 @@ body.locked #main-content,
     gap: 8px;
 }
 .wim-template-floral1 .btn-cover:hover {
-    background-color: #637d88;
+    background-color: #6a7d99;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
 }
@@ -472,10 +477,14 @@ body.locked #main-content,
     height: 90%;
     object-fit: contain;
 }
+.wim-template-floral1 .hero-content .title-names {
+    color: #8093af;
+}
 .wim-template-floral1 .date-highlight {
     font-family: var(--font-heading);
     font-size: 1.2rem;
     margin-top: 10px;
+    color: #8093af;
 }
 .wim-template-floral1 .countdown-container {
     display: flex;
@@ -484,24 +493,26 @@ body.locked #main-content,
 }
 .wim-template-floral1 .countdown-item {
     background-color: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--sage-dark);
+    border: 1px solid rgba(128, 147, 175, 0.4);
+    color: #8093af;
     padding: 10px;
     border-radius: 15px;
     min-width: 65px;
-    box-shadow: 0 4px 10px rgba(108, 142, 147, 0.3);
+    box-shadow: 0 4px 10px rgba(128, 147, 175, 0.3);
 }
 .wim-template-floral1 .countdown-item span {
     font-size: 1.8rem;
     font-weight: 600;
     line-height: 1;
     display: block;
+    color: #8093af;
 }
 .wim-template-floral1 .countdown-item p {
     font-size: 0.7rem;
     margin-top: 5px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    color: #8093af;
 }
 
 
@@ -690,21 +701,16 @@ body.locked #main-content,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #8fa5a6; 
-    color: var(--white);
-    padding: 6px 15px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    gap: 8px;
-    background: var(--sage);
+    background-color: #8093af; 
     color: var(--white);
     padding: 8px 20px;
     border-radius: 20px; 
     font-size: 0.9rem;
+    gap: 8px;
     transition: all 0.3s ease;
 }
 .wim-template-floral1 .social-link:hover {
-    background: var(--sage-dark);
+    background-color: #6a7d99;
     color: var(--white);
     transform: translateY(-2px);
 }
@@ -1122,6 +1128,7 @@ body.locked #main-content,
     align-items: center;
 }
 .wim-template-floral1 .footer {
+    background-color: #8093af !important;
     padding: 60px 20px 40px;
 }
 .wim-template-floral1 .footer-logo {
@@ -1156,7 +1163,7 @@ body.locked #main-content,
 }
 .wim-template-floral1 .social-icons a:hover {
     background-color: var(--white);
-    color: var(--sage-dark);
+    color: #8093af;
 }
 
 
