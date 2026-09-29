@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ReactPlayer from 'react-player';
+import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/jawa.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
@@ -135,23 +135,8 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
         @keyframes pulseCloudRight { 0%, 100% { transform: scale(-1, 1); } 50% { transform: scale(-1.15, 1.15); } }
       `}</style>
 
-      {/* Hidden Audio Player */}
-      {data.musikUrl && (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0, overflow: 'hidden', zIndex: -1 }}>
-          <ReactPlayer 
-            url={data.musikUrl} 
-            playing={isPlaying} 
-            loop={true} 
-            volume={0.5} 
-            width="10px" height="10px"
-            config={{
-              youtube: {
-                playerVars: { autoplay: 1, controls: 0 }
-              }
-            }}
-          />
-        </div>
-      )}
+      {/* Background Music Player */}
+      <BackgroundMusic url={data.musikUrl} isPlaying={isPlaying} start={data.musikStart} />
 
       {/* Cover Section */}
       {isVisible('cover') && (

@@ -300,6 +300,12 @@ function UnifiedEditor() {
            
            <InputField label="No WhatsApp Klien" value={data.clientWa || ''} onChange={e => handleChange('clientWa', e.target.value)} placeholder="628123456789" />
            
+           <div style={{ height: '1px', background: 'var(--border)', margin: '1.5rem 0' }}></div>
+           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Lagu Latar / Musik Undangan</h3>
+           <InputField label="Link Musik (YouTube atau Link MP3)" value={data.musikUrl || ''} onChange={e => handleChange('musikUrl', e.target.value)} placeholder="https://www.youtube.com/watch?v=... atau https://...mp3" />
+           <InputField label="Mulai Musik Dari (Detik atau Menit:Detik)" value={data.musikStart || ''} onChange={e => handleChange('musikStart', e.target.value)} placeholder="contoh: 15 (detik ke-15) atau 01:20" />
+           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>Musik akan otomatis diputar dari titik waktu ini saat tamu mengklik tombol "Buka Undangan".</p>
+           
            <h3 style={{ fontSize: '1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Tampilan Thumbnail Link (SEO)</h3>
            <InputField label="Judul Thumbnail" value={data.thumbnailJudul || ''} onChange={e => handleChange('thumbnailJudul', e.target.value)} placeholder="Undangan Pernikahan Budi & Sari" />
            <InputField label="Deskripsi Singkat" type="textarea" value={data.thumbnailDeskripsi || ''} onChange={e => handleChange('thumbnailDeskripsi', e.target.value)} placeholder="Tanpa mengurangi rasa hormat, kami mengundang..." />

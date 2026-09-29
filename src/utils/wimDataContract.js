@@ -71,6 +71,7 @@ export const defaultInvitationData = {
   ],
   videoUrl: "", 
   musikUrl: "",
+  musikStart: 0,
 
   // Informasi Tambahan
   ceritaCinta: [

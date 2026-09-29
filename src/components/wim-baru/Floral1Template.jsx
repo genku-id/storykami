@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ReactPlayer from 'react-player';
+import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/floral1.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
@@ -124,23 +124,8 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
     <div className={`wim-template-floral1 ${isLocked ? 'locked' : ''}`} style={{ position: 'relative', width: '100%', minHeight: '100vh', background: '#fdfbfb', overflow: isLocked ? 'hidden' : 'auto' }}>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-      {/* Hidden Audio Player */}
-      {data.musikUrl && (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0, overflow: 'hidden', zIndex: -1 }}>
-          <ReactPlayer 
-            url={data.musikUrl} 
-            playing={isPlaying} 
-            loop={true} 
-            volume={0.5} 
-            width="10px" height="10px"
-            config={{
-              youtube: {
-                playerVars: { autoplay: 1, controls: 0 }
-              }
-            }}
-          />
-        </div>
-      )}
+      {/* Background Music Player */}
+      <BackgroundMusic url={data.musikUrl} isPlaying={isPlaying} start={data.musikStart} />
 
       {/* Cover Section */}
       {isVisible('cover') && (
