@@ -5,6 +5,7 @@ import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
+import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -301,10 +302,9 @@ function UnifiedEditor() {
            <InputField label="No WhatsApp Klien" value={data.clientWa || ''} onChange={e => handleChange('clientWa', e.target.value)} placeholder="628123456789" />
            
            <div style={{ height: '1px', background: 'var(--border)', margin: '1.5rem 0' }}></div>
-           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Lagu Latar / Musik Undangan</h3>
+           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Lagu Latar / Musik Undangan</h3>
            <InputField label="Link Musik (YouTube atau Link MP3)" value={data.musikUrl || ''} onChange={e => handleChange('musikUrl', e.target.value)} placeholder="https://www.youtube.com/watch?v=... atau https://...mp3" />
-           <InputField label="Mulai Musik Dari (Detik atau Menit:Detik)" value={data.musikStart || ''} onChange={e => handleChange('musikStart', e.target.value)} placeholder="contoh: 15 (detik ke-15) atau 01:20" />
-           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '-0.5rem', marginBottom: '1rem' }}>Musik akan otomatis diputar dari titik waktu ini saat tamu mengklik tombol "Buka Undangan".</p>
+           <MusicTimestampPicker url={data.musikUrl} value={data.musikStart} onChange={val => handleChange('musikStart', val)} />
            
            <h3 style={{ fontSize: '1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Tampilan Thumbnail Link (SEO)</h3>
            <InputField label="Judul Thumbnail" value={data.thumbnailJudul || ''} onChange={e => handleChange('thumbnailJudul', e.target.value)} placeholder="Undangan Pernikahan Budi & Sari" />
