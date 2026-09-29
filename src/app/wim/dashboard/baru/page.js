@@ -6,6 +6,7 @@ import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
+import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -309,7 +310,13 @@ function UnifiedEditor() {
            <h3 style={{ fontSize: '1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Tampilan Thumbnail Link (SEO)</h3>
            <InputField label="Judul Thumbnail" value={data.thumbnailJudul || ''} onChange={e => handleChange('thumbnailJudul', e.target.value)} placeholder="Undangan Pernikahan Budi & Sari" />
            <InputField label="Deskripsi Singkat" type="textarea" value={data.thumbnailDeskripsi || ''} onChange={e => handleChange('thumbnailDeskripsi', e.target.value)} placeholder="Tanpa mengurangi rasa hormat, kami mengundang..." />
-           <InputField label="URL Foto Thumbnail" value={data.thumbnailFoto || ''} onChange={e => handleChange('thumbnailFoto', e.target.value)} placeholder="https://..." />
+           <ThumbnailUploader 
+             value={data.thumbnailFoto || ''} 
+             onChange={url => handleChange('thumbnailFoto', url)} 
+             slug={slug || 'undangan'} 
+             title={data.thumbnailJudul} 
+             description={data.thumbnailDeskripsi} 
+           />
         </AccordionItem>
 
         {/* Accordion 2: Cover */}
