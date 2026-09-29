@@ -89,6 +89,7 @@ export default function SubDashboardManage() {
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Guestbook State
   const [comments, setComments] = useState([]);
@@ -159,6 +160,57 @@ export default function SubDashboardManage() {
       current[keys[keys.length - 1]] = value;
       return newData;
     });
+  };
+
+  const handlePhotoChange = async (path, url) => {
+    let latestData = null;
+    setData(prev => {
+      const newData = { ...prev };
+      const keys = path.split('.');
+      let current = newData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = url;
+      latestData = newData;
+      return newData;
+    });
+
+    // Auto-save foto langsung ke database Supabase agar tidak hilang saat refresh
+    try {
+      const { data: dbItem } = await supabase
+        .from('invitations')
+        .select('data')
+        .eq('slug', originalSlug)
+        .single();
+      
+      const mergedData = {
+        ...(dbItem?.data || {}),
+        ...(latestData || {}),
+        template: templateName
+      };
+
+      const keys = path.split('.');
+      let current = mergedData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = url;
+
+      const { error } = await supabase
+        .from('invitations')
+        .update({ data: mergedData })
+        .eq('slug', originalSlug);
+
+      if (!error) {
+        setToastMessage(url ? 'Foto berhasil diunggah & disimpan otomatis!' : 'Foto berhasil direset & disimpan!');
+        setTimeout(() => setToastMessage(''), 3500);
+      }
+    } catch (err) {
+      console.error('Auto-save photo error:', err);
+    }
   };
 
   const acaraList = normalizeAcara(data?.acara);
@@ -321,7 +373,7 @@ export default function SubDashboardManage() {
                <InputField label="Deskripsi Singkat" type="textarea" value={data.thumbnailDeskripsi || ''} onChange={e => handleChange('thumbnailDeskripsi', e.target.value)} />
                <ThumbnailUploader 
                  value={data.thumbnailFoto || ''} 
-                 onChange={url => handleChange('thumbnailFoto', url)} 
+                 onChange={url => handlePhotoChange('thumbnailFoto', url)} 
                  slug={slug || 'undangan'} 
                  title={data.thumbnailJudul} 
                  description={data.thumbnailDeskripsi} 
@@ -345,7 +397,7 @@ export default function SubDashboardManage() {
                  label="Foto Mempelai Wanita" 
                  gender="wanita" 
                  value={data.mempelai?.wanita?.fotoUtama || ''} 
-                 onChange={url => handleChange('mempelai.wanita.fotoUtama', url)} 
+                 onChange={url => handlePhotoChange('mempelai.wanita.fotoUtama', url)} 
                  slug={slug || 'undangan'} 
                />
 
@@ -362,7 +414,7 @@ export default function SubDashboardManage() {
                  label="Foto Mempelai Pria" 
                  gender="pria" 
                  value={data.mempelai?.pria?.fotoUtama || ''} 
-                 onChange={url => handleChange('mempelai.pria.fotoUtama', url)} 
+                 onChange={url => handlePhotoChange('mempelai.pria.fotoUtama', url)} 
                  slug={slug || 'undangan'} 
                />
             </AccordionItem>
@@ -520,7 +572,7 @@ export default function SubDashboardManage() {
                 label="Foto Latar Belakang / Gambar Couple Penutup"
                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
                 value={data.penutupFoto || ''}
-                onChange={url => handleChange('penutupFoto', url)}
+                onChange={url => handlePhotoChange('penutupFoto', url)}
                 slug={slug || 'undangan'}
                 showWhatsappPreview={false}
               />
@@ -546,7 +598,47 @@ export default function SubDashboardManage() {
                 value={data.penutupMempelai || ''} 
                 onChange={e => handleChange('penutupMempelai', e.target.value)} 
               />
+
+              <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button 
+                  type="button"
+                  onClick={handleSave} 
+                  disabled={isSaving} 
+                  className="btn btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan Penutup'}
+                </button>
+              </div>
             </AccordionItem>
+
+            {/* Bottom Save Bar */}
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '1.25rem 1.5rem',
+              background: 'var(--bg-card)',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sudah selesai mengedit?</h4>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Klik tombol di samping untuk menyimpan seluruh perubahan data undangan Anda.</p>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="button" onClick={() => setShowPreview(true)} className="btn btn-secondary">Lihat Preview</button>
+                <button type="button" onClick={handleSave} disabled={isSaving} className="btn btn-primary" style={{ padding: '10px 20px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  {isSaving ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -590,6 +682,29 @@ export default function SubDashboardManage() {
         )}
 
       </div>
+
+      {/* Floating Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: '#059669',
+          color: '#ffffff',
+          padding: '12px 20px',
+          borderRadius: '10px',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontWeight: 600,
+          fontSize: '0.9rem'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

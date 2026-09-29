@@ -6,6 +6,7 @@ export const DEFAULT_COUPLE_THUMBNAIL = '/assets/images/couple.png';
 export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', label = '', description = '', showWhatsappPreview = true }) {
   const displayLabel = label || title || 'Foto Thumbnail Link (WhatsApp & Medsos)';
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef(null);
 
@@ -51,6 +52,8 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
 
       // Berhasil upload, simpan URL ke form data
       onChange(json.url);
+      setUploadSuccess(true);
+      setTimeout(() => setUploadSuccess(false), 4000);
     } catch (err) {
       console.error('Upload thumbnail gagal:', err);
       setErrorMsg(err.message || 'Gagal mengunggah foto. Silakan coba lagi.');
@@ -62,6 +65,7 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
   const handleResetToDefault = () => {
     onChange('');
     setErrorMsg('');
+    setUploadSuccess(false);
   };
 
   return (
@@ -259,6 +263,25 @@ export default function ThumbnailUploader({ value, onChange, slug = 'undangan', 
           fontSize: '0.8rem'
         }}>
           {errorMsg}
+        </div>
+      )}
+
+      {uploadSuccess && (
+        <div style={{
+          marginTop: '0.75rem',
+          padding: '0.6rem 0.85rem',
+          background: '#ecfdf5',
+          border: '1px solid #a7f3d0',
+          borderRadius: '8px',
+          color: '#065f46',
+          fontSize: '0.82rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontWeight: 600
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Foto berhasil diunggah!</span>
         </div>
       )}
 

@@ -634,7 +634,47 @@ function UnifiedEditor() {
             value={data.penutupMempelai || ''} 
             onChange={e => handleChange('penutupMempelai', e.target.value)} 
           />
+
+          <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border)', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <button 
+              type="button"
+              onClick={handleSave} 
+              disabled={isSaving} 
+              className="btn btn-primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              {isSaving ? 'Menyimpan...' : (editId ? 'Simpan Pengaturan Penutup' : 'Simpan Undangan')}
+            </button>
+          </div>
         </AccordionItem>
+
+        {/* Bottom Save Bar */}
+        <div style={{
+          marginTop: '1.5rem',
+          padding: '1.25rem 1.5rem',
+          background: 'var(--bg-card)',
+          borderRadius: '10px',
+          border: '1px solid var(--border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+        }}>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sudah selesai mengedit?</h4>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Klik tombol di samping untuk menyimpan seluruh perubahan data undangan Anda.</p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="button" onClick={() => setShowPreview(true)} className="btn btn-secondary">Lihat Preview</button>
+            <button type="button" onClick={handleSave} disabled={isSaving} className="btn btn-primary" style={{ padding: '10px 20px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              {isSaving ? 'Menyimpan...' : (editId ? 'Simpan Semua Perubahan' : 'Buat Undangan Sekarang')}
+            </button>
+          </div>
+        </div>
 
       </div>
     </div>
