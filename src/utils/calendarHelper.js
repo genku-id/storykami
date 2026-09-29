@@ -4,39 +4,37 @@
  */
 
 import { toYYYYMMDD } from '@/utils/dateHelper';
+import { normalizeAcara } from '@/utils/wimDataContract';
 
 export function getGoogleCalendarUrl(data = {}, slug = '', eventType = 'main') {
-  const { mempelai = {}, acara = {} } = data;
+  const { mempelai = {}, acara } = data;
+  const acaraList = normalizeAcara(acara);
 
   // Nama pasangan untuk judul acara
   const namaWanita = mempelai?.wanita?.namaPanggilan || 'Mempelai Wanita';
   const namaPria = mempelai?.pria?.namaPanggilan || 'Mempelai Pria';
   
-  // Tentukan acara mana yang dipakai (akad / resepsi / main)
+  // Tentukan acara mana yang dipakai
   let event = null;
-  let eventName = 'Pernikahan';
 
-  if (eventType === 'akad') {
-    event = acara?.akad;
-    eventName = 'Akad Nikah';
+  if (typeof eventType === 'object' && eventType !== null) {
+    event = eventType;
+  } else if (typeof eventType === 'number') {
+    event = acaraList[eventType] || acaraList[0];
+  } else if (eventType === 'akad') {
+    event = acaraList.find(e => /akad/i.test(e.nama) || e.id === 'akad') || acaraList[0];
   } else if (eventType === 'resepsi') {
-    event = acara?.resepsi;
-    eventName = 'Resepsi Pernikahan';
+    event = acaraList.find(e => /resepsi/i.test(e.nama) || e.id === 'resepsi') || acaraList[1] || acaraList[0];
   } else {
-    // 'main': prioritaskan acara resepsi jika ada tanggalnya, jika tidak ada gunakan akad
-    if (acara?.resepsi?.tanggal) {
-      event = acara.resepsi;
-      eventName = 'Resepsi Pernikahan';
-    } else {
-      event = acara?.akad;
-      eventName = 'Akad Nikah';
-    }
+    // 'main': prioritaskan acara resepsi jika ada tanggalnya, jika tidak gunakan acara pertama yang ada tanggal
+    event = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
   }
 
+  const eventName = event?.nama || 'Pernikahan';
   // Judul acara di Google Calendar
-  const title = `The Wedding of ${namaWanita} & ${namaPria}`;
+  const title = `${eventName} - ${namaWanita} & ${namaPria}`;
 
-  const tanggal = event?.tanggal || acara?.resepsi?.tanggal || acara?.akad?.tanggal;
+  const tanggal = event?.tanggal;
   if (!tanggal) {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}`;
   }

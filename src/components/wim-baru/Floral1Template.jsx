@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/floral1.css';
-import { defaultInvitationData } from '@/utils/wimDataContract';
+import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate } from '@/utils/dateHelper';
 
 export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
+  const acaraList = normalizeAcara(acara);
+  const mainEvent = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
   
   // Ambil nama tamu dari props atau URL (?to=... / ?u=... / ?nama=...)
   const [tamuName, setTamuName] = useState(guestName || 'Nama Tamu');
@@ -45,8 +47,8 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
   const [timeLeft, setTimeLeft] = useState({ hari: 0, jam: 0, menit: 0, detik: 0 });
 
   useEffect(() => {
-    const tanggalAcara = acara?.resepsi?.tanggal || acara?.akad?.tanggal;
-    const waktuAcara = acara?.resepsi?.waktuMulai || acara?.akad?.waktuMulai || '00:00';
+    const tanggalAcara = mainEvent?.tanggal;
+    const waktuAcara = mainEvent?.waktuMulai || '00:00';
     
     if (!tanggalAcara) return;
 
@@ -198,7 +200,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                 {mempelai?.wanita?.namaPanggilan} &amp; {mempelai?.pria?.namaPanggilan}
               </h1>
               <p className="date-highlight mb-4" data-animate="slide-left">
-                {formatIndonesianDate(acara?.akad?.tanggal || acara?.resepsi?.tanggal, { withDay: false })}
+                {formatIndonesianDate(mainEvent?.tanggal, { withDay: false })}
               </p>
               <div className="countdown-container mb-4" data-animate="fade-up">
                 <div className="countdown-item"><span>{String(timeLeft.hari).padStart(2, '0')}</span><p>Hari</p></div>
@@ -282,28 +284,24 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
             <div className="cloud cloud-1"></div>
             <div className="floral-top-profiles"></div>
             <div className="events-content">
-              {/* Akad */}
-              <div className="event-card-pill bg-dark-blue" data-animate="zoom-in">
-                <div className="card-floral card-floral-tl"></div><div className="card-floral card-floral-mr"></div><div className="card-floral card-floral-bl"></div>
-                <h2 className="event-title text-white">Akad Nikah</h2>
-                <p className="event-date">{formatIndonesianDate(acara?.akad?.tanggal, { withDay: true })}</p>
-                <p className="event-time">Pukul {acara?.akad?.waktuMulai} - {acara?.akad?.waktuSelesai} {acara?.akad?.zonaWaktu}</p>
-                <div className="event-location-icon mt-4"><i className="fa-solid fa-map-location-dot fa-2x"></i></div>
-                <p className="event-location-name mt-2">{acara?.akad?.lokasi}</p>
-                <p className="event-address">{acara?.akad?.alamatLengkap}</p>
-                <a href={acara?.akad?.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps mt-4"><i className="fa-solid fa-location-dot"></i> Google Maps</a>
-              </div>
-              {/* Resepsi */}
-              <div className="event-card-pill bg-dark-blue mt-4" data-animate="zoom-in">
-                <div className="card-floral card-floral-tl"></div><div className="card-floral card-floral-mr"></div><div className="card-floral card-floral-bl"></div>
-                <h2 className="event-title text-white">Resepsi</h2>
-                <p className="event-date">{formatIndonesianDate(acara?.resepsi?.tanggal, { withDay: true })}</p>
-                <p className="event-time">Pukul {acara?.resepsi?.waktuMulai} - {acara?.resepsi?.waktuSelesai} {acara?.resepsi?.zonaWaktu}</p>
-                <div className="event-location-icon mt-4"><i className="fa-solid fa-map-location-dot fa-2x"></i></div>
-                <p className="event-location-name mt-2">{acara?.resepsi?.lokasi}</p>
-                <p className="event-address">{acara?.resepsi?.alamatLengkap}</p>
-                <a href={acara?.resepsi?.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps mt-4"><i className="fa-solid fa-location-dot"></i> Google Maps</a>
-              </div>
+              {acaraList.map((item, idx) => (
+                <div key={item.id || idx} className={`event-card-pill bg-dark-blue ${idx > 0 ? 'mt-4' : ''}`} data-animate="zoom-in">
+                  <div className="card-floral card-floral-tl"></div>
+                  <div className="card-floral card-floral-mr"></div>
+                  <div className="card-floral card-floral-bl"></div>
+                  <h2 className="event-title text-white">{item.nama || `Acara #${idx + 1}`}</h2>
+                  <p className="event-date">{formatIndonesianDate(item.tanggal, { withDay: true })}</p>
+                  <p className="event-time">Pukul {item.waktuMulai} - {item.waktuSelesai} {item.zonaWaktu || 'WIB'}</p>
+                  <div className="event-location-icon mt-4"><i className="fa-solid fa-map-location-dot fa-2x"></i></div>
+                  <p className="event-location-name mt-2">{item.lokasi}</p>
+                  <p className="event-address">{item.alamatLengkap}</p>
+                  {item.linkMap && (
+                    <a href={item.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps mt-4">
+                      <i className="fa-solid fa-location-dot"></i> Google Maps
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
             <div className="floral-bottom-profiles"></div>
           </section>

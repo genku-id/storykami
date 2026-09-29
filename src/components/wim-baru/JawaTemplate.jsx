@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import BackgroundMusic from './BackgroundMusic';
 import '@/app/wim/jawa.css';
-import { defaultInvitationData } from '@/utils/wimDataContract';
+import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate, getDateParts } from '@/utils/dateHelper';
 
 export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
+  const acaraList = normalizeAcara(acara);
+  const mainEvent = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
   
   // Ambil nama tamu dari props atau URL (?to=... / ?u=... / ?nama=...)
   const [tamuName, setTamuName] = useState(guestName || 'Nama Tamu');
@@ -41,16 +43,12 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
   const [isLocked, setIsLocked] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Komponen tanggal untuk tampilan kalender Jawa
-  const akadDateParts = getDateParts(acara?.akad?.tanggal);
-  const resepsiDateParts = getDateParts(acara?.resepsi?.tanggal);
-
   // Countdown State
   const [timeLeft, setTimeLeft] = useState({ hari: 0, jam: 0, menit: 0, detik: 0 });
 
   useEffect(() => {
-    const tanggalAcara = acara?.resepsi?.tanggal || acara?.akad?.tanggal;
-    const waktuAcara = acara?.resepsi?.waktuMulai || acara?.akad?.waktuMulai || '00:00';
+    const tanggalAcara = mainEvent?.tanggal;
+    const waktuAcara = mainEvent?.waktuMulai || '00:00';
     
     if (!tanggalAcara) return;
 
@@ -245,7 +243,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                     </p>
                 </div>
                 <p className="date-highlight mb-4" style={{ color: '#2a2a2a', fontWeight: 600, textAlign: 'center', width: '100%', display: 'block', margin: '25px auto 0 auto', fontSize: '1rem', fontFamily: '"Playfair Display", serif' }}>
-                  {formatIndonesianDate(acara?.akad?.tanggal || acara?.resepsi?.tanggal, { withDay: false })}
+                  {formatIndonesianDate(mainEvent?.tanggal, { withDay: false })}
                 </p>
                 
                 <div className="countdown-container" data-animate="fade-up" style={{ transitionDelay: '0.2s', display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '30px', marginTop: '5px' }}>
@@ -362,78 +360,53 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
           <section id="events" className="section events-section" style={{ background: 'radial-gradient(circle, #b8a18a 0%, #9e816a 100%)', position: 'relative', overflow: 'hidden', paddingBottom: '90px' }}>
             <div className="jawa-top-border"></div>
             <div className="events-content" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '30px', marginTop: '45px', marginBottom: '100px' }}>
-                
-                {/* Akad Nikah */}
-                <div className="profile-container text-center" data-animate="zoom-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%)', border: '1px solid rgba(255, 255, 255, 0.4)', borderRadius: '20px', padding: '25px 15px', maxWidth: '580px', margin: '0 auto', width: 'calc(100% - 50px)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)' }}>
-                    <i className="fa-solid fa-ring" style={{ fontSize: '1.8rem', color: '#2a2a2a', marginBottom: '10px' }}></i>
-                    <h2 className="title-names-serif" style={{ fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', marginBottom: '15px', fontSize: '3rem' }}>Akad Nikah</h2>
-                    <div className="event-date-grid" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '15px', fontFamily: '"Playfair Display", serif' }}>
-                        <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {akadDateParts.dayName}
-                        </span>
-                        <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#2a2a2a', lineHeight: 1 }}>
-                              {akadDateParts.day}
-                            </span>
-                            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: '#2a2a2a', marginTop: '3px' }}>
-                              {akadDateParts.year}
-                            </span>
-                        </div>
-                        <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
-                        <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {akadDateParts.monthName}
-                        </span>
-                    </div>
-                    <p className="event-time" style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, fontSize: '1.1rem', color: '#2a2a2a', marginBottom: '10px' }}>
-                      Pukul {acara?.akad?.waktuMulai} - {acara?.akad?.waktuSelesai} {acara?.akad?.zonaWaktu}
-                    </p>
-                    <div className="event-location-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '5px' }}>
-                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
-                        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-                            <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', fontWeight: 700, color: '#2a2a2a', marginBottom: '2px' }}>Lokasi</p>
-                            <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', fontWeight: 700, color: '#2a2a2a', marginBottom: 0 }}>{acara?.akad?.lokasi}</p>
-                        </div>
-                    </div>
-                    <p className="event-address" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1rem', color: '#2a2a2a', lineHeight: '1.5', marginBottom: '20px', marginTop: 0, padding: '0 10px', textAlign: 'center' }}>{acara?.akad?.alamatLengkap}</p>
-                    <a href={acara?.akad?.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps" style={{ display: 'inline-block', backgroundColor: '#4a2c16', color: '#ffffff', padding: '8px 22px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, fontFamily: '"Inter", sans-serif' }}><i className="fa-solid fa-location-dot"></i> Google Maps</a>
-                </div>
+              {acaraList.map((item, idx) => {
+                const parts = getDateParts(item.tanggal);
+                const iconClass = idx === 0 ? 'fa-ring' : idx === 1 ? 'fa-rose' : 'fa-champagne-glasses';
 
-                {/* Resepsi */}
-                <div className="profile-container text-center" data-animate="zoom-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%)', border: '1px solid rgba(255, 255, 255, 0.4)', borderRadius: '20px', padding: '25px 15px', maxWidth: '580px', margin: '0 auto', width: 'calc(100% - 50px)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)' }}>
-                    <i className="fa-solid fa-rose" style={{ fontSize: '1.8rem', color: '#2a2a2a', marginBottom: '10px' }}></i>
-                    <h2 className="title-names-serif" style={{ fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', marginBottom: '15px', fontSize: '3rem' }}>Resepsi</h2>
+                return (
+                  <div key={item.id || idx} className="profile-container text-center" data-animate="zoom-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle, #dfcfb9 0%, #b8a18a 100%)', border: '1px solid rgba(255, 255, 255, 0.4)', borderRadius: '20px', padding: '25px 15px', maxWidth: '580px', margin: '0 auto', width: 'calc(100% - 50px)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)' }}>
+                    <i className={`fa-solid ${iconClass}`} style={{ fontSize: '1.8rem', color: '#2a2a2a', marginBottom: '10px' }}></i>
+                    <h2 className="title-names-serif" style={{ fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', marginBottom: '15px', fontSize: '3rem' }}>{item.nama || `Acara #${idx + 1}`}</h2>
                     <div className="event-date-grid" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '15px', fontFamily: '"Playfair Display", serif' }}>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {resepsiDateParts.dayName}
+                          {parts.dayName}
                         </span>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#2a2a2a', lineHeight: 1 }}>
-                              {resepsiDateParts.day}
+                              {parts.day}
                             </span>
                             <span style={{ fontSize: '1.1rem', fontWeight: 600, color: '#2a2a2a', marginTop: '3px' }}>
-                              {resepsiDateParts.year}
+                              {parts.year}
                             </span>
                         </div>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {resepsiDateParts.monthName}
+                          {parts.monthName}
                         </span>
                     </div>
                     <p className="event-time" style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, fontSize: '1.1rem', color: '#2a2a2a', marginBottom: '10px' }}>
-                      Pukul {acara?.resepsi?.waktuMulai} - {acara?.resepsi?.waktuSelesai} {acara?.resepsi?.zonaWaktu}
+                      Pukul {item.waktuMulai} - {item.waktuSelesai} {item.zonaWaktu || 'WIB'}
                     </p>
-                    <div className="event-location-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '5px' }}>
-                        <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
-                        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-                            <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', fontWeight: 700, color: '#2a2a2a', marginBottom: '2px' }}>Lokasi</p>
-                            <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', fontWeight: 700, color: '#2a2a2a', marginBottom: 0 }}>{acara?.resepsi?.lokasi}</p>
-                        </div>
-                    </div>
-                    <p className="event-address" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1rem', color: '#2a2a2a', lineHeight: '1.5', marginBottom: '20px', marginTop: 0, padding: '0 10px', textAlign: 'center' }}>{acara?.resepsi?.alamatLengkap}</p>
-                    <a href={acara?.resepsi?.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps" style={{ display: 'inline-block', backgroundColor: '#4a2c16', color: '#ffffff', padding: '8px 22px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, fontFamily: '"Inter", sans-serif' }}><i className="fa-solid fa-location-dot"></i> Google Maps</a>
-                </div>
+                    {item.lokasi && (
+                      <div className="event-location-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '5px' }}>
+                          <img src="/assets/templates/jawa/cloud_jawa.webp" alt="awan" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '80px', opacity: 0.9, zIndex: 0 }} />
+                          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                              <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.1rem', fontWeight: 700, color: '#2a2a2a', marginBottom: '2px' }}>Lokasi</p>
+                              <p style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', fontWeight: 700, color: '#2a2a2a', marginBottom: 0 }}>{item.lokasi}</p>
+                          </div>
+                      </div>
+                    )}
+                    {item.alamatLengkap && (
+                      <p className="event-address" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1rem', color: '#2a2a2a', lineHeight: '1.5', marginBottom: '20px', marginTop: 0, padding: '0 10px', textAlign: 'center' }}>{item.alamatLengkap}</p>
+                    )}
+                    {item.linkMap && (
+                      <a href={item.linkMap} target="_blank" rel="noreferrer" className="btn btn-maps" style={{ display: 'inline-block', backgroundColor: '#4a2c16', color: '#ffffff', padding: '8px 22px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, fontFamily: '"Inter", sans-serif' }}><i className="fa-solid fa-location-dot"></i> Google Maps</a>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             <div className="jawa-bottom-container">
                 <div className="wayang-wrapper">

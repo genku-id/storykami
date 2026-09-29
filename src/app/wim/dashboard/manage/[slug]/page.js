@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
+import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
 import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
@@ -102,8 +103,10 @@ export default function SubDashboardManage() {
         setTemplateName(dbData.template_name || dbData.template || 'floral1');
         if (dbData.data) {
           setData(prev => ({ 
+            ...defaultInvitationData,
             ...prev, 
             ...dbData.data,
+            acara: normalizeAcara(dbData.data.acara || prev?.acara),
             pageVisibility: { ...prev?.pageVisibility, ...(dbData.data.pageVisibility || {}) }
           }));
         }
@@ -156,6 +159,55 @@ export default function SubDashboardManage() {
       current[keys[keys.length - 1]] = value;
       return newData;
     });
+  };
+
+  const acaraList = normalizeAcara(data?.acara);
+
+  const handleUpdateAcara = (index, field, value) => {
+    const currentList = [...normalizeAcara(data?.acara)];
+    currentList[index] = {
+      ...currentList[index],
+      [field]: value
+    };
+    handleChange('acara', currentList);
+  };
+
+  const handleAddAcara = () => {
+    const currentList = normalizeAcara(data?.acara);
+    let defaultName = `Acara #${currentList.length + 1}`;
+    if (currentList.length === 2) {
+      defaultName = 'Ngunduh Mantu';
+    } else if (currentList.length === 0) {
+      defaultName = 'Akad Nikah';
+    } else if (currentList.length === 1) {
+      defaultName = 'Resepsi Pernikahan';
+    }
+
+    const newEvent = {
+      id: `acara-${Date.now()}`,
+      nama: defaultName,
+      tanggal: currentList[0]?.tanggal || '22/11/2026',
+      waktuMulai: '09:00',
+      waktuSelesai: 'Selesai',
+      zonaWaktu: currentList[0]?.zonaWaktu || 'WIB',
+      lokasi: '',
+      alamatLengkap: '',
+      linkMap: ''
+    };
+    handleChange('acara', [...currentList, newEvent]);
+  };
+
+  const handleDeleteAcara = (index) => {
+    const currentList = normalizeAcara(data?.acara);
+    if (currentList.length <= 1) {
+      alert('Minimal harus ada 1 acara.');
+      return;
+    }
+    const eventName = currentList[index]?.nama || `Acara #${index + 1}`;
+    if (confirm(`Apakah Anda yakin ingin menghapus "${eventName}"?`)) {
+      const updated = currentList.filter((_, idx) => idx !== index);
+      handleChange('acara', updated);
+    }
   };
 
   const handleToggleVisibility = (pageKey, isVisible) => {
@@ -316,23 +368,96 @@ export default function SubDashboardManage() {
             </AccordionItem>
 
             <AccordionItem title="4. Jadwal Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
-              <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Akad Nikah</h3>
-              <DateInputField label="Tanggal (DD/MM/YYYY)" value={data.acara?.akad?.tanggal || ''} onChange={val => handleChange('acara.akad.tanggal', val)} />
-              <InputField label="Waktu Mulai" type="time" value={data.acara?.akad?.waktuMulai || ''} onChange={e => handleChange('acara.akad.waktuMulai', e.target.value)} />
-              <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 10:00" value={data.acara?.akad?.waktuSelesai || ''} onChange={e => handleChange('acara.akad.waktuSelesai', e.target.value)} />
-              <InputField label="Lokasi/Gedung" value={data.acara?.akad?.lokasi || ''} onChange={e => handleChange('acara.akad.lokasi', e.target.value)} />
-              <InputField label="Alamat Lengkap" type="textarea" value={data.acara?.akad?.alamatLengkap || ''} onChange={e => handleChange('acara.akad.alamatLengkap', e.target.value)} />
-              <InputField label="Link Google Maps" type="url" value={data.acara?.akad?.linkMap || ''} onChange={e => handleChange('acara.akad.linkMap', e.target.value)} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {acaraList.map((item, index) => (
+                  <div key={item.id || index} style={{ padding: '1.25rem', border: '1px solid var(--border)', borderRadius: '10px', background: 'var(--bg-primary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--accent)', color: '#fff', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {index + 1}
+                        </span>
+                        <span>{item.nama || `Acara #${index + 1}`}</span>
+                      </h4>
+                      {acaraList.length > 1 && (
+                        <button 
+                          type="button"
+                          onClick={() => handleDeleteAcara(index)} 
+                          style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', padding: '4px 10px', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 500 }}
+                        >
+                          Hapus Acara
+                        </button>
+                      )}
+                    </div>
 
-              <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
+                    <InputField 
+                      label="Nama Acara" 
+                      value={item.nama || ''} 
+                      onChange={e => handleUpdateAcara(index, 'nama', e.target.value)} 
+                      placeholder="contoh: Akad Nikah / Resepsi Pernikahan / Ngunduh Mantu" 
+                    />
 
-              <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Resepsi Pernikahan</h3>
-              <DateInputField label="Tanggal (DD/MM/YYYY)" value={data.acara?.resepsi?.tanggal || ''} onChange={val => handleChange('acara.resepsi.tanggal', val)} />
-              <InputField label="Waktu Mulai" type="time" value={data.acara?.resepsi?.waktuMulai || ''} onChange={e => handleChange('acara.resepsi.waktuMulai', e.target.value)} />
-              <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 14:00" value={data.acara?.resepsi?.waktuSelesai || ''} onChange={e => handleChange('acara.resepsi.waktuSelesai', e.target.value)} />
-              <InputField label="Lokasi/Gedung" value={data.acara?.resepsi?.lokasi || ''} onChange={e => handleChange('acara.resepsi.lokasi', e.target.value)} />
-              <InputField label="Alamat Lengkap" type="textarea" value={data.acara?.resepsi?.alamatLengkap || ''} onChange={e => handleChange('acara.resepsi.alamatLengkap', e.target.value)} />
-              <InputField label="Link Google Maps" type="url" value={data.acara?.resepsi?.linkMap || ''} onChange={e => handleChange('acara.resepsi.linkMap', e.target.value)} />
+                    <DateInputField 
+                      label="Tanggal Acara (DD/MM/YYYY)" 
+                      value={item.tanggal || ''} 
+                      onChange={val => handleUpdateAcara(index, 'tanggal', val)} 
+                    />
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+                      <InputField 
+                        label="Waktu Mulai" 
+                        type="time" 
+                        value={item.waktuMulai || ''} 
+                        onChange={e => handleUpdateAcara(index, 'waktuMulai', e.target.value)} 
+                      />
+                      <InputField 
+                        label="Waktu Selesai" 
+                        type="text" 
+                        placeholder="Selesai / 14:00" 
+                        value={item.waktuSelesai || ''} 
+                        onChange={e => handleUpdateAcara(index, 'waktuSelesai', e.target.value)} 
+                      />
+                      <InputField 
+                        label="Zona Waktu" 
+                        type="select" 
+                        options={["WIB", "WITA", "WIT"]} 
+                        value={item.zonaWaktu || 'WIB'} 
+                        onChange={e => handleUpdateAcara(index, 'zonaWaktu', e.target.value)} 
+                      />
+                    </div>
+
+                    <InputField 
+                      label="Lokasi / Tempat Acara" 
+                      value={item.lokasi || ''} 
+                      onChange={e => handleUpdateAcara(index, 'lokasi', e.target.value)} 
+                      placeholder="contoh: Gedung Serbaguna / Masjid Agung / Kediaman Mempelai" 
+                    />
+
+                    <InputField 
+                      label="Alamat Lengkap" 
+                      type="textarea" 
+                      value={item.alamatLengkap || ''} 
+                      onChange={e => handleUpdateAcara(index, 'alamatLengkap', e.target.value)} 
+                      placeholder="Jl. Merdeka No. 1, Jakarta Pusat" 
+                    />
+
+                    <InputField 
+                      label="Link Google Maps" 
+                      type="url" 
+                      value={item.linkMap || ''} 
+                      onChange={e => handleUpdateAcara(index, 'linkMap', e.target.value)} 
+                      placeholder="https://maps.app.goo.gl/..." 
+                    />
+                  </div>
+                ))}
+
+                <button 
+                  type="button"
+                  onClick={handleAddAcara} 
+                  style={{ width: '100%', padding: '0.85rem', background: 'var(--border)', border: '1px dashed var(--border-hover)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  + Tambah Acara (Misal: Ngunduh Mantu, dsb)
+                </button>
+              </div>
             </AccordionItem>
 
             <AccordionItem title="5. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
