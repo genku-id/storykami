@@ -451,6 +451,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                   account={acc}
                   mempelai={mempelai}
                   fallbackWa={data.clientWa || data.hadiahDigital?.physicalWhatsapp}
+                  primaryColor="#8093af"
                 />
               ))}
 
@@ -460,6 +461,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                   hadiahDigital={data.hadiahDigital}
                   mempelai={mempelai}
                   fallbackWa={data.clientWa}
+                  primaryColor="#8093af"
                 />
               )}
             </div>
@@ -484,7 +486,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                     onClick={handleKonfirmasiHadir}
                     disabled={isSubmitting}
                     style={{
-                      backgroundColor: '#7c9b9f',
+                      backgroundColor: '#8093af',
                       color: '#ffffff',
                       border: 'none',
                       padding: '8px 16px',

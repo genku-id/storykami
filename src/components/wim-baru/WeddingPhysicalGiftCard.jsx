@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 export default function WeddingPhysicalGiftCard({
   hadiahDigital = {},
   mempelai = {},
-  fallbackWa = ''
+  fallbackWa = '',
+  primaryColor = '#7c9b9f'
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -38,7 +39,7 @@ export default function WeddingPhysicalGiftCard({
     : `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
 
   const cardBg = '#edf0f2';
-  const primaryColor = '#7c9b9f';
+  const activePrimaryColor = primaryColor || '#7c9b9f';
 
   return (
     <div
@@ -86,7 +87,7 @@ export default function WeddingPhysicalGiftCard({
         <path
           d="M 60 36 C 45 10, 18 12, 26 26 C 32 37, 52 36, 60 36"
           fill="none"
-          stroke={primaryColor}
+          stroke={activePrimaryColor}
           strokeWidth="10"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -94,17 +95,17 @@ export default function WeddingPhysicalGiftCard({
         <path
           d="M 60 36 C 75 10, 102 12, 94 26 C 88 37, 68 36, 60 36"
           fill="none"
-          stroke={primaryColor}
+          stroke={activePrimaryColor}
           strokeWidth="10"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         {/* Box Lid */}
-        <rect x="8" y="36" width="104" height="22" rx="7" fill={primaryColor} />
+        <rect x="8" y="36" width="104" height="22" rx="7" fill={activePrimaryColor} />
         {/* Box Left Block */}
-        <rect x="13" y="64" width="42" height="44" rx="7" fill={primaryColor} />
+        <rect x="13" y="64" width="42" height="44" rx="7" fill={activePrimaryColor} />
         {/* Box Right Block */}
-        <rect x="65" y="64" width="42" height="44" rx="7" fill={primaryColor} />
+        <rect x="65" y="64" width="42" height="44" rx="7" fill={activePrimaryColor} />
       </svg>
 
       {/* Address & Receiver Details */}
@@ -150,7 +151,7 @@ export default function WeddingPhysicalGiftCard({
           type="button"
           onClick={handleCopy}
           style={{
-            backgroundColor: copied ? '#15803d' : primaryColor,
+            backgroundColor: copied ? '#15803d' : activePrimaryColor,
             color: '#ffffff',
             border: 'none',
             borderRadius: '12px',
@@ -190,7 +191,7 @@ export default function WeddingPhysicalGiftCard({
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            backgroundColor: primaryColor,
+            backgroundColor: activePrimaryColor,
             color: '#ffffff',
             borderRadius: '12px',
             padding: '9px 22px',

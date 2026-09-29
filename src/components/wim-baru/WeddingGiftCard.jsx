@@ -32,7 +32,8 @@ export function getBankLogoPath(name = '') {
 export default function WeddingGiftCard({
   account = {},
   mempelai = {},
-  fallbackWa = ''
+  fallbackWa = '',
+  primaryColor = '#7c9b9f'
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -64,7 +65,7 @@ export default function WeddingGiftCard({
     : `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
 
   const cardBg = '#edf0f2';
-  const primaryColor = '#7c9b9f';
+  const activePrimaryColor = primaryColor || '#7c9b9f';
 
   return (
     <div
@@ -179,7 +180,7 @@ export default function WeddingGiftCard({
             xmlns="http://www.w3.org/2000/svg"
             style={{ display: 'block', marginBottom: '14px' }}
           >
-            <rect width="106" height="72" rx="16" fill={primaryColor} />
+            <rect width="106" height="72" rx="16" fill={activePrimaryColor} />
             {/* Top Stripe cutout showing card background */}
             <rect y="20" width="106" height="5" fill={cardBg} />
             {/* Circle dot on lower left */}
@@ -191,7 +192,7 @@ export default function WeddingGiftCard({
             type="button"
             onClick={handleCopy}
             style={{
-              backgroundColor: copied ? '#15803d' : primaryColor,
+              backgroundColor: copied ? '#15803d' : activePrimaryColor,
               color: '#ffffff',
               border: 'none',
               borderRadius: '12px',
@@ -231,7 +232,7 @@ export default function WeddingGiftCard({
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              backgroundColor: primaryColor,
+              backgroundColor: activePrimaryColor,
               color: '#ffffff',
               borderRadius: '12px',
               padding: '7px 14px',
