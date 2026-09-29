@@ -10,11 +10,11 @@ export default async function DemoPage({ params }) {
 
   // Render berdasarkan template
   if (template === 'floral1') {
-    return <Floral1Template data={defaultInvitationData} slug="demo" isVisible={() => true} />;
+    return <Floral1Template data={defaultInvitationData} slug="demo" />;
   }
   
   if (template === 'template-daerahJawa') {
-    return <JawaTemplate data={defaultInvitationData} slug="demo" isVisible={() => true} />;
+    return <JawaTemplate data={defaultInvitationData} slug="demo" />;
   }
 
   // Jika tidak ditemukan

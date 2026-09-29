@@ -385,8 +385,8 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
           <section id="guestbook" className="section guestbook-section bg-dark-blue">
             <div className="cloud cloud-1"></div><div className="cloud cloud-2"></div><div className="cloud cloud-3"></div>
             <div className="guestbook-header text-center mb-3" data-animate="fade-up">
-              <h2 className="section-title mb-1" style={{ color: 'black !important', fontSize: '1.8rem' }}>Ucapan &amp; Doa</h2>
-              <p className="subtitle" style={{ color: 'black !important', fontSize: '0.85rem' }}>Berikan ucapan harapan dan doa kepada kedua mempelai</p>
+              <h2 className="section-title mb-1 text-white" style={{ fontSize: '1.8rem' }}>Ucapan &amp; Doa</h2>
+              <p className="subtitle text-white" style={{ fontSize: '0.85rem', opacity: 0.9 }}>Berikan ucapan harapan dan doa kepada kedua mempelai</p>
             </div>
             <div className="guestbook-container" data-animate="zoom-in">
               <form className="guestbook-form" onSubmit={handleKirimUcapan}>
@@ -426,12 +426,12 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
         {isVisible('closing') && (
           <section id="closing" className="section closing-section text-center">
             <div className="closing-gradient-overlay">
-              <h1 className="title-names" data-animate="fade-up" style={{ fontSize: '3.5rem', color: 'black !important' }}>Terima Kasih</h1>
+              <h1 className="title-names text-sage mb-2" data-animate="fade-up" style={{ fontSize: '3.5rem' }}>Terima Kasih</h1>
               <div className="mt-2" data-animate="fade-up" style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-dark)', maxWidth: '320px', margin: '0 auto', fontWeight: 500 }}>
                 <p>Merupakan suatu kebahagiaan dan kehormatan bagi kami, apabila Bapak/Ibu/Saudara/i, berkenan hadir dan memberikan doa restu kepada kami.</p>
                 <p className="mt-3">Wassalamu'alaikum Wr. Wb.</p>
               </div>
-              <h1 id="closing-couple-names" className="title-names mt-4" data-animate="fade-up" style={{ animationDelay: '0.2s' }}>
+              <h1 id="closing-couple-names" className="title-names text-sage mt-4" data-animate="fade-up" style={{ animationDelay: '0.2s', fontSize: '2.5rem' }}>
                 {mempelai?.wanita?.namaPanggilan} &amp; {mempelai?.pria?.namaPanggilan}
               </h1>
             </div>

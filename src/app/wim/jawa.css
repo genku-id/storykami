@@ -1,7 +1,7 @@
 /* Jawa Theme Styles - Cover Page Only */
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
-body {
+.wim-template-jawa {
     margin: 0 auto; /* Tengah pada layar desktop */
     padding: 0;
     font-family: 'Inter', sans-serif;
@@ -11,12 +11,12 @@ body {
     box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Bayangan untuk memberi efek device */
 }
 
-body.locked {
+.wim-template-jawa.locked {
     overflow: hidden;
 }
 
 /* Base Cover Section */
-#cover-page {
+.wim-template-jawa #cover-page {
     position: relative;
     width: 100%;
     height: 100svh;
@@ -31,7 +31,7 @@ body.locked {
 }
 
 /* Base Cover Section */
-#cover-page {
+.wim-template-jawa #cover-page {
     position: relative;
     width: 100%;
     height: 100svh;
@@ -48,7 +48,7 @@ body.locked {
 }
 
 .wim-template-jawa .cover-page.slide-up,
-#cover-page.slide-up {
+.wim-template-jawa #cover-page.slide-up {
     animation: none !important;
     transform: translateY(-100%) !important;
     transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
@@ -59,7 +59,7 @@ body.locked {
 }
 
 /* Ornaments */
-.jawa-top-border {
+.wim-template-jawa .jawa-top-border {
     position: absolute;
     top: -51px; /* Dinaikkan lagi 3px */
     left: 0;
@@ -81,7 +81,7 @@ body.locked {
     100% { transform: scaleY(-1) translateX(-50%); }
 }
 
-.jawa-gunungan-container {
+.wim-template-jawa .jawa-gunungan-container {
     position: relative;
     width: 100%;
     max-width: 600px;
@@ -95,66 +95,66 @@ body.locked {
     filter: contrast(150%) brightness(80%); /* Hitamnya diperpekat, yang terang tetap natural */
 }
 
-.jawa-gunungan {
+.wim-template-jawa .jawa-gunungan {
     width: 80px; /* Diperkecil lagi 5px */
     margin: 0 20px; /* Dijauhkan 5px lagi ke kiri dan kanan */
 }
 
-.jawa-gunungan.left {
+.wim-template-jawa .jawa-gunungan.left {
     transform: rotate(-40deg); /* Kemiringan ditambah 5 derajat */
     animation: pulse-gunungan-left 2s ease-in-out infinite;
 }
 
-.jawa-gunungan.right {
+.wim-template-jawa .jawa-gunungan.right {
     transform: rotate(40deg); /* Kemiringan ditambah 5 derajat */
     animation: pulse-gunungan-right 2s ease-in-out infinite;
 }
 
-.jawa-cloud {
+.wim-template-jawa .jawa-cloud {
     width: 90px; /* Diperkecil lagi 5px */
     position: absolute;
     opacity: 0.85;
 }
 
-.jawa-cloud.left {
+.wim-template-jawa .jawa-cloud.left {
     left: calc(-10% + 45px); /* Didekatkan 5px lagi */
     top: 30px; /* Naik 20px */
     animation: pulse-cloud 2s ease-in-out infinite;
 }
 
-.jawa-cloud.right {
+.wim-template-jawa .jawa-cloud.right {
     right: calc(-10% + 45px); /* Didekatkan 5px lagi */
     top: 60px;
     animation: pulse-cloud 2s ease-in-out infinite;
 }
 
 /* Text Content */
-.cover-content {
+.wim-template-jawa .cover-content {
     position: relative;
     z-index: 10;
     text-align: center;
     margin-top: 0px; /* Tulisan dinaikkan lagi */
 }
 
-.wedding-text {
+.wim-template-jawa .wedding-text {
     text-align: center;
     width: 100%;
 }
 
-.subtitle {
+.wim-template-jawa .subtitle {
     margin-top: 0; /* Reset margin karena jarak sudah diatur oleh gunungan-container */
 }
 
-.title-names-cursive {
+.wim-template-jawa .title-names-cursive {
     margin-top: 0; /* Reset margin */
 }
 
-.text-serif {
+.wim-template-jawa .text-serif {
     font-family: 'Playfair Display', serif;
 }
 
 /* Wayang and Bottom */
-.jawa-bottom-container {
+.wim-template-jawa .jawa-bottom-container {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -165,7 +165,7 @@ body.locked {
 
 /* Efek gradasi gelap sudah dihapus */
 
-.wayang-wrapper {
+.wim-template-jawa .wayang-wrapper {
     position: absolute;
     bottom: -5px; /* Diturunkan lagi 5px */
     left: 0;
@@ -177,14 +177,14 @@ body.locked {
     z-index: 4;
 }
 
-.jawa-wayang {
+.wim-template-jawa .jawa-wayang {
     width: 490px; /* Diperkecil lagi 5px */
     object-fit: contain;
     animation: sway-wayang 8.5s ease-in-out infinite;
 }
 
 /* Ornamen bawah sama dengan atas */
-.jawa-bottom-border {
+.wim-template-jawa .jawa-bottom-border {
     position: absolute;
     bottom: -15px; /* Diturunkan hingga melewati batas layar (dipotong) */
     left: 0;
@@ -198,14 +198,14 @@ body.locked {
 }
 
 /* Animations */
-.cover-fade-up-1, .cover-fade-up-2, .cover-fade-up-3 {
+.wim-template-jawa .cover-fade-up-1, .wim-template-jawa .cover-fade-up-2, .wim-template-jawa .cover-fade-up-3 {
     animation: fadeUp 1s ease-out forwards;
     opacity: 0;
 }
 
-.cover-fade-up-1 { animation-delay: 1.5s; }
-.cover-fade-up-2 { animation-delay: 1.8s; }
-.cover-fade-up-3 { animation-delay: 2.1s; }
+.wim-template-jawa .cover-fade-up-1 { animation-delay: 1.5s; }
+.wim-template-jawa .cover-fade-up-2 { animation-delay: 1.8s; }
+.wim-template-jawa .cover-fade-up-3 { animation-delay: 2.1s; }
 
 @keyframes dropScreen {
     from { transform: translateY(-120dvh); } /* Dipertinggi dari -100vh agar pasti di luar layar */
@@ -248,7 +248,7 @@ body.locked {
 }
 
 /* Hero Section (Halaman 2) */
-#hero {
+.wim-template-jawa #hero {
     position: relative;
     width: 100%;
     min-height: calc(100svh + 40px); /* Ditambah secara signifikan agar melarnya terlihat */
@@ -262,16 +262,16 @@ body.locked {
     z-index: 10;
 }
 
-#hero .jawa-top-border {
+.wim-template-jawa #hero .jawa-top-border {
     top: -38px; /* Diturunkan lagi 3px khusus untuk halaman hero */
 }
 
 /* Quote Section (Halaman 3) */
-#quote .jawa-top-border {
+.wim-template-jawa #quote .jawa-top-border {
     top: -30px; /* Dinaikkan secara signifikan agar potongannya jelas terlihat */
 }
 
-#quote {
+.wim-template-jawa #quote {
     position: relative;
     width: 100%;
     background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%); /* Halaman dibuat lebih gelap */
@@ -285,7 +285,7 @@ body.locked {
     padding-top: 130px; /* Cukup untuk tinggi border (100px) + ~1.5 enter */
 }
 
-#quote .quote-content-wrapper {
+.wim-template-jawa #quote .quote-content-wrapper {
     position: relative;
     z-index: 3; /* Diturunkan z-indexnya agar berada di belakang wayang (z-index wayang = 4/5) */
     width: calc(100% - 40px); /* 20px margin kiri-kanan */
@@ -297,7 +297,7 @@ body.locked {
     border: 1px solid rgba(255, 255, 255, 0.4);
     margin: 0 auto;
 }
-#profiles {
+.wim-template-jawa #profiles {
     position: relative;
     width: 100%;
     background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%);
@@ -311,7 +311,7 @@ body.locked {
     padding-top: 50px; /* Ornamen atas menumpuk di atas kotak */
 }
 
-#profiles .profiles-content-wrapper {
+.wim-template-jawa #profiles .profiles-content-wrapper {
     position: relative;
     z-index: 3;
     width: calc(100% - 50px); /* 25px margin kiri-kanan */
@@ -324,7 +324,7 @@ body.locked {
     margin: 0 auto;
 }
 
-#lovestory {
+.wim-template-jawa #lovestory {
     position: relative;
     width: 100%;
     background: radial-gradient(circle, #b8a18a 0%, #9e816a 100%);
@@ -338,7 +338,7 @@ body.locked {
     padding-top: 50px; /* Ornamen atas menumpuk di atas kotak */
 }
 
-#lovestory .lovestory-content-wrapper {
+.wim-template-jawa #lovestory .lovestory-content-wrapper {
     position: relative;
     z-index: 3;
     width: calc(100% - 50px); /* 25px margin kiri-kanan */
@@ -351,14 +351,14 @@ body.locked {
     margin: 0 auto 120px auto; /* Margin bawah 120px agar tidak menabrak wayang */
 }
 
-.hero-content {
+.wim-template-jawa .hero-content {
     position: relative;
     z-index: 10;
     margin-top: 0px; /* Diturunkan lagi 10px */
 }
 
 /* Audio Button */
-.btn-audio {
+.wim-template-jawa .btn-audio {
     position: fixed;
     bottom: 90px; /* 2x tinggi elemen (45px) */
     right: 20px;
@@ -379,7 +379,7 @@ body.locked {
     transition: opacity 0.5s ease;
 }
 
-.btn-audio.visible {
+.wim-template-jawa .btn-audio.visible {
     opacity: 1;
     pointer-events: auto;
 }
@@ -388,23 +388,23 @@ body.locked {
     100% { transform: rotate(360deg); }
 }
 
-.btn-audio.playing i {
+.wim-template-jawa .btn-audio.playing i {
     animation: spin-audio 4s linear infinite;
 }
 
 /* Transparansi Ornamen */
-.jawa-top-border,
-.jawa-bottom-border {
+.wim-template-jawa .jawa-top-border,
+.wim-template-jawa .jawa-bottom-border {
     opacity: 0.9;
 }
 
-.btn-audio i {
+.wim-template-jawa .btn-audio i {
     font-size: 1.2rem;
     transition: 0.3s;
 }
 
 /* Arch Frame Couple */
-.hero-arch-frame {
+.wim-template-jawa .hero-arch-frame {
     width: 115px; /* Diperlebar lagi */
     height: 140px;
     background-color: #fff;
@@ -418,7 +418,7 @@ body.locked {
     z-index: 10; /* Di depan gunungan */
 }
 
-.hero-arch-frame img.hero-couple-img {
+.wim-template-jawa .hero-arch-frame img.hero-couple-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -426,7 +426,7 @@ body.locked {
 }
 
 /* Dark Countdown */
-.countdown-item.style-dark {
+.wim-template-jawa .countdown-item.style-dark {
     background-color: #1a1a1a;
     color: #fff;
     width: 55px; /* Diperkecil lagi 5px */
@@ -439,28 +439,28 @@ body.locked {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-.countdown-item.style-dark span {
+.wim-template-jawa .countdown-item.style-dark span {
     font-size: 1.2rem; /* Disesuaikan dengan ukuran kotak */
     font-weight: 700;
     line-height: 1.1;
     font-family: 'Playfair Display', serif;
 }
 
-.countdown-item.style-dark p {
+.wim-template-jawa .countdown-item.style-dark p {
     font-size: 0.75rem;
     font-weight: 500;
     margin: 0;
 }
 
 @media screen and (min-width: 500px) {
-    #cover-page {
+    .wim-template-jawa #cover-page {
         height: auto;
         aspect-ratio: 9 / 19.5;
     }
 }
 
 /* Bottom Navigation */
-.bottom-nav {
+.wim-template-jawa .bottom-nav {
     position: fixed;
     bottom: 20px;
     left: 50%;
@@ -482,13 +482,13 @@ body.locked {
     transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.bottom-nav.visible {
+.wim-template-jawa .bottom-nav.visible {
     opacity: 1;
     pointer-events: auto;
     transform: translateX(-50%) translateY(0);
 }
 
-.bottom-nav .nav-item {
+.wim-template-jawa .bottom-nav .nav-item {
     color: #4a2c16;
     font-size: 1.1rem;
     width: 40px;
@@ -501,11 +501,11 @@ body.locked {
     border-radius: 50%;
 }
 
-.bottom-nav .nav-item:hover {
+.wim-template-jawa .bottom-nav .nav-item:hover {
     color: #2a2a2a;
 }
 
-.bottom-nav .nav-item.active {
+.wim-template-jawa .bottom-nav .nav-item.active {
     background-color: #4a2c16;
     color: #dfcfb9;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -513,7 +513,7 @@ body.locked {
 
 
 /* ===== GIFT CARDS (WIM Engine Generated) ===== */
-.bank-card {
+.wim-template-jawa .bank-card {
     background-color: #f3ece1;
     border: 1px solid #e0d5c1;
     border-radius: 16px;
@@ -523,20 +523,20 @@ body.locked {
     position: relative;
     z-index: 10;
 }
-.card-top-row {
+.wim-template-jawa .card-top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
 }
-.bank-card-title {
+.wim-template-jawa .bank-card-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.5rem;
     font-weight: 700;
     color: #333;
     margin: 0;
 }
-.bank-logo-container {
+.wim-template-jawa .bank-logo-container {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -545,43 +545,43 @@ body.locked {
     padding: 0;
     border: none;
 }
-.bank-logo {
+.wim-template-jawa .bank-logo {
     max-height: 25px;
     max-width: 80px;
     object-fit: contain;
     margin-bottom: 8px;
 }
-.bank-divider {
+.wim-template-jawa .bank-divider {
     width: 100%;
     border: none;
     border-top: 2px solid #111;
     margin: 0;
     opacity: 1;
 }
-.card-body-row {
+.wim-template-jawa .card-body-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
-.card-left {
+.wim-template-jawa .card-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
     width: 45%;
 }
-.card-icon {
+.wim-template-jawa .card-icon {
     font-size: 4rem;
     color: #111;
     margin-bottom: 5px;
 }
-.card-buttons {
+.wim-template-jawa .card-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
 }
-.btn-bank {
+.wim-template-jawa .btn-bank {
     width: 100%;
     text-align: center;
     border: none;
@@ -597,50 +597,50 @@ body.locked {
     gap: 5px;
     transition: all 0.3s ease;
 }
-.btn-copy {
+.wim-template-jawa .btn-copy {
     background-color: #111;
     color: #fff;
 }
-.btn-copy:hover {
+.wim-template-jawa .btn-copy:hover {
     background-color: #333;
 }
-.btn-wa {
+.wim-template-jawa .btn-wa {
     background-color: #5c8526;
     color: #fff;
 }
-.btn-wa:hover {
+.wim-template-jawa .btn-wa:hover {
     background-color: #4a6b1f;
 }
-.card-right {
+.wim-template-jawa .card-right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
     width: 50%;
 }
-.bank-details-wrapper {
+.wim-template-jawa .bank-details-wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 4px;
 }
-.bank-label {
+.wim-template-jawa .bank-label {
     font-family: 'Playfair Display', serif;
     font-size: 1rem;
     color: #555;
     margin: 0;
 }
-.bank-label.mt-2 {
+.wim-template-jawa .bank-label.mt-2 {
     margin-top: 15px !important;
 }
-.bank-number {
+.wim-template-jawa .bank-number {
     font-family: 'Inter', sans-serif;
     font-size: 1.4rem;
     font-weight: 700;
     color: #333;
     margin: 0;
 }
-.bank-name {
+.wim-template-jawa .bank-name {
     font-family: 'Inter', sans-serif;
     font-size: 1.05rem;
     font-weight: 700;
