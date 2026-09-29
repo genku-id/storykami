@@ -38,11 +38,11 @@ export default async function InvitationPage({ params }) {
 
   // Render berdasarkan template yang menggunakan Framework (React)
   if (template === 'floral1') {
-    return <Floral1Template data={data} slug={slug} isVisible={() => true} />;
+    return <Floral1Template data={data} slug={slug} />;
   }
   
   if (template === 'template-daerahJawa') {
-    return <JawaTemplate data={data} slug={slug} isVisible={() => true} />;
+    return <JawaTemplate data={data} slug={slug} />;
   }
 
   // Jika menggunakan template lama atau tidak dikenal
