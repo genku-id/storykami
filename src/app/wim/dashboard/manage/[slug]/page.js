@@ -140,11 +140,45 @@ export default function SubDashboardManage() {
 
   const handleDeleteComment = async (id) => {
     if (!confirm('Hapus ucapan ini secara permanen?')) return;
-    const { error } = await supabase.from('guestbook').delete().eq('id', id);
-    if (!error) {
-      setComments(comments.filter(c => c.id !== id));
-    } else {
-      alert("Gagal menghapus ucapan.");
+    try {
+      const res = await fetch('/api/guestbook/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, slug: originalSlug })
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setComments(comments.filter(c => c.id !== id));
+        setToastMessage('Ucapan berhasil dihapus permanen');
+        setTimeout(() => setToastMessage(''), 3000);
+      } else {
+        alert('Gagal menghapus ucapan: ' + (json.error || 'Terjadi kesalahan'));
+      }
+    } catch (err) {
+      console.error('Delete comment error:', err);
+      alert('Gagal menghapus ucapan. Silakan coba lagi.');
+    }
+  };
+
+  const handleDeleteAllComments = async () => {
+    if (!confirm('Apakah Anda yakin ingin menghapus SEMUA ucapan untuk undangan ini? Tindakan ini tidak dapat dibatalkan.')) return;
+    try {
+      const res = await fetch('/api/guestbook/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deleteAll: true, slug: originalSlug })
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setComments([]);
+        setToastMessage('Semua ucapan berhasil dihapus');
+        setTimeout(() => setToastMessage(''), 3000);
+      } else {
+        alert('Gagal menghapus ucapan: ' + (json.error || 'Terjadi kesalahan'));
+      }
+    } catch (err) {
+      console.error('Delete all comments error:', err);
+      alert('Gagal menghapus semua ucapan.');
     }
   };
 
@@ -645,8 +679,22 @@ export default function SubDashboardManage() {
         {/* Tab Guestbook */}
         {activeTab === 'guestbook' && (
           <div style={{ background: 'var(--bg-card)', padding: '2rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Daftar Ucapan & Doa</h2>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.9rem' }}>Kelola pesan yang ditinggalkan tamu untuk undangan ini.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>Daftar Ucapan & Doa</h2>
+                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.9rem' }}>Kelola pesan yang ditinggalkan tamu untuk undangan ini.</p>
+              </div>
+              {comments.length > 0 && (
+                <button 
+                  type="button"
+                  onClick={handleDeleteAllComments}
+                  style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '7px 14px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  Hapus Semua Ucapan
+                </button>
+              )}
+            </div>
             
             {isCommentsLoading ? (
               <div>Memuat data...</div>
