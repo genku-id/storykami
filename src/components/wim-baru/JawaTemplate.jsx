@@ -7,6 +7,7 @@ import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate, getDateParts } from '@/utils/dateHelper';
 import WeddingGiftCard from './WeddingGiftCard';
+import WeddingPhysicalGiftCard from './WeddingPhysicalGiftCard';
 
 export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -476,22 +477,11 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
 
                     {/* Physical Gift */}
                     {data.hadiahDigital?.physicalAddress && (
-                      <div className="bank-card mt-4 address-card text-center" style={{ backgroundColor: '#fdf5e6', borderRadius: '15px', padding: '25px', boxShadow: '0 5px 15px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '30px' }}>
-                          <h3 className="bank-card-title text-center mb-3" style={{ color: '#2a2a2a', fontFamily: '"Playfair Display", serif', fontWeight: 600, fontSize: '1.4rem' }}>Kirim Kado Fisik</h3>
-                          <i className="fa-solid fa-gift card-icon-address" style={{ fontSize: '4rem', color: '#111', margin: '15px 0' }}></i>
-                          
-                          <div className="address-details mt-3 mb-4" style={{ color: '#2a2a2a' }}>
-                              <p className="mb-2" style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>Alamat : {data.hadiahDigital.physicalAddress}</p>
-                              <p className="mb-0" style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>Penerima: {data.hadiahDigital.receiver}</p>
-                              <p className="mb-0" style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>No HP: {data.hadiahDigital.physicalWhatsapp}</p>
-                          </div>
-                          
-                          <div className="address-buttons" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
-                              <button onClick={() => navigator.clipboard.writeText(data.hadiahDigital.physicalAddress)} style={{ backgroundColor: '#111', border: 'none', padding: '8px 20px', borderRadius: '10px', cursor: 'pointer', color: '#fff', fontSize: '0.85rem', fontWeight: 500, fontFamily: '"Inter", sans-serif', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <i className="fa-regular fa-copy"></i> Salin Alamat
-                              </button>
-                          </div>
-                      </div>
+                      <WeddingPhysicalGiftCard
+                        hadiahDigital={data.hadiahDigital}
+                        mempelai={mempelai}
+                        fallbackWa={data.clientWa}
+                      />
                     )}
                 </div>
             </div>

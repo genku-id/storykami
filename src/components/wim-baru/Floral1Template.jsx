@@ -7,6 +7,7 @@ import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
 import { parseDate, formatIndonesianDate } from '@/utils/dateHelper';
 import WeddingGiftCard from './WeddingGiftCard';
+import WeddingPhysicalGiftCard from './WeddingPhysicalGiftCard';
 
 export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -351,17 +352,11 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
 
               {/* Physical Gift */}
               {data.hadiahDigital?.physicalAddress && (
-                <div className="bank-card mt-2">
-                  <div className="card-top-row">
-                    <h3 className="bank-card-title">Kirim Kado</h3>
-                  </div>
-                  <div className="card-body-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '0.95rem' }}>Alamat Penerima:</p>
-                    <p style={{ fontSize: '0.9rem', lineHeight: '1.5' }}>{data.hadiahDigital.physicalAddress}</p>
-                    <p className="mt-2" style={{ fontSize: '0.9rem' }}><strong>Penerima:</strong> {data.hadiahDigital.receiver}</p>
-                    <p style={{ fontSize: '0.9rem' }}><strong>No HP:</strong> {data.hadiahDigital.physicalWhatsapp}</p>
-                  </div>
-                </div>
+                <WeddingPhysicalGiftCard
+                  hadiahDigital={data.hadiahDigital}
+                  mempelai={mempelai}
+                  fallbackWa={data.clientWa}
+                />
               )}
             </div>
           </section>
