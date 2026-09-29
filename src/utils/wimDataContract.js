@@ -22,7 +22,7 @@ export const defaultInvitationData = {
       namaIbu: "Ibu Siti Aminah",
       urutanAnak: "Putra pertama",
       instagram: "@rizkypratama",
-      fotoUtama: "https://images.unsplash.com/photo-1550096141-7263640ae4ce?w=400&q=80"
+      fotoUtama: ""
     },
     wanita: {
       namaLengkap: "Aulia Rahma",
@@ -31,7 +31,7 @@ export const defaultInvitationData = {
       namaIbu: "Ibu Dewi Lestari",
       urutanAnak: "Putri kedua",
       instagram: "@auliarahma",
-      fotoUtama: "https://images.unsplash.com/photo-1549417229-aa67d3263c09?w=400&q=80"
+      fotoUtama: ""
     }
   },
 

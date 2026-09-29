@@ -7,6 +7,7 @@ import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
 import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
+import ProfilePhotoUploader from '@/components/wim-baru/ProfilePhotoUploader';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -334,7 +335,13 @@ function UnifiedEditor() {
            <InputField label="Nama Ibu" value={data.mempelai.wanita.namaIbu} onChange={e => handleChange('mempelai.wanita.namaIbu', e.target.value)} />
            <InputField label="Urutan Anak (contoh: Putri ke-2)" value={data.mempelai.wanita.urutanAnak} onChange={e => handleChange('mempelai.wanita.urutanAnak', e.target.value)} />
            <InputField label="Username Instagram" value={data.mempelai.wanita.instagram} onChange={e => handleChange('mempelai.wanita.instagram', e.target.value)} />
-           <InputField label="Link Foto (URL)" value={data.mempelai.wanita.fotoUtama} onChange={e => handleChange('mempelai.wanita.fotoUtama', e.target.value)} />
+           <ProfilePhotoUploader 
+             label="Foto Mempelai Wanita" 
+             gender="wanita" 
+             value={data.mempelai.wanita.fotoUtama} 
+             onChange={url => handleChange('mempelai.wanita.fotoUtama', url)} 
+             slug={slug || 'undangan'} 
+           />
 
            <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
 
@@ -345,7 +352,13 @@ function UnifiedEditor() {
            <InputField label="Nama Ibu" value={data.mempelai.pria.namaIbu} onChange={e => handleChange('mempelai.pria.namaIbu', e.target.value)} />
            <InputField label="Urutan Anak (contoh: Putra sulung)" value={data.mempelai.pria.urutanAnak} onChange={e => handleChange('mempelai.pria.urutanAnak', e.target.value)} />
            <InputField label="Username Instagram" value={data.mempelai.pria.instagram} onChange={e => handleChange('mempelai.pria.instagram', e.target.value)} />
-           <InputField label="Link Foto (URL)" value={data.mempelai.pria.fotoUtama} onChange={e => handleChange('mempelai.pria.fotoUtama', e.target.value)} />
+           <ProfilePhotoUploader 
+             label="Foto Mempelai Pria" 
+             gender="pria" 
+             value={data.mempelai.pria.fotoUtama} 
+             onChange={url => handleChange('mempelai.pria.fotoUtama', url)} 
+             slug={slug || 'undangan'} 
+           />
         </AccordionItem>
 
         {/* Accordion 4: Jadwal Acara */}
