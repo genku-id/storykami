@@ -8,6 +8,7 @@ import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
 import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
 import ProfilePhotoUploader from '@/components/wim-baru/ProfilePhotoUploader';
+import DateInputField from '@/components/wim-baru/DateInputField';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -364,7 +365,7 @@ function UnifiedEditor() {
         {/* Accordion 4: Jadwal Acara */}
         <AccordionItem title="4. Jadwal Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Akad Nikah</h3>
-          <InputField label="Tanggal (YYYY-MM-DD)" type="date" value={data.acara.akad.tanggal} onChange={e => handleChange('acara.akad.tanggal', e.target.value)} />
+          <DateInputField label="Tanggal (DD/MM/YYYY)" value={data.acara.akad.tanggal} onChange={val => handleChange('acara.akad.tanggal', val)} />
           <InputField label="Waktu Mulai" type="time" value={data.acara.akad.waktuMulai} onChange={e => handleChange('acara.akad.waktuMulai', e.target.value)} />
           <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 10:00" value={data.acara.akad.waktuSelesai} onChange={e => handleChange('acara.akad.waktuSelesai', e.target.value)} />
           <InputField label="Lokasi/Gedung" value={data.acara.akad.lokasi} onChange={e => handleChange('acara.akad.lokasi', e.target.value)} />
@@ -374,7 +375,7 @@ function UnifiedEditor() {
           <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
 
           <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Resepsi Pernikahan</h3>
-          <InputField label="Tanggal (YYYY-MM-DD)" type="date" value={data.acara.resepsi.tanggal} onChange={e => handleChange('acara.resepsi.tanggal', e.target.value)} />
+          <DateInputField label="Tanggal (DD/MM/YYYY)" value={data.acara.resepsi.tanggal} onChange={val => handleChange('acara.resepsi.tanggal', val)} />
           <InputField label="Waktu Mulai" type="time" value={data.acara.resepsi.waktuMulai} onChange={e => handleChange('acara.resepsi.waktuMulai', e.target.value)} />
           <InputField label="Waktu Selesai" type="text" placeholder="Selesai / 14:00" value={data.acara.resepsi.waktuSelesai} onChange={e => handleChange('acara.resepsi.waktuSelesai', e.target.value)} />
           <InputField label="Lokasi/Gedung" value={data.acara.resepsi.lokasi} onChange={e => handleChange('acara.resepsi.lokasi', e.target.value)} />

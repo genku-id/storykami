@@ -5,6 +5,7 @@ import '@/app/wim/floral1.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
+import { parseDate, formatIndonesianDate } from '@/utils/dateHelper';
 
 export default function Floral1Template({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -49,8 +50,10 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
     
     if (!tanggalAcara) return;
 
-    const targetDate = new Date(`${tanggalAcara}T${waktuAcara}:00`).getTime();
-    
+    const parsedTarget = parseDate(tanggalAcara, waktuAcara);
+    if (!parsedTarget) return;
+
+    const targetDate = parsedTarget.getTime();
     if (isNaN(targetDate)) return;
 
     const interval = setInterval(() => {
@@ -195,7 +198,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                 {mempelai?.wanita?.namaPanggilan} &amp; {mempelai?.pria?.namaPanggilan}
               </h1>
               <p className="date-highlight mb-4" data-animate="slide-left">
-                {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                {formatIndonesianDate(acara?.akad?.tanggal || acara?.resepsi?.tanggal, { withDay: false })}
               </p>
               <div className="countdown-container mb-4" data-animate="fade-up">
                 <div className="countdown-item"><span>{String(timeLeft.hari).padStart(2, '0')}</span><p>Hari</p></div>
@@ -283,7 +286,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
               <div className="event-card-pill bg-dark-blue" data-animate="zoom-in">
                 <div className="card-floral card-floral-tl"></div><div className="card-floral card-floral-mr"></div><div className="card-floral card-floral-bl"></div>
                 <h2 className="event-title text-white">Akad Nikah</h2>
-                <p className="event-date">{acara?.akad?.tanggal ? new Date(acara.akad.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p>
+                <p className="event-date">{formatIndonesianDate(acara?.akad?.tanggal, { withDay: true })}</p>
                 <p className="event-time">Pukul {acara?.akad?.waktuMulai} - {acara?.akad?.waktuSelesai} {acara?.akad?.zonaWaktu}</p>
                 <div className="event-location-icon mt-4"><i className="fa-solid fa-map-location-dot fa-2x"></i></div>
                 <p className="event-location-name mt-2">{acara?.akad?.lokasi}</p>
@@ -294,7 +297,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
               <div className="event-card-pill bg-dark-blue mt-4" data-animate="zoom-in">
                 <div className="card-floral card-floral-tl"></div><div className="card-floral card-floral-mr"></div><div className="card-floral card-floral-bl"></div>
                 <h2 className="event-title text-white">Resepsi</h2>
-                <p className="event-date">{acara?.resepsi?.tanggal ? new Date(acara.resepsi.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p>
+                <p className="event-date">{formatIndonesianDate(acara?.resepsi?.tanggal, { withDay: true })}</p>
                 <p className="event-time">Pukul {acara?.resepsi?.waktuMulai} - {acara?.resepsi?.waktuSelesai} {acara?.resepsi?.zonaWaktu}</p>
                 <div className="event-location-icon mt-4"><i className="fa-solid fa-map-location-dot fa-2x"></i></div>
                 <p className="event-location-name mt-2">{acara?.resepsi?.lokasi}</p>

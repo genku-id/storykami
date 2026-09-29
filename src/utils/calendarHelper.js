@@ -3,6 +3,8 @@
  * Utility untuk membuat tautan Google Calendar otomatis berdasarkan data undangan.
  */
 
+import { toYYYYMMDD } from '@/utils/dateHelper';
+
 export function getGoogleCalendarUrl(data = {}, slug = '', eventType = 'main') {
   const { mempelai = {}, acara = {} } = data;
 
@@ -39,8 +41,9 @@ export function getGoogleCalendarUrl(data = {}, slug = '', eventType = 'main') {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}`;
   }
 
-  // Format tanggal YYYYMMDD
-  const cleanDate = tanggal.replace(/-/g, '');
+  // Format tanggal YYYYMMDD secara aman dari DD/MM/YYYY ataupun YYYY-MM-DD
+  const isoFormatted = toYYYYMMDD(tanggal);
+  const cleanDate = isoFormatted.replace(/-/g, '');
 
   // Parse waktu mulai
   const rawMulai = String(event?.waktuMulai || acara?.akad?.waktuMulai || '08:00').replace('.', ':');

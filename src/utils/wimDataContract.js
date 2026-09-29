@@ -38,7 +38,7 @@ export const defaultInvitationData = {
   // Detail Acara
   acara: {
     akad: {
-      tanggal: "2026-10-12",
+      tanggal: "22/11/2026",
       waktuMulai: "08:00",
       waktuSelesai: "10:00",
       zonaWaktu: "WIB",
@@ -47,7 +47,7 @@ export const defaultInvitationData = {
       linkMap: "https://maps.app.goo.gl/dummy"
     },
     resepsi: {
-      tanggal: "2026-10-12",
+      tanggal: "22/11/2026",
       waktuMulai: "11:00",
       waktuSelesai: "14:00",
       zonaWaktu: "WIB",

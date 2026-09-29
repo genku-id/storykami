@@ -5,6 +5,7 @@ import '@/app/wim/jawa.css';
 import { defaultInvitationData } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import { getGoogleCalendarUrl } from '@/utils/calendarHelper';
+import { parseDate, formatIndonesianDate, getDateParts } from '@/utils/dateHelper';
 
 export default function JawaTemplate({ data = defaultInvitationData, slug = 'test-slug', isVisible: isVisibleProp, guestName = '' }) {
   const { mempelai, acara, kutipan, pageVisibility = {} } = data;
@@ -40,6 +41,10 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
   const [isLocked, setIsLocked] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Komponen tanggal untuk tampilan kalender Jawa
+  const akadDateParts = getDateParts(acara?.akad?.tanggal);
+  const resepsiDateParts = getDateParts(acara?.resepsi?.tanggal);
+
   // Countdown State
   const [timeLeft, setTimeLeft] = useState({ hari: 0, jam: 0, menit: 0, detik: 0 });
 
@@ -49,8 +54,10 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
     
     if (!tanggalAcara) return;
 
-    const targetDate = new Date(`${tanggalAcara}T${waktuAcara}:00`).getTime();
-    
+    const parsedTarget = parseDate(tanggalAcara, waktuAcara);
+    if (!parsedTarget) return;
+
+    const targetDate = parsedTarget.getTime();
     if (isNaN(targetDate)) return;
 
     const interval = setInterval(() => {
@@ -238,7 +245,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                     </p>
                 </div>
                 <p className="date-highlight mb-4" style={{ color: '#2a2a2a', fontWeight: 600, textAlign: 'center', width: '100%', display: 'block', margin: '25px auto 0 auto', fontSize: '1rem', fontFamily: '"Playfair Display", serif' }}>
-                  {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                  {formatIndonesianDate(acara?.akad?.tanggal || acara?.resepsi?.tanggal, { withDay: false })}
                 </p>
                 
                 <div className="countdown-container" data-animate="fade-up" style={{ transitionDelay: '0.2s', display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '30px', marginTop: '5px' }}>
@@ -362,20 +369,20 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                     <h2 className="title-names-serif" style={{ fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', marginBottom: '15px', fontSize: '3rem' }}>Akad Nikah</h2>
                     <div className="event-date-grid" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '15px', fontFamily: '"Playfair Display", serif' }}>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).toLocaleDateString('id-ID', { weekday: 'long' }) : ''}
+                          {akadDateParts.dayName}
                         </span>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#2a2a2a', lineHeight: 1 }}>
-                              {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).getDate() : ''}
+                              {akadDateParts.day}
                             </span>
                             <span style={{ fontSize: '1.1rem', fontWeight: 600, color: '#2a2a2a', marginTop: '3px' }}>
-                              {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).getFullYear() : ''}
+                              {akadDateParts.year}
                             </span>
                         </div>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {acara?.akad?.tanggal ? new Date(acara.akad.tanggal).toLocaleDateString('id-ID', { month: 'long' }) : ''}
+                          {akadDateParts.monthName}
                         </span>
                     </div>
                     <p className="event-time" style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, fontSize: '1.1rem', color: '#2a2a2a', marginBottom: '10px' }}>
@@ -398,20 +405,20 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
                     <h2 className="title-names-serif" style={{ fontFamily: '"Oleo Script", cursive', color: '#2a2a2a', marginBottom: '15px', fontSize: '3rem' }}>Resepsi</h2>
                     <div className="event-date-grid" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '15px', fontFamily: '"Playfair Display", serif' }}>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {acara?.resepsi?.tanggal ? new Date(acara.resepsi.tanggal).toLocaleDateString('id-ID', { weekday: 'long' }) : ''}
+                          {resepsiDateParts.dayName}
                         </span>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#2a2a2a', lineHeight: 1 }}>
-                              {acara?.resepsi?.tanggal ? new Date(acara.resepsi.tanggal).getDate() : ''}
+                              {resepsiDateParts.day}
                             </span>
                             <span style={{ fontSize: '1.1rem', fontWeight: 600, color: '#2a2a2a', marginTop: '3px' }}>
-                              {acara?.resepsi?.tanggal ? new Date(acara.resepsi.tanggal).getFullYear() : ''}
+                              {resepsiDateParts.year}
                             </span>
                         </div>
                         <div style={{ width: '1px', height: '45px', backgroundColor: '#2a2a2a' }}></div>
                         <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2a2a2a' }}>
-                          {acara?.resepsi?.tanggal ? new Date(acara.resepsi.tanggal).toLocaleDateString('id-ID', { month: 'long' }) : ''}
+                          {resepsiDateParts.monthName}
                         </span>
                     </div>
                     <p className="event-time" style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700, fontSize: '1.1rem', color: '#2a2a2a', marginBottom: '10px' }}>
