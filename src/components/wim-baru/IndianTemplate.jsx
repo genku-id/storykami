@@ -317,12 +317,24 @@ export default function IndianTemplate({ data = defaultInvitationData, slug = 't
         
         {/* Hero Section */}
         {isVisible('hero') && (
-          <section id="hero" className="section hero-section" style={{
-            backgroundImage: "url('/wim/indian-wedding-bg.svg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat"
-          }}>
+          <section id="hero" className="section hero-section" style={{ position: 'relative', overflow: 'hidden' }}>
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                zIndex: 0
+              }}
+            >
+              <source src="/wim/indian-wedding-bg.mp4" type="video/mp4" />
+            </video>
             <button id="btn-audio" className={`btn-audio ${isPlaying ? 'playing' : ''}`} onClick={() => setIsPlaying(!isPlaying)} style={{ zIndex: 10 }}>
               <i className={`fa-solid ${isPlaying ? 'fa-volume-high' : 'fa-volume-xmark'}`}></i>
             </button>
