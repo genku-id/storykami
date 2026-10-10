@@ -518,10 +518,10 @@ body.locked #main-content,
 
 .wim-template-floral1 .quote-section {
     position: relative;
-    padding: 20px 20px;
+    padding: 60px 20px;
     background-color: var(--sage-bg); 
     z-index: 10;
-    height: 80vh;
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -589,7 +589,7 @@ body.locked #main-content,
     font-style: italic;
     line-height: 1.6;
     opacity: 0.9;
-    text-transform: capitalize;
+    text-transform: none;
 }
 
 .wim-template-floral1 .profiles-section {

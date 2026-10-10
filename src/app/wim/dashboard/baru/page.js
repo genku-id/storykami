@@ -412,8 +412,25 @@ function UnifiedEditor() {
            />
         </AccordionItem>
 
-        {/* Accordion 4: Jadwal Acara */}
-        <AccordionItem title="4. Jadwal Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 4: Kutipan / Ayat */}
+        <AccordionItem title="4. Kutipan / Ayat" pageKey="quote" isOpen={openAccordion === 'quote'} onClick={() => setOpenAccordion(openAccordion === 'quote' ? '' : 'quote')} visibility={isVisible('quote')} onToggleVisibility={handleToggleVisibility}>
+          <InputField 
+            label="Sumber Kutipan / Surah" 
+            value={data.kutipan?.sumber !== undefined ? data.kutipan.sumber : 'QS. Ar-Rum: 21'} 
+            onChange={e => handleChange('kutipan.sumber', e.target.value)} 
+            placeholder="Contoh: QS. Ar-Rum: 21" 
+          />
+          <InputField 
+            label="Teks Kutipan / Ayat" 
+            type="textarea" 
+            value={data.kutipan?.teks !== undefined ? data.kutipan.teks : 'Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.'} 
+            onChange={e => handleChange('kutipan.teks', e.target.value)} 
+            placeholder="Tuliskan ayat atau kalimat kutipan..." 
+          />
+        </AccordionItem>
+
+        {/* Accordion 5: Jadwal Acara */}
+        <AccordionItem title="5. Jadwal Acara" pageKey="events" isOpen={openAccordion === 'events'} onClick={() => setOpenAccordion(openAccordion === 'events' ? '' : 'events')} visibility={isVisible('events')} onToggleVisibility={handleToggleVisibility}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {acaraList.map((item, index) => (
               <div key={item.id || index} style={{ padding: '1.25rem', border: '1px solid var(--border)', borderRadius: '10px', background: 'var(--bg-primary)' }}>
@@ -506,8 +523,8 @@ function UnifiedEditor() {
           </div>
         </AccordionItem>
 
-        {/* Accordion 5: Love Story */}
-        <AccordionItem title="5. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 6: Love Story */}
+        <AccordionItem title="6. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
           {data.ceritaCinta?.map((cerita, index) => (
             <div key={index} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -548,8 +565,8 @@ function UnifiedEditor() {
           </button>
         </AccordionItem>
 
-        {/* Accordion 6: Wedding Gift */}
-        <AccordionItem title="6. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 7: Wedding Gift */}
+        <AccordionItem title="7. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
            <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
            {data.hadiahDigital?.accounts?.map((acc, idx) => (
              <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
@@ -602,8 +619,8 @@ function UnifiedEditor() {
            <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
         </AccordionItem>
 
-        {/* Accordion 7: Penutup */}
-        <AccordionItem title="7. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 8: Penutup */}
+        <AccordionItem title="8. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
           <ThumbnailUploader
             label="Foto Latar Belakang / Gambar Couple Penutup"
             description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."

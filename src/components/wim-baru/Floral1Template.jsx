@@ -403,8 +403,12 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
                 <img src="/assets/images/couple.png" alt="Pasangan" className="quote-main-image" />
               </div>
               <div className="quote-text text-white mt-4">
-                <h3>{kutipan?.sumber}</h3>
-                <p className="translation mt-3">"{kutipan?.teks}"</p>
+                <h3>{kutipan?.sumber || 'QS. Ar-Rum: 21'}</h3>
+                <p className="translation mt-3">
+                  "{(!kutipan?.teks || kutipan.teks.startsWith("Dan di antara tanda-tanda kekuasaan-Nya"))
+                    ? "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
+                    : kutipan.teks}"
+                </p>
               </div>
             </div>
           </section>
