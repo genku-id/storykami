@@ -7,6 +7,7 @@ const TEMPLATE_LABELS = {
   'template-floral1': 'Floral Elegance 1',
   'template-floral2': 'Floral Elegance 2',
   'template-daerahJawa': 'Jawa Klasik',
+  'template-indian': 'Indian Wedding',
 };
 
 function StatCard({ icon, label, value, sub, accentColor }) {

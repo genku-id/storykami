@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 // Import Templates
 import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
+import IndianTemplate from '@/components/wim-baru/IndianTemplate';
 
 export const revalidate = 60; // ISR cache tiap 60 detik
 
@@ -46,6 +47,10 @@ export default async function InvitationPage({ params, searchParams }) {
   
   if (template === 'template-daerahJawa') {
     return <JawaTemplate data={data} slug={slug} guestName={guestName} />;
+  }
+
+  if (template === 'template-indian') {
+    return <IndianTemplate data={data} slug={slug} guestName={guestName} />;
   }
 
   // Jika menggunakan template lama atau tidak dikenal
