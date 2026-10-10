@@ -1297,3 +1297,14 @@ body.locked #main-content,
     color: #333;
 }
 
+
+@keyframes indianHeroZoom {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.wim-template-indian .indian-hero-anim {
+  animation: indianHeroZoom 2s ease-out forwards;
+  animation-delay: 1.5s;
+  opacity: 0;
+  transform-origin: center center;
+}

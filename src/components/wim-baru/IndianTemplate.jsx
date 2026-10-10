@@ -320,7 +320,6 @@ export default function IndianTemplate({ data = defaultInvitationData, slug = 't
           <section id="hero" className="section hero-section" style={{ position: 'relative', overflow: 'hidden' }}>
             <video 
               autoPlay 
-              loop 
               muted 
               playsInline 
               style={{
@@ -338,7 +337,7 @@ export default function IndianTemplate({ data = defaultInvitationData, slug = 't
             <button id="btn-audio" className={`btn-audio ${isPlaying ? 'playing' : ''}`} onClick={() => setIsPlaying(!isPlaying)} style={{ zIndex: 10 }}>
               <i className={`fa-solid ${isPlaying ? 'fa-volume-high' : 'fa-volume-xmark'}`}></i>
             </button>
-            <div className="hero-content text-center" style={{ backgroundColor: 'rgba(255,255,255,0.7)', padding: '20px', borderRadius: '15px', zIndex: 2 }}>
+            <div className="hero-content text-center indian-hero-anim" style={{ backgroundColor: 'rgba(255,255,255,0.7)', padding: '20px', borderRadius: '15px', zIndex: 2 }}>
               <div className="hero-image-container mb-4" data-animate="zoom-in">
                 <img src="/assets/images/couple.png" alt="Couple" className="hero-couple-img" />
               </div>
