@@ -404,7 +404,7 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
               </div>
               <div className="quote-text text-white mt-4">
                 <h3>{kutipan?.sumber || 'QS. Ar-Rum: 21'}</h3>
-                <p className="translation mt-3">
+                <p className="translation mt-3" style={{ whiteSpace: 'pre-line' }}>
                   "{(!kutipan?.teks || kutipan.teks.startsWith("Dan di antara tanda-tanda kekuasaan-Nya"))
                     ? "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
                     : kutipan.teks}"

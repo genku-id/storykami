@@ -414,7 +414,7 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
             <div className="quote-content-wrapper">
                 <div className="quote-text text-center" data-animate="fade-up">
                     <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.2rem', color: '#2a2a2a', marginBottom: '15px', fontWeight: 600, textAlign: 'center' }}>{kutipan?.sumber || 'QS. Ar-Rum: 21'}</h3>
-                    <p className="translation" style={{ fontSize: '0.85rem', color: '#2a2a2a', fontWeight: 500, fontFamily: '"Lora", serif', lineHeight: '1.6', textAlign: 'center' }}>
+                    <p className="translation" style={{ fontSize: '0.85rem', color: '#2a2a2a', fontWeight: 500, fontFamily: '"Lora", serif', lineHeight: '1.6', textAlign: 'center', whiteSpace: 'pre-line' }}>
                       "{(!kutipan?.teks || kutipan.teks.startsWith("Dan di antara tanda-tanda kekuasaan-Nya"))
                         ? "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
                         : kutipan.teks}"

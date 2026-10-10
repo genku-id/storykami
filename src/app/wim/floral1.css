@@ -590,6 +590,7 @@ body.locked #main-content,
     line-height: 1.6;
     opacity: 0.9;
     text-transform: none;
+    white-space: pre-line;
 }
 
 .wim-template-floral1 .profiles-section {
