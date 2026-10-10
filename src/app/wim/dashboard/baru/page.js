@@ -300,9 +300,9 @@ function UnifiedEditor() {
         </button>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           {templateName === 'floral1' ? (
-            <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} />
+            <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           ) : (
-            <JawaTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} />
+            <JawaTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           )}
         </div>
       </div>

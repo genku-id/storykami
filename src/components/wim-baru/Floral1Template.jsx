@@ -139,27 +139,26 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
     }
     setIsSubmitting(true);
     
-    const newComment = {
-      id: isDemo ? `demo-${Date.now()}` : undefined,
-      invitation_slug: slug,
-      nama: namaTamu.trim(),
-      ucapan: ucapan ? ucapan.trim() : '',
-      kehadiran: 'Hadir',
-      created_at: new Date().toISOString()
-    };
-
     if (isDemo) {
+      const demoComment = {
+        id: `demo-${Date.now()}`,
+        invitation_slug: slug,
+        nama: namaTamu.trim(),
+        ucapan: ucapan ? ucapan.trim() : '',
+        kehadiran: 'Hadir',
+        created_at: new Date().toISOString()
+      };
       try {
         if (typeof window !== 'undefined') {
           const currentList = JSON.parse(localStorage.getItem(demoStorageKey) || '[]');
-          const updated = [newComment, ...currentList];
+          const updated = [demoComment, ...currentList];
           localStorage.setItem(demoStorageKey, JSON.stringify(updated));
         }
-        if (newComment.ucapan) {
-          setComments(prev => [newComment, ...prev]);
+        if (demoComment.ucapan) {
+          setComments(prev => [demoComment, ...prev]);
           alert('Terima kasih! Konfirmasi kehadiran dan ucapan Anda berhasil dikirim (Mode Demo: Tersimpan di HP Anda).');
         } else {
-          setComments(prev => [newComment, ...prev]);
+          setComments(prev => [demoComment, ...prev]);
           alert('Terima kasih! Konfirmasi kehadiran Anda berhasil disimpan (Mode Demo: Tersimpan di HP Anda).');
         }
         setUcapan('');
@@ -170,20 +169,34 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
       return;
     }
     
-    const { data: inserted, error } = await supabase
-      .from('guestbook')
-      .insert([newComment])
-      .select();
-      
-    if (!error && inserted && inserted.length > 0) {
-      if (newComment.ucapan) {
-        setComments(prev => [inserted[0], ...prev]);
-        alert('Terima kasih! Konfirmasi kehadiran dan ucapan Anda berhasil dikirim.');
+    const dbPayload = {
+      invitation_slug: slug,
+      nama: namaTamu.trim(),
+      ucapan: ucapan ? ucapan.trim() : '',
+      kehadiran: 'Hadir',
+      created_at: new Date().toISOString()
+    };
+    
+    try {
+      const { data: inserted, error } = await supabase
+        .from('guestbook')
+        .insert([dbPayload])
+        .select();
+        
+      if (!error && inserted && inserted.length > 0) {
+        if (dbPayload.ucapan) {
+          setComments(prev => [inserted[0], ...prev]);
+          alert('Terima kasih! Konfirmasi kehadiran dan ucapan Anda berhasil dikirim.');
+        } else {
+          alert('Terima kasih! Konfirmasi kehadiran Anda berhasil disimpan.');
+        }
+        setUcapan('');
       } else {
-        alert('Terima kasih! Konfirmasi kehadiran Anda berhasil disimpan.');
+        console.error('Error submitting kehadiran:', error);
+        alert('Gagal mengirim konfirmasi kehadiran: ' + (error?.message || 'Silakan coba lagi.'));
       }
-      setUcapan('');
-    } else {
+    } catch (err) {
+      console.error('Exception submitting kehadiran:', err);
       alert('Gagal mengirim konfirmasi kehadiran. Silakan coba lagi.');
     }
     setIsSubmitting(false);
@@ -201,23 +214,22 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
     }
     setIsSubmitting(true);
     
-    const newComment = {
-      id: isDemo ? `demo-${Date.now()}` : undefined,
-      invitation_slug: slug,
-      nama: namaTamu.trim(),
-      ucapan: ucapan.trim(),
-      kehadiran: 'Hadir',
-      created_at: new Date().toISOString()
-    };
-
     if (isDemo) {
+      const demoComment = {
+        id: `demo-${Date.now()}`,
+        invitation_slug: slug,
+        nama: namaTamu.trim(),
+        ucapan: ucapan.trim(),
+        kehadiran: 'Hadir',
+        created_at: new Date().toISOString()
+      };
       try {
         if (typeof window !== 'undefined') {
           const currentList = JSON.parse(localStorage.getItem(demoStorageKey) || '[]');
-          const updated = [newComment, ...currentList];
+          const updated = [demoComment, ...currentList];
           localStorage.setItem(demoStorageKey, JSON.stringify(updated));
         }
-        setComments(prev => [newComment, ...prev]);
+        setComments(prev => [demoComment, ...prev]);
         alert('Terima kasih atas ucapan dan doa restunya! (Mode Demo: Tersimpan di HP Anda)');
         setUcapan('');
       } catch (e) {
@@ -227,16 +239,30 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
       return;
     }
     
-    const { data: inserted, error } = await supabase
-      .from('guestbook')
-      .insert([newComment])
-      .select();
-      
-    if (!error && inserted && inserted.length > 0) {
-      setComments(prev => [inserted[0], ...prev]);
-      alert('Terima kasih atas ucapan dan doa restunya!');
-      setUcapan('');
-    } else {
+    const dbPayload = {
+      invitation_slug: slug,
+      nama: namaTamu.trim(),
+      ucapan: ucapan.trim(),
+      kehadiran: 'Hadir',
+      created_at: new Date().toISOString()
+    };
+    
+    try {
+      const { data: inserted, error } = await supabase
+        .from('guestbook')
+        .insert([dbPayload])
+        .select();
+        
+      if (!error && inserted && inserted.length > 0) {
+        setComments(prev => [inserted[0], ...prev]);
+        alert('Terima kasih atas ucapan dan doa restunya!');
+        setUcapan('');
+      } else {
+        console.error('Error submitting ucapan:', error);
+        alert('Gagal mengirim ucapan: ' + (error?.message || 'Silakan coba lagi.'));
+      }
+    } catch (err) {
+      console.error('Exception submitting ucapan:', err);
       alert('Gagal mengirim ucapan. Silakan coba lagi.');
     }
     setIsSubmitting(false);
