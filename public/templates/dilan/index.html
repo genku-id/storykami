@@ -1345,25 +1345,444 @@ Penerima: alamat kado">
 (function() {
   console.log("StoryKami Dilan Vanilla Engine Active");
 
-  // 1. DYNAMIC GUEST NAME FROM URL (?to=... / ?u=... / ?nama=...)
-  const sp = new URLSearchParams(window.location.search);
-  const guestParam = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest');
-  if (guestParam) {
-    const guestName = decodeURIComponent(guestParam.replace(/\+/g, ' ')).trim();
-    if (guestName) {
-      document.querySelectorAll('h2, h3, h1, span, p, div').forEach(el => {
-        if (el.children.length === 0 && el.textContent.trim().toLowerCase() === 'nama tamu') {
-          el.textContent = guestName;
-        }
-      });
+  let currentTargetDate = null;
+
+  function showToast(msg) {
+    let toast = document.getElementById('storykami-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'storykami-toast';
+      toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#374A33;color:#fff;padding:10px 24px;border-radius:30px;font-family:sans-serif;font-size:14px;box-shadow:0 4px 15px rgba(0,0,0,0.3);z-index:99999;transition:opacity 0.3s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  }
+
+  function parseDateInfo(str) {
+    if (!str) return null;
+    const monthsId = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const daysId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    let d, m, y;
+    if (str.includes('/')) {
+      const parts = str.split('/');
+      d = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10) - 1;
+      y = parseInt(parts[2], 10);
+    } else if (str.includes('-')) {
+      const parts = str.split('-');
+      y = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10) - 1;
+      d = parseInt(parts[2], 10);
+    }
+    if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+    const dt = new Date(y, m, d);
+    const dayName = daysId[dt.getDay()];
+    const monthName = monthsId[m];
+    return { dayName, dayNum: String(d), monthName, yearNum: String(y), fullDate: `${d} ${monthName} ${y}`, jsDate: dt };
+  }
+
+  function renderComments(commentsList) {
+    const container = document.getElementById('saic-container-comment-33797');
+    const countSpan = document.querySelector('#saic-link-33797 span');
+    if (!container) return;
+
+    const validList = Array.isArray(commentsList) ? commentsList.filter(c => c && c.ucapan && c.ucapan.trim() !== '') : [];
+    if (countSpan) countSpan.textContent = validList.length;
+
+    container.innerHTML = '';
+    container.classList.remove('sf-hidden');
+    container.style.display = 'block';
+
+    if (validList.length === 0) {
+      container.innerHTML = '<li style="list-style:none;text-align:center;padding:15px;color:#777;font-size:13px;font-family:sans-serif;">Belum ada ucapan. Jadilah yang pertama memberikan doa restu!</li>';
+      return;
+    }
+
+    validList.forEach(item => {
+      const li = document.createElement('li');
+      li.style.cssText = 'list-style:none;padding:12px 16px;margin-bottom:12px;background:rgba(255,255,255,0.88);border-radius:10px;border:1px solid rgba(90,85,61,0.18);box-shadow:0 2px 5px rgba(0,0,0,0.03);';
+
+      const header = document.createElement('div');
+      header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;';
+
+      const name = document.createElement('strong');
+      name.style.cssText = 'color:#374A33;font-size:14px;font-family:sans-serif;';
+      name.textContent = item.nama || 'Tamu';
+
+      const badge = document.createElement('span');
+      badge.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:12px;background:#e6f4ea;color:#137333;font-weight:600;font-family:sans-serif;';
+      badge.textContent = item.kehadiran || 'Hadir';
+
+      header.appendChild(name);
+      header.appendChild(badge);
+
+      const text = document.createElement('p');
+      text.style.cssText = 'margin:0 0 4px 0;font-size:13px;color:#333;line-height:1.4;word-break:break-word;font-family:sans-serif;';
+      text.textContent = item.ucapan;
+
+      const time = document.createElement('small');
+      time.style.cssText = 'color:#888;font-size:11px;font-family:sans-serif;';
+      try {
+        time.textContent = item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      } catch (e) {
+        time.textContent = '';
+      }
+
+      li.appendChild(header);
+      li.appendChild(text);
+      li.appendChild(time);
+      container.appendChild(li);
+    });
+  }
+
+  function applyInvitationData(invData, guestName) {
+    if (!invData || typeof invData !== 'object') return;
+
+    // 1. Mempelai Panggilan & Couple Name
+    const wanitaNick = invData.mempelai?.wanita?.namaPanggilan || invData.mempelai?.wanita?.namaLengkap || 'Millea';
+    const priaNick = invData.mempelai?.pria?.namaPanggilan || invData.mempelai?.pria?.namaLengkap || 'Dilan';
+    const coupleName = invData.coverName || invData.coupleName || (wanitaNick + ' & ' + priaNick);
+
+    document.title = 'The Wedding of ' + coupleName;
+
+    // Cover, Hero, Closing Couple Name
+    ['182eda2c', '4b8fc027', '4dbb0dab'].forEach(did => {
+      const el = document.querySelector(`.elementor-element-${did} .elementor-heading-title, [data-id="${did}"] .elementor-heading-title`);
+      if (el) el.textContent = coupleName;
+    });
+
+    // 2. Tamu Undangan
+    const sp = new URLSearchParams(window.location.search);
+    const guest = guestName || sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+    if (guest) {
+      const elGuest = document.querySelector('.elementor-element-ce79a1e .elementor-heading-title, [data-id="ce79a1e"] .elementor-heading-title');
+      if (elGuest) elGuest.textContent = guest;
       const authorInput = document.getElementById('author');
-      if (authorInput) {
-        authorInput.value = guestName;
+      if (authorInput) authorInput.value = guest;
+    }
+
+    // 3. Profil Mempelai Wanita
+    const w = invData.mempelai?.wanita || {};
+    if (w.namaLengkap) {
+      const elName = document.querySelector('.elementor-element-101cbbea .elementor-heading-title, [data-id="101cbbea"] .elementor-heading-title');
+      if (elName) elName.textContent = w.namaLengkap;
+    }
+    if (w.namaAyah || w.namaIbu || w.urutanAnak) {
+      const wUrutan = w.urutanAnak || 'Putri Pertama';
+      const wAyah = w.namaAyah ? 'Bapak ' + w.namaAyah.replace(/^Bpk\.?\s*/i, '') : 'Bapak Lorem';
+      const wIbu = w.namaIbu ? 'Dan Ibu ' + w.namaIbu.replace(/^Ibu\.?\s*/i, '') : 'Dan Ibu Ipsum';
+      const elParents = document.querySelector('.elementor-element-126ce898 .elementor-heading-title, [data-id="126ce898"] .elementor-heading-title');
+      if (elParents) elParents.innerHTML = `<p>${wUrutan} dari<br>${wAyah} ${wIbu}</p>`;
+    }
+    if (w.fotoUtama) {
+      const elImg = document.querySelector('.elementor-element-2364e723 img, [data-id="2364e723"] img');
+      if (elImg) {
+        elImg.src = w.fotoUtama;
+        elImg.style.backgroundImage = 'none';
+        elImg.style.objectFit = 'cover';
+      }
+    }
+    if (w.instagram) {
+      const handleW = w.instagram.replace('@', '').trim();
+      const elIg = document.querySelector('.elementor-element-75c0b3aa a, [data-id="75c0b3aa"] a');
+      if (elIg) elIg.href = 'https://instagram.com/' + handleW;
+    }
+
+    // 4. Profil Mempelai Pria
+    const p = invData.mempelai?.pria || {};
+    if (p.namaLengkap) {
+      const elName = document.querySelector('.elementor-element-4ccb864e .elementor-heading-title, [data-id="4ccb864e"] .elementor-heading-title');
+      if (elName) elName.textContent = p.namaLengkap;
+    }
+    if (p.namaAyah || p.namaIbu || p.urutanAnak) {
+      const pUrutan = p.urutanAnak || 'Putra Pertama';
+      const pAyah = p.namaAyah ? 'Bapak ' + p.namaAyah.replace(/^Bpk\.?\s*/i, '') : 'Bapak Lorem';
+      const pIbu = p.namaIbu ? 'Dan Ibu ' + p.namaIbu.replace(/^Ibu\.?\s*/i, '') : 'Dan Ibu Ipsum';
+      const elParents = document.querySelector('.elementor-element-62bf903 .elementor-heading-title, [data-id="62bf903"] .elementor-heading-title');
+      if (elParents) elParents.innerHTML = `<p>${pUrutan} dari<br>${pAyah} ${pIbu}</p>`;
+    }
+    if (p.fotoUtama) {
+      const elImg = document.querySelector('.elementor-element-65870389 img, [data-id="65870389"] img');
+      if (elImg) {
+        elImg.src = p.fotoUtama;
+        elImg.style.backgroundImage = 'none';
+        elImg.style.objectFit = 'cover';
+      }
+    }
+    if (p.instagram) {
+      const handleP = p.instagram.replace('@', '').trim();
+      const elIg = document.querySelector('.elementor-element-630a606c a, [data-id="630a606c"] a');
+      if (elIg) elIg.href = 'https://instagram.com/' + handleP;
+    }
+
+    // 5. Kutipan / Ayat
+    if (invData.kutipan?.teks) {
+      const elQuote = document.querySelector('.elementor-element-489f68e8 .elementor-heading-title, [data-id="489f68e8"] .elementor-heading-title');
+      if (elQuote) {
+        const sumber = invData.kutipan.sumber ? `<br><br><b>(${invData.kutipan.sumber})</b>` : '';
+        elQuote.innerHTML = `<p><b>Assalamu\`alaikum Warahmatullaahi Wabarakaatuh</b><br><br>${invData.kutipan.teks}${sumber}</p>`;
+      }
+    }
+
+    // 6. Jadwal Acara
+    let acaraList = [];
+    if (Array.isArray(invData.acara) && invData.acara.length > 0) {
+      acaraList = invData.acara;
+    } else if (invData.acara && typeof invData.acara === 'object') {
+      if (invData.acara.akad) acaraList.push(invData.acara.akad);
+      if (invData.acara.resepsi) acaraList.push(invData.acara.resepsi);
+    }
+
+    // Acara 1 (Akad Nikah)
+    if (acaraList[0]) {
+      const ev1 = acaraList[0];
+      if (ev1.nama) {
+        const el = document.querySelector('.elementor-element-7024293a .elementor-heading-title, [data-id="7024293a"] .elementor-heading-title');
+        if (el) el.textContent = ev1.nama;
+      }
+      const d1 = parseDateInfo(ev1.tanggal);
+      if (d1) {
+        const elDay = document.querySelector('.elementor-element-3621200c .elementor-heading-title, [data-id="3621200c"] .elementor-heading-title'); if (elDay) elDay.textContent = d1.dayName;
+        const elNum = document.querySelector('.elementor-element-7db343b .elementor-heading-title, [data-id="7db343b"] .elementor-heading-title'); if (elNum) elNum.textContent = d1.dayNum;
+        const elMo = document.querySelector('.elementor-element-6dd2a1ea .elementor-heading-title, [data-id="6dd2a1ea"] .elementor-heading-title'); if (elMo) elMo.textContent = d1.monthName;
+        const elYr = document.querySelector('.elementor-element-2754036 .elementor-heading-title, [data-id="2754036"] .elementor-heading-title'); if (elYr) elYr.textContent = d1.yearNum;
+      }
+      if (ev1.waktuMulai) {
+        const wStr = "Pukul " + ev1.waktuMulai + (ev1.waktuSelesai ? " - " + ev1.waktuSelesai : "") + " " + (ev1.zonaWaktu || "WIB");
+        const elTime = document.querySelector('.elementor-element-251231c8 .elementor-heading-title, [data-id="251231c8"] .elementor-heading-title');
+        if (elTime) elTime.textContent = wStr;
+      }
+      if (ev1.lokasi) {
+        const elLoc = document.querySelector('.elementor-element-5c468981 .elementor-heading-title, [data-id="5c468981"] .elementor-heading-title');
+        if (elLoc) elLoc.innerHTML = `<p>${ev1.lokasi}</p>`;
+      }
+      if (ev1.alamatLengkap) {
+        const elAddr = document.querySelector('.elementor-element-3910577d .elementor-heading-title, [data-id="3910577d"] .elementor-heading-title');
+        if (elAddr) elAddr.innerHTML = `<p>${ev1.alamatLengkap}</p>`;
+      }
+      if (ev1.linkMap) {
+        const elMap = document.querySelector('.elementor-element-d4b443b a, [data-id="d4b443b"] a');
+        if (elMap) elMap.href = ev1.linkMap;
+      }
+    }
+
+    // Acara 2 (Resepsi)
+    if (acaraList[1]) {
+      const ev2 = acaraList[1];
+      if (ev2.nama) {
+        const el = document.querySelector('.elementor-element-43059256 .elementor-heading-title, [data-id="43059256"] .elementor-heading-title');
+        if (el) el.textContent = ev2.nama;
+      }
+      const d2 = parseDateInfo(ev2.tanggal);
+      if (d2) {
+        const elDay = document.querySelector('.elementor-element-70ead25c .elementor-heading-title, [data-id="70ead25c"] .elementor-heading-title'); if (elDay) elDay.textContent = d2.dayName;
+        const elNum = document.querySelector('.elementor-element-7909f1ba .elementor-heading-title, [data-id="7909f1ba"] .elementor-heading-title'); if (elNum) elNum.textContent = d2.dayNum;
+        const elMo = document.querySelector('.elementor-element-c4c8ed4 .elementor-heading-title, [data-id="c4c8ed4"] .elementor-heading-title'); if (elMo) elMo.textContent = d2.monthName;
+        const elYr = document.querySelector('.elementor-element-4ce1eb84 .elementor-heading-title, [data-id="4ce1eb84"] .elementor-heading-title'); if (elYr) elYr.textContent = d2.yearNum;
+      }
+      if (ev2.waktuMulai) {
+        const wStr = "Pukul " + ev2.waktuMulai + (ev2.waktuSelesai ? " - " + ev2.waktuSelesai : "") + " " + (ev2.zonaWaktu || "WIB");
+        const elTime = document.querySelector('.elementor-element-76084007 .elementor-heading-title, [data-id="76084007"] .elementor-heading-title');
+        if (elTime) elTime.textContent = wStr;
+      }
+      if (ev2.lokasi) {
+        const elLoc = document.querySelector('.elementor-element-5ae4fe24 .elementor-heading-title, [data-id="5ae4fe24"] .elementor-heading-title');
+        if (elLoc) elLoc.innerHTML = `<p>${ev2.lokasi}</p>`;
+      }
+      if (ev2.alamatLengkap) {
+        const elAddr = document.querySelector('.elementor-element-2ef48f4 .elementor-heading-title, [data-id="2ef48f4"] .elementor-heading-title');
+        if (elAddr) elAddr.innerHTML = `<p>${ev2.alamatLengkap}</p>`;
+      }
+      if (ev2.linkMap) {
+        const elMap = document.querySelector('.elementor-element-2f6c96f0 a, [data-id="2f6c96f0"] a');
+        if (elMap) elMap.href = ev2.linkMap;
+      }
+    }
+
+    // Acara 3 (Ngunduh Mantu)
+    const ngunduhCont = document.querySelector('.elementor-element-629cee43, [data-id="629cee43"]');
+    if (acaraList[2]) {
+      const ev3 = acaraList[2];
+      if (ngunduhCont) ngunduhCont.style.display = '';
+      if (ev3.nama) {
+        const el = document.querySelector('.elementor-element-4deeadcd .elementor-heading-title, [data-id="4deeadcd"] .elementor-heading-title');
+        if (el) el.textContent = ev3.nama;
+      }
+      const d3 = parseDateInfo(ev3.tanggal);
+      if (d3) {
+        const elDay = document.querySelector('.elementor-element-77b3704e .elementor-heading-title, [data-id="77b3704e"] .elementor-heading-title'); if (elDay) elDay.textContent = d3.dayName;
+        const elNum = document.querySelector('.elementor-element-71c7c1f3 .elementor-heading-title, [data-id="71c7c1f3"] .elementor-heading-title'); if (elNum) elNum.textContent = d3.dayNum;
+        const elMo = document.querySelector('.elementor-element-6902b0eb .elementor-heading-title, [data-id="6902b0eb"] .elementor-heading-title'); if (elMo) elMo.textContent = d3.monthName;
+        const elYr = document.querySelector('.elementor-element-76be11b7 .elementor-heading-title, [data-id="76be11b7"] .elementor-heading-title'); if (elYr) elYr.textContent = d3.yearNum;
+      }
+      if (ev3.lokasi) {
+        const elLoc = document.querySelector('.elementor-element-4c4903c9 .elementor-heading-title, [data-id="4c4903c9"] .elementor-heading-title');
+        if (elLoc) elLoc.innerHTML = `<p>${ev3.lokasi}</p>`;
+      }
+      if (ev3.alamatLengkap) {
+        const elAddr = document.querySelector('.elementor-element-75cfe180 .elementor-heading-title, [data-id="75cfe180"] .elementor-heading-title');
+        if (elAddr) elAddr.innerHTML = `<p>${ev3.alamatLengkap}</p>`;
+      }
+    } else if (ngunduhCont && acaraList.length < 3) {
+      ngunduhCont.style.display = 'none';
+    }
+
+    // Cover Date, Calendar, and Countdown Timer
+    const mainEvent = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
+    if (mainEvent && mainEvent.tanggal) {
+      const dMain = parseDateInfo(mainEvent.tanggal);
+      if (dMain) {
+        const elDateCover = document.querySelector('.elementor-element-5bbfcdf0 .elementor-heading-title, [data-id="5bbfcdf0"] .elementor-heading-title');
+        if (elDateCover) elDateCover.textContent = dMain.fullDate;
+
+        // Set Target Date for Countdown
+        const timeParts = (mainEvent.waktuMulai || '08:00').split(':').map(Number);
+        const targetDt = new Date(dMain.jsDate.getFullYear(), dMain.jsDate.getMonth(), dMain.jsDate.getDate(), timeParts[0] || 8, timeParts[1] || 0);
+        currentTargetDate = targetDt.getTime();
+
+        // Calendar Button
+        const calTitle = encodeURIComponent("Pernikahan " + coupleName);
+        const calDetails = encodeURIComponent("Kepada " + (guest || "Tamu Undangan") + ", menghadiri pernikahan " + coupleName);
+        const calLoc = encodeURIComponent(mainEvent.lokasi || "Lokasi Acara");
+        const calBtn = document.querySelector('.elementor-element-3fd151e4 a, [data-id="3fd151e4"] a');
+        if (calBtn) {
+          calBtn.href = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&details=${calDetails}&location=${calLoc}`;
+        }
+      }
+    }
+
+    // 7. Hadiah Digital / Rekening
+    const accounts = invData.hadiahDigital?.accounts || invData.rekening || [];
+    // Bank 1
+    const b1Card = document.querySelector('.elementor-element-61326ce8, [data-id="61326ce8"]');
+    if (accounts[0]) {
+      if (b1Card) b1Card.style.display = '';
+      const elNum = document.querySelector('.elementor-element-68dc6280 .elementor-heading-title, [data-id="68dc6280"] .elementor-heading-title'); if (elNum) elNum.textContent = accounts[0].number || '';
+      const elOwn = document.querySelector('.elementor-element-812d687 .elementor-heading-title, [data-id="812d687"] .elementor-heading-title'); if (elOwn) elOwn.textContent = accounts[0].owner || '';
+      const elName = document.querySelector('.elementor-element-2cfd15c5 .elementor-heading-title, [data-id="2cfd15c5"] .elementor-heading-title'); if (elName && accounts[0].name) elName.textContent = accounts[0].name;
+      const elCopy = document.querySelector('.elementor-element-527d01af a, [data-id="527d01af"] a'); if (elCopy) elCopy.setAttribute('data-clipboard-text', accounts[0].number || '');
+      const elWa = document.querySelector('.elementor-element-88ca38d a, [data-id="88ca38d"] a');
+      if (elWa && accounts[0].whatsapp) elWa.href = `https://api.whatsapp.com/send?phone=${accounts[0].whatsapp}`;
+    } else if (accounts.length === 0 && b1Card) {
+      b1Card.style.display = 'none';
+    }
+
+    // Bank 2
+    const b2Card = document.querySelector('.elementor-element-1e1fb581, [data-id="1e1fb581"]');
+    if (accounts[1]) {
+      if (b2Card) b2Card.style.display = '';
+      const elNum = document.querySelector('.elementor-element-1e482420 .elementor-heading-title, [data-id="1e482420"] .elementor-heading-title'); if (elNum) elNum.textContent = accounts[1].number || '';
+      const elOwn = document.querySelector('.elementor-element-744de44f .elementor-heading-title, [data-id="744de44f"] .elementor-heading-title'); if (elOwn) elOwn.textContent = accounts[1].owner || '';
+      const elCopy = document.querySelector('.elementor-element-7bc8e45c a, [data-id="7bc8e45c"] a'); if (elCopy) elCopy.setAttribute('data-clipboard-text', accounts[1].number || '');
+    } else if (b2Card) {
+      b2Card.style.display = 'none';
+    }
+
+    // Bank 3
+    const b3Num = document.querySelector('.elementor-element-2d93f3e5 .elementor-heading-title, [data-id="2d93f3e5"] .elementor-heading-title');
+    if (accounts[2]) {
+      if (b3Num) b3Num.textContent = accounts[2].number || '';
+      const elOwn = document.querySelector('.elementor-element-5fefd1d1 .elementor-heading-title, [data-id="5fefd1d1"] .elementor-heading-title'); if (elOwn) elOwn.textContent = accounts[2].owner || '';
+    } else if (b3Num) {
+      const b3Card = b3Num.closest('.elementor-element-e02ef71, [data-id="e02ef71"]') || b3Num.parentElement;
+      if (b3Card) b3Card.style.display = 'none';
+    }
+
+    // Kado Fisik
+    const physAddr = invData.hadiahDigital?.physicalAddress;
+    const physRecv = invData.hadiahDigital?.receiver || '';
+    const physEl = document.querySelector('.elementor-element-6b0b1fef, [data-id="6b0b1fef"]');
+    const physCopy = document.querySelector('.elementor-element-319df53a, [data-id="319df53a"]');
+    if (physAddr) {
+      if (physEl) {
+        physEl.style.display = '';
+        const h2 = physEl.querySelector('.elementor-heading-title');
+        if (h2) h2.innerHTML = `Alamat : ${physAddr}<br>Penerima: ${physRecv}`;
+      }
+      if (physCopy) {
+        physCopy.style.display = '';
+        const a = physCopy.querySelector('a');
+        if (a) a.setAttribute('data-clipboard-text', `Alamat: ${physAddr}\nPenerima: ${physRecv}`);
+      }
+    } else {
+      if (physEl) physEl.style.display = 'none';
+      if (physCopy) physCopy.style.display = 'none';
+    }
+
+    // 8. Love Story
+    if (Array.isArray(invData.ceritaCinta) && invData.ceritaCinta.length > 0) {
+      const stories = invData.ceritaCinta;
+      if (stories[0]) {
+        const elT = document.querySelector('.elementor-element-5d74702b .elementor-heading-title, [data-id="5d74702b"] .elementor-heading-title'); if (elT && stories[0].judul) elT.textContent = stories[0].judul;
+        const elD = document.querySelector('.elementor-element-e2d318a .elementor-heading-title, [data-id="e2d318a"] .elementor-heading-title'); if (elD && stories[0].tanggal) elD.textContent = stories[0].tanggal;
+        const elC = document.querySelector('.elementor-element-5d20cd21 .elementor-heading-title, [data-id="5d20cd21"] .elementor-heading-title'); if (elC && stories[0].cerita) elC.textContent = stories[0].cerita;
+      }
+      if (stories[1]) {
+        const elT = document.querySelector('.elementor-element-72cf624a .elementor-heading-title, [data-id="72cf624a"] .elementor-heading-title'); if (elT && stories[1].judul) elT.textContent = stories[1].judul;
+        const elD = document.querySelector('.elementor-element-7967b5d3 .elementor-heading-title, [data-id="7967b5d3"] .elementor-heading-title'); if (elD && stories[1].tanggal) elD.textContent = stories[1].tanggal;
+        const elC = document.querySelector('.elementor-element-2a795a2f .elementor-heading-title, [data-id="2a795a2f"] .elementor-heading-title'); if (elC && stories[1].cerita) elC.textContent = stories[1].cerita;
+      }
+      if (stories[2]) {
+        const elT = document.querySelector('.elementor-element-32f68a7 .elementor-heading-title, [data-id="32f68a7"] .elementor-heading-title'); if (elT && stories[2].judul) elT.textContent = stories[2].judul;
+        const elD = document.querySelector('.elementor-element-76557557 .elementor-heading-title, [data-id="76557557"] .elementor-heading-title'); if (elD && stories[2].tanggal) elD.textContent = stories[2].tanggal;
+        const elC = document.querySelector('.elementor-element-6f830558 .elementor-heading-title, [data-id="6f830558"] .elementor-heading-title'); if (elC && stories[2].cerita) elC.textContent = stories[2].cerita;
+      }
+      if (stories[3]) {
+        const elT = document.querySelector('.elementor-element-1f54353d .elementor-heading-title, [data-id="1f54353d"] .elementor-heading-title'); if (elT && stories[3].judul) elT.textContent = stories[3].judul;
+        const elD = document.querySelector('.elementor-element-30df929b .elementor-heading-title, [data-id="30df929b"] .elementor-heading-title'); if (elD && stories[3].tanggal) elD.textContent = stories[3].tanggal;
+        const elC = document.querySelector('.elementor-element-33cd62c8 .elementor-heading-title, [data-id="33cd62c8"] .elementor-heading-title'); if (elC && stories[3].cerita) elC.textContent = stories[3].cerita;
+      }
+    }
+
+    // 9. Penutup
+    if (invData.penutup) {
+      const elPenutup = document.querySelector('.elementor-element-21bb9af9 .elementor-heading-title, [data-id="21bb9af9"] .elementor-heading-title');
+      if (elPenutup) elPenutup.innerHTML = `<p>${invData.penutup.replace(/\n/g, '<br>')}</p>`;
+    }
+
+    // 10. Musik
+    if (invData.musikUrl) {
+      const audioEl = document.getElementById('song');
+      if (audioEl) {
+        audioEl.src = invData.musikUrl;
+        if (invData.musikStart) audioEl.currentTime = Number(invData.musikStart) || 0;
       }
     }
   }
 
-  // 2. AUDIO & BUKA UNDANGAN BUTTON
+  // Initial read from sessionStorage on boot
+  try {
+    const rawData = sessionStorage.getItem('storykami_invitation_data');
+    const guestName = sessionStorage.getItem('storykami_guest_name') || '';
+    if (rawData) {
+      applyInvitationData(JSON.parse(rawData), guestName);
+    }
+  } catch (e) {
+    console.warn('Initial sessionStorage read failed:', e);
+  }
+
+  // Listen for parent messages
+  window.addEventListener('message', function(event) {
+    if (!event.data) return;
+    if (event.data.type === 'STORYKAMI_INIT' || event.data.type === 'STORYKAMI_DATA') {
+      applyInvitationData(event.data.data, event.data.guestName);
+      if (event.data.comments) {
+        renderComments(event.data.comments);
+      }
+    }
+    if (event.data.type === 'COMMENTS_UPDATED') {
+      renderComments(event.data.comments);
+    }
+  });
+
+  // Notify parent that iframe is ready
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'IFRAME_READY' }, '*');
+  }
+
+  // Audio and Buka Undangan Button
   const audio = document.getElementById('song');
   const bukaBtn = document.getElementById('tombol-buka') || document.querySelector('a[href="#home"]');
   const audioToggle = document.getElementById('wds-audio-btn') || document.querySelector('.fa-volume-mute, .fa-volume-up')?.closest('div, a, button');
@@ -1423,38 +1842,56 @@ Penerima: alamat kado">
     });
   }
 
-  // 3. COPY REKENING BUTTONS
+  // Copy Clipboard Buttons
   document.querySelectorAll('a, button, div, span').forEach(el => {
     const text = el.textContent.trim();
     if (text.includes('Salin') || text.includes('Copy') || (el.classList && el.classList.contains('elementor-button') && text.toLowerCase().includes('rekening'))) {
       el.addEventListener('click', function(e) {
         e.preventDefault();
-        const card = el.closest('.elementor-widget-wrap') || el.parentElement;
-        const numEl = card ? card.querySelector('h2, h3, p, span') : null;
-        const copyText = numEl ? numEl.textContent.trim() : text;
-        navigator.clipboard.writeText(copyText).then(() => {
-          showToast('Nomor rekening berhasil disalin!');
+        const copyVal = el.getAttribute('data-clipboard-text') || (el.closest('.elementor-widget-wrap') || el.parentElement)?.querySelector('h2, h3, p, span')?.textContent?.trim() || text;
+        navigator.clipboard.writeText(copyVal).then(() => {
+          showToast('Berhasil disalin ke clipboard!');
         });
       });
     }
   });
 
-  function showToast(msg) {
-    let toast = document.getElementById('storykami-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'storykami-toast';
-      toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#374A33;color:#fff;padding:10px 24px;border-radius:30px;font-family:sans-serif;font-size:14px;box-shadow:0 4px 15px rgba(0,0,0,0.3);z-index:99999;transition:opacity 0.3s;';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  // Guestbook Form Handler
+  const commentForm = document.getElementById('commentform-33797');
+  if (commentForm) {
+    commentForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const authorEl = document.getElementById('author');
+      const attendEl = document.getElementById('attendance');
+      const textEl = document.getElementById('saic-textarea-33797');
+
+      const nama = (authorEl ? authorEl.value : '').trim();
+      const kehadiran = attendEl ? (attendEl.options[attendEl.selectedIndex]?.text || attendEl.value) : 'Hadir';
+      const ucapan = (textEl ? textEl.value : '').trim();
+
+      if (!nama) {
+        showToast('Silakan masukkan nama Anda');
+        return;
+      }
+      if (!ucapan) {
+        showToast('Silakan tuliskan ucapan');
+        return;
+      }
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'SUBMIT_COMMENT',
+          payload: { nama, kehadiran, ucapan }
+        }, '*');
+      }
+
+      if (textEl) textEl.value = '';
+      showToast('Ucapan Anda berhasil dikirim!');
+    });
   }
 
-  // 4. COUNTDOWN TIMER
+  // Countdown Timer
   function initCountdown() {
-    const targetDate = new Date('2025-03-22T09:00:00').getTime();
     const daysEl = document.querySelector('.elementor-countdown-days');
     const hoursEl = document.querySelector('.elementor-countdown-hours');
     const minutesEl = document.querySelector('.elementor-countdown-minutes');
@@ -1463,13 +1900,19 @@ Penerima: alamat kado">
     if (!daysEl && !hoursEl) return;
 
     function update() {
+      const targetTime = currentTargetDate || new Date('2025-03-22T09:00:00').getTime();
       const now = new Date().getTime();
-      const dist = targetDate - now;
+      const dist = targetTime - now;
       if (dist > 0) {
         if (daysEl) daysEl.textContent = Math.floor(dist / (1000 * 60 * 60 * 24));
         if (hoursEl) hoursEl.textContent = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         if (minutesEl) minutesEl.textContent = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
         if (secondsEl) secondsEl.textContent = Math.floor((dist % (1000 * 60)) / 1000);
+      } else {
+        if (daysEl) daysEl.textContent = 0;
+        if (hoursEl) hoursEl.textContent = 0;
+        if (minutesEl) minutesEl.textContent = 0;
+        if (secondsEl) secondsEl.textContent = 0;
       }
     }
     update();
