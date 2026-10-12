@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+
 :root {
     
     --sage-dark: #8093af;
@@ -17,7 +19,7 @@
     --glass-border: rgba(255, 255, 255, 0.4);
     
     
-    --font-names: 'Great Vibes', 'Playfair Display', serif;
+    --font-names: 'Playfair Display', serif;
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
     --font-quote: 'Lora', serif;
@@ -149,7 +151,8 @@
 .wim-template-floral1 .title-names {
     font-family: var(--font-names);
     font-size: 3rem;
-    font-weight: 400;
+    font-weight: 600;
+    font-style: italic;
 }
 
 .wim-template-floral1 .section-title {
@@ -328,12 +331,12 @@ body.locked #main-content,
     transform: translateY(-8vh);
 }
 .wim-template-floral1 .monogram-large {
-    font-family: var(--font-names), 'Great Vibes', cursive;
+    font-family: var(--font-names), 'Playfair Display', serif;
     font-size: 6.4rem;
     color: #8093af;
     line-height: 1;
     margin-bottom: 2.5rem;
-    font-weight: normal;
+    font-weight: 600;
     font-style: italic;
     display: flex;
     justify-content: center;
@@ -361,11 +364,11 @@ body.locked #main-content,
     transform: translateY(8px);
 }
 .wim-template-floral1 .title-names-cursive {
-    font-family: var(--font-names), 'Great Vibes', cursive;
+    font-family: var(--font-names), 'Playfair Display', serif;
     font-size: 2.8rem;
     color: #8093af;
     margin: 0;
-    font-weight: normal;
+    font-weight: 600;
     font-style: italic;
     transform: translateY(10px);
 }
@@ -718,6 +721,7 @@ body.locked #main-content,
 .wim-template-floral1 .ampersand {
     font-family: var(--font-names);
     font-size: 2.2rem;
+    font-style: italic;
     color: var(--gold);
     margin: 15px 0;
 }
@@ -749,7 +753,8 @@ body.locked #main-content,
     font-size: 1.8rem;
     color: var(--text-dark);
     margin-bottom: 5px;
-    font-weight: normal;
+    font-weight: 600;
+    font-style: italic;
 }
 .wim-template-floral1 .story-date {
     font-size: 0.85rem;
@@ -848,9 +853,10 @@ body.locked #main-content,
 }
 .wim-template-floral1 .event-title {
     font-family: var(--font-names);
-    font-size: 3rem;
+    font-size: 2.2rem;
     margin-bottom: 20px;
-    font-weight: normal;
+    font-weight: 600;
+    font-style: italic;
 }
 .wim-template-floral1 .event-date {
     font-size: 1.1rem;
