@@ -71,7 +71,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Card 3 */}
+            {/* Card 2 */}
             <div className={styles.card}>
               <div className={styles.cardImageWrapper}>
                 <Image 
@@ -85,6 +85,22 @@ export default function Home() {
                 <h3 className={styles.cardTitle}>Jawa Klasik</h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Adat Tradisional & Elegan</p>
                 <a href="/demo/template-daerahJawa" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className={styles.card}>
+              <div className={styles.cardImageWrapper}>
+                <img 
+                  src="/assets/templates/dilan/asset_1.webp" 
+                  alt="Dilan & Millea Preview" 
+                  style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top'}} 
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>Dilan &amp; Millea</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Adat Modern &amp; Olive Gold</p>
+                <a href="/demo/template-dilan" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
               </div>
             </div>
 

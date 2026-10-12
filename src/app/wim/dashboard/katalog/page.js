@@ -13,6 +13,12 @@ const TEMPLATES = [
     name: 'Jawa Klasik',
     description: 'Tema tradisional bernuansa adat Jawa yang sakral dan klasik.',
     image: '/jawa-preview.jpg', // Placeholder image
+  },
+  {
+    id: 'template-dilan',
+    name: 'Dilan & Millea (Adat Olive)',
+    description: 'Tema pernikahan adat modern dengan perpaduan warna deep olive green dan sentuhan warm gold yang anggun.',
+    image: '/assets/templates/dilan/asset_1.webp',
   }
 ];
 
@@ -35,9 +41,14 @@ export default function KatalogTemaPage() {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <div style={{ height: '200px', background: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
-              {/* If real images exist, use <img src={tpl.image} /> instead */}
-              <span>Preview {tpl.name}</span>
+            <div style={{ height: '200px', background: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', overflow: 'hidden', position: 'relative' }}>
+              <img 
+                src={tpl.image} 
+                alt={tpl.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <span style={{ position: 'absolute', zIndex: 0 }}>Preview {tpl.name}</span>
             </div>
             <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
               <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{tpl.name}</h3>

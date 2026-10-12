@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
+import DilanTemplate from '@/components/wim-baru/DilanTemplate';
 import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
@@ -300,7 +301,9 @@ function UnifiedEditor() {
           Tutup Preview ✕
         </button>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-          {templateName === 'floral1' ? (
+          {templateName === 'template-dilan' || templateName === 'dilan' ? (
+            <DilanTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
+          ) : templateName === 'floral1' ? (
             <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           ) : (
             <JawaTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
