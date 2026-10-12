@@ -98,7 +98,7 @@ function InputField({ label, value, onChange, type = "text", placeholder = "", o
 const TEMPLATE_OPTIONS = [
   { val: 'floral1', name: 'Floral Elegance 1' },
   { val: 'template-daerahJawa', name: 'Jawa Klasik' },
-  { val: 'template-indian', name: 'Indian Wedding' }
+  { val: 'template-dilan', name: 'Dilan & Millea (Adat Olive)' }
 ];
 
 function UnifiedEditor() {

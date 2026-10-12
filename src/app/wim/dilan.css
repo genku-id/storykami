@@ -1,0 +1,845 @@
+/* Dilan & Millea Theme (Tema Adat Modern / Olive Gold) */
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&family=Tangerine:wght@700&display=swap');
+
+:root {
+  --dilan-primary: #374A33;
+  --dilan-primary-dark: #2A3827;
+  --dilan-accent: #5A553D;
+  --dilan-gold: #7D674C;
+  --dilan-gold-light: #C4B59D;
+  --dilan-cream: #F7F5F0;
+  --dilan-cream-dark: #ECE7DD;
+  --dilan-text-dark: #2C3529;
+  --dilan-text-muted: #6B7268;
+  --dilan-white: #FFFFFF;
+  --dilan-glass: rgba(255, 255, 255, 0.88);
+  --dilan-glass-border: rgba(90, 85, 61, 0.18);
+  --dilan-shadow: 0 10px 30px rgba(55, 74, 51, 0.08);
+
+  --font-dilan-heading: 'EB Garamond', serif;
+  --font-dilan-script: 'Tangerine', cursive;
+  --font-dilan-sub: 'Crimson Pro', serif;
+  --font-dilan-body: 'Poppins', sans-serif;
+}
+
+/* Scoped Root Container */
+.wim-template-dilan {
+  margin: 0 auto;
+  padding: 0;
+  font-family: var(--font-dilan-body);
+  color: var(--dilan-text-dark);
+  background-color: #20241f; /* Desktop backdrop */
+  overflow-x: hidden;
+  max-width: 430px; /* Mobile width */
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.45);
+}
+
+.wim-template-dilan.locked {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.wim-template-dilan * {
+  box-sizing: border-box;
+}
+
+/* ==========================================================
+   1. COVER SECTION (LOCK SCREEN)
+   ========================================================== */
+.wim-template-dilan #cover-page {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: 100svh;
+  max-height: 100svh;
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 24px 40px;
+  background-color: var(--dilan-cream);
+  background-image: 
+    linear-gradient(rgba(247, 245, 240, 0.7), rgba(247, 245, 240, 0.85)),
+    url('/assets/templates/dilan/asset_1.webp');
+  background-size: cover;
+  background-position: center;
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.wim-template-dilan .cover-page.slide-up {
+  transform: translate(-50%, -100%) !important;
+}
+
+.wim-template-dilan .cover-top {
+  text-align: center;
+  animation: dilanFadeDown 1s ease forwards;
+}
+
+.wim-template-dilan .cover-top .cover-tagline {
+  font-family: var(--font-dilan-sub);
+  font-size: 0.95rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--dilan-gold);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.wim-template-dilan .cover-ornament {
+  width: 80px;
+  height: auto;
+  margin: 10px auto;
+  opacity: 0.85;
+}
+
+.wim-template-dilan .cover-center {
+  text-align: center;
+  margin: auto 0;
+}
+
+.wim-template-dilan .cover-names {
+  font-family: var(--font-dilan-heading);
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: var(--dilan-primary);
+  line-height: 1.15;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.wim-template-dilan .cover-ampersand {
+  font-family: var(--font-dilan-script);
+  font-size: 3.5rem;
+  color: var(--dilan-gold);
+  display: block;
+  line-height: 0.7;
+  margin: 6px 0;
+}
+
+.wim-template-dilan .cover-bottom {
+  text-align: center;
+  width: 100%;
+  animation: dilanFadeUp 1s ease forwards;
+}
+
+.wim-template-dilan .cover-guest-card {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 20px rgba(55, 74, 51, 0.08);
+}
+
+.wim-template-dilan .cover-guest-title {
+  font-size: 0.78rem;
+  color: var(--dilan-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.wim-template-dilan .cover-guest-name {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin: 0;
+}
+
+.wim-template-dilan .btn-open-invitation {
+  background: linear-gradient(135deg, var(--dilan-primary) 0%, #465d41 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 30px;
+  padding: 14px 34px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(55, 74, 51, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.wim-template-dilan .btn-open-invitation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(55, 74, 51, 0.45);
+}
+
+/* ==========================================================
+   2. FLOATING AUDIO BUTTON
+   ========================================================== */
+.wim-template-dilan .dilan-audio-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--dilan-primary);
+  color: #fff;
+  border: 2px solid var(--dilan-gold-light);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.wim-template-dilan .dilan-audio-btn.playing {
+  animation: dilanSpin 8s linear infinite;
+}
+
+/* ==========================================================
+   3. MAIN CONTENT & SECTIONS
+   ========================================================== */
+.wim-template-dilan #main-content {
+  background-color: var(--dilan-cream);
+  background-image: 
+    linear-gradient(rgba(247, 245, 240, 0.92), rgba(247, 245, 240, 0.95)),
+    url('/assets/templates/dilan/asset_7.webp');
+  background-size: cover;
+  background-attachment: scroll;
+  min-height: 100vh;
+}
+
+.wim-template-dilan .dilan-section {
+  padding: 60px 22px;
+  position: relative;
+}
+
+.wim-template-dilan .section-divider {
+  width: 120px;
+  height: auto;
+  margin: 0 auto 30px;
+  display: block;
+  opacity: 0.85;
+}
+
+.wim-template-dilan .section-title-wrap {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.wim-template-dilan .section-subtitle {
+  font-family: var(--font-dilan-sub);
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--dilan-gold);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.wim-template-dilan .section-title {
+  font-family: var(--font-dilan-heading);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--dilan-primary);
+  line-height: 1.2;
+}
+
+/* ==========================================================
+   4. HERO SECTION
+   ========================================================== */
+.wim-template-dilan .dilan-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px;
+  background: 
+    linear-gradient(rgba(247, 245, 240, 0.75), rgba(247, 245, 240, 0.88)),
+    url('/assets/templates/dilan/asset_8.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.wim-template-dilan .hero-names {
+  font-family: var(--font-dilan-heading);
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--dilan-primary);
+  margin: 15px 0 10px;
+}
+
+.wim-template-dilan .hero-date {
+  font-family: var(--font-dilan-sub);
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  color: var(--dilan-gold);
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+/* Countdown */
+.wim-template-dilan .countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 320px;
+  margin: 0 auto 30px;
+  width: 100%;
+}
+
+.wim-template-dilan .countdown-box {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 14px 6px;
+  box-shadow: 0 4px 15px rgba(55, 74, 51, 0.06);
+}
+
+.wim-template-dilan .countdown-num {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  line-height: 1;
+}
+
+.wim-template-dilan .countdown-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--dilan-text-muted);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.wim-template-dilan .btn-calendar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  color: var(--dilan-primary);
+  border: 1.5px solid var(--dilan-primary);
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.wim-template-dilan .btn-calendar:hover {
+  background: var(--dilan-primary);
+  color: #FFFFFF;
+}
+
+/* ==========================================================
+   5. PROFILES SECTION
+   ========================================================== */
+.wim-template-dilan .profile-card {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  margin-bottom: 25px;
+  box-shadow: var(--dilan-shadow);
+}
+
+.wim-template-dilan .profile-avatar-wrap {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  padding: 5px;
+  border: 2px dashed var(--dilan-gold);
+  background: #FFFFFF;
+}
+
+.wim-template-dilan .profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wim-template-dilan .profile-name {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin-bottom: 8px;
+}
+
+.wim-template-dilan .profile-parents {
+  font-size: 0.82rem;
+  color: var(--dilan-text-muted);
+  line-height: 1.6;
+}
+
+.wim-template-dilan .ampersand-divider {
+  font-family: var(--font-dilan-script);
+  font-size: 4rem;
+  color: var(--dilan-gold);
+  text-align: center;
+  margin: 10px 0;
+  line-height: 0.8;
+}
+
+/* ==========================================================
+   6. QUOTE SECTION
+   ========================================================== */
+.wim-template-dilan .quote-box {
+  background: linear-gradient(135deg, rgba(55, 74, 51, 0.08) 0%, rgba(125, 103, 76, 0.08) 100%);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 18px;
+  padding: 30px 22px;
+  text-align: center;
+  position: relative;
+}
+
+.wim-template-dilan .quote-arabic {
+  font-size: 1.25rem;
+  line-height: 2;
+  color: var(--dilan-primary);
+  margin-bottom: 16px;
+  font-family: serif;
+}
+
+.wim-template-dilan .quote-text {
+  font-family: var(--font-dilan-sub);
+  font-size: 0.98rem;
+  font-style: italic;
+  color: var(--dilan-text-dark);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.wim-template-dilan .quote-source {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dilan-gold);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* ==========================================================
+   7. EVENTS SECTION (AKAD & RESEPSI)
+   ========================================================== */
+.wim-template-dilan .event-card {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 20px;
+  padding: 30px 22px;
+  text-align: center;
+  margin-bottom: 25px;
+  box-shadow: var(--dilan-shadow);
+  position: relative;
+}
+
+.wim-template-dilan .event-badge {
+  display: inline-block;
+  background: var(--dilan-primary);
+  color: #fff;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.wim-template-dilan .event-title {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin-bottom: 14px;
+}
+
+.wim-template-dilan .event-date-box {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px dashed var(--dilan-glass-border);
+}
+
+.wim-template-dilan .event-date-text {
+  font-family: var(--font-dilan-sub);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dilan-primary);
+}
+
+.wim-template-dilan .event-time-text {
+  font-size: 0.82rem;
+  color: var(--dilan-text-muted);
+  margin-top: 4px;
+}
+
+.wim-template-dilan .event-location-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dilan-text-dark);
+  margin-bottom: 4px;
+}
+
+.wim-template-dilan .event-location-addr {
+  font-size: 0.8rem;
+  color: var(--dilan-text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.wim-template-dilan .btn-maps {
+  background: var(--dilan-primary);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.wim-template-dilan .btn-maps:hover {
+  background: var(--dilan-primary-dark);
+}
+
+/* ==========================================================
+   8. LOVE STORY (TIMELINE)
+   ========================================================== */
+.wim-template-dilan .timeline-wrap {
+  position: relative;
+  padding-left: 24px;
+}
+
+.wim-template-dilan .timeline-wrap::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 6px;
+  width: 2px;
+  background: var(--dilan-gold-light);
+}
+
+.wim-template-dilan .timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.wim-template-dilan .timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--dilan-primary);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 2px var(--dilan-gold);
+}
+
+.wim-template-dilan .timeline-card {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--dilan-shadow);
+}
+
+.wim-template-dilan .timeline-date {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--dilan-gold);
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.wim-template-dilan .timeline-title {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin-bottom: 8px;
+}
+
+.wim-template-dilan .timeline-desc {
+  font-size: 0.82rem;
+  color: var(--dilan-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ==========================================================
+   9. TURUT MENGUNDANG SECTION
+   ========================================================== */
+.wim-template-dilan .invitee-box {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 18px;
+  padding: 24px 20px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.wim-template-dilan .invitee-title {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin-bottom: 10px;
+}
+
+.wim-template-dilan .invitee-list {
+  font-size: 0.85rem;
+  color: var(--dilan-text-muted);
+  line-height: 1.8;
+}
+
+/* ==========================================================
+   10. WEDDING GIFT SECTION
+   ========================================================== */
+.wim-template-dilan .gift-card {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 18px;
+  padding: 24px 20px;
+  margin-bottom: 18px;
+  text-align: center;
+  box-shadow: var(--dilan-shadow);
+}
+
+.wim-template-dilan .gift-bank-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--dilan-gold);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.wim-template-dilan .gift-rekening-number {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  letter-spacing: 1px;
+  margin: 6px 0;
+}
+
+.wim-template-dilan .gift-owner {
+  font-size: 0.85rem;
+  color: var(--dilan-text-muted);
+  margin-bottom: 16px;
+}
+
+.wim-template-dilan .btn-copy-gift {
+  background: #FFFFFF;
+  color: var(--dilan-primary);
+  border: 1.5px solid var(--dilan-primary);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wim-template-dilan .btn-copy-gift:hover {
+  background: var(--dilan-primary);
+  color: #FFFFFF;
+}
+
+/* ==========================================================
+   11. GUESTBOOK SECTION (UCAPAN & DOA)
+   ========================================================== */
+.wim-template-dilan .guestbook-form {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 20px;
+  padding: 26px 20px;
+  margin-bottom: 30px;
+  box-shadow: var(--dilan-shadow);
+}
+
+.wim-template-dilan .guestbook-input,
+.wim-template-dilan .guestbook-textarea,
+.wim-template-dilan .guestbook-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--dilan-glass-border);
+  background: #FFFFFF;
+  font-family: var(--font-dilan-body);
+  font-size: 0.85rem;
+  color: var(--dilan-text-dark);
+  margin-bottom: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.wim-template-dilan .guestbook-input:focus,
+.wim-template-dilan .guestbook-textarea:focus,
+.wim-template-dilan .guestbook-select:focus {
+  border-color: var(--dilan-primary);
+}
+
+.wim-template-dilan .btn-submit-guestbook {
+  width: 100%;
+  background: var(--dilan-primary);
+  color: #FFFFFF;
+  border: none;
+  padding: 12px;
+  border-radius: 25px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(55, 74, 51, 0.25);
+  transition: all 0.3s ease;
+}
+
+.wim-template-dilan .btn-submit-guestbook:hover {
+  background: var(--dilan-primary-dark);
+}
+
+.wim-template-dilan .comment-list {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wim-template-dilan .comment-item {
+  background: var(--dilan-glass);
+  border: 1px solid var(--dilan-glass-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.wim-template-dilan .comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.wim-template-dilan .comment-author {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--dilan-primary);
+}
+
+.wim-template-dilan .comment-badge {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(55, 74, 51, 0.1);
+  color: var(--dilan-primary);
+  font-weight: 600;
+}
+
+.wim-template-dilan .comment-text {
+  font-size: 0.82rem;
+  color: var(--dilan-text-dark);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.wim-template-dilan .comment-time {
+  font-size: 0.68rem;
+  color: var(--dilan-text-muted);
+  margin-top: 6px;
+}
+
+/* ==========================================================
+   12. CLOSING & FOOTER
+   ========================================================== */
+.wim-template-dilan .dilan-closing {
+  text-align: center;
+  padding: 70px 24px 50px;
+  background: 
+    linear-gradient(rgba(247, 245, 240, 0.85), rgba(247, 245, 240, 0.95)),
+    url('/assets/templates/dilan/asset_1.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.wim-template-dilan .closing-text {
+  font-family: var(--font-dilan-sub);
+  font-size: 1rem;
+  color: var(--dilan-text-dark);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.wim-template-dilan .closing-names {
+  font-family: var(--font-dilan-heading);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--dilan-primary);
+  margin-bottom: 6px;
+}
+
+.wim-template-dilan .closing-date {
+  font-family: var(--font-dilan-sub);
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: var(--dilan-gold);
+  font-weight: 600;
+}
+
+.wim-template-dilan .dilan-footer {
+  text-align: center;
+  padding: 24px;
+  background: #20241f;
+  color: #FFFFFF;
+}
+
+.wim-template-dilan .footer-brand {
+  font-family: var(--font-dilan-heading);
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.wim-template-dilan .footer-sub {
+  font-size: 0.72rem;
+  color: #A0A59F;
+  margin-top: 4px;
+}
+
+/* Animations */
+@keyframes dilanFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dilanFadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dilanSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

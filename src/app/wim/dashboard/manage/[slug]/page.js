@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
-import IndianTemplate from '@/components/wim-baru/IndianTemplate';
+import DilanTemplate from '@/components/wim-baru/DilanTemplate';
 import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
@@ -355,8 +355,8 @@ export default function SubDashboardManage() {
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: '#111', overflowY: 'auto' }}>
         <button onClick={() => setShowPreview(false)} style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 10000, background: 'var(--bg-card)', color: 'var(--text-primary)', border: 'none', padding: '10px 20px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Tutup Preview ✕</button>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-          {templateName === 'template-indian' ? (
-            <IndianTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
+          {templateName === 'template-dilan' || templateName === 'dilan' || templateName === 'template-indian' ? (
+            <DilanTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           ) : templateName === 'floral1' ? (
             <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           ) : (
