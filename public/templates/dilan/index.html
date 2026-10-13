@@ -272,6 +272,48 @@
   .has-custom-penutup-photo .elementor-element.elementor-element-53e4a533::before {
     opacity: 0.05 !important;
   }
+  /* -------------------------------------------------------------
+     StoryKami Floating Music Button & Note Icon
+     ------------------------------------------------------------- */
+  .elementor-element.elementor-element-6998fd1,
+  #wds_audio_pause,
+  #wds_audio_play {
+    z-index: 99999 !important;
+    cursor: pointer !important;
+  }
+  .elementor-element.elementor-element-6998fd1 .elementor-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background-color: rgba(32, 36, 31, 0.88) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+  }
+  .elementor-element.elementor-element-6998fd1 .elementor-icon:hover {
+    transform: scale(1.1) !important;
+    background-color: rgba(32, 36, 31, 0.98) !important;
+  }
+  .elementor-element.elementor-element-6998fd1 .elementor-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: #ffffff !important;
+    display: block !important;
+  }
+
+  /* Animasi Not Musik Berputar saat memutar */
+  @keyframes storykamiNoteRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .storykami-music-playing .elementor-icon svg {
+    animation: storykamiNoteRotate 3.5s linear infinite !important;
+  }
 </style>
 </head>
 <body class="wp-singular post-template-default single single-post postid-33797 single-format-standard wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-kit-8 elementor-page elementor-page-33797 elementor-page-32151 e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile style=overflow-y:unset>
@@ -2120,65 +2162,103 @@ Penerima: alamat kado">
     window.parent.postMessage({ type: 'IFRAME_READY' }, '*');
   }
 
-  // Audio and Buka Undangan Button
-  const audio = document.getElementById('song');
-  const bukaBtn = document.getElementById('tombol-buka') || document.querySelector('a[href="#home"]');
-  const audioToggle = document.getElementById('wds-audio-btn') || document.querySelector('.fa-volume-mute, .fa-volume-up')?.closest('div, a, button');
+  // -------------------------------------------------------------
+  // StoryKami Audio & Buka Undangan Controls (YouTube & MP3)
+  // -------------------------------------------------------------
+  const SVG_NOTE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" fill="currentColor"><path d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7v72 272c0 53-43 96-96 96s-96-43-96-96 43-96 96-96c11.2 0 21.8 1.9 31.7 5.4l.3-157.4L160 204.6V384c0 53-43 96-96 96s-96-43-96-96 43-96 96-96c11.2 0 21.8 1.9 31.7 5.4l.3-229.4c0-14.7 10-27.5 24.2-31l288-72c11.1-2.8 22.8 1.3 29.9 9.3z"/></svg>';
+  const SVG_MUTE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="20" height="20" fill="currentColor"><path d="M301.1 34.8c-11.5-5.1-25-2.6-33.9 6.3L149.1 160H64c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64h85.1l118.1 118.9c8.9 9 22.4 11.4 33.9 6.3s18.9-16.6 18.9-29.2V64c0-12.6-7.4-24.1-18.9-29.2zM454.6 256l60.7-60.7c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L432 233.4l-60.7-60.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6L409.4 256l-60.7 60.7c-6.2 6.2-6.2 16.4 0 22.6s16.4 6.2 22.6 0l60.7-60.7 60.7 60.7c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6L454.6 256z"/></svg>';
 
-  let isPlaying = false;
+  let isMusicPlaying = false;
 
-  function playAudio() {
-    if (audio) {
-      audio.play().then(() => {
-        isPlaying = true;
-        updateAudioIcon();
-      }).catch(err => {
-        console.log('Audio autoplay prevented:', err);
-      });
-    }
-  }
+  function updateMusicBtnUI(playing) {
+    isMusicPlaying = Boolean(playing);
+    const audioContainer = document.querySelector('.elementor-element-6998fd1') || document.getElementById('wds_audio_pause');
+    const iconContainers = document.querySelectorAll('.elementor-element-6998fd1 .elementor-icon, #wds_audio_pause .elementor-icon, #wds-audio-btn .elementor-icon');
 
-  function pauseAudio() {
-    if (audio) {
-      audio.pause();
-      isPlaying = false;
-      updateAudioIcon();
-    }
-  }
-
-  function updateAudioIcon() {
-    const icons = document.querySelectorAll('.fa-volume-mute, .fa-volume-up, .fa-volume-high, .fa-volume-xmark');
-    icons.forEach(ic => {
-      if (isPlaying) {
-        ic.className = ic.className.replace(/fa-volume-(mute|xmark)/g, 'fa-volume-high');
-      } else {
-        ic.className = ic.className.replace(/fa-volume-(high|up)/g, 'fa-volume-mute');
-      }
+    iconContainers.forEach(container => {
+      container.innerHTML = isMusicPlaying ? SVG_NOTE : SVG_MUTE;
     });
+
+    if (audioContainer) {
+      if (isMusicPlaying) {
+        audioContainer.classList.add('storykami-music-playing');
+      } else {
+        audioContainer.classList.remove('storykami-music-playing');
+      }
+    }
   }
 
-  if (bukaBtn) {
-    bukaBtn.addEventListener('click', function(e) {
-      playAudio();
+  function playMusic() {
+    isMusicPlaying = true;
+    updateMusicBtnUI(true);
+
+    // Kirim pesan ke parent Next.js (BackgroundMusic) untuk memainkan YouTube / MP3
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'PLAY_MUSIC' }, '*');
+    }
+
+    // Fallback standalone jika dibuka langsung di luar iframe
+    const audio = document.getElementById('song');
+    if (audio && audio.src && !audio.src.includes('pixabay')) {
+      audio.play().catch(console.warn);
+    }
+  }
+
+  function pauseMusic() {
+    isMusicPlaying = false;
+    updateMusicBtnUI(false);
+
+    // Kirim pesan ke parent Next.js (BackgroundMusic) untuk pause
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'PAUSE_MUSIC' }, '*');
+    }
+
+    const audio = document.getElementById('song');
+    if (audio) audio.pause();
+  }
+
+  function toggleMusic() {
+    if (isMusicPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
+    }
+  }
+
+  // Set initial icon to Mute
+  updateMusicBtnUI(false);
+
+  // Event listener tombol Buka Undangan -> Autoplay Music
+  const bukaBtnElements = document.querySelectorAll('#tombol-buka, a[href="#home"], .elementor-element-ce1e220 a, a[href*="home"]');
+  bukaBtnElements.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      playMusic();
       const homeSection = document.getElementById('home');
       if (homeSection) {
         e.preventDefault();
         homeSection.scrollIntoView({ behavior: 'smooth' });
       }
     });
-  }
+  });
 
-  if (audioToggle) {
-    audioToggle.style.cursor = 'pointer';
-    audioToggle.addEventListener('click', function(e) {
+  // Event listener floating music button
+  const audioButtons = document.querySelectorAll('.elementor-element-6998fd1, #wds_audio_pause, #wds_audio_play, #wds-audio-btn');
+  audioButtons.forEach(btn => {
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (isPlaying) {
-        pauseAudio();
-      } else {
-        playAudio();
-      }
+      e.stopPropagation();
+      toggleMusic();
     });
-  }
+  });
+
+  // Dengarkan status musik dari parent (Next.js BackgroundMusic)
+  window.addEventListener('message', function(e) {
+    if (!e.data) return;
+    if (e.data.type === 'MUSIC_STATE') {
+      updateMusicBtnUI(e.data.isPlaying);
+    }
+  });
 
   // Copy Clipboard: HANYA aktif saat mengklik tombol/link salin spesifik (data-clipboard-text)
   document.addEventListener('click', function(e) {

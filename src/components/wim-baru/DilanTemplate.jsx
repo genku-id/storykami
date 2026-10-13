@@ -1,12 +1,14 @@
 'use client';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '@/utils/supabase';
+import BackgroundMusic from '@/components/wim-baru/BackgroundMusic';
 
 export default function DilanTemplate({ data = {}, slug = 'demo', guestName = '', isDemo = false }) {
   const iframeRef = useRef(null);
   const [iframeSrc, setIframeSrc] = useState('/templates/dilan/index.html');
   const [resolvedGuestName, setResolvedGuestName] = useState(guestName || '');
   const [comments, setComments] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const isDemoMode = Boolean(isDemo) || slug === 'demo' || slug === 'preview' || 
     (typeof slug === 'string' && (slug.startsWith('demo') || slug.includes('demo'))) || 
@@ -83,25 +85,52 @@ export default function DilanTemplate({ data = {}, slug = 'demo', guestName = ''
         guestName: resolvedGuestName,
         slug,
         isDemo: isDemoMode,
-        comments
+        comments,
+        isPlaying
       }, '*');
     } catch (err) {
       console.warn('postMessage error:', err);
     }
-  }, [data, resolvedGuestName, slug, isDemoMode, comments]);
+  }, [data, resolvedGuestName, slug, isDemoMode, comments, isPlaying]);
 
   // 4. Send data on updates
   useEffect(() => {
     sendDataToIframe();
   }, [sendDataToIframe]);
 
-  // 5. Handle messages from iframe (IFRAME_READY and SUBMIT_COMMENT)
+  // Sync music state to iframe
+  useEffect(() => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage({
+          type: 'MUSIC_STATE',
+          isPlaying
+        }, '*');
+      } catch (err) {
+        console.warn('postMessage music state error:', err);
+      }
+    }
+  }, [isPlaying]);
+
+  // 5. Handle messages from iframe (IFRAME_READY, MUSIC, and SUBMIT_COMMENT)
   useEffect(() => {
     const handleMessage = async (event) => {
       if (!event.data) return;
       
       if (event.data.type === 'IFRAME_READY') {
         sendDataToIframe();
+      }
+
+      if (event.data.type === 'PLAY_MUSIC') {
+        setIsPlaying(true);
+      }
+
+      if (event.data.type === 'PAUSE_MUSIC') {
+        setIsPlaying(false);
+      }
+
+      if (event.data.type === 'TOGGLE_MUSIC') {
+        setIsPlaying(prev => !prev);
       }
 
       if (event.data.type === 'SUBMIT_COMMENT') {
@@ -177,6 +206,7 @@ export default function DilanTemplate({ data = {}, slug = 'demo', guestName = ''
         overflow: 'hidden' 
       }}
     >
+      <BackgroundMusic url={data.musikUrl} isPlaying={isPlaying} start={data.musikStart} />
       <iframe
         ref={iframeRef}
         src={iframeSrc}
