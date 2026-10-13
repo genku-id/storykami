@@ -570,7 +570,33 @@ export default function SubDashboardManage() {
               </div>
             </AccordionItem>
 
-            <AccordionItem title="6. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
+            <AccordionItem title="6. Turut Mengundang" pageKey="turutMengundang" isOpen={openAccordion === 'turutMengundang'} onClick={() => setOpenAccordion(openAccordion === 'turutMengundang' ? '' : 'turutMengundang')} visibility={isVisible('turutMengundang')} onToggleVisibility={handleToggleVisibility}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <InputField 
+                  label="Daftar Pihak yang Turut Mengundang (Opsional)" 
+                  type="textarea" 
+                  rows={6}
+                  placeholder={`Pihak Laki-Laki:\n- Keluarga Mempelai Pria\n- Bapak ...\n- Ibu ...\n\nPihak Wanita:\n- Keluarga Mempelai Wanita\n- Bapak ...\n- Ibu ...`}
+                  value={data.turutMengundang || ''} 
+                  onChange={e => handleChange('turutMengundang', e.target.value)} 
+                  helper="Gunakan baris baru (Enter) untuk memisahkan nama-nama atau keluarga yang turut mengundang. Kosongkan jika tidak ingin menampilkan bagian ini."
+                />
+                <div style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button"
+                    onClick={handleSave} 
+                    disabled={isSaving} 
+                    className="btn btn-primary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    {isSaving ? 'Menyimpan...' : 'Simpan Turut Mengundang'}
+                  </button>
+                </div>
+              </div>
+            </AccordionItem>
+
+            <AccordionItem title="7. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
               {data.ceritaCinta?.map((cerita, index) => (
                 <div key={index} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -593,7 +619,7 @@ export default function SubDashboardManage() {
               </button>
             </AccordionItem>
 
-            <AccordionItem title="7. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+            <AccordionItem title="8. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
                <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
                {data.hadiahDigital?.accounts?.map((acc, idx) => (
                  <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
@@ -625,7 +651,7 @@ export default function SubDashboardManage() {
                <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
             </AccordionItem>
 
-            <AccordionItem title="8. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+            <AccordionItem title="9. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
               <ThumbnailUploader
                 label="Foto Latar Belakang / Gambar Couple Penutup"
                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."

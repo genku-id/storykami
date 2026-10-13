@@ -103,7 +103,7 @@ export function normalizeAcara(acara) {
 export const defaultInvitationData = {
   pageVisibility: {
     cover: true, hero: true, profiles: true, quote: true, 
-    events: true, loveStory: true, gift: true, guestbook: true, closing: true
+    events: true, turutMengundang: true, loveStory: true, gift: true, guestbook: true, closing: true
   },
   slug: "mempelai-pria-wanita",
   tema: "floral-elegance",
@@ -132,6 +132,9 @@ export const defaultInvitationData = {
 
   // Detail Acara (Dinamis: Array of events)
   acara: defaultAcaraList,
+
+  // Turut Mengundang (Opsional)
+  turutMengundang: "",
 
   // Kutipan / Ayat (Opsional)
   kutipan: {

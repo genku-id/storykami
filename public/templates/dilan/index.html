@@ -1,5 +1,6 @@
 <!DOCTYPE html> <html lang=id prefix="og: https://ogp.me/ns#" class style><meta charset=utf-8>
 <meta name=viewport content="width=device-width, initial-scale=1">
+<meta name=referrer content="no-referrer">
 <link rel=profile href=https://gmpg.org/xfn/11>
 <title>The Wedding of Dilan &amp; Millea</title>
 <meta name=description content="Nama Tamu, hadiri acara pernikahan Putri dan Putra pada hari Minggu, 31 Desember 2025 yaa">
@@ -1479,15 +1480,29 @@ Penerima: alamat kado">
     if (w.fotoUtama) {
       const elImg = document.querySelector('.elementor-element-2364e723 img, [data-id="2364e723"] img');
       if (elImg) {
+        elImg.removeAttribute('loading');
+        elImg.loading = 'eager';
+        elImg.referrerPolicy = 'no-referrer';
+        elImg.crossOrigin = 'anonymous';
         elImg.src = w.fotoUtama;
         elImg.style.backgroundImage = 'none';
         elImg.style.objectFit = 'cover';
+        elImg.style.aspectRatio = '3/4';
+        elImg.style.backgroundColor = '#faf8f5';
       }
     }
-    if (w.instagram) {
+    const elIgWCont = document.querySelector('.elementor-element-75c0b3aa, [data-id="75c0b3aa"]');
+    if (w.instagram && w.instagram.trim()) {
       const handleW = w.instagram.replace('@', '').trim();
-      const elIg = document.querySelector('.elementor-element-75c0b3aa a, [data-id="75c0b3aa"] a');
-      if (elIg) elIg.href = 'https://instagram.com/' + handleW;
+      const elIg = elIgWCont?.querySelector('a');
+      if (elIg) {
+        elIg.href = 'https://instagram.com/' + handleW;
+        const txt = elIg.querySelector('.elementor-button-text');
+        if (txt) txt.textContent = '@' + handleW;
+      }
+      if (elIgWCont) elIgWCont.style.display = '';
+    } else if (elIgWCont) {
+      elIgWCont.style.display = 'none';
     }
 
     // 4. Profil Mempelai Pria
@@ -1506,15 +1521,29 @@ Penerima: alamat kado">
     if (p.fotoUtama) {
       const elImg = document.querySelector('.elementor-element-65870389 img, [data-id="65870389"] img');
       if (elImg) {
+        elImg.removeAttribute('loading');
+        elImg.loading = 'eager';
+        elImg.referrerPolicy = 'no-referrer';
+        elImg.crossOrigin = 'anonymous';
         elImg.src = p.fotoUtama;
         elImg.style.backgroundImage = 'none';
         elImg.style.objectFit = 'cover';
+        elImg.style.aspectRatio = '3/4';
+        elImg.style.backgroundColor = '#faf8f5';
       }
     }
-    if (p.instagram) {
+    const elIgPCont = document.querySelector('.elementor-element-630a606c, [data-id="630a606c"]');
+    if (p.instagram && p.instagram.trim()) {
       const handleP = p.instagram.replace('@', '').trim();
-      const elIg = document.querySelector('.elementor-element-630a606c a, [data-id="630a606c"] a');
-      if (elIg) elIg.href = 'https://instagram.com/' + handleP;
+      const elIg = elIgPCont?.querySelector('a');
+      if (elIg) {
+        elIg.href = 'https://instagram.com/' + handleP;
+        const txt = elIg.querySelector('.elementor-button-text');
+        if (txt) txt.textContent = '@' + handleP;
+      }
+      if (elIgPCont) elIgPCont.style.display = '';
+    } else if (elIgPCont) {
+      elIgPCont.style.display = 'none';
     }
 
     // 5. Kutipan / Ayat
@@ -1653,7 +1682,17 @@ Penerima: alamat kado">
       }
     }
 
-    // 7. Hadiah Digital / Rekening
+    // 7. Turut Mengundang
+    const turutCont = document.querySelector('.elementor-element-71a1993e, [data-id="71a1993e"]');
+    const turutText = document.querySelector('.elementor-element-5702e1d3 .elementor-heading-title, [data-id="5702e1d3"] .elementor-heading-title');
+    if (invData.turutMengundang && invData.turutMengundang.trim() && invData.pageVisibility?.turutMengundang !== false) {
+      if (turutCont) turutCont.style.display = '';
+      if (turutText) turutText.innerHTML = `<p>${invData.turutMengundang.replace(/\n/g, '<br>')}</p>`;
+    } else if (turutCont) {
+      turutCont.style.display = 'none';
+    }
+
+    // 8. Hadiah Digital / Rekening
     const accounts = invData.hadiahDigital?.accounts || invData.rekening || [];
     // Bank 1
     const b1Card = document.querySelector('.elementor-element-61326ce8, [data-id="61326ce8"]');
@@ -1665,7 +1704,7 @@ Penerima: alamat kado">
       const elCopy = document.querySelector('.elementor-element-527d01af a, [data-id="527d01af"] a'); if (elCopy) elCopy.setAttribute('data-clipboard-text', accounts[0].number || '');
       const elWa = document.querySelector('.elementor-element-88ca38d a, [data-id="88ca38d"] a');
       if (elWa && accounts[0].whatsapp) elWa.href = `https://api.whatsapp.com/send?phone=${accounts[0].whatsapp}`;
-    } else if (accounts.length === 0 && b1Card) {
+    } else if (b1Card) {
       b1Card.style.display = 'none';
     }
 
@@ -1680,8 +1719,8 @@ Penerima: alamat kado">
       b2Card.style.display = 'none';
     }
 
-    // Bank 3
-    const b3Card = document.querySelector('.elementor-element-e02ef71, [data-id="e02ef71"]') || document.querySelector('.elementor-element-2d93f3e5')?.closest('.e-child');
+    // Bank 3 (Container 13ac8862)
+    const b3Card = document.querySelector('.elementor-element-13ac8862, [data-id="13ac8862"]');
     const b3Num = document.querySelector('.elementor-element-2d93f3e5 .elementor-heading-title, [data-id="2d93f3e5"] .elementor-heading-title');
     if (accounts[2]) {
       if (b3Card) b3Card.style.display = '';
@@ -1713,7 +1752,7 @@ Penerima: alamat kado">
       if (physCopy) physCopy.style.display = 'none';
     }
 
-    // 8. Love Story
+    // 9. Love Story
     if (Array.isArray(invData.ceritaCinta) && invData.ceritaCinta.length > 0) {
       const stories = invData.ceritaCinta;
       if (stories[0]) {
@@ -1738,7 +1777,32 @@ Penerima: alamat kado">
       }
     }
 
-    // 9. Penutup
+    // 10. Penutup
+    // A. Foto / Background Penutup
+    const elPenutupCont = document.querySelector('.elementor-element-2c51224e, [data-id="2c51224e"]');
+    if (elPenutupCont && invData.penutupFoto) {
+      elPenutupCont.style.backgroundImage = `url("${invData.penutupFoto}")`;
+      elPenutupCont.style.backgroundPosition = 'center top';
+      elPenutupCont.style.backgroundSize = 'cover';
+      elPenutupCont.style.backgroundRepeat = 'no-repeat';
+    }
+
+    // B. Nama Mempelai Penutup
+    const elPenutupMempelai = document.querySelector('.elementor-element-4dbb0dab .elementor-heading-title, [data-id="4dbb0dab"] .elementor-heading-title');
+    if (elPenutupMempelai) {
+      elPenutupMempelai.textContent = invData.penutupMempelai || coupleName;
+    }
+
+    // C. Tanggal Acara Penutup
+    if (mainEvent && mainEvent.tanggal) {
+      const dMainPenutup = parseDateInfo(mainEvent.tanggal);
+      if (dMainPenutup) {
+        const elPenutupDate = document.querySelector('.elementor-element-128bbf7d .elementor-heading-title, [data-id="128bbf7d"] .elementor-heading-title');
+        if (elPenutupDate) elPenutupDate.textContent = dMainPenutup.fullDate;
+      }
+    }
+
+    // D. Kalimat Penutup
     if (invData.penutup) {
       const elPenutup = document.querySelector('.elementor-element-21bb9af9 .elementor-heading-title, [data-id="21bb9af9"] .elementor-heading-title');
       if (elPenutup) elPenutup.innerHTML = `<p>${invData.penutup.replace(/\n/g, '<br>')}</p>`;

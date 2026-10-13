@@ -527,8 +527,21 @@ function UnifiedEditor() {
           </div>
         </AccordionItem>
 
-        {/* Accordion 6: Love Story */}
-        <AccordionItem title="6. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 6: Turut Mengundang */}
+        <AccordionItem title="6. Turut Mengundang" pageKey="turutMengundang" isOpen={openAccordion === 'turutMengundang'} onClick={() => setOpenAccordion(openAccordion === 'turutMengundang' ? '' : 'turutMengundang')} visibility={isVisible('turutMengundang')} onToggleVisibility={handleToggleVisibility}>
+          <InputField 
+            label="Daftar Pihak yang Turut Mengundang (Opsional)" 
+            type="textarea" 
+            rows={6}
+            placeholder={`Pihak Laki-Laki:\n- Keluarga Mempelai Pria\n- Bapak ...\n- Ibu ...\n\nPihak Wanita:\n- Keluarga Mempelai Wanita\n- Bapak ...\n- Ibu ...`}
+            value={data.turutMengundang || ''} 
+            onChange={e => handleChange('turutMengundang', e.target.value)} 
+            helper="Gunakan baris baru (Enter) untuk memisahkan nama-nama atau keluarga yang turut mengundang. Kosongkan jika tidak ingin menampilkan bagian ini."
+          />
+        </AccordionItem>
+
+        {/* Accordion 7: Love Story */}
+        <AccordionItem title="7. Love Story" pageKey="loveStory" isOpen={openAccordion === 'loveStory'} onClick={() => setOpenAccordion(openAccordion === 'loveStory' ? '' : 'loveStory')} visibility={isVisible('loveStory')} onToggleVisibility={handleToggleVisibility}>
           {data.ceritaCinta?.map((cerita, index) => (
             <div key={index} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -569,8 +582,8 @@ function UnifiedEditor() {
           </button>
         </AccordionItem>
 
-        {/* Accordion 7: Wedding Gift */}
-        <AccordionItem title="7. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 8: Wedding Gift */}
+        <AccordionItem title="8. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
            <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
            {data.hadiahDigital?.accounts?.map((acc, idx) => (
              <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
@@ -623,8 +636,8 @@ function UnifiedEditor() {
            <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
         </AccordionItem>
 
-        {/* Accordion 8: Penutup */}
-        <AccordionItem title="8. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+        {/* Accordion 9: Penutup */}
+        <AccordionItem title="9. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
           <ThumbnailUploader
             label="Foto Latar Belakang / Gambar Couple Penutup"
             description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
