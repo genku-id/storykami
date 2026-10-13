@@ -349,9 +349,11 @@
     z-index: 5 !important;
   }
 
-  /* Foto mempelai lonjong/oval berbingkai rapi selalu di tengah */
+  /* Foto mempelai lonjong/oval berbingkai rapi selalu di depan ornamen */
   .elementor-element.elementor-element-2364e723 img,
   .elementor-element.elementor-element-65870389 img {
+    position: relative !important;
+    z-index: 5 !important;
     width: 160px !important;
     height: 200px !important;
     max-width: 160px !important;
@@ -362,38 +364,46 @@
     box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.16) !important;
     margin: 0 auto !important;
     display: block !important;
+    background-color: #faf8f5 !important;
   }
 
-  /* Ornamen gunungan/daun di sisi kiri foto */
+  /* Ornamen gunungan/daun di sisi kiri foto (diletakkan di belakang foto) */
   .elementor-element.elementor-element-17fb0fb4,
   .elementor-element.elementor-element-4f4a13d5 {
     position: absolute !important;
-    left: 0px !important;
+    left: -20px !important;
     right: auto !important;
     top: 50% !important;
-    transform: translateY(-50%) rotate(330deg) !important;
-    width: 54px !important;
-    max-width: 54px !important;
+    transform: translateY(-50%) rotate(326deg) !important;
+    width: 95px !important;
+    max-width: 95px !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 6 !important;
+    z-index: 1 !important;
     pointer-events: none !important;
   }
 
-  /* Ornamen gunungan/daun di sisi kanan foto */
+  /* Ornamen gunungan/daun di sisi kanan foto (diletakkan di belakang foto) */
   .elementor-element.elementor-element-581f1da8,
   .elementor-element.elementor-element-4a7992dc {
     position: absolute !important;
-    right: 0px !important;
+    right: -20px !important;
     left: auto !important;
     top: 50% !important;
-    transform: translateY(-50%) rotate(30deg) !important;
-    width: 54px !important;
-    max-width: 54px !important;
+    transform: translateY(-50%) rotate(32deg) !important;
+    width: 95px !important;
+    max-width: 95px !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 6 !important;
+    z-index: 1 !important;
     pointer-events: none !important;
+  }
+
+  .elementor-element.elementor-element-17fb0fb4 > .elementor-widget-container,
+  .elementor-element.elementor-element-4f4a13d5 > .elementor-widget-container,
+  .elementor-element.elementor-element-581f1da8 > .elementor-widget-container,
+  .elementor-element.elementor-element-4a7992dc > .elementor-widget-container {
+    transform: none !important;
   }
 
   .elementor-element.elementor-element-17fb0fb4 img,
