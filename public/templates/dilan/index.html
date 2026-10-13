@@ -1681,13 +1681,15 @@ Penerima: alamat kado">
     }
 
     // Bank 3
+    const b3Card = document.querySelector('.elementor-element-e02ef71, [data-id="e02ef71"]') || document.querySelector('.elementor-element-2d93f3e5')?.closest('.e-child');
     const b3Num = document.querySelector('.elementor-element-2d93f3e5 .elementor-heading-title, [data-id="2d93f3e5"] .elementor-heading-title');
     if (accounts[2]) {
+      if (b3Card) b3Card.style.display = '';
       if (b3Num) b3Num.textContent = accounts[2].number || '';
       const elOwn = document.querySelector('.elementor-element-5fefd1d1 .elementor-heading-title, [data-id="5fefd1d1"] .elementor-heading-title'); if (elOwn) elOwn.textContent = accounts[2].owner || '';
-    } else if (b3Num) {
-      const b3Card = b3Num.closest('.elementor-element-e02ef71, [data-id="e02ef71"]') || b3Num.parentElement;
-      if (b3Card) b3Card.style.display = 'none';
+      const elCopy = document.querySelector('.elementor-element-4d896739 a, [data-id="4d896739"] a'); if (elCopy) elCopy.setAttribute('data-clipboard-text', accounts[2].number || '');
+    } else if (b3Card) {
+      b3Card.style.display = 'none';
     }
 
     // Kado Fisik
@@ -1842,16 +1844,28 @@ Penerima: alamat kado">
     });
   }
 
-  // Copy Clipboard Buttons
-  document.querySelectorAll('a, button, div, span').forEach(el => {
-    const text = el.textContent.trim();
-    if (text.includes('Salin') || text.includes('Copy') || (el.classList && el.classList.contains('elementor-button') && text.toLowerCase().includes('rekening'))) {
-      el.addEventListener('click', function(e) {
-        e.preventDefault();
-        const copyVal = el.getAttribute('data-clipboard-text') || (el.closest('.elementor-widget-wrap') || el.parentElement)?.querySelector('h2, h3, p, span')?.textContent?.trim() || text;
-        navigator.clipboard.writeText(copyVal).then(() => {
-          showToast('Berhasil disalin ke clipboard!');
-        });
+  // Copy Clipboard: HANYA aktif saat mengklik tombol/link salin spesifik (data-clipboard-text)
+  document.addEventListener('click', function(e) {
+    const copyBtn = e.target.closest('a[data-clipboard-text], .elementor-widget-wedding-copy-widget a');
+    if (!copyBtn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    let copyVal = copyBtn.getAttribute('data-clipboard-text');
+    if (!copyVal) {
+      const card = copyBtn.closest('.elementor-element') || copyBtn.parentElement;
+      const numEl = card ? card.querySelector('h2, h3, p, span') : null;
+      copyVal = numEl ? numEl.textContent.trim() : '';
+    }
+
+    if (copyVal) {
+      // Hilangkan tag html jika ada (misal <br /> pada alamat)
+      copyVal = copyVal.replace(/<br\s*[\/]?>/gi, '\n').trim();
+      navigator.clipboard.writeText(copyVal).then(() => {
+        showToast('Berhasil disalin ke clipboard!');
+      }).catch(() => {
+        showToast('Berhasil disalin!');
       });
     }
   });
