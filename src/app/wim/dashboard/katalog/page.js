@@ -19,6 +19,12 @@ const TEMPLATES = [
     name: 'Dilan & Millea (Adat Olive)',
     description: 'Tema pernikahan adat modern dengan perpaduan warna deep olive green dan sentuhan warm gold yang anggun.',
     image: '/assets/templates/dilan/asset_1.webp',
+  },
+  {
+    id: 'vintage-jawa-03',
+    name: 'Vintage Jawa 03 (Foto)',
+    description: 'Tema pernikahan adat Jawa klasik bernuansa cokelat vintage mewah dengan intro video cinematic, bingkai foto melengkung, dan musik merdu.',
+    image: '/assets/templates/vintage-jawa-03/preview.webp',
   }
 ];
 

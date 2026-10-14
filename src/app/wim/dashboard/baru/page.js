@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 import DilanTemplate from '@/components/wim-baru/DilanTemplate';
+import VintageJawa03Template from '@/components/wim-baru/VintageJawa03Template';
 import { defaultInvitationData, normalizeAcara } from '@/utils/wimDataContract';
 import { supabase } from '@/utils/supabase';
 import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
@@ -99,7 +100,8 @@ function InputField({ label, value, onChange, type = "text", placeholder = "", o
 const TEMPLATE_OPTIONS = [
   { val: 'floral1', name: 'Floral Elegance 1' },
   { val: 'template-daerahJawa', name: 'Jawa Klasik' },
-  { val: 'template-dilan', name: 'Dilan & Millea (Adat Olive)' }
+  { val: 'template-dilan', name: 'Dilan & Millea (Adat Olive)' },
+  { val: 'vintage-jawa-03', name: 'Vintage Jawa 03 (Foto)' }
 ];
 
 function UnifiedEditor() {
@@ -301,7 +303,9 @@ function UnifiedEditor() {
           Tutup Preview ✕
         </button>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-          {templateName === 'template-dilan' || templateName === 'dilan' ? (
+          {templateName === 'vintage-jawa-03' || templateName === 'template-vintage-jawa-03' ? (
+            <VintageJawa03Template data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
+          ) : templateName === 'template-dilan' || templateName === 'dilan' ? (
             <DilanTemplate data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />
           ) : templateName === 'floral1' ? (
             <Floral1Template data={data} slug={slug || 'preview'} isVisible={isVisible} isDemo={true} />

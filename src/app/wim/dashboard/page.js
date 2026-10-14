@@ -9,6 +9,8 @@ const TEMPLATE_LABELS = {
   'template-daerahJawa': 'Jawa Klasik',
   'template-dilan': 'Dilan & Millea (Adat Olive)',
   'template-indian': 'Dilan & Millea (Adat Olive)',
+  'vintage-jawa-03': 'Vintage Jawa 03 (Foto)',
+  'template-vintage-jawa-03': 'Vintage Jawa 03 (Foto)',
 };
 
 function StatCard({ icon, label, value, sub, accentColor }) {

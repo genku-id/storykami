@@ -104,6 +104,22 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Card 4 */}
+            <div className={styles.card}>
+              <div className={styles.cardImageWrapper}>
+                <img 
+                  src="/assets/templates/vintage-jawa-03/preview.webp" 
+                  alt="Vintage Jawa 03 Preview" 
+                  style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top'}} 
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>Vintage Jawa 03</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Adat Jawa Mewah &amp; Intro Video</p>
+                <a href="/demo/vintage-jawa-03" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
