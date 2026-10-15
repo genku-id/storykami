@@ -30,10 +30,27 @@ export default function VintageJawa03Template({ data = {}, slug = 'demo', guestN
     if (slug) params.set('slug', slug);
     if (isDemoMode) params.set('demo', '1');
 
+    // Prepare data (with demo fallback if in demo mode)
+    const finalData = isDemoMode ? {
+      ...data,
+      galeri: (Array.isArray(data.galeri) && data.galeri.length > 0) ? data.galeri : [
+        "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
+        "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80",
+        "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800&q=80"
+      ],
+      liveStreaming: data.liveStreaming?.url ? data.liveStreaming : {
+        platform: "Instagram",
+        url: "https://instagram.com",
+        judul: "Live Streaming",
+        deskripsi: "Temui kami secara virtual untuk menyaksikan acara pernikahan kami melalui tautan di bawah ini:",
+        label: "INSTAGRAM"
+      }
+    } : data;
+
     // Store in sessionStorage so iframe reads it immediately on startup
     try {
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem('storykami_invitation_data', JSON.stringify(data));
+        sessionStorage.setItem('storykami_invitation_data', JSON.stringify(finalData));
         sessionStorage.setItem('storykami_guest_name', finalName);
       }
     } catch (e) {
@@ -79,9 +96,25 @@ export default function VintageJawa03Template({ data = {}, slug = 'demo', guestN
   const sendDataToIframe = useCallback(() => {
     if (!iframeRef.current || !iframeRef.current.contentWindow) return;
     try {
+      const finalData = isDemoMode ? {
+        ...data,
+        galeri: (Array.isArray(data.galeri) && data.galeri.length > 0) ? data.galeri : [
+          "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
+          "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80",
+          "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800&q=80"
+        ],
+        liveStreaming: data.liveStreaming?.url ? data.liveStreaming : {
+          platform: "Instagram",
+          url: "https://instagram.com",
+          judul: "Live Streaming",
+          deskripsi: "Temui kami secara virtual untuk menyaksikan acara pernikahan kami melalui tautan di bawah ini:",
+          label: "INSTAGRAM"
+        }
+      } : data;
+
       iframeRef.current.contentWindow.postMessage({
         type: 'STORYKAMI_INIT',
-        data,
+        data: finalData,
         guestName: resolvedGuestName,
         slug,
         isDemo: isDemoMode,

@@ -144,12 +144,16 @@ export const defaultInvitationData = {
   },
 
   // Galeri & Media
-  galeri: [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80",
-    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800&q=80"
-  ],
+  galeri: [],
   videoUrl: "", 
+  liveStreaming: {
+    platform: "Instagram",
+    url: "",
+    judul: "Live Streaming",
+    deskripsi: "Temui kami secara virtual untuk menyaksikan acara pernikahan kami melalui tautan di bawah ini:",
+    label: ""
+  },
+  streamingUrl: "",
   musikUrl: "",
   musikStart: 0,
   thumbnailJudul: "",

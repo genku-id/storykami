@@ -310,6 +310,11 @@ export default function SubDashboardManage() {
   
   const isVisible = (pageKey) => {
     if (pageKey === 'galeri') {
+      const hasGaleri = Array.isArray(data.galeri) && data.galeri.length > 0;
+      const hasStreaming = Boolean(data.liveStreaming?.url || data.streamingUrl);
+      if (hasGaleri || hasStreaming) {
+        return data.pageVisibility?.galeri !== false;
+      }
       return data.pageVisibility?.galeri === true;
     }
     return data.pageVisibility?.[pageKey] !== false;
@@ -648,18 +653,94 @@ export default function SubDashboardManage() {
             </AccordionItem>
 
             <AccordionItem 
-              title="8. Galeri Foto" 
+              title="8. Galeri & Live Streaming" 
               pageKey="galeri" 
               isOpen={openAccordion === 'galeri'} 
               onClick={() => setOpenAccordion(openAccordion === 'galeri' ? '' : 'galeri')} 
               visibility={isVisible('galeri')} 
               onToggleVisibility={handleToggleVisibility}
             >
-              <GalleryUploader 
-                images={data.galeri || []} 
-                onChange={newImgs => handleChange('galeri', newImgs)} 
-                slug={slug || 'undangan'} 
-              />
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>Galeri Foto</h3>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Unggah foto-foto momen Anda. Jika diunggah, halaman galeri otomatis muncul di undangan. Jika dikosongkan, halaman galeri otomatis disembunyikan.
+                </p>
+                <GalleryUploader 
+                  images={data.galeri || []} 
+                  onChange={newImgs => {
+                    handleChange('galeri', newImgs);
+                    if (newImgs.length > 0 && !data.pageVisibility?.galeri) {
+                      handleChange('pageVisibility.galeri', true);
+                    }
+                  }} 
+                  slug={slug || 'undangan'} 
+                />
+              </div>
+
+              <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
+
+              <div>
+                <h3 style={{ fontSize: '1rem', marginBottom: '0.4rem', color: 'var(--text-primary)' }}>Live Streaming (Opsional)</h3>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Bagikan tautan siaran langsung pernikahan Anda (Instagram Live, YouTube, Zoom, dsb). Jika diisi, tombol live streaming akan otomatis muncul di undangan. Jika dikosongkan, bagian live streaming otomatis disembunyikan.
+                </p>
+
+                <InputField 
+                  label="Platform Live Streaming" 
+                  type="select" 
+                  options={[
+                    { val: "Instagram", name: "Instagram Live" },
+                    { val: "YouTube", name: "YouTube Live" },
+                    { val: "Zoom", name: "Zoom Meeting" },
+                    { val: "TikTok", name: "TikTok Live" },
+                    { val: "Facebook", name: "Facebook Live" },
+                    { val: "Google Meet", name: "Google Meet" },
+                    { val: "Lainnya", name: "Lainnya / Tautan Langsung" }
+                  ]} 
+                  value={data.liveStreaming?.platform || 'Instagram'} 
+                  onChange={e => handleChange('liveStreaming.platform', e.target.value)} 
+                />
+
+                <InputField 
+                  label="Link / URL Live Streaming" 
+                  type="url" 
+                  placeholder="https://instagram.com/username/live atau https://youtube.com/live/..." 
+                  value={data.liveStreaming?.url || data.streamingUrl || ''} 
+                  onChange={e => {
+                    handleChange('liveStreaming.url', e.target.value);
+                    handleChange('streamingUrl', e.target.value);
+                  }} 
+                />
+
+                <InputField 
+                  label="Label Tombol (Opsional)" 
+                  type="text" 
+                  placeholder="Contoh: INSTAGRAM / LIVE STREAMING (kosongkan untuk otomatis)" 
+                  value={data.liveStreaming?.label || ''} 
+                  onChange={e => handleChange('liveStreaming.label', e.target.value)} 
+                />
+
+                <InputField 
+                  label="Kalimat Ajakan / Keterangan (Opsional)" 
+                  type="textarea" 
+                  placeholder="Temui kami secara virtual untuk menyaksikan acara pernikahan kami melalui tautan di bawah ini:" 
+                  value={data.liveStreaming?.deskripsi || ''} 
+                  onChange={e => handleChange('liveStreaming.deskripsi', e.target.value)} 
+                />
+
+                <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    onClick={handleSave} 
+                    disabled={isSaving}
+                    className="btn-primary"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    {isSaving ? 'Menyimpan...' : 'Simpan Galeri & Live Streaming'}
+                  </button>
+                </div>
+              </div>
             </AccordionItem>
 
             <AccordionItem title="9. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
