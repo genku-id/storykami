@@ -127,11 +127,15 @@
 <meta name=viewport content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name=referrer content=no-referrer><style>.sf-hidden{display:none!important}</style><meta name="referrer" content="no-referrer"><style>img[src="data:,"],source[src="data:,"]{display:none!important}</style>
 <style id="storykami-vintage-jawa-overrides">
   /* Cover Styling */
+  body.cover-active, html.cover-active {
+    overflow: hidden !important;
+    height: 100% !important;
+  }
   #ajaib-cover {
     position: fixed !important;
     top: 0 !important;
     left: 50% !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-50%) translateY(0) !important;
     width: 100% !important;
     max-width: 500px !important;
     height: 100vh !important;
@@ -151,6 +155,24 @@
     transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+  #ajaib-cover.cover-hidden {
+    transform: translateX(-50%) translateY(-100%) !important;
+    pointer-events: none !important;
+  }
+  #ajaib-cover.cover-removed {
+    display: none !important;
+  }
+  #ajaib-cover .elementor-background-overlay {
+    pointer-events: none !important;
+  }
+  #ajaib-cover .elementor-element-78436fcf .elementor-heading-title {
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+  }
+  #ajaib-cover .elementor-element-162da89 .elementor-heading-title {
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
   }
   #ajaib-cover .elementor-container {
     width: 100% !important;
@@ -173,6 +195,8 @@
   }
   #ajaib-btnCover {
     margin-top: 20px !important;
+    position: relative !important;
+    z-index: 100 !important;
   }
   #ajaib-btnCover a {
     cursor: pointer !important;
@@ -187,6 +211,8 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
     transition: all 0.3s ease !important;
     text-decoration: none !important;
+    position: relative !important;
+    z-index: 101 !important;
   }
   #ajaib-btnCover a:hover {
     background: #e0c8a5 !important;
@@ -538,7 +564,7 @@
  </div>
  <div class="elementor-element elementor-element-78436fcf lw-sticky-section-no elementor-widget elementor-widget-heading" data-id="78436fcf" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
  <div class="elementor-widget-container">
- <h2 class="elementor-heading-title elementor-size-default" style="font-family:'Cinzel',serif;font-size:0.95rem;letter-spacing:3px;color:#f0ddb8;">WEDDING INVITATION</h2> </div>
+ <h2 class="elementor-heading-title elementor-size-default" style="font-family:'Cinzel',serif;font-size:0.95rem;letter-spacing:3px;color:#ffffff;text-shadow:0 1px 4px rgba(0,0,0,0.8);">WEDDING INVITATION</h2> </div>
  </div>
  <div class="elementor-element elementor-element-551b0ac2 lw-sticky-section-no elementor-widget elementor-widget-heading" data-id="551b0ac2" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
  <div class="elementor-widget-container">
@@ -553,7 +579,7 @@
  </div>
  <div class="elementor-element elementor-element-162da89 lw-sticky-section-no elementor-widget elementor-widget-heading" data-id="162da89" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
  <div class="elementor-widget-container">
- <h2 class="elementor-heading-title elementor-size-default" style="font-size:0.9rem;color:#d5c5a8;">Kepada Yth.</h2> </div>
+ <h2 class="elementor-heading-title elementor-size-default" style="font-size:0.9rem;color:#ffffff;text-shadow:0 1px 4px rgba(0,0,0,0.8);">Kepada Yth.</h2> </div>
  </div>
  <div class="elementor-element elementor-element-7854aeb3 lw-sticky-section-no elementor-widget elementor-widget-heading" data-id="7854aeb3" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
  <div class="elementor-widget-container">
@@ -562,7 +588,7 @@
  <div class="elementor-element elementor-element-1d2cbb4e elementor-align-center lw-sticky-section-no elementor-widget elementor-widget-button animated fadeInUp" data-id="1d2cbb4e" data-element_type="widget" data-e-type="widget" id="ajaib-btnCover" data-settings='{"_animation":"fadeInUp","_animation_delay":200}' data-widget_type="button.default">
  <div class="elementor-widget-container">
  <div class="elementor-button-wrapper">
- <a class="elementor-button elementor-size-xs" role="button" href="#" onclick="bukaUndangan(); return false;">
+ <a id="ajaib-btnCover-link" class="elementor-button elementor-size-xs" role="button" href="javascript:void(0);" onclick="bukaUndangan(); return false;">
  <span class="elementor-button-content-wrapper">
  <span class="elementor-button-icon">
  <i aria-hidden="true" class="fas fa-leaf"></i> </span>
@@ -1725,9 +1751,9 @@
 
   // Lock scroll initially if cover is present
   const initialCover = document.getElementById('ajaib-cover');
-  if (initialCover && initialCover.style.display !== 'none') {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
+  if (initialCover && initialCover.style.display !== 'none' && !initialCover.classList.contains('cover-removed')) {
+    document.body.classList.add('cover-active');
+    document.documentElement.classList.add('cover-active');
   }
 
 
@@ -1802,52 +1828,82 @@
 
   // BUKA UNDANGAN HANDLER
   function bukaUndangan() {
-    window.bukaUndangan = bukaUndangan;
-    console.log("Buka Undangan clicked!");
+    console.log("Buka Undangan triggered!");
     const cover = document.getElementById('ajaib-cover');
 
     // 1. Play Background Music immediately
-    playMusic();
+    try {
+      playMusic();
+    } catch (e) {
+      console.warn("Music play error:", e);
+    }
 
     // 2. Naik ke atas perlahan (slide up smoothly out of screen)
     if (cover) {
-      cover.style.pointerEvents = 'none';
-      cover.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
-      cover.style.transform = 'translateX(-50%) translateY(-100%)';
+      cover.classList.add('cover-hidden');
+      cover.style.setProperty('transform', 'translateX(-50%) translateY(-100%)', 'important');
+      cover.style.setProperty('pointer-events', 'none', 'important');
 
-      // 3. Jika sudah naik sempurna (1200ms), baru video diputar!
+      // 3. Jika sudah naik sempurna (1200ms), sembunyikan cover dan play video!
       setTimeout(function() {
-        cover.style.display = 'none';
+        cover.classList.add('cover-removed');
+        cover.style.setProperty('display', 'none', 'important');
 
         // Unlock scrolling on document body and html
-        document.body.style.overflowY = 'auto';
-        document.body.style.height = 'auto';
-        document.documentElement.style.overflowY = 'auto';
-        document.documentElement.style.height = 'auto';
+        try {
+          document.body.classList.remove('cover-active');
+          document.documentElement.classList.remove('cover-active');
+          document.body.style.removeProperty('overflow');
+          document.body.style.overflow = 'auto';
+          document.body.style.overflowY = 'auto';
+          document.body.style.height = 'auto';
+          document.documentElement.style.removeProperty('overflow');
+          document.documentElement.style.overflow = 'auto';
+          document.documentElement.style.overflowY = 'auto';
+          document.documentElement.style.height = 'auto';
+        } catch (e) {
+          console.warn("Unlock scroll error:", e);
+        }
 
         // Play Intro Video once (muted)
         const introVideo = document.getElementById('storykami-intro-video');
         if (introVideo && !hasVideoPlayed) {
           hasVideoPlayed = true;
-          introVideo.muted = true;
-          introVideo.preload = 'auto';
-          introVideo.currentTime = 0;
-          const playPromise = introVideo.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(err => {
-              console.warn('Intro video autoplay prevented:', err);
-            });
-          }
+          try {
+            introVideo.muted = true;
+            introVideo.preload = 'auto';
+            introVideo.currentTime = 0;
+            const playPromise = introVideo.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(err => {
+                console.warn('Intro video autoplay prevented:', err);
+              });
+            }
 
-          // Berhenti di akhir tampilan (frame terakhir), tanpa auto-scroll
-          introVideo.onended = function() {
-            introVideo.pause();
-          };
+            // Berhenti di akhir tampilan (frame terakhir), tanpa auto-scroll
+            introVideo.onended = function() {
+              introVideo.pause();
+            };
+          } catch (e) {
+            console.warn("Intro video play error:", e);
+          }
         }
       }, 1200);
     }
   }
 
+  // EXPOSE TO GLOBAL SCOPE IMMEDIATELY!
+  window.bukaUndangan = bukaUndangan;
+
+  // Add event listeners directly to the <a> link and container
+  const btnCoverLink = document.getElementById('ajaib-btnCover-link');
+  if (btnCoverLink) {
+    btnCoverLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      bukaUndangan();
+    });
+  }
   const btnCover = document.getElementById('ajaib-btnCover') || document.querySelector('.elementor-element-1d2cbb4e');
   if (btnCover) {
     btnCover.style.cursor = 'pointer';
