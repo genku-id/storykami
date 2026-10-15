@@ -533,11 +533,14 @@
 
   /* Countdown Section Background with default couple photo */
   .elementor-element-adad052 {
-    background-image: url("/assets/images/couple.png") !important;
+    background-image: url("/assets/images/couple.png");
     background-position: center center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     position: relative !important;
+  }
+  .elementor-element-adad052 .elementor-background-slideshow {
+    display: none !important;
   }
   .elementor-element-adad052 > .elementor-background-overlay {
     position: absolute !important;
@@ -790,7 +793,7 @@
  </div>
  <div class="elementor-element elementor-element-399d5b97 animated-slow lw-sticky-section-no elementor-widget elementor-widget-heading animated fadeInUp" data-id=399d5b97 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_animation_delay":500}' data-widget_type=heading.default>
  <div class=elementor-widget-container>
- <h2 class="elementor-heading-title elementor-size-default">11<br>June<br>2027</h2> </div>
+ <h2 id="storykami-countdown-date" class="elementor-heading-title elementor-size-default">11<br>June<br>2027</h2> </div>
  </div>
  <div class="elementor-element elementor-element-2abafea lw-sticky-section-no elementor-widget elementor-widget-image animated fadeInDown" data-id=2abafea data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown","_animation_delay":100,"_animation_mobile":"fadeInDown"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
@@ -1814,6 +1817,7 @@
 
 
   let currentTargetDate = null;
+  let updateCountdownFn = null;
   let isMusicPlaying = false;
   let hasVideoPlayed = false;
 
@@ -2018,32 +2022,96 @@
   });
 
   // DATE PARSER HELPER
+  const monthsId = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const monthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const daysId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const dayNamesList = ['minggu','senin','selasa','rabu','kamis','jumat','sabtu','sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
   function parseDateInfo(str) {
     if (!str) return null;
-    const monthsId = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const daysId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    let d, m, y;
-    if (str.includes('/')) {
-      const parts = str.split('/');
-      d = parseInt(parts[0], 10);
-      m = parseInt(parts[1], 10) - 1;
-      y = parseInt(parts[2], 10);
-    } else if (str.includes('-')) {
-      const parts = str.split('-');
-      y = parseInt(parts[0], 10);
-      m = parseInt(parts[1], 10) - 1;
-      d = parseInt(parts[2], 10);
+    str = String(str).trim();
+
+    const firstWord = (str.split(/[\s,]+/)[0] || '').toLowerCase();
+    if (dayNamesList.includes(firstWord)) {
+      str = str.replace(/^[a-zA-Z]+[,\s]*/, '').trim();
     }
-    if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
-    const dt = new Date(y, m, d);
+
+    let d = NaN, m = NaN, y = NaN, customMonth = '';
+
+    // 1. Textual: "11 June 2027" or "11 Juni 2027" or "June 11, 2027" or "22 November 2026"
+    const textMatch1 = str.match(/^(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})$/);
+    const textMatch2 = str.match(/^([a-zA-Z]+)\s+(\d{1,2})[,\s]+(\d{4})$/);
+    if (textMatch1) {
+      d = parseInt(textMatch1[1], 10);
+      const mWord = textMatch1[2];
+      y = parseInt(textMatch1[3], 10);
+      customMonth = mWord;
+
+      let mIdx = monthsId.findIndex(mName => mName.toLowerCase() === mWord.toLowerCase());
+      if (mIdx === -1) {
+        mIdx = monthsEn.findIndex(mName => mName.toLowerCase() === mWord.toLowerCase());
+      }
+      if (mIdx !== -1) {
+        m = mIdx;
+      }
+    } else if (textMatch2) {
+      const mWord = textMatch2[1];
+      d = parseInt(textMatch2[2], 10);
+      y = parseInt(textMatch2[3], 10);
+      customMonth = mWord;
+
+      let mIdx = monthsId.findIndex(mName => mName.toLowerCase() === mWord.toLowerCase());
+      if (mIdx === -1) {
+        mIdx = monthsEn.findIndex(mName => mName.toLowerCase() === mWord.toLowerCase());
+      }
+      if (mIdx !== -1) {
+        m = mIdx;
+      }
+    }
+
+    // 2. Delimited: DD/MM/YYYY, DD-MM-YYYY, or YYYY-MM-DD
+    if (isNaN(d) || isNaN(m) || isNaN(y)) {
+      const cleanStr = str.split('T')[0];
+      const parts = cleanStr.split(/[/.-]/);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          // YYYY-MM-DD
+          y = parseInt(parts[0], 10);
+          m = parseInt(parts[1], 10) - 1;
+          d = parseInt(parts[2], 10);
+        } else {
+          // DD/MM/YYYY
+          d = parseInt(parts[0], 10);
+          m = parseInt(parts[1], 10) - 1;
+          y = parseInt(parts[2], 10);
+        }
+      }
+    }
+
+    // 3. Fallback: native Date.parse
+    if (isNaN(d) || isNaN(m) || isNaN(y)) {
+      const dt = new Date(str);
+      if (!isNaN(dt.getTime())) {
+        d = dt.getDate();
+        m = dt.getMonth();
+        y = dt.getFullYear();
+      }
+    }
+
+    if (isNaN(d) || isNaN(m) || isNaN(y) || m < 0 || m > 11) return null;
+
+    const dt = new Date(y, m, d, 8, 0, 0);
     const dayName = daysId[dt.getDay()];
-    const monthName = monthsId[m];
+    const monthName = customMonth || monthsId[m];
     const dayPadded = String(d).padStart(2, '0');
     const monthPadded = String(m + 1).padStart(2, '0');
+
     return {
       dayName,
       dayNum: String(d),
       monthName,
+      monthNameId: monthsId[m],
+      monthNameEn: monthsEn[m],
       yearNum: String(y),
       formattedDotted: `${dayName} | ${dayPadded} . ${monthPadded} . ${y}`,
       fullDate: `${dayName}, ${d} ${monthName} ${y}`,
@@ -2054,18 +2122,11 @@
   // Format tanggal pernikahan untuk overlay video judul
   function formatWeddingDateForTitle(rawDate) {
     if (!rawDate) return '10 JUNI 2026';
-    const str = String(rawDate).trim();
-    // Jika input database sudah berupa teks (misal "10 June 2026" atau "11 Juni 2027"):
-    // Pertahankan bahasa aslinya dan jadikan uppercase
-    if (/[a-zA-Z]/.test(str)) {
-      return str.toUpperCase();
-    }
-    // Jika input berupa format numerik (misal "22/11/2026" atau "2026-11-22"):
-    const parsed = parseDateInfo(str);
+    const parsed = parseDateInfo(rawDate);
     if (parsed) {
       return `${parsed.dayNum} ${parsed.monthName.toUpperCase()} ${parsed.yearNum}`;
     }
-    return str.toUpperCase();
+    return String(rawDate).trim().toUpperCase();
   }
 
   // RENDER COMMENTS (GUESTBOOK)
@@ -2257,8 +2318,8 @@
     // Countdown Background Image (Photo Couple fallback)
     const countdownSec = document.querySelector('.elementor-element-adad052, [data-id="adad052"]');
     if (countdownSec) {
-      const coupleCountdownFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama || '/assets/images/couple.png';
-      countdownSec.style.backgroundImage = `url("${coupleCountdownFoto}")`;
+      const coupleCountdownFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.fotoCouple || invData.fotoCouple || (Array.isArray(invData.galeri) && invData.galeri[0]) || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama || '/assets/images/couple.png';
+      countdownSec.style.setProperty('background-image', `url("${coupleCountdownFoto}")`, 'important');
       countdownSec.style.backgroundPosition = 'center center';
       countdownSec.style.backgroundSize = 'cover';
       countdownSec.style.backgroundRepeat = 'no-repeat';
@@ -2432,12 +2493,33 @@
       if (invData.acara.resepsi) acaraList.push(invData.acara.resepsi);
     }
 
+    // Wedding Date for Video Title & Save The Date Countdown:
+    const mainEvent = acaraList.find(e => /resepsi/i.test(e.nama) && e.tanggal) || acaraList.find(e => e.tanggal) || acaraList[0];
+    const rawWeddingDate = mainEvent?.tanggal || acaraList[0]?.tanggal || acaraList[1]?.tanggal || invData.targetDate || invData.tanggal;
+    const parsedWeddingDate = parseDateInfo(rawWeddingDate);
+
     // Video Title Overlay Wedding Date:
-    const rawWeddingDate = acaraList[0]?.tanggal || acaraList[1]?.tanggal || invData.targetDate || invData.tanggal;
     if (rawWeddingDate) {
       const elVideoTitleDate = document.getElementById('storykami-video-title-date');
       if (elVideoTitleDate) {
         elVideoTitleDate.textContent = formatWeddingDateForTitle(rawWeddingDate);
+      }
+    }
+
+    // Save The Date Heading (Day<br>Month<br>Year):
+    const elStdDate = document.getElementById('storykami-countdown-date') || document.querySelector('.elementor-element-399d5b97 .elementor-heading-title, [data-id="399d5b97"] .elementor-heading-title');
+    if (elStdDate && parsedWeddingDate) {
+      elStdDate.innerHTML = `${parsedWeddingDate.dayNum}<br>${parsedWeddingDate.monthName}<br>${parsedWeddingDate.yearNum}`;
+    }
+
+    // Set Target Date for Countdown Timer:
+    if (parsedWeddingDate && parsedWeddingDate.jsDate) {
+      const timeStr = mainEvent?.waktuMulai || acaraList[0]?.waktuMulai || '08:00';
+      const timeMatch = String(timeStr).match(/^(\d{1,2})[:.](\d{2})/);
+      const targetDt = new Date(parsedWeddingDate.jsDate.getFullYear(), parsedWeddingDate.jsDate.getMonth(), parsedWeddingDate.jsDate.getDate(), timeMatch ? parseInt(timeMatch[1], 10) : 8, timeMatch ? parseInt(timeMatch[2], 10) : 0, 0);
+      currentTargetDate = targetDt.getTime();
+      if (typeof updateCountdownFn === 'function') {
+        updateCountdownFn();
       }
     }
 
@@ -2448,7 +2530,10 @@
       if (d1) {
         const elDate = document.querySelector('.elementor-element-12056143 .elementor-heading-title, [data-id="12056143"] .elementor-heading-title');
         if (elDate) elDate.textContent = d1.formattedDotted;
-        if (!currentTargetDate) currentTargetDate = d1.jsDate.getTime();
+        if (!currentTargetDate) {
+          currentTargetDate = d1.jsDate.getTime();
+          if (typeof updateCountdownFn === 'function') updateCountdownFn();
+        }
       }
       if (ev1.waktuMulai) {
         const wStr = "Pukul " + ev1.waktuMulai + (ev1.waktuSelesai ? " - " + ev1.waktuSelesai : " s/d Selesai") + " " + (ev1.zonaWaktu || "WIB");
@@ -2475,7 +2560,10 @@
       if (d2) {
         const elDate = document.querySelector('.elementor-element-3b7e64a9 .elementor-heading-title, [data-id="3b7e64a9"] .elementor-heading-title');
         if (elDate) elDate.textContent = d2.formattedDotted;
-        if (!currentTargetDate) currentTargetDate = d2.jsDate.getTime();
+        if (!currentTargetDate) {
+          currentTargetDate = d2.jsDate.getTime();
+          if (typeof updateCountdownFn === 'function') updateCountdownFn();
+        }
       }
       if (ev2.waktuMulai) {
         const wStr = "Pukul " + ev2.waktuMulai + (ev2.waktuSelesai ? " - " + ev2.waktuSelesai : " s/d Selesai") + " " + (ev2.zonaWaktu || "WIB");
@@ -2639,25 +2727,35 @@
     const hoursEl = document.querySelector('.elementor-countdown-hours');
     const minutesEl = document.querySelector('.elementor-countdown-minutes');
     const secondsEl = document.querySelector('.elementor-countdown-seconds');
+    const wrapperEl = document.querySelector('.elementor-countdown-wrapper');
 
     if (!daysEl && !hoursEl) return;
 
     function update() {
       const targetTime = currentTargetDate || new Date('2027-06-11T08:00:00').getTime();
+      if (wrapperEl) {
+        wrapperEl.setAttribute('data-date', Math.floor(targetTime / 1000));
+      }
       const now = new Date().getTime();
       const dist = targetTime - now;
       if (dist > 0) {
-        if (daysEl) daysEl.textContent = Math.floor(dist / (1000 * 60 * 60 * 24));
-        if (hoursEl) hoursEl.textContent = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        if (minutesEl) minutesEl.textContent = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-        if (secondsEl) secondsEl.textContent = Math.floor((dist % (1000 * 60)) / 1000);
+        const dVal = Math.floor(dist / (1000 * 60 * 60 * 24));
+        const hVal = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mVal = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+        const sVal = Math.floor((dist % (1000 * 60)) / 1000);
+
+        if (daysEl) daysEl.textContent = dVal;
+        if (hoursEl) hoursEl.textContent = String(hVal).padStart(2, '0');
+        if (minutesEl) minutesEl.textContent = String(mVal).padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = String(sVal).padStart(2, '0');
       } else {
-        if (daysEl) daysEl.textContent = 0;
-        if (hoursEl) hoursEl.textContent = 0;
-        if (minutesEl) minutesEl.textContent = 0;
-        if (secondsEl) secondsEl.textContent = 0;
+        if (daysEl) daysEl.textContent = '0';
+        if (hoursEl) hoursEl.textContent = '00';
+        if (minutesEl) minutesEl.textContent = '00';
+        if (secondsEl) secondsEl.textContent = '00';
       }
     }
+    updateCountdownFn = update;
     update();
     setInterval(update, 1000);
   }
