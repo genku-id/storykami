@@ -436,14 +436,9 @@ function UnifiedEditor() {
            </p>
            <ThumbnailUploader 
              label="Foto Pasangan (Couple)" 
-             description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
-             value={data.fotoCouple || data.penutupFoto || ''} 
-             onChange={url => {
-               handleChange('fotoCouple', url);
-               if (!data.penutupFoto) {
-                 handleChange('penutupFoto', url);
-               }
-             }} 
+             description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple animasi default."
+             value={data.fotoCouple || ''} 
+             onChange={url => handleChange('fotoCouple', url)} 
              slug={slug || 'undangan'} 
              showWhatsappPreview={false}
            />

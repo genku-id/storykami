@@ -23,7 +23,7 @@
 <meta name=twitter:data1 content="4 minutes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Caudex:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Imperial+Script&family=Pinyon+Script&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Vidaloka&display=swap" rel="stylesheet">
 <style id=astra-theme-css-css>body,h1,h2,html,iframe,li,p,textarea,ul{border:0;font-size:100%;font-style:inherit;font-weight:inherit;margin:0;outline:0;padding:0;vertical-align:baseline}html{-webkit-text-size-adjust:100%}a{background-color:transparent}a:active{outline:0}a,a:focus,a:hover,a:visited{text-decoration:none}button,input,select,textarea{font:inherit}button,html input[type=button],input[type=submit]{-webkit-appearance:button;cursor:pointer}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}textarea{overflow:auto}/*!
  * Bootstrap v4.0.0-alpha.2 (https://getbootstrap.com)
  */h1,h2{clear:both}html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}body{background:#fff;font-style:normal}ul{margin:0 0 1.5em 3em}ul{list-style:disc}li>ul{margin-left:1.5em}button,input,select,textarea{color:#808285;font-weight:400;vertical-align:baseline}button,input[type=button],input[type=submit]{border-color:var(--ast-border-color);background:#e6e6e6}button:focus,button:hover,input[type=button]:focus,input[type=button]:hover,input[type=submit]:focus,input[type=submit]:hover{color:#fff;border-color:var(--ast-border-color)}button:active,button:focus,input[type=button]:active,input[type=button]:focus,input[type=submit]:active,input[type=submit]:focus{border-color:var(--ast-border-color);outline:0}input[type=text],textarea{border:1px solid var(--ast-border-color);-webkit-appearance:none}input[type=text]:focus,textarea:focus{color:#111}textarea{padding-left:3px}a:focus,a:hover{color:#191970}a:focus{outline:thin dotted}a:hover{outline:0}::selection{color:#fff;background:#0274be}body:not(.logged-in){position:relative}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}a,a:focus{text-decoration:none}a{transition:all .2s linear}input[type=button],input[type=submit]{border-radius:0;padding:18px 30px;border:0;text-shadow:none}input[type=button]:hover,input[type=submit]:hover{box-shadow:none}input[type=button]:active,input[type=button]:focus,input[type=submit]:active,input[type=submit]:focus{box-shadow:none}body,button,input[type=button],input[type=submit],textarea{line-height:1.8571428571}body{overflow-x:hidden}input[type=text],select,textarea{color:#666;padding:.75em;height:auto;border-width:1px;border-style:solid;border-color:var(--ast-border-color);border-radius:2px;background:var(--ast-comment-inputs-background);box-shadow:none;box-sizing:border-box;transition:all .2s linear}input[type=text]:focus,select:focus,textarea:focus{background-color:#fff;border-color:var(--ast-border-color);box-shadow:none}input[type=button],input[type=button]:focus,input[type=button]:hover,input[type=submit],input[type=submit]:focus,input[type=submit]:hover{box-shadow:none}textarea{width:100%}input[type=range]::-moz-range-track{width:100%;height:8.6px;cursor:pointer;box-shadow:2.6px 2.6px .4px #ccc,0 0 2.6px #d9d9d9;background:rgba(255,255,255,.2);border-radius:13.6px;border:0 solid #fff}input[type=range]::-moz-range-thumb{box-shadow:0 0 0 rgba(255,221,0,.37),0 0 0 rgba(255,224,26,.37);border:7.9px solid #0274be;height:20px;width:20px;border-radius:50px;background:#0274be;cursor:pointer}</style>
@@ -264,7 +264,33 @@
     color: #c4a47c !important;
   }
 
-  /* StoryKami Dynamic Gallery Grid */
+  /* StoryKami Dynamic Gallery Typography & Grid */
+  .elementor-element-2dc2a7d0 .elementor-heading-title,
+  #storykami-section-galeri .elementor-element-2dc2a7d0 .elementor-heading-title {
+    font-family: 'Alex Brush', cursive, serif !important;
+    font-size: clamp(38px, 10vw, 54px) !important;
+    font-weight: 400 !important;
+    color: #593520 !important;
+    line-height: 1.2em !important;
+    text-align: center !important;
+    letter-spacing: 1px !important;
+    margin: 0 auto 6px auto !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+  }
+  .elementor-element-72ca687e .elementor-heading-title,
+  #storykami-section-galeri .elementor-element-72ca687e .elementor-heading-title {
+    font-family: 'Caudex', 'Cormorant Garamond', Georgia, serif !important;
+    font-style: italic !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 1.6em !important;
+    color: #593520 !important;
+    text-align: center !important;
+    margin: 0 auto 15px auto !important;
+    padding: 0 15px !important;
+    letter-spacing: 0.5px !important;
+  }
+
   .storykami-gallery-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -2396,6 +2422,14 @@
       } else {
         sec.style.removeProperty('display');
         sec.style.display = '';
+        const elTitle = sec.querySelector('.elementor-element-2dc2a7d0 .elementor-heading-title');
+        if (elTitle && invData?.galeriJudul) {
+          elTitle.textContent = invData.galeriJudul;
+        }
+        const elSub = sec.querySelector('.elementor-element-72ca687e .elementor-heading-title');
+        if (elSub && invData?.galeriDeskripsi) {
+          elSub.textContent = invData.galeriDeskripsi;
+        }
         const grid = document.getElementById('storykami-gallery-grid');
         if (grid) {
           grid.innerHTML = validImages.map((url, idx) => `
@@ -2501,13 +2535,13 @@
   
   function getCouplePhoto(data) {
     if (!data) return '/assets/images/couple.png';
-    return data.fotoCouple || 
-           data.mempelai?.fotoCouple || 
-           data.penutupFoto || 
-           data.coupleImage || 
-           data.hal2_fotoCouple || 
-           (Array.isArray(data.galeri) && data.galeri[0]) || 
-           '/assets/images/couple.png';
+    if (typeof data.fotoCouple === 'string' && data.fotoCouple.trim().length > 0) {
+      return data.fotoCouple.trim();
+    }
+    if (typeof data.mempelai?.fotoCouple === 'string' && data.mempelai.fotoCouple.trim().length > 0) {
+      return data.mempelai.fotoCouple.trim();
+    }
+    return '/assets/images/couple.png';
   }
 
   function applyInvitationData(invData, guestName) {

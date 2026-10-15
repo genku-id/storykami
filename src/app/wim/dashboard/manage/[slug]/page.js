@@ -481,14 +481,9 @@ export default function SubDashboardManage() {
                </p>
                <ThumbnailUploader 
                  label="Foto Pasangan (Couple)" 
-                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
-                 value={data.fotoCouple || data.penutupFoto || ''} 
-                 onChange={url => {
-                   handlePhotoChange('fotoCouple', url);
-                   if (!data.penutupFoto) {
-                     handlePhotoChange('penutupFoto', url);
-                   }
-                 }} 
+                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple animasi default."
+                 value={data.fotoCouple || ''} 
+                 onChange={url => handlePhotoChange('fotoCouple', url)} 
                  slug={slug || 'undangan'} 
                  showWhatsappPreview={false}
                />
