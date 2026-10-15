@@ -167,6 +167,7 @@
     object-fit: cover !important;
     display: block !important;
     margin: 0 auto !important;
+    pointer-events: none !important;
   }
 
   /* Mempelai Photo Containers (Arched Pill Frame) */
@@ -1990,13 +1991,8 @@
         });
       }
 
-      // When video ends, smooth scroll to content
-      introVideo.onended = function() {
-        const firstSection = document.querySelector('.elementor-element-4d21b82');
-        if (firstSection) {
-          firstSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      };
+      // Berhenti di akhir tampilan (frame terakhir), tanpa auto-scroll
+      introVideo.onended = function() { introVideo.pause(); };
     }
   }
 
