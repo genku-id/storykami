@@ -531,6 +531,103 @@
     transition: opacity 0.3s ease, transform 0.3s ease !important;
   }
 
+  /* Kutipan / Ayat Section ("WE FOUND LOVE") */
+  .storykami-kutipan-section {
+    position: relative !important;
+    overflow: hidden !important;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5) !important;
+    margin: 0 !important;
+    padding: 55px 20px 65px 20px !important;
+    background-image: url("./assets/bg_joglo.webp");
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+  .storykami-kutipan-section > .elementor-background-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(22, 14, 10, 0.05) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+  }
+  .storykami-kutipan-container {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    max-width: 325px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+  .storykami-kutipan-photo-frame {
+    width: 100% !important;
+    max-width: 320px !important;
+    height: 380px !important;
+    max-height: 50vh !important;
+    border-radius: 160px 160px 0 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1) !important;
+    background: #faf8f5 !important;
+    margin: 0 auto !important;
+  }
+  .storykami-kutipan-photo-frame img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border-radius: 160px 160px 0 0 !important;
+  }
+  .storykami-kutipan-card {
+    width: 100% !important;
+    max-width: 320px !important;
+    background: rgba(244, 237, 226, 0.94) !important;
+    border: 1px solid rgba(89, 53, 32, 0.22) !important;
+    border-top: none !important;
+    border-radius: 0 0 16px 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    padding: 26px 20px 30px 20px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    position: relative !important;
+  }
+  .storykami-kutipan-title {
+    font-family: 'Cinzel', 'Playfair Display', 'Marcellus', Georgia, serif !important;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px !important;
+    color: #593520 !important;
+    margin: 0 0 14px 0 !important;
+    text-transform: uppercase !important;
+    line-height: 1.25 !important;
+  }
+  .storykami-kutipan-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+    color: #593520 !important;
+    margin: 0 0 14px 0 !important;
+    font-weight: 400 !important;
+  }
+  .storykami-kutipan-source {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #593520 !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
+  }
+
   /* Countdown Section Background with default couple photo */
   .elementor-element-adad052 {
     background-image: url("/assets/images/couple.png");
@@ -676,6 +773,24 @@
     </div>
   </div>
 </section>
+
+<!-- SECTION KUTIPAN / AYAT (WE FOUND LOVE) -->
+<section id="storykami-section-kutipan" class="elementor-section elementor-inner-section elementor-element storykami-kutipan-section elementor-section-full_width elementor-section-content-middle elementor-section-height-default lw-sticky-section-no">
+  <div class="elementor-background-overlay"></div>
+  <div class="storykami-kutipan-container">
+    <div class="storykami-kutipan-photo-frame animated zoomIn">
+      <img id="storykami-foto-kutipan" src="/assets/images/couple.png" alt="Couple Photo" loading="eager" decoding="async">
+    </div>
+    <div class="storykami-kutipan-card animated fadeInUp">
+      <h2 id="storykami-kutipan-judul" class="storykami-kutipan-title">WE FOUND LOVE</h2>
+      <div id="storykami-kutipan-teks" class="storykami-kutipan-body">
+        “Dan diantara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.”
+      </div>
+      <div id="storykami-kutipan-sumber" class="storykami-kutipan-source">(Qs. Ar. Rum (30) : 21)</div>
+    </div>
+  </div>
+</section>
+
 <section class="elementor-section elementor-inner-section elementor-element elementor-element-5407585 elementor-section-full_width elementor-section-content-middle elementor-section-height-default lw-sticky-section-no" data-id=5407585 data-element_type=section data-e-type=section>
  <div class=elementor-background-overlay></div>
  <div class="elementor-container elementor-column-gap-no">
@@ -2475,13 +2590,45 @@
       elIgPCont.style.display = 'none';
     }
 
-    // 6. Kutipan / Ayat
-    if (invData.kutipan?.teks) {
-      const elQuote = document.querySelector('.elementor-element-76056080 .elementor-heading-title, [data-id="76056080"] .elementor-heading-title');
-      if (elQuote) {
-        const sumber = invData.kutipan.sumber ? `<br><br><b>(${invData.kutipan.sumber})</b>` : '';
-        elQuote.innerHTML = `<p><b>Assalamu'alaikum Warahmatullaahi Wabarakaatuh</b><br><br>${invData.kutipan.teks}${sumber}</p>`;
+    // 6. Kutipan / Ayat (Halaman Mandiri "WE FOUND LOVE")
+    const elKutipanSec = document.getElementById('storykami-section-kutipan');
+    if (elKutipanSec) {
+      if (invData.pageVisibility?.quote === false || invData.pageVisibility?.kutipan === false) {
+        elKutipanSec.style.display = 'none';
+      } else {
+        elKutipanSec.style.display = '';
       }
+    }
+
+    const elImgKutipan = document.getElementById('storykami-foto-kutipan');
+    if (elImgKutipan) {
+      const kutipanFoto = invData.thumbnailFoto || invData.mempelai?.fotoCouple || invData.fotoCouple || invData.penutupFoto || (Array.isArray(invData.galeri) && invData.galeri[0]) || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama;
+      if (kutipanFoto) {
+        elImgKutipan.onerror = function() {
+          if (!this.dataset.proxied && kutipanFoto.startsWith('http')) {
+            this.dataset.proxied = '1';
+            this.src = '/api/proxy-image?url=' + encodeURIComponent(kutipanFoto);
+          }
+        };
+        elImgKutipan.src = kutipanFoto;
+      } else {
+        elImgKutipan.src = '/assets/images/couple.png';
+      }
+    }
+
+    const elKutipanJudul = document.getElementById('storykami-kutipan-judul');
+    const elKutipanTeks = document.getElementById('storykami-kutipan-teks');
+    const elKutipanSumber = document.getElementById('storykami-kutipan-sumber');
+
+    if (elKutipanJudul && invData.kutipan?.judul) {
+      elKutipanJudul.textContent = invData.kutipan.judul;
+    }
+    if (elKutipanTeks && invData.kutipan?.teks) {
+      elKutipanTeks.textContent = `“${invData.kutipan.teks.replace(/^["“]+|["”]+$/g, '').trim()}”`;
+    }
+    if (elKutipanSumber && invData.kutipan?.sumber) {
+      const rawS = invData.kutipan.sumber.trim();
+      elKutipanSumber.textContent = rawS.startsWith('(') ? rawS : `(${rawS})`;
     }
 
     // 7. Jadwal Acara (Akad & Resepsi)
