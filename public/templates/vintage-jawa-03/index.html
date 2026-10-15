@@ -126,9 +126,27 @@
 <meta name=msapplication-TileImage content=https://invite.leafitation.com/wp-content/uploads/2024/05/cropped-logo-leafitation-270x270.png>
 <meta name=viewport content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name=referrer content=no-referrer><style>.sf-hidden{display:none!important}</style><meta name="referrer" content="no-referrer"><style>img[src="data:,"],source[src="data:,"]{display:none!important}</style>
 <style id="storykami-vintage-jawa-overrides">
-  /* Reset body */
-  body {
+  /* Force enable scrolling on html and body */
+  html, body {
     overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Centered mobile-first container */
+  #isi {
+    margin: 0 auto !important;
+    max-width: 500px !important;
+    width: 100% !important;
+    position: relative !important;
+    min-height: 100vh !important;
+    box-shadow: 0 0 35px rgba(0,0,0,0.4) !important;
+  }
+
+  #desk_cov {
+    display: none !important;
   }
 
   /* Cover container */
@@ -140,38 +158,51 @@
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    height: 100svh !important;
     z-index: 9999 !important;
     transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s ease !important;
     background-size: cover !important;
     background-position: center !important;
   }
 
-  /* Intro video section */
+  /* Intro video section - full size of invitation screen, no background/borders */
+  #storykami-intro-video-section {
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background: transparent !important;
+  }
+
   #storykami-intro-video-wrapper {
     position: relative !important;
     width: 100% !important;
-    min-height: 100vh !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: #261710 !important;
+    background: transparent !important;
     overflow: hidden !important;
-    z-index: 10 !important;
   }
 
   #storykami-intro-video {
     width: 100% !important;
-    max-width: 480px !important;
-    height: 100vh !important;
-    max-height: 850px !important;
+    height: 100% !important;
     object-fit: cover !important;
     display: block !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
     pointer-events: none !important;
   }
 
   /* Mempelai Photo Containers (Arched Pill Frame) */
-  .elementor-element.elementor-element-7ae3706c,
   .elementor-element.elementor-element-4735761,
   .elementor-element.elementor-element-49f88dcd,
   .elementor-element.elementor-element-6413aa00 {
@@ -345,7 +376,7 @@
   }
 </style>
 </head>
-<body class="wp-singular page-template page-template-elementor_canvas page page-id-14873 wp-embed-responsive wp-theme-astra ast-header-break-point ast-page-builder-template ast-no-sidebar astra-4.13.2 ast-single-post ast-inherit-site-logo-transparent ast-hfb-header ast-normal-title-enabled elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-14873 ast-header-loaded e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile style=overflow-y:hidden;height:100vh>
+<body class="wp-singular page-template page-template-elementor_canvas page page-id-14873 wp-embed-responsive wp-theme-astra ast-header-break-point ast-page-builder-template ast-no-sidebar astra-4.13.2 ast-single-post ast-inherit-site-logo-transparent ast-hfb-header ast-normal-title-enabled elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-14873 ast-header-loaded e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile style="overflow-y:auto!important;overflow-x:hidden!important;min-height:100vh!important;">
  <script></script>
  <div data-elementor-type=wp-page data-elementor-id=14873 class="elementor elementor-14873" data-elementor-post-type=page>
  <div class="elementor-element elementor-element-5cc0cbe2 elementor-hidden-tablet elementor-hidden-mobile e-flex e-con-boxed lw-sticky-section-no e-con e-child sf-hidden" data-id=5cc0cbe2 data-element_type=container data-e-type=container id=desk_cov data-settings='{"background_background":"classic"}'>
@@ -415,53 +446,14 @@
  </div>
  </div>
  </section>
-<section id="storykami-intro-video-section" class="elementor-section elementor-inner-section elementor-element elementor-element-34975cd2 lw-sticky-section-no">
+<section id="storykami-intro-video-section" class="elementor-section elementor-inner-section elementor-element lw-sticky-section-no">
   <div id="storykami-intro-video-wrapper">
     <video id="storykami-intro-video" muted playsinline preload="auto">
       <source src="video-intro.mp4" type="video/mp4">
     </video>
   </div>
 </section>
-<section class="elementor-section elementor-inner-section elementor-element elementor-element-4d21b82 elementor-section-boxed elementor-section-height-default lw-sticky-section-no" data-id=4d21b82 data-element_type=section data-e-type=section data-settings='{"background_background":"classic"}'>
- <div class="elementor-container elementor-column-gap-no">
- <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-28d387f9 lw-sticky-section-no" data-id=28d387f9 data-element_type=column data-e-type=column>
- <div class="elementor-widget-wrap elementor-element-populated e-swiper-container">
- <div class=elementor-background-overlay></div>
- <div class="elementor-element elementor-element-7ae3706c animated-slow e-flex e-con-boxed lw-sticky-section-no e-con e-parent animated fadeInDown" data-id="7ae3706c" data-element_type="container" data-e-type="container">
-  <img id="storykami-foto-hero" class="storykami-profile-img" src="/assets/images/couple.png" alt="Foto Mempelai" loading="eager" decoding="async">
-</div>
-<div class="elementor-element elementor-element-429b408 animated-slow e-flex e-con-boxed lw-sticky-section-no e-con e-parent e-lazyloaded animated fadeInDown" data-id=429b408 data-element_type=container data-e-type=container data-settings='{"background_background":"classic","animation":"fadeInDown"}'>
- <div class=e-con-inner>
- <div class="elementor-element elementor-element-7e37b23 lw-sticky-section-no elementor-widget elementor-widget-heading animated zoomIn" data-id=7e37b23 data-element_type=widget data-e-type=widget data-settings='{"_animation_mobile":"zoomIn"}' data-widget_type=heading.default>
- <div class=elementor-widget-container>
- <p class="elementor-heading-title elementor-size-default">WE FOUND LOVE</p> </div>
- </div>
- <div class="elementor-element elementor-element-7add7d9 lw-sticky-section-no elementor-widget elementor-widget-text-editor animated fadeInDown" data-id=7add7d9 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_animation_delay":300,"_animation_mobile":"fadeInDown"}' data-widget_type=text-editor.default>
- <div class=elementor-widget-container>
- <p>“Dan diantara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.”<p>(Qs. Ar. Rum (30) : 21)</p> </div>
- </div>
- <div class="elementor-element elementor-element-f9d2228 lw-sticky-section-no elementor-widget elementor-widget-spacer" data-id=f9d2228 data-element_type=widget data-e-type=widget data-widget_type=spacer.default>
- <div class=elementor-widget-container>
- <div class=elementor-spacer>
- <div class=elementor-spacer-inner></div>
- </div>
- </div>
- </div>
- </div>
- </div>
- <div class="elementor-element elementor-element-24b848af elementor-absolute animated-slow lw-sticky-section-no elementor-widget elementor-widget-image animated rotateInDownRight" data-id=24b848af data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown","_animation_delay":400,"_animation_mobile":"rotateInDownRight","_position":"absolute"}' data-widget_type=image.default>
- <div class=elementor-widget-container>
- <img decoding=async width=289 height=545 src='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="289" height="545"><rect fill-opacity="0"/></svg>' class="attachment-large size-large wp-image-15418" alt style="background-blend-mode:normal!important;background-clip:content-box!important;background-position:50% 50%!important;background-color:rgba(0,0,0,0)!important;background-image:var(--sf-img-84)!important;background-size:100% 100%!important;background-origin:content-box!important;background-repeat:no-repeat!important;background-attachment:scroll!important"> </div>
- </div>
- <div class="elementor-element elementor-element-6efffc23 elementor-absolute animated-slow e-transform lw-sticky-section-no elementor-widget elementor-widget-image animated rotateInDownLeft" data-id=6efffc23 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown","_animation_delay":400,"_animation_mobile":"rotateInDownLeft","_position":"absolute","_transform_flipX_effect":"transform"}' data-widget_type=image.default>
- <div class=elementor-widget-container>
- <img decoding=async width=289 height=545 src='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="289" height="545"><rect fill-opacity="0"/></svg>' class="attachment-large size-large wp-image-15418" alt style="background-blend-mode:normal!important;background-clip:content-box!important;background-position:50% 50%!important;background-color:rgba(0,0,0,0)!important;background-image:var(--sf-img-84)!important;background-size:100% 100%!important;background-origin:content-box!important;background-repeat:no-repeat!important;background-attachment:scroll!important"> </div>
- </div>
- </div>
- </div>
- </div>
- </section>
- <section class="elementor-section elementor-inner-section elementor-element elementor-element-5407585 elementor-section-full_width elementor-section-content-middle elementor-section-height-default lw-sticky-section-no" data-id=5407585 data-element_type=section data-e-type=section>
+<section class="elementor-section elementor-inner-section elementor-element elementor-element-5407585 elementor-section-full_width elementor-section-content-middle elementor-section-height-default lw-sticky-section-no" data-id=5407585 data-element_type=section data-e-type=section>
  <div class=elementor-background-overlay></div>
  <div class="elementor-container elementor-column-gap-no">
  <div class="elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-1d2c95f1 lw-sticky-section-no" data-id=1d2c95f1 data-element_type=column data-e-type=column data-settings='{"background_background":"classic"}'>
@@ -1972,8 +1964,14 @@
       cover.style.pointerEvents = 'none';
       setTimeout(() => {
         cover.style.display = 'none';
-      }, 800);
+      }, 500);
     }
+
+    // Force unlock scrolling on document body and html
+    document.body.style.overflowY = 'auto';
+    document.body.style.height = 'auto';
+    document.documentElement.style.overflowY = 'auto';
+    document.documentElement.style.height = 'auto';
 
     // Play Background Music
     playMusic();
@@ -1992,7 +1990,9 @@
       }
 
       // Berhenti di akhir tampilan (frame terakhir), tanpa auto-scroll
-      introVideo.onended = function() { introVideo.pause(); };
+      introVideo.onended = function() {
+        introVideo.pause();
+      };
     }
   }
 
