@@ -10,9 +10,15 @@ export default function VintageJawa03Template({ data = {}, slug = 'demo', guestN
   const [comments, setComments] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const isDemoMode = Boolean(isDemo) || slug === 'demo' || slug === 'preview' || 
-    (typeof slug === 'string' && (slug.startsWith('demo') || slug.includes('demo'))) || 
-    (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo'));
+  const isDemoMode = Boolean(isDemo) || !slug || slug === 'demo' || slug === 'preview' || 
+    (typeof slug === 'string' && (slug.startsWith('demo') || slug.includes('demo') || slug.includes('preview'))) || 
+    (typeof window !== 'undefined' && (
+      window.location.pathname.startsWith('/demo') ||
+      window.location.pathname.includes('/baru') ||
+      window.location.pathname.includes('/manage') ||
+      window.location.pathname.includes('/preview') ||
+      window.location.pathname.includes('/templates/')
+    ));
   const demoStorageKey = `storykami_demo_guestbook_${slug || 'vintage-jawa-03'}`;
 
   // 1. Resolve Guest Name
