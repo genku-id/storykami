@@ -11,6 +11,7 @@ import MusicTimestampPicker from '@/components/wim-baru/MusicTimestampPicker';
 import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
 import ProfilePhotoUploader from '@/components/wim-baru/ProfilePhotoUploader';
 import DateInputField from '@/components/wim-baru/DateInputField';
+import GalleryUploader from '@/components/wim-baru/GalleryUploader';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -308,6 +309,9 @@ export default function SubDashboardManage() {
   };
   
   const isVisible = (pageKey) => {
+    if (pageKey === 'galeri') {
+      return data.pageVisibility?.galeri === true;
+    }
     return data.pageVisibility?.[pageKey] !== false;
   };
 
@@ -623,7 +627,22 @@ export default function SubDashboardManage() {
               </button>
             </AccordionItem>
 
-            <AccordionItem title="8. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
+            <AccordionItem 
+              title="8. Galeri Foto" 
+              pageKey="galeri" 
+              isOpen={openAccordion === 'galeri'} 
+              onClick={() => setOpenAccordion(openAccordion === 'galeri' ? '' : 'galeri')} 
+              visibility={isVisible('galeri')} 
+              onToggleVisibility={handleToggleVisibility}
+            >
+              <GalleryUploader 
+                images={data.galeri || []} 
+                onChange={newImgs => handleChange('galeri', newImgs)} 
+                slug={slug || 'undangan'} 
+              />
+            </AccordionItem>
+
+            <AccordionItem title="9. Wedding Gift" pageKey="gift" isOpen={openAccordion === 'gift'} onClick={() => setOpenAccordion(openAccordion === 'gift' ? '' : 'gift')} visibility={isVisible('gift')} onToggleVisibility={handleToggleVisibility}>
                <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Daftar Rekening / E-Wallet</h3>
                {data.hadiahDigital?.accounts?.map((acc, idx) => (
                  <div key={idx} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', marginBottom: '1rem', background: 'var(--bg-primary)' }}>
@@ -655,7 +674,7 @@ export default function SubDashboardManage() {
                <InputField label="No HP Penerima" value={data.hadiahDigital?.physicalWhatsapp || ''} onChange={e => handleChange('hadiahDigital.physicalWhatsapp', e.target.value)} />
             </AccordionItem>
 
-            <AccordionItem title="9. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
+            <AccordionItem title="10. Penutup" pageKey="closing" isOpen={openAccordion === 'closing'} onClick={() => setOpenAccordion(openAccordion === 'closing' ? '' : 'closing')} visibility={isVisible('closing')} onToggleVisibility={handleToggleVisibility}>
               <ThumbnailUploader
                 label="Foto Latar Belakang / Gambar Couple Penutup"
                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."

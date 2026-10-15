@@ -586,6 +586,45 @@ export default function JawaTemplate({ data = defaultInvitationData, slug = 'tes
           </section>
         )}
 
+        {/* Galeri Section */}
+        {isVisible('galeri') && data.galeri && data.galeri.length > 0 && (
+          <section id="galeri" className="section galeri-section" style={{ position: 'relative', width: '100%', background: '#2c2c2c', padding: '60px 20px', color: '#dfcfb9', textAlign: 'center' }}>
+            <div className="jawa-top-border"></div>
+            <h2 className="title-names-serif" data-animate="fade-up" style={{ fontFamily: '"Oleo Script", cursive', color: '#dfcfb9', marginBottom: '10px', fontSize: '3rem' }}>Our Moment</h2>
+            <p style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.85rem', color: '#c4b5a2', marginBottom: '25px' }}>Potret momen bahagia kedua mempelai</p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+              maxWidth: '440px',
+              margin: '0 auto'
+            }}>
+              {data.galeri.map((imgUrl, idx) => (
+                <div key={idx} style={{
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  aspectRatio: '1 / 1',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+                  border: '2px solid #b6925f'
+                }}>
+                  <img
+                    src={imgUrl}
+                    alt={`Galeri ${idx + 1}`}
+                    loading="lazy"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="jawa-bottom-container" style={{ marginTop: '30px' }}>
+              <div className="wayang-wrapper">
+                <img src="/assets/templates/jawa/wayang.webp" className="jawa-wayang center" alt="wayang" />
+              </div>
+              <div className="jawa-bottom-border"></div>
+            </div>
+          </section>
+        )}
+
         {/* Gift Section */}
         {isVisible('gift') && (
           <section id="gift" className="section gift-section" style={{ position: 'relative', width: '100%', background: 'radial-gradient(circle, #b8a18a 0%, #9e816a 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', overflow: 'hidden', zIndex: 10, paddingTop: '50px', paddingBottom: '90px' }}>

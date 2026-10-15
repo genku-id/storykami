@@ -464,6 +464,41 @@ export default function Floral1Template({ data = defaultInvitationData, slug = '
           </section>
         )}
 
+        {/* Galeri Section */}
+        {isVisible('galeri') && data.galeri && data.galeri.length > 0 && (
+          <section id="galeri" className="section gallery-section text-center" style={{ padding: '60px 20px', background: '#f8fafc' }}>
+            <h2 className="section-title mb-2" data-animate="fade-up" style={{ fontSize: '2.5rem', color: '#1a1a1a', fontWeight: 700 }}>
+              Our Moments
+            </h2>
+            <p className="subtitle mb-4" data-animate="fade-up" style={{ fontSize: '0.9rem', color: '#666' }}>
+              Kenangan dan potret kebahagiaan kami
+            </p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+              maxWidth: '440px',
+              margin: '0 auto'
+            }}>
+              {data.galeri.map((imgUrl, idx) => (
+                <div key={idx} style={{
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  aspectRatio: '1 / 1',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
+                }}>
+                  <img
+                    src={imgUrl}
+                    alt={`Galeri ${idx + 1}`}
+                    loading="lazy"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Gift Section */}
         {isVisible('gift') && (
           <section id="gift" className="section gift-section bg-dark-blue">
