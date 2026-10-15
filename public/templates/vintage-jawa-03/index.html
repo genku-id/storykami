@@ -453,6 +453,64 @@
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease !important;
   }
+
+  /* Countdown Section Background with default couple photo */
+  .elementor-element-adad052 {
+    background-image: url("/assets/images/couple.png") !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
+  }
+  .elementor-element-adad052 > .elementor-background-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(180deg, rgba(22, 14, 10, 0.55) 0%, rgba(22, 14, 10, 0.8) 100%) !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+  .elementor-element-adad052 > .elementor-container {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  /* Halaman Penutup Background (matching Cover with bg_cover.webp) */
+  .elementor-element-512b5c {
+    background-image: url("./assets/bg_cover.webp") !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
+    padding: 60px 20px 50px 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .elementor-element-512b5c > .elementor-background-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(180deg, rgba(22, 14, 10, 0.72) 0%, rgba(22, 14, 10, 0.88) 100%) !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+  .elementor-element-512b5c > .elementor-container {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+  .elementor-element-512b5c .elementor-element-b179759 .elementor-widget-container p {
+    color: #f7ebd7 !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7) !important;
+  }
 </style>
 </head>
 <body class="wp-singular page-template page-template-elementor_canvas page page-id-14873 wp-embed-responsive wp-theme-astra ast-header-break-point ast-page-builder-template ast-no-sidebar astra-4.13.2 ast-single-post ast-inherit-site-logo-transparent ast-hfb-header ast-normal-title-enabled elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-14873 ast-header-loaded e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile style="overflow-y:auto!important;overflow-x:hidden!important;min-height:100vh!important;">
@@ -1122,6 +1180,7 @@
         </div>
       </div>
     </div> </div> </div> </section>
+  </div> </div> </div> </section> <!-- closes 4314efe5 -->
  <section class="elementor-section elementor-inner-section elementor-element elementor-element-2d84bda elementor-section-full_width elementor-section-content-middle elementor-section-height-default lw-sticky-section-no" data-id=2d84bda data-element_type=section data-e-type=section>
  <div class=elementor-background-overlay></div>
  <div class="elementor-container elementor-column-gap-no">
@@ -1563,7 +1622,7 @@
  </div>
  </div>
  </section>
- <section class="elementor-section elementor-inner-section elementor-element elementor-element-512b5c elementor-section-boxed elementor-section-height-default lw-sticky-section-no" data-id="512b5c" data-element_type="section" data-e-type="section" style="padding: 55px 20px 45px; text-align: center; background: #1f140e; color: #f7ebd7; position: relative;">
+ <section class="elementor-section elementor-inner-section elementor-element elementor-element-512b5c elementor-section-boxed elementor-section-height-default lw-sticky-section-no" data-id="512b5c" data-element_type="section" data-e-type="section">
   <div class="elementor-background-overlay"></div>
   <div class="elementor-container elementor-column-gap-no" style="position: relative; z-index: 2; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
     
@@ -2042,6 +2101,16 @@
   
   function applyInvitationData(invData, guestName) {
     if (!invData || typeof invData !== 'object') return;
+
+    // Countdown Background Image (Photo Couple fallback)
+    const countdownSec = document.querySelector('.elementor-element-adad052, [data-id="adad052"]');
+    if (countdownSec) {
+      const coupleCountdownFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama || '/assets/images/couple.png';
+      countdownSec.style.backgroundImage = `url("${coupleCountdownFoto}")`;
+      countdownSec.style.backgroundPosition = 'center center';
+      countdownSec.style.backgroundSize = 'cover';
+      countdownSec.style.backgroundRepeat = 'no-repeat';
+    }
 
     // 1. Couple Names & Title
     const wanitaNick = invData.mempelai?.wanita?.namaPanggilan || invData.mempelai?.wanita?.namaLengkap || 'Tiara';
