@@ -2414,27 +2414,37 @@
     `).join('');
   }
   
+  function getCouplePhoto(data) {
+    if (!data) return '/assets/images/couple.png';
+    return data.fotoCouple || 
+           data.mempelai?.fotoCouple || 
+           data.penutupFoto || 
+           data.coupleImage || 
+           data.hal2_fotoCouple || 
+           (Array.isArray(data.galeri) && data.galeri[0]) || 
+           '/assets/images/couple.png';
+  }
+
   function applyInvitationData(invData, guestName) {
     if (!invData || typeof invData !== 'object') return;
 
+    const couplePhoto = getCouplePhoto(invData);
     
-    // Love Story Photo (Default couple.png)
+    // Love Story Photo (Couple Photo)
     const elLoveStoryImg = document.getElementById('storykami-foto-lovestory');
     if (elLoveStoryImg) {
-      const loveStoryFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama || '/assets/images/couple.png';
-      elLoveStoryImg.src = loveStoryFoto;
       elLoveStoryImg.onerror = function() {
-        if (!this.dataset.proxied && loveStoryFoto.startsWith('http')) {
+        if (!this.dataset.proxied && couplePhoto.startsWith('http')) {
           this.dataset.proxied = '1';
-          this.src = '/api/proxy-image?url=' + encodeURIComponent(loveStoryFoto);
+          this.src = '/api/proxy-image?url=' + encodeURIComponent(couplePhoto);
         }
       };
+      elLoveStoryImg.src = couplePhoto;
     }
-    // Countdown Background Image (Photo Couple fallback)
+    // Countdown Background Image (Couple Photo)
     const countdownSec = document.querySelector('.elementor-element-adad052, [data-id="adad052"]');
     if (countdownSec) {
-      const coupleCountdownFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.fotoCouple || invData.fotoCouple || (Array.isArray(invData.galeri) && invData.galeri[0]) || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama || '/assets/images/couple.png';
-      countdownSec.style.setProperty('background-image', `url("${coupleCountdownFoto}")`, 'important');
+      countdownSec.style.setProperty('background-image', `url("${couplePhoto}")`, 'important');
       countdownSec.style.backgroundPosition = 'center center';
       countdownSec.style.backgroundSize = 'cover';
       countdownSec.style.backgroundRepeat = 'no-repeat';
@@ -2472,7 +2482,7 @@
     }
 
     // 3. Hero Photo (Foto Mempelai Berdua setelah intro video)
-    const heroFoto = invData.thumbnailFoto || invData.penutupFoto || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama;
+    const heroFoto = couplePhoto;
     const elImgHero = document.getElementById('storykami-foto-hero');
     if (elImgHero) {
       if (heroFoto) {
@@ -2602,15 +2612,14 @@
 
     const elImgKutipan = document.getElementById('storykami-foto-kutipan');
     if (elImgKutipan) {
-      const kutipanFoto = invData.thumbnailFoto || invData.mempelai?.fotoCouple || invData.fotoCouple || invData.penutupFoto || (Array.isArray(invData.galeri) && invData.galeri[0]) || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama;
-      if (kutipanFoto) {
+      if (couplePhoto) {
         elImgKutipan.onerror = function() {
-          if (!this.dataset.proxied && kutipanFoto.startsWith('http')) {
+          if (!this.dataset.proxied && couplePhoto.startsWith('http')) {
             this.dataset.proxied = '1';
-            this.src = '/api/proxy-image?url=' + encodeURIComponent(kutipanFoto);
+            this.src = '/api/proxy-image?url=' + encodeURIComponent(couplePhoto);
           }
         };
-        elImgKutipan.src = kutipanFoto;
+        elImgKutipan.src = couplePhoto;
       } else {
         elImgKutipan.src = '/assets/images/couple.png';
       }
@@ -2777,7 +2786,7 @@
       elClosingCouple.textContent = invData.penutupMempelai || coupleName;
     }
 
-    const penutupFoto = invData.penutupFoto || invData.thumbnailFoto || invData.mempelai?.wanita?.fotoUtama || invData.mempelai?.pria?.fotoUtama;
+    const penutupFoto = invData.penutupFoto || couplePhoto;
     const elImgPenutup = document.getElementById('storykami-foto-penutup');
     if (elImgPenutup) {
       if (penutupFoto) {

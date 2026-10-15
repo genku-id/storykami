@@ -91,7 +91,7 @@ export async function generateMetadata({ params, searchParams }) {
     description = `Kepada Yth. ${guestName}. ${description}`;
   }
   const DEFAULT_THUMBNAIL = 'https://storykami.my.id/assets/images/couple.png';
-  let image = data.thumbnailFoto || data.coupleImage || data.hal2_fotoCouple || DEFAULT_THUMBNAIL;
+  let image = data.thumbnailFoto || data.fotoCouple || data.coupleImage || data.hal2_fotoCouple || DEFAULT_THUMBNAIL;
   if (image && image.startsWith('/')) {
     image = `https://storykami.my.id${image}`;
   }

@@ -129,6 +129,7 @@ export const defaultInvitationData = {
       fotoUtama: ""
     }
   },
+  fotoCouple: "",
 
   // Detail Acara (Dinamis: Array of events)
   acara: defaultAcaraList,

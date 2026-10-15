@@ -467,6 +467,26 @@ export default function SubDashboardManage() {
                  onChange={url => handlePhotoChange('mempelai.pria.fotoUtama', url)} 
                  slug={slug || 'undangan'} 
                />
+
+               <div style={{ height: '1px', background: 'var(--border)', margin: '2rem 0' }}></div>
+
+               <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Foto Pasangan (Couple)</h3>
+               <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                 Foto berdua mempelai. Foto ini akan otomatis ditampilkan di halaman Kutipan Ayat, Hitung Mundur (Countdown), Love Story, dan Penutup.
+               </p>
+               <ThumbnailUploader 
+                 label="Foto Pasangan (Couple)" 
+                 description="Format JPG, PNG, atau WEBP. Jika tidak diunggah, otomatis menggunakan ilustrasi gambar couple default."
+                 value={data.fotoCouple || data.penutupFoto || ''} 
+                 onChange={url => {
+                   handlePhotoChange('fotoCouple', url);
+                   if (!data.penutupFoto) {
+                     handlePhotoChange('penutupFoto', url);
+                   }
+                 }} 
+                 slug={slug || 'undangan'} 
+                 showWhatsappPreview={false}
+               />
             </AccordionItem>
 
             <AccordionItem title="4. Kutipan / Ayat" pageKey="quote" isOpen={openAccordion === 'quote'} onClick={() => setOpenAccordion(openAccordion === 'quote' ? '' : 'quote')} visibility={isVisible('quote')} onToggleVisibility={handleToggleVisibility}>
