@@ -1538,19 +1538,12 @@ Penerima: alamat kado">
  <div class="elementor-container elementor-column-gap-default">
  <div class="has_eae_slider elementor-column elementor-col-33 elementor-inner-column elementor-element elementor-element-9bc045c" data-eae-slider=27701 data-id=9bc045c data-element_type=column data-e-type=column data-settings='{"background_background":"classic"}'>
  <div class="elementor-widget-wrap elementor-element-populated">
- <div class="elementor-element elementor-element-54de2e3b elementor-view-stacked elementor-shape-circle elementor-widget elementor-widget-icon elementor-sticky elementor-sticky--effects elementor-sticky--active elementor-section--handles-inside" data-id=54de2e3b data-element_type=widget data-e-type=widget id=btnFullscreen data-settings='{"sticky":"bottom","sticky_offset":120,"sticky_offset_mobile":140,"sticky_on":["desktop","tablet","mobile"],"sticky_effects_offset":0,"sticky_anchor_link_offset":0}' data-widget_type=icon.default style=position:fixed;width:70px;margin-top:0px;margin-bottom:0px;bottom:140px;inset-inline-start:10px>
+ <div class="elementor-element elementor-element-54de2e3b elementor-view-stacked elementor-shape-circle elementor-widget elementor-widget-icon elementor-sticky elementor-sticky--effects elementor-sticky--active elementor-section--handles-inside" data-id=54de2e3b data-element_type=widget data-e-type=widget id=old_btnFullscreen style="display:none!important" data-settings='{"sticky":"bottom","sticky_offset":120,"sticky_offset_mobile":140,"sticky_on":["desktop","tablet","mobile"],"sticky_effects_offset":0,"sticky_anchor_link_offset":0}' data-widget_type=icon.default style=position:fixed;width:70px;margin-top:0px;margin-bottom:0px;bottom:140px;inset-inline-start:10px>
  <div class=elementor-widget-container>
  <div class=elementor-icon-wrapper>
  <div class=elementor-icon>
  <svg class="storykami-fullscreen-svg" viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> 
 </div>
- </div>
- </div>
- </div><div class="elementor-element elementor-element-54de2e3b elementor-view-stacked elementor-shape-circle elementor-widget elementor-widget-icon elementor-sticky elementor-sticky--effects elementor-sticky__spacer" data-id=54de2e3b data-element_type=widget data-e-type=widget id=btnFullscreen data-settings='{"sticky":"bottom","sticky_offset":120,"sticky_offset_mobile":140,"sticky_on":["desktop","tablet","mobile"],"sticky_effects_offset":0,"sticky_anchor_link_offset":0}' data-widget_type=icon.default style="visibility:hidden;transition:none;animation:auto ease 0s 1 normal none running none">
- <div class=elementor-widget-container>
- <div class=elementor-icon-wrapper>
- <div class=elementor-icon>
- <i aria-hidden=true class="fas fa-expand-arrows-alt"></i> </div>
  </div>
  </div>
  </div>
@@ -1573,27 +1566,6 @@ Penerima: alamat kado">
  <source type=audio/mp3>
  </audio>
  
- </div>
- </div>
- </div><div class="elementor-element elementor-element-594a4010 elementor-view-stacked wdsdv-enabled--yes elementor-shape-circle elementor-widget elementor-widget-wds_audio elementor-sticky elementor-sticky--effects elementor-sticky__spacer" data-id=594a4010 data-element_type=widget data-e-type=widget data-settings='{"sticky":"bottom","sticky_offset":80,"sticky_offset_mobile":100,"sticky_on":["desktop","tablet","mobile"],"sticky_effects_offset":0,"sticky_anchor_link_offset":0}' data-widget_type=wds_audio.default style="visibility:hidden;transition:none;animation:auto ease 0s 1 normal none running none">
- <div class=elementor-widget-container>
- 
- 
- <div class=elementor-icon-wrapper id=wds_audio_play>
- <div class=elementor-icon>
- <i aria-hidden=true class="fa fa-music"></i> </div>
- </div> 
- <div class=elementor-icon-wrapper id=wds_audio_pause style=display:none>
- 
- </div>
- <div id=wds-audio-box style=display:none!important>
- 
- 
- <audio id=song loop class=sf-hidden>
- <source type=audio/mp3>
- </audio>
- 
- </div>
  </div>
  </div>
  </div>
@@ -2015,90 +1987,134 @@ Penerima: alamat kado">
     fill: #ffffff !important;
   }
 
-  /* Audio button floating above navbar */
-  .elementor-element.elementor-element-594a4010 {
+  /* StoryKami Floating Controls: 2 Tombol Atas-Bawah Sejajar */
+  .storykami-floating-controls {
     position: fixed !important;
-    width: 44px !important;
-    height: 44px !important;
     bottom: 85px !important;
-    inset-inline-start: 16px !important;
-    left: 16px !important;
+    left: 20px !important;
     z-index: 99998 !important;
     display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 12px !important;
     margin: 0 !important;
     padding: 0 !important;
-    cursor: pointer !important;
-    background: transparent !important;
+    pointer-events: auto !important;
+    width: auto !important;
+    height: auto !important;
   }
 
-  /* Fullscreen button floating above audio */
-  .elementor-element.elementor-element-54de2e3b {
-    position: fixed !important;
+  .storykami-circle-btn {
     width: 44px !important;
     height: 44px !important;
-    bottom: 140px !important;
-    inset-inline-start: 16px !important;
-    left: 16px !important;
-    z-index: 99998 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    cursor: pointer !important;
-    background: transparent !important;
-  }
-
-  .elementor-element-594a4010 .elementor-widget-container,
-  .elementor-element-54de2e3b .elementor-widget-container,
-  .elementor-element-594a4010 .elementor-icon-wrapper,
-  .elementor-element-54de2e3b .elementor-icon-wrapper {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .elementor-element-594a4010 .elementor-icon,
-  .elementor-element-54de2e3b .elementor-icon {
-    width: 42px !important;
-    height: 42px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
     border-radius: 50% !important;
     background-color: #3F5C48 !important;
-    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(63, 92, 72, 0.45) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 4px 15px rgba(63, 92, 72, 0.4) !important;
-    transition: all 0.25s ease !important;
     cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    border: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease, box-shadow 0.25s ease !important;
   }
 
-  .elementor-element-594a4010 .elementor-icon:hover,
-  .elementor-element-54de2e3b .elementor-icon:hover {
-    transform: scale(1.1) !important;
+  .storykami-circle-btn:hover {
+    transform: scale(1.08) !important;
     background-color: #2F4536 !important;
+    box-shadow: 0 6px 18px rgba(63, 92, 72, 0.55) !important;
   }
 
-  .elementor-element-594a4010.elementor-sticky__spacer,
-  .elementor-element-54de2e3b.elementor-sticky__spacer {
+  .storykami-circle-btn:active {
+    transform: scale(0.95) !important;
+  }
+
+  .storykami-circle-btn svg {
+    display: block !important;
+    margin: auto !important;
+  }
+
+  .storykami-circle-btn span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  @keyframes storykami-note-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .storykami-circle-btn.storykami-audio-spin .icon-audio-note svg {
+    animation: storykami-note-spin 4s linear infinite;
+  }
+
+  /* Sembunyikan TOTAL section lama 7fc02d85 dan widget Elementor lama agar tidak ada tombol ketiga / duplikat / spacer */
+  .elementor-element-7fc02d85,
+  .elementor-element-54de2e3b,
+  .elementor-element-594a4010,
+  .elementor-sticky__spacer,
+  .elementor-sticky--effects.elementor-sticky__spacer,
+  #old_btnFullscreen,
+  #wds_audio_play,
+  #wds_audio_pause {
     display: none !important;
-  }
-
-  @keyframes storykami-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .storykami-music-spin .elementor-icon {
-    animation: storykami-spin 4s linear infinite !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    position: absolute !important;
   }
 </style>
+
+
+<!-- StoryKami 2 Floating Buttons: Atas Zoom, Bawah Suara -->
+<div id="storykami-floating-controls" class="storykami-floating-controls">
+  <!-- Tombol Atas: Zoom (Toggle Zoom In / Zoom Out) -->
+  <button type="button" id="storykami-btn-zoom" class="storykami-circle-btn" aria-label="Perbesar Layar" title="Perbesar Layar">
+    <span class="icon-zoom-in">
+      <!-- SVG Zoom In (Expand) -->
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+      </svg>
+    </span>
+    <span class="icon-zoom-out" style="display:none;">
+      <!-- SVG Zoom Out (Compress) -->
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14L3 21"/>
+      </svg>
+    </span>
+  </button>
+
+  <!-- Tombol Bawah: Audio (Toggle Note / Pause) -->
+  <button type="button" id="storykami-btn-audio" class="storykami-circle-btn storykami-audio-spin" aria-label="Putar / Hentikan Musik" title="Hentikan Musik">
+    <span class="icon-audio-note">
+      <!-- SVG Note (Not Balok Musik) -->
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3" fill="#ffffff"/>
+        <circle cx="18" cy="16" r="3" fill="#ffffff"/>
+      </svg>
+    </span>
+    <span class="icon-audio-pause" style="display:none;">
+      <!-- SVG Pause (Dua Garis Vertikal Jeda) -->
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2.5" fill="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="4" width="3.5" height="16" rx="1.5" fill="#ffffff"/>
+        <rect x="14.5" y="4" width="3.5" height="16" rx="1.5" fill="#ffffff"/>
+      </svg>
+    </span>
+  </button>
+</div>
+
+
 
 <div id="storykami-toast" class="storykami-toast">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -2730,26 +2746,31 @@ Penerima: alamat kado">
   // --- Audio State & Controls ---
   function updateMusicBtnUI(playing) {
     isMusicPlaying = Boolean(playing);
-    const audioPlayWrap = document.getElementById('wds_audio_play');
-    const audioPauseWrap = document.getElementById('wds_audio_pause');
-    const audioBtn = document.querySelector('.elementor-element-594a4010');
+    const audioBtn = document.getElementById('storykami-btn-audio');
+    if (!audioBtn) return;
 
-    if (audioBtn) {
-      if (isMusicPlaying) {
-        audioBtn.classList.add('storykami-music-spin');
-      } else {
-        audioBtn.classList.remove('storykami-music-spin');
-      }
+    const iconNote = audioBtn.querySelector('.icon-audio-note');
+    const iconPause = audioBtn.querySelector('.icon-audio-pause');
+
+    if (isMusicPlaying) {
+      audioBtn.classList.add('storykami-audio-spin');
+      if (iconNote) iconNote.style.display = 'flex';
+      if (iconPause) iconPause.style.display = 'none';
+      audioBtn.setAttribute('title', 'Hentikan Musik');
+    } else {
+      audioBtn.classList.remove('storykami-audio-spin');
+      if (iconNote) iconNote.style.display = 'none';
+      if (iconPause) iconPause.style.display = 'flex';
+      audioBtn.setAttribute('title', 'Putar Musik');
     }
 
-    if (audioPlayWrap && audioPauseWrap) {
+    // Update elemen audio tag lokal jika ada
+    const song = document.getElementById('song');
+    if (song) {
       if (isMusicPlaying) {
-        audioPlayWrap.style.display = 'block';
-        audioPauseWrap.style.display = 'none';
+        song.play().catch(() => {});
       } else {
-        audioPlayWrap.style.display = 'none';
-        audioPauseWrap.style.display = 'block';
-        audioPauseWrap.innerHTML = '<div class="elementor-icon"><i aria-hidden="true" class="fa fa-volume-mute"></i></div>';
+        song.pause();
       }
     }
   }
@@ -2778,35 +2799,64 @@ Penerima: alamat kado">
     }
   }
 
-  // Floating audio button click
-  
-  // Fullscreen button click handler
-  const btnFull = document.getElementById('btnFullscreen') || document.querySelector('.elementor-element-54de2e3b');
-  if (btnFull) {
-    btnFull.style.cursor = 'pointer';
-    btnFull.addEventListener('click', function(e) {
+  // --- Zoom / Fullscreen Logic (Zoom In <-> Zoom Out) ---
+  const btnZoom = document.getElementById('storykami-btn-zoom');
+  if (btnZoom) {
+    const iconZoomIn = btnZoom.querySelector('.icon-zoom-in');
+    const iconZoomOut = btnZoom.querySelector('.icon-zoom-out');
+
+    function updateZoomUI() {
+      const isFullscreen = Boolean(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      if (isFullscreen) {
+        if (iconZoomIn) iconZoomIn.style.display = 'none';
+        if (iconZoomOut) iconZoomOut.style.display = 'flex';
+        btnZoom.setAttribute('title', 'Kecilkan Layar (Zoom Out)');
+      } else {
+        if (iconZoomIn) iconZoomIn.style.display = 'flex';
+        if (iconZoomOut) iconZoomOut.style.display = 'none';
+        btnZoom.setAttribute('title', 'Perbesar Layar (Zoom In)');
+      }
+    }
+
+    btnZoom.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen();
+      const isFullscreen = Boolean(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      if (!isFullscreen) {
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+          docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+          docEl.msRequestFullscreen();
         }
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
           document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
         }
       }
+      setTimeout(updateZoomUI, 100);
     });
+
+    document.addEventListener('fullscreenchange', updateZoomUI);
+    document.addEventListener('webkitfullscreenchange', updateZoomUI);
+    document.addEventListener('mozfullscreenchange', updateZoomUI);
+    document.addEventListener('MSFullscreenChange', updateZoomUI);
   }
 
-  const audioWidget = document.querySelector('.elementor-element-594a4010, #wds_audio_play, #wds_audio_pause');
-  if (audioWidget) {
-    audioWidget.style.cursor = 'pointer';
-    audioWidget.addEventListener('click', function(e) {
+  // Floating audio button click
+  const btnAudio = document.getElementById('storykami-btn-audio');
+  if (btnAudio) {
+    btnAudio.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       toggleMusic();
