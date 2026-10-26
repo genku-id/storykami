@@ -2470,6 +2470,17 @@ Penerima: alamat kado">
     position: relative !important;
     z-index: 2 !important;
   }
+
+  /* Pastikan semua ornamen bunga langsung tampil 100% tanpa delay/glitch */
+  .elementor-element-ff3333f,
+  .elementor-element-59111c24,
+  .elementor-element-4ef05064,
+  .elementor-element-44442ed1,
+  .elementor-element-4ff21c84 {
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important;
+  }
 </style>
 
 
@@ -3508,36 +3519,6 @@ Penerima: alamat kado">
     // 4. Menuju halaman pertama (scroll top: 0)
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-
-  // --- Viewport Intersection Observer for Flowers (bergerak saat tampil di layar, diam saat tidak tampil) ---
-  try {
-    if ('IntersectionObserver' in window) {
-      const flowerObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const img = entry.target.tagName === 'IMG' ? entry.target : entry.target.querySelector('img');
-          if (entry.isIntersecting) {
-            entry.target.classList.add('storykami-in-view');
-            if (img) img.style.animationPlayState = 'running';
-            entry.target.style.animationPlayState = 'running';
-          } else {
-            entry.target.classList.remove('storykami-in-view');
-            if (img) img.style.animationPlayState = 'paused';
-            entry.target.style.animationPlayState = 'paused';
-          }
-        });
-      }, { rootMargin: '60px' });
-
-      document.querySelectorAll('.goyang-1, .goyang-2, .goyang-3, .goyang-4, .naik-turun').forEach(el => {
-        flowerObserver.observe(el);
-      });
-    } else {
-      document.querySelectorAll('.goyang-1, .goyang-2, .goyang-3, .goyang-4, .naik-turun').forEach(el => {
-        el.classList.add('storykami-in-view');
-      });
-    }
-  } catch (err) {
-    console.warn('Flower observer setup error:', err);
-  }
 
   // Countdown Timer
   function initCountdown() {
