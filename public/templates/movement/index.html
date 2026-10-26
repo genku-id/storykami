@@ -2041,10 +2041,42 @@ Penerima: alamat kado">
     margin: auto !important;
   }
 
-  .storykami-circle-btn span {
+  /* --- STATE IKON ZOOM: HANYA SATU YANG MUNCUL BERGANTIAN --- */
+  #storykami-btn-zoom .icon-zoom-in {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+  }
+  #storykami-btn-zoom .icon-zoom-out {
+    display: none !important;
+  }
+  #storykami-btn-zoom.is-fullscreen .icon-zoom-in {
+    display: none !important;
+  }
+  #storykami-btn-zoom.is-fullscreen .icon-zoom-out {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* --- STATE IKON AUDIO: HANYA SATU YANG MUNCUL BERGANTIAN --- */
+  /* Default / saat di-pause: Tampilkan SVG Pause */
+  #storykami-btn-audio .icon-audio-note {
+    display: none !important;
+  }
+  #storykami-btn-audio .icon-audio-pause {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  /* Saat musik berputar: Tampilkan SVG Note & berputar */
+  #storykami-btn-audio.is-playing .icon-audio-note {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  #storykami-btn-audio.is-playing .icon-audio-pause {
+    display: none !important;
   }
 
   @keyframes storykami-note-spin {
@@ -2052,11 +2084,11 @@ Penerima: alamat kado">
     100% { transform: rotate(360deg); }
   }
 
-  .storykami-circle-btn.storykami-audio-spin .icon-audio-note svg {
-    animation: storykami-note-spin 4s linear infinite;
+  #storykami-btn-audio.is-playing .icon-audio-note svg {
+    animation: storykami-note-spin 4s linear infinite !important;
   }
 
-  /* Sembunyikan TOTAL section lama 7fc02d85 dan widget Elementor lama agar tidak ada tombol ketiga / duplikat / spacer */
+  /* Sembunyikan elemen lama Elementor */
   .elementor-element-7fc02d85,
   .elementor-element-54de2e3b,
   .elementor-element-594a4010,
@@ -2747,21 +2779,14 @@ Penerima: alamat kado">
   function updateMusicBtnUI(playing) {
     isMusicPlaying = Boolean(playing);
     const audioBtn = document.getElementById('storykami-btn-audio');
-    if (!audioBtn) return;
-
-    const iconNote = audioBtn.querySelector('.icon-audio-note');
-    const iconPause = audioBtn.querySelector('.icon-audio-pause');
-
-    if (isMusicPlaying) {
-      audioBtn.classList.add('storykami-audio-spin');
-      if (iconNote) iconNote.style.display = 'flex';
-      if (iconPause) iconPause.style.display = 'none';
-      audioBtn.setAttribute('title', 'Hentikan Musik');
-    } else {
-      audioBtn.classList.remove('storykami-audio-spin');
-      if (iconNote) iconNote.style.display = 'none';
-      if (iconPause) iconPause.style.display = 'flex';
-      audioBtn.setAttribute('title', 'Putar Musik');
+    if (audioBtn) {
+      if (isMusicPlaying) {
+        audioBtn.classList.add('is-playing');
+        audioBtn.setAttribute('title', 'Hentikan Musik');
+      } else {
+        audioBtn.classList.remove('is-playing');
+        audioBtn.setAttribute('title', 'Putar Musik');
+      }
     }
 
     // Update elemen audio tag lokal jika ada
@@ -2802,18 +2827,13 @@ Penerima: alamat kado">
   // --- Zoom / Fullscreen Logic (Zoom In <-> Zoom Out) ---
   const btnZoom = document.getElementById('storykami-btn-zoom');
   if (btnZoom) {
-    const iconZoomIn = btnZoom.querySelector('.icon-zoom-in');
-    const iconZoomOut = btnZoom.querySelector('.icon-zoom-out');
-
     function updateZoomUI() {
       const isFullscreen = Boolean(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
       if (isFullscreen) {
-        if (iconZoomIn) iconZoomIn.style.display = 'none';
-        if (iconZoomOut) iconZoomOut.style.display = 'flex';
+        btnZoom.classList.add('is-fullscreen');
         btnZoom.setAttribute('title', 'Kecilkan Layar (Zoom Out)');
       } else {
-        if (iconZoomIn) iconZoomIn.style.display = 'flex';
-        if (iconZoomOut) iconZoomOut.style.display = 'none';
+        btnZoom.classList.remove('is-fullscreen');
         btnZoom.setAttribute('title', 'Perbesar Layar (Zoom In)');
       }
     }
