@@ -120,6 +120,22 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Card 5 */}
+            <div className={styles.card}>
+              <div className={styles.cardImageWrapper}>
+                <img 
+                  src="/assets/templates/movement/preview.webp" 
+                  alt="Movement Preview" 
+                  style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center'}} 
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>Movement</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Modern Floral &amp; Soft Sage Green</p>
+                <a href="/demo/movement" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

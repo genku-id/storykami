@@ -11,6 +11,8 @@ const TEMPLATE_LABELS = {
   'template-indian': 'Dilan & Millea (Adat Olive)',
   'vintage-jawa-03': 'Vintage Jawa 03 (Foto)',
   'template-vintage-jawa-03': 'Vintage Jawa 03 (Foto)',
+  'movement': 'Movement',
+  'template-movement': 'Movement',
 };
 
 function StatCard({ icon, label, value, sub, accentColor }) {

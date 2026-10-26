@@ -25,6 +25,12 @@ const TEMPLATES = [
     name: 'Vintage Jawa 03 (Foto)',
     description: 'Tema pernikahan adat Jawa klasik bernuansa cokelat vintage mewah dengan intro video cinematic, bingkai foto melengkung, dan musik merdu.',
     image: '/assets/templates/vintage-jawa-03/preview.webp',
+  },
+  {
+    id: 'movement',
+    name: 'Movement',
+    description: 'Tema pernikahan modern floral bernuansa soft sage green yang elegan, ornamen cat air lembut, dan tipografi romantis.',
+    image: '/assets/templates/movement/preview.webp',
   }
 ];
 
