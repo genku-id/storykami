@@ -212,7 +212,7 @@
  <div class=elementor-widget-container>
  <h2 class="elementor-heading-title elementor-size-default">Di Tempat</h2> </div>
  </div>
- 
+ </div>
  </div>
  </div>
  </section>
@@ -2423,6 +2423,52 @@ Penerima: alamat kado">
   @keyframes fadeInNavbar {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+
+  /* Transform handler untuk Elementor CSS variable agar rotate & flip aktif */
+  .e-transform > .elementor-widget-container {
+    transform: rotate(var(--e-transform-rotateZ, 0deg)) scaleX(var(--e-transform-flipX, 1)) scaleY(var(--e-transform-flipY, 1)) !important;
+  }
+
+  /* Overflow & Layering untuk bunga atas antar-section agar tampak di atas background section sebelumnya */
+  .elementor-element-62145ec2,
+  .elementor-element-2ee577b4,
+  .elementor-element-6eb9a3f0,
+  .elementor-element-7e13240c,
+  .elementor-element-5e7b3b1a,
+  .elementor-element-50fc661b,
+  .elementor-element-62996c20,
+  .elementor-element-76f11347,
+  .elementor-element-f2e8d07,
+  .elementor-element-7213b315,
+  .elementor-element-310e59,
+  .elementor-element-7c522cdd,
+  .elementor-element-47ff88e2 {
+    overflow: visible !important;
+  }
+
+  /* Bunga atas di section 2 s/d 6 */
+  .elementor-element-187ce017,
+  .elementor-element-cf19181,
+  .elementor-element-311233a2,
+  .elementor-element-1bad9269,
+  .elementor-element-6f8713f1 {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  /* Card putih konten tetap di atas bunga */
+  .elementor-element-3c7035ec > .elementor-element-populated,
+  .elementor-element-3fa91d68 > .elementor-element-populated,
+  .elementor-element-63855045 > .elementor-element-populated,
+  .elementor-element-289af6a8 > .elementor-widget-wrap,
+  .elementor-element-512fdcb9 > .elementor-widget-wrap,
+  .elementor-element-6a8b24c0 > .elementor-widget-wrap,
+  .elementor-element-34449a73 > .elementor-widget-wrap,
+  .elementor-element-4663756 > .elementor-widget-wrap,
+  .elementor-element-499aaedc > .elementor-widget-wrap {
+    position: relative !important;
+    z-index: 2 !important;
   }
 </style>
 
