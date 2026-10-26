@@ -1934,6 +1934,142 @@ Penerima: alamat kado">
   html {
     scroll-behavior: smooth;
   }
+
+  /* =====================================================================
+     FLOATING NAVBAR CENTERED (Mengambang di Tengah)
+     ===================================================================== */
+  .elementor-section.elementor-element-32e9e884,
+  section.elementor-element-32e9e884:not(.elementor-sticky__spacer) {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    bottom: 22px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: calc(100vw - 28px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+    display: block !important;
+  }
+
+  .elementor-element-32e9e884.elementor-sticky__spacer {
+    display: none !important;
+  }
+
+  .elementor-element-32e9e884 > .elementor-container {
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-element-1cbc57ac,
+  .elementor-element-32e9e884 .elementor-widget-wrap {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-element-1b2296d4 {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-element-1b2296d4 > .elementor-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+  }
+
+  /* Floating Pill Container */
+  .elementor-element-32e9e884 .elementor-element-30561535,
+  .elementor-element-30561535 {
+    margin: 0 auto !important;
+    padding: 6px 12px !important;
+    border-radius: 50px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(63, 92, 72, 0.28) !important;
+    box-shadow: 0 8px 30px rgba(63, 92, 72, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Nav Items & Icons */
+  .elementor-element-32e9e884 .e-con-child {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-icon,
+  .elementor-element-30561535 .elementor-icon {
+    width: 38px !important;
+    height: 38px !important;
+    line-height: 38px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #3F5C48 !important;
+    background: transparent !important;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-decoration: none !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-icon svg,
+  .elementor-element-30561535 .elementor-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    fill: #3F5C48 !important;
+    transition: all 0.25s ease !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-icon:hover,
+  .elementor-element-30561535 .elementor-icon:hover,
+  .elementor-element-32e9e884 .elementor-icon.active,
+  .elementor-element-30561535 .elementor-icon.active {
+    background: #3F5C48 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) scale(1.08) !important;
+    box-shadow: 0 4px 12px rgba(63, 92, 72, 0.35) !important;
+  }
+
+  .elementor-element-32e9e884 .elementor-icon:hover svg,
+  .elementor-element-30561535 .elementor-icon:hover svg,
+  .elementor-element-32e9e884 .elementor-icon.active svg,
+  .elementor-element-30561535 .elementor-icon.active svg {
+    fill: #ffffff !important;
+  }
+
+  /* Audio button floating above navbar */
+  .elementor-element-594a4010 {
+    bottom: 85px !important;
+    inset-inline-start: 16px !important;
+    z-index: 99998 !important;
+  }
+
+  /* Fullscreen button floating above audio */
+  .elementor-element-54de2e3b {
+    bottom: 145px !important;
+    inset-inline-start: 16px !important;
+    z-index: 99998 !important;
+  }
 </style>
 
 <div id="storykami-toast" class="storykami-toast">
@@ -2726,6 +2862,47 @@ Penerima: alamat kado">
       showToast('Ucapan Anda berhasil dikirim!');
     });
   }
+
+  
+  // --- Floating Navbar Navigation Click & Active Highlight ---
+  const navLinks = document.querySelectorAll('.elementor-element-32e9e884 a[href^="#"], .elementor-element-30561535 a[href^="#"]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      const hash = this.getAttribute('href');
+      if (!hash || hash === '#') return;
+      const targetEl = document.querySelector(hash) || document.getElementById(hash.substring(1));
+      if (targetEl) {
+        e.preventDefault();
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  window.addEventListener('scroll', function() {
+    let current = '';
+    const scrollPos = window.scrollY + 250;
+    const sections = ['home', 'couple', 'event', 'galeri', 'story', 'gift', 'wishes'];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.offsetTop;
+        if (scrollPos >= top) {
+          current = id;
+        }
+      }
+    });
+    if (current) {
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+  }, { passive: true });
 
   // Countdown Timer
   function initCountdown() {
