@@ -126,25 +126,10 @@
  <div class="wds-cover-dialog">
  <div class="wds-cover-content">
  <div class="wds-cover-overlay"></div>
- 
- <!-- Corner Flowers with subtle swaying animations -->
- <div class="wds-cover-flower wds-flower-top-right goyang-1">
-   <img src="./assets/flower_sage_1.webp" alt="Flower Top Right" />
- </div>
- <div class="wds-cover-flower wds-flower-bottom-left goyang-2">
-   <img src="./assets/flower_sage_2.webp" alt="Flower Bottom Left" />
- </div>
- <div class="wds-cover-flower wds-flower-top-left goyang-3">
-   <img src="./assets/flower_sage_3.webp" alt="Flower Top Left" />
- </div>
 
  <div class="wds-cover-body">
  <div class="centered-box">
  <div style="text-align:center; width:100%;">
- 
- <div class="elementor-image wds-image-cover">
-   <img src="./assets/ornament_header.webp" style="max-width:180px;height:auto;display:inline-block;" alt="Header Ornament" />
- </div>
  
  <div class="wds-text-cover">The Wedding Of</div>
  
@@ -1888,6 +1873,37 @@ Penerima: alamat kado">
 /* =====================================================================
    WDS COVER MODAL (SAGE GREEN THEME - DARI COVER MOVEMENT)
    ===================================================================== */
+
+/* =====================================================================
+   HIDE NAVBAR & FLOATING CONTROLS WHILE COVER IS ACTIVE
+   ===================================================================== */
+body:not(.wds-opened) .elementor-element-32e9e884,
+body:not(.wds-opened) section.elementor-element-32e9e884,
+body:not(.wds-opened) .storykami-floating-controls,
+body.wds-cover-active .elementor-element-32e9e884,
+body.wds-cover-active section.elementor-element-32e9e884,
+body.wds-cover-active .storykami-floating-controls {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.wds-opened .elementor-element-32e9e884,
+body.wds-opened section.elementor-element-32e9e884,
+body.wds-opened .storykami-floating-controls {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  animation: fadeInNavbar 0.6s ease forwards;
+}
+
+@keyframes fadeInNavbar {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .wds-cover {
   position: fixed;
   top: 0;
@@ -3429,10 +3445,8 @@ Penerima: alamat kado">
       }, 850);
     }
 
-    const targetSec = document.getElementById('couple') || document.querySelector('.elementor-element-62145ec2');
-    if (targetSec) {
-      targetSec.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Menuju halaman pertama (top: 0)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // --- Viewport Intersection Observer for Flowers (bergerak saat tampil di layar, diam saat tidak tampil) ---
