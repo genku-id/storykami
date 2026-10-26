@@ -8,7 +8,8 @@ import DilanTemplate from '@/components/wim-baru/DilanTemplate';
 import VintageJawa03Template from '@/components/wim-baru/VintageJawa03Template';
 import MovementTemplate from '@/components/wim-baru/MovementTemplate';
 
-export const revalidate = 60; // ISR cache tiap 60 detik
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Selalu ambil data live terbaru dari Supabase tanpa delay cache
 
 export default async function InvitationPage({ params, searchParams }) {
   const { slug } = await params;
