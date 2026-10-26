@@ -2324,7 +2324,9 @@ Penerima: alamat kado">
 
       const elWanitaImg = document.querySelector('.elementor-element-7b7433b4 img, [data-id="7b7433b4"] img, #storykami-bride-img');
       if (elWanitaImg) {
-        elWanitaImg.src = wanita.fotoUtama || '/assets/images/bride.png';
+        const bridePic = wanita.fotoUtama || './assets/bride_default.webp';
+        elWanitaImg.src = bridePic;
+        elWanitaImg.srcset = bridePic;
       }
 
       const elWanitaIg = document.querySelector('.elementor-element-4a660457 a, [data-id="4a660457"] a');
@@ -2354,7 +2356,9 @@ Penerima: alamat kado">
 
       const elPriaImg = document.querySelector('.elementor-element-156d96f2 img, [data-id="156d96f2"] img, #storykami-groom-img');
       if (elPriaImg) {
-        elPriaImg.src = pria.fotoUtama || '/assets/images/groom.png';
+        const groomPic = pria.fotoUtama || './assets/groom_default.webp';
+        elPriaImg.src = groomPic;
+        elPriaImg.srcset = groomPic;
       }
 
       const elPriaIg = document.querySelector('.elementor-element-371e2d2f a, [data-id="371e2d2f"] a');
@@ -2574,7 +2578,10 @@ Penerima: alamat kado">
       invData.galeri.forEach((item, idx) => {
         if (galleryImgs[idx]) {
           const imgUrl = typeof item === 'string' ? item : (item.url || item.src || '');
-          if (imgUrl) galleryImgs[idx].src = imgUrl;
+          if (imgUrl) {
+              galleryImgs[idx].src = imgUrl;
+              galleryImgs[idx].srcset = imgUrl;
+            }
         }
       });
     }
