@@ -121,6 +121,57 @@
 <meta name=msapplication-TileImage content=#>
 <meta name=referrer content=no-referrer><style>.sf-hidden{display:none!important}</style><link rel=canonical href="#"><meta http-equiv=content-security-policy content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:; frame-src 'self' data:; form-action 'none'; base-uri 'none';"></head>
 <body class="wp-singular post-template-default single single-post postid-30581 single-format-standard wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-kit-8 elementor-page elementor-page-30581 elementor-page-31121 e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile>
+
+<div id="wds-cover" class="wds-cover">
+ <div class="wds-cover-dialog">
+ <div class="wds-cover-content">
+ <div class="wds-cover-overlay"></div>
+ 
+ <!-- Corner Flowers with subtle swaying animations -->
+ <div class="wds-cover-flower wds-flower-top-right goyang-1">
+   <img src="./assets/flower_sage_1.webp" alt="Flower Top Right" />
+ </div>
+ <div class="wds-cover-flower wds-flower-bottom-left goyang-2">
+   <img src="./assets/flower_sage_2.webp" alt="Flower Bottom Left" />
+ </div>
+ <div class="wds-cover-flower wds-flower-top-left goyang-3">
+   <img src="./assets/flower_sage_3.webp" alt="Flower Top Left" />
+ </div>
+
+ <div class="wds-cover-body">
+ <div class="centered-box">
+ <div style="text-align:center; width:100%;">
+ 
+ <div class="elementor-image wds-image-cover">
+   <img src="./assets/ornament_header.webp" style="max-width:180px;height:auto;display:inline-block;" alt="Header Ornament" />
+ </div>
+ 
+ <div class="wds-text-cover">The Wedding Of</div>
+ 
+ <div class="wds-name-cover">Dika &amp; Riyan</div>
+ 
+ <div class="wds-text-to-cover"><p>Kepada Yth:</p></div>
+ 
+ <div class="wds-get-name">Nama Tamu</div>
+ 
+ <div id="wds-button-cover" class="wds-button-cover">
+ <button class="elementor-button" type="button">
+ <span class="wds-icon-btn-cover">
+   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
+     <path d="M500.5 198.8l-107.5 76.8c-1.3.9-2.9 1.4-4.5 1.4s-3.2-.5-4.5-1.4l-107.5-76.8c-12.7-9-29.3-9-42 0L27.5 275.6c-1.3.9-2.9 1.4-4.5 1.4s-3.2-.5-4.5-1.4L11.5 198.8C4.3 193.7 0 185.3 0 176.4V48c0-26.5 21.5-48 48-48h416c26.5 0 48 21.5 48 48v128.4c0 8.9-4.3 17.3-11.5 22.4zm-14.8 55.4l14.8 10.6V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V264.8l14.8-10.6 195.4 139.6c13.7 9.8 29.8 14.7 45.8 14.7s32.1-4.9 45.8-14.7l195.9-139.6zM256 128c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64z"/>
+   </svg>
+ </span>
+ <span class="wds-text-btn-cover">Buka Undangan</span>
+ </button>
+ </div>
+ 
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+
 <a class="skip-link screen-reader-text" href=#content>Lewati ke konten</a>
  <div data-elementor-type=single-post data-elementor-id=31121 class="elementor elementor-31121 elementor-location-single post-30581 post type-post status-publish format-standard has-post-thumbnail hentry category-tema-movement tema-movement-tm06" data-elementor-post-type=elementor_library>
  <section class="has_eae_slider elementor-section elementor-top-section elementor-element elementor-element-3c0fe3b2 elementor-section-height-min-height elementor-section-items-top hidden elementor-section-boxed elementor-section-height-default" data-eae-slider=13318 data-id=3c0fe3b2 data-element_type=section data-e-type=section id=cover data-settings='{"jet_parallax_layout_list":[]}'>
@@ -1833,23 +1884,228 @@ Penerima: alamat kado">
     scroll-behavior: smooth;
   }
 
-  /* =====================================================================
-     OPTIMIZATION: FLOWER ANIMATIONS ONLY RUN WHEN IN VIEWPORT
-     (Bergerak saat tampil di layar, diam saat tidak tampil)
-     ===================================================================== */
-  .goyang-1, .goyang-2, .goyang-3, .goyang-4, .naik-turun,
-  .goyang-1 img, .goyang-2 img, .goyang-3 img, .goyang-4 img, .naik-turun img {
-    will-change: transform !important;
-    transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-    animation-play-state: paused !important; /* Diam saat tidak di layar */
-  }
+  
+/* =====================================================================
+   WDS COVER MODAL (SAGE GREEN THEME - DARI COVER MOVEMENT)
+   ===================================================================== */
+.wds-cover {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  width: 100%;
+  height: 100%;
+  background-color: #C4D2C7;
+  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+  overflow: hidden;
+}
+.wds-cover.wds-cover-opened {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.wds-cover-dialog {
+  height: 100%;
+  width: 100%;
+}
+.wds-cover-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #C4D2C7;
+}
+.wds-cover-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  background-image: var(--sf-img-22);
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.85;
+}
+.wds-cover-flower {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+.wds-flower-top-right {
+  top: -40px;
+  right: -40px;
+  width: 260px;
+  max-width: 62vw;
+}
+.wds-flower-top-right img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.wds-flower-bottom-left {
+  bottom: -40px;
+  left: -40px;
+  width: 260px;
+  max-width: 62vw;
+}
+.wds-flower-bottom-left img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.wds-flower-top-left {
+  top: -20px;
+  left: -20px;
+  width: 180px;
+  max-width: 45vw;
+}
+.wds-flower-top-left img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.wds-cover-body {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wds-cover .centered-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 460px;
+  padding: 2rem 1.5rem;
+  margin: 0 auto;
+}
+.wds-cover .wds-image-cover {
+  margin-bottom: 20px;
+}
+.wds-cover .wds-text-cover {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: #3F5C48;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.wds-cover .wds-name-cover {
+  font-family: "Great Vibes", "Croissant One", cursive, serif;
+  font-size: 52px;
+  font-weight: normal;
+  color: #3F5C48;
+  text-align: center;
+  line-height: 1.25;
+  margin-bottom: 22px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.6);
+}
+.wds-cover .wds-text-to-cover {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #3F5C48;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.wds-cover .wds-get-name {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #3F5C48;
+  text-align: center;
+  margin-bottom: 28px;
+}
+.wds-cover .wds-button-cover {
+  text-align: center;
+}
+.wds-cover .elementor-button {
+  font-family: "Crimson Pro", Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #FFFFFF !important;
+  background-color: #3F5C48 !important;
+  border: none;
+  border-radius: 28px;
+  padding: 12px 32px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(63, 92, 72, 0.4);
+  transition: all 0.3s ease;
+}
+.wds-cover .elementor-button:hover {
+  background-color: #2D4334 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(63, 92, 72, 0.5);
+}
+.wds-cover .wds-icon-btn-cover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .storykami-in-view,
-  .storykami-in-view img {
-    animation-play-state: running !important; /* Bergerak saat di layar */
-  }
+/* =====================================================================
+   GENTLE FLOWER SWAYING (BUNGA SEDIKIT BERGERAK-GERAK HALUS)
+   ===================================================================== */
+.goyang-1 img {
+  animation: goyang1 7s ease-in-out infinite alternate !important;
+}
+.goyang-2 img {
+  animation: goyang2 8s ease-in-out infinite alternate !important;
+}
+.goyang-3 img {
+  animation: goyang3 6s ease-in-out infinite alternate !important;
+}
+.goyang-4 img {
+  animation: goyang4 7.5s ease-in-out infinite alternate !important;
+}
+
+.goyang-1 img, .goyang-2 img, .goyang-3 img, .goyang-4 img, .naik-turun img {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  animation-play-state: running;
+}
+
+.storykami-paused,
+.storykami-paused img {
+  animation-play-state: paused !important;
+}
+
+@keyframes goyang1 {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(4deg) scale(1.05); }
+  100% { transform: rotate(-3deg) scale(0.98); }
+}
+@keyframes goyang2 {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-4.5deg) scale(1.06); }
+  100% { transform: rotate(3deg) scale(0.99); }
+}
+@keyframes goyang3 {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(4.5deg) scale(1.05); }
+  100% { transform: rotate(-3.5deg) scale(0.98); }
+}
+@keyframes goyang4 {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-3.5deg); }
+  100% { transform: rotate(3.5deg); }
+}
 
   /* =====================================================================
      FLOATING NAVBAR (1 BARIS DI BAWAH LAYAR MENGAMBANG DI TENGAH)
@@ -2301,6 +2557,16 @@ Penerima: alamat kado">
 
     const elPriaCover = document.querySelector('.elementor-element-28884c99 .elementor-heading-title, [data-id="28884c99"] .elementor-heading-title');
     if (elPriaCover) elPriaCover.textContent = priaPanggilan;
+
+    // Cover overlay popup names (wds-cover dari cover movement)
+    const elWdsName = document.querySelector('.wds-name-cover, #wds-cover .wds-name-cover');
+    if (elWdsName) {
+      elWdsName.textContent = coupleName;
+    }
+    const elWdsGuest = document.querySelector('.wds-get-name, #wds-cover .wds-get-name');
+    if (elWdsGuest && guest) {
+      elWdsGuest.textContent = guest;
+    }
 
     // 3. Profiles (Mempelai Wanita & Pria)
     const secProfiles = document.querySelector('.elementor-element-62145ec2, [data-id="62145ec2"]');
@@ -3142,13 +3408,26 @@ Penerima: alamat kado">
     });
   }
 
-  // Buka Undangan Click -> Autoplay & Scroll
+  // Buka Undangan Click -> Autoplay, Dismiss Cover & Scroll
   document.addEventListener('click', function(e) {
-    const bukaBtn = e.target.closest('#tombol-buka, a[href="#couple"], .elementor-element-buka-undangan-wrapper a');
+    const bukaBtn = e.target.closest('#tombol-buka, a[href="#couple"], .elementor-element-buka-undangan-wrapper a, #wds-button-cover button, .wds-button-cover button, .elementor-button');
     if (!bukaBtn) return;
+
+    // Check if it is a Buka Undangan action
+    const isBuka = bukaBtn.closest('#wds-cover') || bukaBtn.id === 'tombol-buka' || bukaBtn.getAttribute('href') === '#couple' || bukaBtn.innerText.includes('Buka Undangan') || bukaBtn.innerText.includes('BUKA UNDANGAN');
+    if (!isBuka) return;
 
     e.preventDefault();
     playMusic();
+
+    const wdsCover = document.getElementById('wds-cover');
+    if (wdsCover) {
+      wdsCover.classList.add('wds-cover-opened');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        wdsCover.style.display = 'none';
+      }, 850);
+    }
 
     const targetSec = document.getElementById('couple') || document.querySelector('.elementor-element-62145ec2');
     if (targetSec) {
@@ -3175,9 +3454,6 @@ Penerima: alamat kado">
       }, { rootMargin: '60px' });
 
       document.querySelectorAll('.goyang-1, .goyang-2, .goyang-3, .goyang-4, .naik-turun').forEach(el => {
-        el.style.animationPlayState = 'paused';
-        const img = el.querySelector('img');
-        if (img) img.style.animationPlayState = 'paused';
         flowerObserver.observe(el);
       });
     } else {
