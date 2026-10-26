@@ -200,7 +200,7 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
         width: '100vw', 
         height: '100svh', 
         zIndex: 1000, 
-        background: '#f3f6f4', 
+        background: '#FAFCFA', 
         margin: 0, 
         padding: 0, 
         overflow: 'hidden' 
