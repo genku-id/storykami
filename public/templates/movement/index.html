@@ -1864,39 +1864,7 @@ Penerima: alamat kado">
    WDS COVER MODAL (SAGE GREEN THEME - DARI COVER MOVEMENT)
    ===================================================================== */
 
-/* =====================================================================
-   HIDE NAVBAR & FLOATING CONTROLS WHILE COVER IS ACTIVE
-   ===================================================================== */
-body.wds-cover-active .elementor-element-32e9e884,
-body.wds-cover-active section.elementor-element-32e9e884,
-body.wds-cover-active .storykami-floating-controls {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
 
-body.wds-opened .elementor-element-32e9e884,
-body.wds-opened section.elementor-element-32e9e884 {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  animation: fadeInNavbar 0.6s ease forwards;
-}
-
-body.wds-opened .storykami-floating-controls {
-  display: flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  animation: fadeInNavbar 0.6s ease forwards;
-}
-
-@keyframes fadeInNavbar {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 .wds-cover {
   position: fixed;
@@ -2132,10 +2100,9 @@ body.wds-opened .storykami-floating-controls {
     max-width: calc(100vw - 24px) !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 99999 !important;
+    z-index: 9990 !important;
     pointer-events: auto !important;
     box-sizing: border-box !important;
-    display: flex !important;
     justify-content: center !important;
   }
 
@@ -2310,8 +2277,7 @@ body.wds-opened .storykami-floating-controls {
     position: fixed !important;
     bottom: 85px !important;
     left: 20px !important;
-    z-index: 99998 !important;
-    display: flex !important;
+    z-index: 9990 !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
@@ -2422,6 +2388,41 @@ body.wds-opened .storykami-floating-controls {
     height: 0 !important;
     opacity: 0 !important;
     position: absolute !important;
+  }
+
+  /* =====================================================================
+     HIDE NAVBAR & CONTROLS ON COVER (ONLY SHOW AFTER BUKA UNDANGAN)
+     ===================================================================== */
+  .elementor-section.elementor-element-32e9e884,
+  section.elementor-element-32e9e884:not(.elementor-sticky__spacer),
+  .storykami-floating-controls {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.5s ease !important;
+  }
+
+  body.wds-opened .elementor-section.elementor-element-32e9e884,
+  body.wds-opened section.elementor-element-32e9e884:not(.elementor-sticky__spacer) {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    animation: fadeInNavbar 0.6s ease forwards !important;
+  }
+
+  body.wds-opened .storykami-floating-controls {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    animation: fadeInNavbar 0.6s ease forwards !important;
+  }
+
+  @keyframes fadeInNavbar {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 </style>
 
