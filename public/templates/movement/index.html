@@ -2745,30 +2745,58 @@ Penerima: alamat kado">
   /* ============================================================
      COUPLE SECTION ADJUSTMENTS (UKURAN NAMA & SPASI LEGA)
      ============================================================ */
-  /* Ukuran font nama mempelai dibesarkan 2px (20px -> 22px) */
+  /* Ukuran font nama mempelai dibesarkan (20px -> 23px) */
   .elementor-element-67ceb3a0 .elementor-heading-title,
-  .elementor-element-2f744628 .elementor-heading-title {
-    font-size: 22px !important;
+  .elementor-element-2f744628 .elementor-heading-title,
+  [data-id="67ceb3a0"] .elementor-heading-title,
+  [data-id="2f744628"] .elementor-heading-title {
+    font-size: 23px !important;
   }
 
-  /* Spasi atas dan bawah tanda "&" ditambah +5px lagi (19px -> 24px) */
-  .elementor-element-174a7fc3 .elementor-divider {
+  /* Spasi atas dan bawah tanda "&" (divider) */
+  .elementor-element-174a7fc3,
+  [data-id="174a7fc3"] {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .elementor-element-174a7fc3 .elementor-divider,
+  [data-id="174a7fc3"] .elementor-divider {
     padding-block-start: 24px !important;
     padding-block-end: 24px !important;
   }
 
-  /* Renggangkan elemen halaman couple (+2px lagi antar widget & padding card) */
-  .elementor-element-3c7035ec > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute) {
-    margin-block-end: 7px !important;
-  }
-  /* Bawah foto/ilustrasi nambah 4px (18px -> 22px) */
-  .elementor-element-167f8b0d {
+  /* Bawah foto/ilustrasi mempelai (+4px lebih lega) */
+  .elementor-element-167f8b0d,
+  [data-id="167f8b0d"] {
     margin-top: 18px !important;
-    margin-bottom: 22px !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Jeda antar-elemen di dalam profil mempelai */
+  .elementor-element-67ceb3a0, [data-id="67ceb3a0"],
+  .elementor-element-2f744628, [data-id="2f744628"] {
+    margin-bottom: 8px !important;
+  }
+  .elementor-element-1bab71b1, [data-id="1bab71b1"],
+  .elementor-element-301c2039, [data-id="301c2039"] {
+    margin-bottom: 12px !important;
+  }
+  .elementor-element-4a660457, [data-id="4a660457"] {
+    margin-bottom: 14px !important;
+  }
+  .elementor-element-371e2d2f, [data-id="371e2d2f"] {
+    margin-bottom: 10px !important;
+  }
+
+  /* Renggangkan padding kartu couple */
+  .elementor-element-3c7035ec > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial):not(:last-child):not(.elementor-absolute) {
+    margin-block-end: 8px !important;
   }
   .elementor-element-3c7035ec > .elementor-element-populated {
-    padding-top: 30px !important;
-    padding-bottom: 30px !important;
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
   /* ============================================================
      EVENT SECTION SPACING & PADDING (LEBIH LEGA & TIDAK PADAT)
