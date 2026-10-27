@@ -2494,6 +2494,26 @@ Penerima: alamat kado">
   .wds-cover-overlay {
     opacity: 0.85 !important;
   }
+
+  /* Instagram button text and size */
+  .elementor-element-4a660457 .elementor-button,
+  .elementor-element-371e2d2f .elementor-button {
+    font-size: 11px !important;
+    padding: 6px 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+  .elementor-element-4a660457 .elementor-button .elementor-button-text,
+  .elementor-element-371e2d2f .elementor-button .elementor-button-text {
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .elementor-element-1bab71b1 .elementor-heading-title,
+  .elementor-element-301c2039 .elementor-heading-title {
+    line-height: 1.5 !important;
+  }
 </style>
 
 
@@ -2663,10 +2683,11 @@ Penerima: alamat kado">
 
       const elWanitaOrtu = document.querySelector('.elementor-element-1bab71b1 .elementor-heading-title, [data-id="1bab71b1"] .elementor-heading-title');
       if (elWanitaOrtu) {
-        const urutan = wanita.urutanAnak || 'Putri Pertama';
+        const urutanRaw = (wanita.urutanAnak || 'Putri Pertama').trim();
+        const urutan = urutanRaw.replace(/\s+dari$/i, '').trim();
         const ayah = wanita.namaAyah || 'Bapak';
         const ibu = wanita.namaIbu || 'Ibu';
-        elWanitaOrtu.textContent = `${urutan} dari ${ayah} dan ${ibu}`;
+        elWanitaOrtu.innerHTML = `<p>${urutan} dari<br>${ayah} &amp; ${ibu}</p>`;
       }
 
       const elWanitaImg = document.querySelector('.elementor-element-7b7433b4 img, [data-id="7b7433b4"] img, #storykami-bride-img');
@@ -2682,8 +2703,14 @@ Penerima: alamat kado">
         if (igHandle) {
           elWanitaIg.href = `https://www.instagram.com/${igHandle}`;
           elWanitaIg.target = '_blank';
+          const txt = elWanitaIg.querySelector('.elementor-button-text');
+          if (txt) txt.textContent = `@${igHandle}`;
+          const wrap = elWanitaIg.closest('.elementor-element-4a660457, [data-id="4a660457"]');
+          if (wrap) wrap.style.display = '';
           elWanitaIg.style.display = '';
         } else {
+          const wrap = elWanitaIg.closest('.elementor-element-4a660457, [data-id="4a660457"]');
+          if (wrap) wrap.style.display = 'none';
           elWanitaIg.style.display = 'none';
         }
       }
@@ -2695,10 +2722,11 @@ Penerima: alamat kado">
 
       const elPriaOrtu = document.querySelector('.elementor-element-301c2039 .elementor-heading-title, [data-id="301c2039"] .elementor-heading-title');
       if (elPriaOrtu) {
-        const urutan = pria.urutanAnak || 'Putra Pertama';
+        const urutanRaw = (pria.urutanAnak || 'Putra Pertama').trim();
+        const urutan = urutanRaw.replace(/\s+dari$/i, '').trim();
         const ayah = pria.namaAyah || 'Bapak';
         const ibu = pria.namaIbu || 'Ibu';
-        elPriaOrtu.textContent = `${urutan} dari ${ayah} dan ${ibu}`;
+        elPriaOrtu.innerHTML = `<p>${urutan} dari<br>${ayah} &amp; ${ibu}</p>`;
       }
 
       const elPriaImg = document.querySelector('.elementor-element-156d96f2 img, [data-id="156d96f2"] img, #storykami-groom-img');
@@ -2714,8 +2742,14 @@ Penerima: alamat kado">
         if (igHandle) {
           elPriaIg.href = `https://www.instagram.com/${igHandle}`;
           elPriaIg.target = '_blank';
+          const txt = elPriaIg.querySelector('.elementor-button-text');
+          if (txt) txt.textContent = `@${igHandle}`;
+          const wrap = elPriaIg.closest('.elementor-element-371e2d2f, [data-id="371e2d2f"]');
+          if (wrap) wrap.style.display = '';
           elPriaIg.style.display = '';
         } else {
+          const wrap = elPriaIg.closest('.elementor-element-371e2d2f, [data-id="371e2d2f"]');
+          if (wrap) wrap.style.display = 'none';
           elPriaIg.style.display = 'none';
         }
       }
