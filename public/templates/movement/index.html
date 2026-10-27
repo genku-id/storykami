@@ -2140,39 +2140,47 @@ Penerima: alamat kado">
     justify-content: center !important;
   }
 
-  /* Single-line Pill Container */
+  /* Single-line Pill Container Dinamis & Compact */
   .elementor-element-32e9e884 .elementor-element-30561535,
   .elementor-element-30561535 {
     margin: 0 auto !important;
-    padding: 6px 14px !important;
+    padding: 6px 12px !important;
     border-radius: 50px !important;
     background: rgba(255, 255, 255, 0.94) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
     border: 1px solid rgba(63, 92, 72, 0.28) !important;
     box-shadow: 0 8px 30px rgba(63, 92, 72, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    display: flex !important;
+    display: inline-flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     white-space: nowrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
     width: max-content !important;
-    max-width: 100% !important;
+    max-width: calc(100vw - 32px) !important;
     box-sizing: border-box !important;
+    transition: all 0.3s ease !important;
   }
 
-  /* Nav Items & Icons */
+  /* Nav Items & Icons: reset any Elementor column/container styles */
+  .elementor-element-30561535 > *,
+  .elementor-element-32e9e884 .e-child,
+  .elementor-element-30561535 .e-child,
   .elementor-element-32e9e884 .e-con-child {
     width: auto !important;
+    min-width: 0 !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
     padding: 0 !important;
     display: inline-flex !important;
   }
 
-  /* Sembunyikan item navbar jika section di-disable */
+  /* Sembunyikan item navbar jika section di-disable agar jarak compact & dinamis */
+  .elementor-element-30561535 > *.storykami-nav-hidden,
+  .elementor-element-30561535 .e-child.storykami-nav-hidden,
+  .elementor-element-32e9e884 .e-child.storykami-nav-hidden,
   .elementor-element-30561535 .e-con-child.storykami-nav-hidden,
   .elementor-element-32e9e884 .e-con-child.storykami-nav-hidden,
   .storykami-nav-hidden {
@@ -2180,8 +2188,10 @@ Penerima: alamat kado">
     visibility: hidden !important;
     width: 0 !important;
     height: 0 !important;
+    min-width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
+    border: none !important;
     pointer-events: none !important;
   }
 
@@ -3476,7 +3486,7 @@ Penerima: alamat kado">
     navItems.forEach(item => {
       const link = document.querySelector(`.elementor-element-30561535 a[href="${item.href}"]`) || document.querySelector(`.elementor-element-32e9e884 a[href="${item.href}"]`) || document.querySelector(`a[href="${item.href}"]`);
       if (link) {
-        const container = link.closest('.e-con-child') || link.closest('.elementor-widget-icon') || link;
+        const container = link.closest('.elementor-element-30561535 > *') || link.closest('.e-child') || link.closest('.e-con-child') || link.closest('.elementor-widget-icon') || link;
         if (item.visible) {
           container.style.removeProperty('display'); container.style.display = '';
           container.classList.remove('storykami-nav-hidden');
