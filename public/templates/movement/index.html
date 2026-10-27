@@ -19,6 +19,21 @@
     overflow: hidden !important;
     height: 100vh !important;
   }
+
+  /* Quote / Ayat styling: unbold and smaller size */
+  .elementor-element-70929b2 .elementor-heading-title,
+  [data-id="70929b2"] .elementor-heading-title,
+  .elementor-element-70929b2 .elementor-heading-title p,
+  [data-id="70929b2"] .elementor-heading-title p {
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+  }
+  .elementor-element-70929b2 .elementor-heading-title b,
+  .elementor-element-70929b2 .elementor-heading-title strong {
+    font-weight: 400 !important;
+  }
+
 </style>
 <link rel=profile href=https://gmpg.org/xfn/11>
 <title>The Wedding of Dilan &amp; Millea</title>
@@ -998,7 +1013,7 @@
  <div class="elementor-widget-wrap elementor-element-populated">
  <div class="elementor-element elementor-element-70929b2 elementor-widget elementor-widget-heading" data-id=70929b2 data-element_type=widget data-e-type=widget data-widget_type=heading.default>
  <div class=elementor-widget-container>
- <h2 class="elementor-heading-title elementor-size-default"><p><b>QS. Ar-Rum Ayat 21</b> <br><br>وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ <br><br>Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.</p></h2> </div>
+ <h2 class="elementor-heading-title elementor-size-default" style="font-size:16px !important;font-weight:400 !important;line-height:1.6 !important;"><p style="font-size:16px !important;font-weight:400 !important;line-height:1.6 !important;"><span style="display:inline-block;margin-bottom:8px;">QS. Ar-Rum Ayat 21</span> <br><br>وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗاِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ <br><br>Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.</p></h2> </div>
  </div>
  </div>
  </div>
@@ -3317,8 +3332,11 @@ Penerima: alamat kado">
       if (invData.kutipan?.teks) {
         const elQuote = document.querySelector('.elementor-element-70929b2 .elementor-heading-title, [data-id="70929b2"] .elementor-heading-title');
         if (elQuote) {
-          const sumber = invData.kutipan.sumber ? `<br><strong style="font-size:0.9em;margin-top:12px;display:inline-block;">(${invData.kutipan.sumber})</strong>` : '';
-          elQuote.innerHTML = `<p>${invData.kutipan.teks.replace(/\n/g, '<br>')}${sumber}</p>`;
+          elQuote.style.setProperty('font-size', '16px', 'important');
+          elQuote.style.setProperty('font-weight', '400', 'important');
+          elQuote.style.setProperty('line-height', '1.6', 'important');
+          const sumber = invData.kutipan.sumber ? `<br><span style="font-size:0.9em;margin-top:10px;display:inline-block;font-weight:400;">(${invData.kutipan.sumber})</span>` : '';
+          elQuote.innerHTML = `<p style="font-weight:400;font-size:16px;line-height:1.6;margin:0;">${invData.kutipan.teks.replace(/\n/g, '<br>')}${sumber}</p>`;
         }
       }
     }
