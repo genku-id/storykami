@@ -5,15 +5,38 @@ import BackgroundMusic from '@/components/wim-baru/BackgroundMusic';
 
 export default function MovementTemplate({ data = {}, slug = 'demo', guestName = '', isDemo = false, isVisible = true }) {
   const iframeRef = useRef(null);
-  const [iframeSrc, setIframeSrc] = useState('/templates/movement/index.html');
-  const [resolvedGuestName, setResolvedGuestName] = useState(guestName || '');
-  const [comments, setComments] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const isDemoMode = Boolean(isDemo) || slug === 'demo' || slug === 'preview' || 
     (typeof slug === 'string' && (slug.startsWith('demo') || slug.includes('demo'))) || 
     (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo'));
   const demoStorageKey = `storykami_demo_guestbook_${slug || 'movement'}`;
+
+  const buildIframeSrc = (nameOverride) => {
+    let name = nameOverride !== undefined ? nameOverride : guestName;
+    if (!name && typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      name = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+    }
+    const finalName = name ? decodeURIComponent(name.replace(/\+/g, ' ')).trim() : '';
+    const params = new URLSearchParams();
+    if (finalName) params.set('to', finalName);
+    if (slug) params.set('slug', slug);
+    if (isDemoMode) params.set('demo', '1');
+    const qs = params.toString();
+    return `/templates/movement/index.html${qs ? `?${qs}` : ''}`;
+  };
+
+  const [iframeSrc, setIframeSrc] = useState(buildIframeSrc);
+  const [resolvedGuestName, setResolvedGuestName] = useState(() => {
+    let name = guestName;
+    if (!name && typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      name = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+    }
+    return name ? decodeURIComponent(name.replace(/\+/g, ' ')).trim() : '';
+  });
+  const [comments, setComments] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // 1. Resolve Guest Name & setup query params
   useEffect(() => {
@@ -25,11 +48,6 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
     const finalName = name ? decodeURIComponent(name.replace(/\+/g, ' ')).trim() : '';
     setResolvedGuestName(finalName);
 
-    const params = new URLSearchParams();
-    if (finalName) params.set('to', finalName);
-    if (slug) params.set('slug', slug);
-    if (isDemoMode) params.set('demo', '1');
-
     // Store in sessionStorage so iframe reads it immediately on startup
     try {
       if (typeof window !== 'undefined') {
@@ -40,7 +58,8 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
       console.warn('sessionStorage write error:', e);
     }
 
-    setIframeSrc(`/templates/movement/index.html?${params.toString()}`);
+    const targetSrc = buildIframeSrc(finalName);
+    setIframeSrc(prev => prev !== targetSrc ? targetSrc : prev);
   }, [guestName, slug, isDemoMode, data]);
 
   // 2. Fetch Comments (Guestbook)
