@@ -2750,10 +2750,32 @@ Penerima: alamat kado">
       }
     }
 
+    function capitalizeWord(s) {
+      if (!s || typeof s !== 'string') return '';
+      const trimmed = s.trim();
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    }
+
+    function formatTitleCaseName(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str.split(' ').map(w => {
+        if (w.toLowerCase() === 'dan' || w.toLowerCase() === 'and' || w === '&') return w;
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      }).join(' ');
+    }
+
     // 2. Mempelai Panggilan & Cover
-    const wanitaPanggilan = invData.mempelai?.wanita?.namaPanggilan || invData.brideName || 'Milea';
-    const priaPanggilan = invData.mempelai?.pria?.namaPanggilan || invData.groomName || 'Dilan';
-    const coupleName = invData.coverName || invData.coupleName || `${wanitaPanggilan} & ${priaPanggilan}`;
+    const rawWanita = invData.mempelai?.wanita?.namaPanggilan || invData.brideName || 'Milea';
+    const rawPria = invData.mempelai?.pria?.namaPanggilan || invData.groomName || 'Dilan';
+    const wanitaPanggilan = capitalizeWord(rawWanita);
+    const priaPanggilan = capitalizeWord(rawPria);
+
+    let coupleName = invData.coverName || invData.coupleName;
+    if (coupleName) {
+      coupleName = formatTitleCaseName(coupleName);
+    } else {
+      coupleName = `${wanitaPanggilan} & ${priaPanggilan}`;
+    }
 
     // Title Tag
     document.title = `The Wedding of ${coupleName} - StoryKami`;
