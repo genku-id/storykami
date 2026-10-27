@@ -35,7 +35,37 @@
   }
 
 
-  /* StoryKami Comment List Styling - Container 3:4 dengan Internal Scroll */
+  /* Warna Teks Form Ucapan - Hitam Jelas & Tebal */
+  .saic-select,
+  .saic-wrapper select.saic-select,
+  .saic-wrapper input[type="text"].saic-input,
+  .saic-wrapper textarea.saic-textarea,
+  #attendance,
+  #author,
+  #saic-textarea-30581 {
+    color: #111111 !important;
+    background-color: #ffffff !important;
+    font-weight: 500 !important;
+  }
+
+  .saic-select option {
+    color: #111111 !important;
+    background-color: #ffffff !important;
+  }
+
+  .saic-wrapper input::placeholder,
+  .saic-wrapper textarea::placeholder,
+  #author::placeholder,
+  #saic-textarea-30581::placeholder,
+  ::-webkit-input-placeholder,
+  :-moz-placeholder,
+  ::-moz-placeholder,
+  :-ms-input-placeholder {
+    color: #444444 !important;
+    opacity: 1 !important;
+  }
+
+  /* StoryKami Comment List Styling - Container 3:4 Ditengah Layar & Batang Scroll Disembunyikan */
   .saic-wrapper ul.saic-container-comments,
   ul.saic-container-comments {
     display: block !important;
@@ -43,8 +73,13 @@
     max-width: 320px !important;
     aspect-ratio: 3 / 4 !important;
     max-height: 420px !important;
-    margin: 16px auto 0 auto !important;
-    padding: 10px 8px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    float: none !important;
+    clear: both !important;
+    padding: 12px 10px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
@@ -53,20 +88,18 @@
     background: rgba(0, 0, 0, 0.16) !important;
     border: 1px solid rgba(255, 255, 255, 0.22) !important;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(255, 255, 255, 0.5) transparent !important;
+
+    /* Sembunyikan batang scroll di semua browser */
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE dan Edge */
   }
+
+  /* Sembunyikan batang scroll untuk Chrome, Safari, dan Opera */
   .saic-wrapper ul.saic-container-comments::-webkit-scrollbar,
   ul.saic-container-comments::-webkit-scrollbar {
-    width: 4px !important;
-  }
-  .saic-wrapper ul.saic-container-comments::-webkit-scrollbar-thumb,
-  ul.saic-container-comments::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.5) !important;
-    border-radius: 4px !important;
-  }
-  .saic-wrapper ul.saic-container-comments::-webkit-scrollbar-track,
-  ul.saic-container-comments::-webkit-scrollbar-track {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
     background: transparent !important;
   }
   .saic-wrapper ul.saic-container-comments li.saic-item-comment:last-child {
@@ -3894,18 +3927,23 @@ Penerima: alamat kado">
 
       const nama = (authorEl ? authorEl.value : '').trim();
       const ucapan = (textEl ? textEl.value : '').trim();
-      let kehadiran = 'Hadir';
+      let kehadiran = '';
       if (attendEl) {
         const val = attendEl.value;
         if (val === 'present' || val === 'Hadir') kehadiran = 'Hadir';
         else if (val === 'notpresent' || val === 'Tidak Hadir') kehadiran = 'Tidak Hadir';
         else if (val === 'notsure' || val === 'Masih Ragu') kehadiran = 'Masih Ragu';
-        else kehadiran = attendEl.options[attendEl.selectedIndex]?.text || val || 'Hadir';
+        else if (val) kehadiran = attendEl.options[attendEl.selectedIndex]?.text || val;
       }
 
       if (!nama) {
         showToast('Silakan masukkan nama Anda');
         if (authorEl) authorEl.focus();
+        return;
+      }
+      if (!kehadiran) {
+        showToast('Silakan pilih konfirmasi kehadiran');
+        if (attendEl) attendEl.focus();
         return;
       }
       if (!ucapan) {
@@ -3941,6 +3979,8 @@ Penerima: alamat kado">
         }
       }
 
+      // Reset form: selalu kembalikan pilihan ke 'Konfirmasi Kehadiran' dan kosongkan teks
+      if (attendEl) attendEl.selectedIndex = 0;
       if (textEl) textEl.value = '';
       showToast('Ucapan Anda berhasil dikirim!');
     });
