@@ -2504,8 +2504,17 @@ Penerima: alamat kado">
     z-index: 3 !important;
   }
 
-  /* Card putih: background putih diturunkan opacity-nya jadi 40% (tembus pandang ke ornamen di bawahnya) */
-  .elementor-element-6b085b14 > .elementor-element-populated,
+  /* Card putih khusus halaman Home: opacity 10%, jernih tanpa blur */
+  .elementor-element-6b085b14 > .elementor-element-populated {
+    position: relative !important;
+    z-index: 3 !important;
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Card putih halaman lainnya: opacity 20%, jernih tanpa blur */
   .elementor-element-3c7035ec > .elementor-element-populated,
   .elementor-element-3fa91d68 > .elementor-element-populated,
   .elementor-element-6a8b24c0 > .elementor-element-populated,
@@ -2516,22 +2525,22 @@ Penerima: alamat kado">
   .elementor-element-46c42bfd .elementor-element-populated {
     position: relative !important;
     z-index: 3 !important;
-    background-color: rgba(255, 255, 255, 0.40) !important;
+    background-color: rgba(255, 255, 255, 0.20) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  /* Sub-cards di dalam Acara (Akad, Resepsi, Ngunduh Mantu) */
+  /* Sub-cards di dalam Acara (Akad, Resepsi, Ngunduh Mantu): opacity 20%, jernih tanpa blur */
   .elementor-element-63855045 > .elementor-element-populated,
   .elementor-element-289af6a8 > .elementor-element-populated,
   .elementor-element-512fdcb9 > .elementor-element-populated {
     position: relative !important;
     z-index: 4 !important;
-    background-color: rgba(255, 255, 255, 0.50) !important;
+    background-color: rgba(255, 255, 255, 0.20) !important;
     border: 1px solid rgba(63, 92, 72, 0.15) !important;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   /* 4. Text & Konten (di dalam card, di atas card putih) */
