@@ -3296,6 +3296,13 @@ Penerima: alamat kado">
         img.alt = 'StoryKami';
       });
     } catch(e) {}
+
+    // Sinkronisasi Navbar dengan WIM
+    try {
+      updateNavbarVisibility(invData);
+    } catch (e) {
+      console.warn('updateNavbarVisibility error:', e);
+    }
   }
 
   // --- Helper: Render Comments ---
@@ -3450,7 +3457,7 @@ Penerima: alamat kado">
     const pv = invData.pageVisibility || {};
 
     // Cek kondisi keterisian dan status aktivasi setiap section
-    const hasGaleri = pv.galeri === true && Array.isArray(invData.galeri) && invData.galeri.length > 0;
+    const hasGaleri = pv.galeri !== false && pv.gallery !== false && Array.isArray(invData.galeri) && invData.galeri.length > 0;
     const hasStory = pv.loveStory !== false && Array.isArray(invData.ceritaCinta) && invData.ceritaCinta.length > 0;
     const hasCouple = pv.profiles !== false;
     const hasEvent = pv.events !== false;
@@ -3467,14 +3474,14 @@ Penerima: alamat kado">
     ];
 
     navItems.forEach(item => {
-      const link = document.querySelector(`.elementor-element-30561535 a[href="${item.href}"]`);
+      const link = document.querySelector(`.elementor-element-30561535 a[href="${item.href}"]`) || document.querySelector(`.elementor-element-32e9e884 a[href="${item.href}"]`) || document.querySelector(`a[href="${item.href}"]`);
       if (link) {
         const container = link.closest('.e-con-child') || link.closest('.elementor-widget-icon') || link;
         if (item.visible) {
-          container.style.display = '';
+          container.style.removeProperty('display'); container.style.display = '';
           container.classList.remove('storykami-nav-hidden');
         } else {
-          container.style.display = 'none';
+          container.style.setProperty('display', 'none', 'important');
           container.classList.add('storykami-nav-hidden');
         }
       }
@@ -3760,6 +3767,7 @@ Penerima: alamat kado">
     if (event.data.type === 'STORYKAMI_INIT' || event.data.type === 'STORYKAMI_DATA') {
       if (event.data.slug) currentSlug = event.data.slug;
       applyInvitationData(event.data.data, event.data.guestName);
+      updateNavbarVisibility(event.data.data);
       if (event.data.comments) {
         renderComments(event.data.comments);
       }
