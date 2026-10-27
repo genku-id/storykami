@@ -3662,15 +3662,16 @@ Penerima: alamat kado">
     });
   }
 
-  // Buka Undangan Click -> Autoplay, Dismiss Cover, Reveal Navbar & Menuju Halaman Pertama
+  // Buka Undangan Click -> Autoplay Sekali Saja saat Membuka Undangan
+  let isCoverDismissed = false;
   document.addEventListener('click', function(e) {
-    const bukaBtn = e.target.closest('#tombol-buka, a[href="#couple"], .elementor-element-buka-undangan-wrapper a, #wds-button-cover button, .wds-button-cover button, .elementor-button');
+    if (isCoverDismissed || document.body.classList.contains('wds-opened')) return;
+
+    // Hanya tombol buka undangan pada cover overlay yang memicu pembukaan undangan
+    const bukaBtn = e.target.closest('#wds-cover #wds-button-cover button, #wds-cover button, #wds-button-cover button, #tombol-buka');
     if (!bukaBtn) return;
 
-    // Check if it is a Buka Undangan action
-    const isBuka = bukaBtn.closest('#wds-cover') || bukaBtn.id === 'tombol-buka' || bukaBtn.getAttribute('href') === '#couple' || (bukaBtn.innerText && (bukaBtn.innerText.includes('Buka Undangan') || bukaBtn.innerText.includes('BUKA UNDANGAN')));
-    if (!isBuka) return;
-
+    isCoverDismissed = true;
     e.preventDefault();
     playMusic();
 

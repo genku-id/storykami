@@ -2367,10 +2367,13 @@ Penerima: alamat kado">
   // Set initial icon to Mute
   updateMusicBtnUI(false);
 
-  // Event listener tombol Buka Undangan -> Autoplay Music
-  const bukaBtnElements = document.querySelectorAll('#tombol-buka, a[href="#home"], .elementor-element-ce1e220 a, a[href*="home"]');
+  // Event listener tombol Buka Undangan -> Autoplay Sekali Saja saat Membuka Undangan
+  let isDilanOpened = false;
+  const bukaBtnElements = document.querySelectorAll('#tombol-buka, .elementor-element-3a74dce8 a, .elementor-element-ce1e220 a');
   bukaBtnElements.forEach(btn => {
     btn.addEventListener('click', function(e) {
+      if (isDilanOpened) return;
+      isDilanOpened = true;
       playMusic();
       const homeSection = document.getElementById('home');
       if (homeSection) {
