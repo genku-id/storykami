@@ -22,7 +22,7 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
     if (finalName) params.set('to', finalName);
     if (slug) params.set('slug', slug);
     if (isDemoMode) params.set('demo', '1');
-    params.set('v', '2.1.0');
+    params.set('v', '2.1.1');
     const qs = params.toString();
     return `/templates/movement/index.html${qs ? `?${qs}` : ''}`;
   };
