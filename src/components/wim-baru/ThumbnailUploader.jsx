@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 
-export const DEFAULT_COUPLE_THUMBNAIL = '/assets/images/couple.png';
+export const DEFAULT_COUPLE_THUMBNAIL = '/assets/images/couple.jpg';
 
 export default function ThumbnailUploader({ value, onChange, slug = 'undangan', title = '', label = '', description = '', showWhatsappPreview = true }) {
   const displayLabel = label || title || 'Foto Thumbnail Link (WhatsApp & Medsos)';

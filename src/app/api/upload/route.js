@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import sharp from 'sharp';
 
 const supabaseAdmin = createClient(
   (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, ''),
@@ -16,24 +17,63 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Tidak ada file yang dipilih' }, { status: 400 });
     }
 
-    // Batas ukuran 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Ukuran file maksimal 5MB' }, { status: 400 });
+    // Batas ukuran 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Ukuran file maksimal 10MB' }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const rawExt = file.name && file.name.includes('.') 
       ? file.name.split('.').pop().toLowerCase() 
       : 'jpg';
-    const ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg';
+    let ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg';
+
+    let finalBuffer = buffer;
+    let finalContentType = file.type || 'image/jpeg';
+
+    // Optimasi gambar otomatis agar ringan (< 250 KB) dan ramah thumbnail WhatsApp/Medsos
+    if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+      try {
+        const imagePipeline = sharp(buffer).rotate();
+        const metadata = await imagePipeline.metadata();
+
+        if (metadata.width && metadata.width > 1200) {
+          imagePipeline.resize({ width: 1200, withoutEnlargement: true });
+        }
+
+        if (ext === 'png') {
+          finalBuffer = await imagePipeline.png({ compressionLevel: 9, quality: 85 }).toBuffer();
+          // Jika PNG masih di atas 280KB, convert ke JPEG agar tidak ditolak crawler WhatsApp (<300KB)
+          if (finalBuffer.length > 280 * 1024) {
+            finalBuffer = await sharp(buffer)
+              .rotate()
+              .resize({ width: 1000, withoutEnlargement: true })
+              .jpeg({ quality: 82, progressive: true })
+              .toBuffer();
+            ext = 'jpg';
+            finalContentType = 'image/jpeg';
+          } else {
+            finalContentType = 'image/png';
+          }
+        } else {
+          finalBuffer = await imagePipeline.jpeg({ quality: 82, progressive: true }).toBuffer();
+          ext = 'jpg';
+          finalContentType = 'image/jpeg';
+        }
+      } catch (optErr) {
+        console.warn('Image optimization fallback to original buffer:', optErr);
+        finalBuffer = buffer;
+      }
+    }
+
     const cleanSlug = String(slug).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30);
     const fileName = `${cleanSlug}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
 
     // Upload ke bucket wim-assets
     let uploadRes = await supabaseAdmin.storage
       .from('wim-assets')
-      .upload(fileName, buffer, {
-        contentType: file.type || 'image/jpeg',
+      .upload(fileName, finalBuffer, {
+        contentType: finalContentType,
         upsert: true
       });
 
@@ -42,8 +82,8 @@ export async function POST(req) {
       await supabaseAdmin.storage.createBucket('wim-assets', { public: true });
       uploadRes = await supabaseAdmin.storage
         .from('wim-assets')
-        .upload(fileName, buffer, {
-          contentType: file.type || 'image/jpeg',
+        .upload(fileName, finalBuffer, {
+          contentType: finalContentType,
           upsert: true
         });
     }

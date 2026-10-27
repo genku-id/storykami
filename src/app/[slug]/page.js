@@ -96,11 +96,14 @@ export async function generateMetadata({ params, searchParams }) {
   if (guestName) {
     description = `Kepada Yth. ${guestName}. ${description}`;
   }
-  const DEFAULT_THUMBNAIL = 'https://storykami.my.id/assets/images/couple.png';
+  const DEFAULT_THUMBNAIL = 'https://storykami.my.id/assets/images/couple.jpg';
   let image = data.thumbnailFoto || data.fotoCouple || data.coupleImage || data.hal2_fotoCouple || DEFAULT_THUMBNAIL;
   if (image && image.startsWith('/')) {
     image = `https://storykami.my.id${image}`;
   }
+
+  const mimeType = image.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+  const pageUrl = `https://storykami.my.id/${slug}`;
 
   return {
     title,
@@ -108,14 +111,26 @@ export async function generateMetadata({ params, searchParams }) {
     openGraph: {
       title,
       description,
-      images: image ? [image] : [],
+      url: pageUrl,
+      siteName: 'StoryKami',
+      images: [
+        {
+          url: image,
+          secureUrl: image,
+          width: 800,
+          height: 800,
+          alt: title,
+          type: mimeType,
+        }
+      ],
       type: 'website',
+      locale: 'id_ID',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: image ? [image] : [],
+      images: [image],
     }
   };
 }
