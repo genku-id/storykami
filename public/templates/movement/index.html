@@ -35,9 +35,42 @@
   }
 
 
-  /* StoryKami Comment List Styling - Rata Kiri & Clean Layout */
-  .saic-wrapper ul.saic-container-comments {
-    padding-left: 0 !important;
+  /* StoryKami Comment List Styling - Container 3:4 dengan Internal Scroll */
+  .saic-wrapper ul.saic-container-comments,
+  ul.saic-container-comments {
+    display: block !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    aspect-ratio: 3 / 4 !important;
+    max-height: 420px !important;
+    margin: 16px auto 0 auto !important;
+    padding: 10px 8px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+    background: rgba(0, 0, 0, 0.16) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent !important;
+  }
+  .saic-wrapper ul.saic-container-comments::-webkit-scrollbar,
+  ul.saic-container-comments::-webkit-scrollbar {
+    width: 4px !important;
+  }
+  .saic-wrapper ul.saic-container-comments::-webkit-scrollbar-thumb,
+  ul.saic-container-comments::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    border-radius: 4px !important;
+  }
+  .saic-wrapper ul.saic-container-comments::-webkit-scrollbar-track,
+  ul.saic-container-comments::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  .saic-wrapper ul.saic-container-comments li.saic-item-comment:last-child {
+    border-bottom: none !important;
   }
   .saic-wrapper ul.saic-container-comments li.saic-item-comment {
     text-align: left !important;
@@ -1668,6 +1701,11 @@ Penerima: alamat kado">
  </div>
  </div>
  </div>
+ <div class="elementor-element storykami-closing-couple-container">
+ <div class="storykami-arch-frame">
+ <img id="closing-couple-img" src="./assets/couple.webp" onerror="this.src='/assets/images/couple.webp'" alt="Foto Mempelai" />
+ </div>
+ </div>
  <div class="elementor-element elementor-element-262755fc elementor-widget elementor-widget-heading animated fadeInDown" data-id=262755fc data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown"}' data-widget_type=heading.default>
  <div class=elementor-widget-container>
  <h2 class="elementor-heading-title elementor-size-default"><p>Atas kehadiran dan do’a restu dari Bapak/Ibu/Saudara/i sekalian, kami mengucapkan Terima Kasih. <br><br><b>Wassalamualaikum Wr. Wb.</b></p></h2> </div>
@@ -2928,6 +2966,33 @@ Penerima: alamat kado">
     margin-bottom: 20px !important;
   }
 
+
+  /* Container Foto Penutup: Gabungan Persegi dan Setengah Lingkaran (Arch Frame 3:4) */
+  .storykami-closing-couple-container {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 10px !important;
+    margin-bottom: 22px !important;
+  }
+  .storykami-arch-frame {
+    width: 180px !important;
+    height: 240px !important; /* Proporsi 3:4 */
+    border-radius: 90px 90px 8px 8px !important; /* Atas setengah lingkaran kubah, bawah persegi */
+    overflow: hidden !important;
+    position: relative !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+    border: 3.5px solid rgba(255, 255, 255, 0.95) !important;
+    background: #ffffff !important;
+  }
+  .storykami-arch-frame img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 20% !important;
+    display: block !important;
+  }
 </style>
 
 
@@ -3695,6 +3760,13 @@ Penerima: alamat kado">
       if (secClosing) secClosing.style.display = 'none';
     } else if (secClosing) {
       secClosing.style.display = '';
+
+      // Foto Penutup (Arch Couple Frame)
+      const elClosingImg = document.getElementById('closing-couple-img');
+      if (elClosingImg) {
+        const couplePhoto = invData.fotoCouple || invData.hal2_fotoCouple || invData.coverImage || './assets/couple.webp';
+        elClosingImg.src = couplePhoto;
+      }
 
       if (invData.penutup) {
         const elPenutup = document.querySelector('.elementor-element-262755fc .elementor-heading-title, [data-id="262755fc"] .elementor-heading-title');
