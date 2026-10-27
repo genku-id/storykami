@@ -2447,28 +2447,109 @@ Penerima: alamat kado">
     overflow: visible !important;
   }
 
-  /* Bunga atas di section 2 s/d 6 */
+  /* ========================================================
+     EXACT STACKING ORDER:
+     background (0) > ornamen (1) > card (3) > text (5) > tombol (10)
+     ======================================================== */
+
+  /* 2. Ornamen bunga (di atas background, tapi di bawah card putih) */
+  .elementor-widget-image.elementor-absolute,
+  .elementor-element-ff3333f,
+  .elementor-element-59111c24,
+  .elementor-element-4ef05064,
+  .elementor-element-44442ed1,
+  .elementor-element-4ff21c84,
+  .elementor-element-3f3df273,
+  .elementor-element-696ca939,
+  .elementor-element-69c48112,
   .elementor-element-187ce017,
+  .elementor-element-622736a9,
+  .elementor-element-3e9fd44,
   .elementor-element-cf19181,
+  .elementor-element-6fa573a2,
+  .elementor-element-2e68e908,
+  .elementor-element-5cf0f17,
+  .elementor-element-7976796a,
   .elementor-element-311233a2,
+  .elementor-element-5de43bd2,
+  .elementor-element-43803185,
+  .elementor-element-cf525fc,
   .elementor-element-1bad9269,
-  .elementor-element-6f8713f1 {
+  .elementor-element-1a669119,
+  .elementor-element-3fe602e0,
+  .elementor-element-6f8713f1,
+  .elementor-element-3c966edd,
+  .elementor-element-4ff7b64d {
+    position: absolute !important;
     z-index: 1 !important;
     pointer-events: none !important;
   }
 
-  /* Card putih konten tetap di atas bunga */
+  /* 3. Card Sections & Card Putih (di atas ornamen bunga) */
+  .elementor-inner-section {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+
+  .elementor-inner-section.elementor-element-25d03082,
+  .elementor-inner-section.elementor-element-542344fc,
+  .elementor-inner-section.elementor-element-68d7f55a,
+  .elementor-inner-section.elementor-element-75ab95bc,
+  .elementor-inner-section.elementor-element-2c2e32b8,
+  .elementor-inner-section.elementor-element-1c4a3575,
+  .elementor-inner-section.elementor-element-7d968ce9,
+  .elementor-inner-section.elementor-element-46c42bfd,
+  .elementor-inner-section.elementor-element-18c98a74 {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+
+  /* Card putih: background putih solid bersih agar ornamen tidak menembus teks */
+  .elementor-element-6b085b14 > .elementor-element-populated,
   .elementor-element-3c7035ec > .elementor-element-populated,
   .elementor-element-3fa91d68 > .elementor-element-populated,
-  .elementor-element-63855045 > .elementor-element-populated,
-  .elementor-element-289af6a8 > .elementor-widget-wrap,
-  .elementor-element-512fdcb9 > .elementor-widget-wrap,
-  .elementor-element-6a8b24c0 > .elementor-widget-wrap,
-  .elementor-element-34449a73 > .elementor-widget-wrap,
-  .elementor-element-4663756 > .elementor-widget-wrap,
-  .elementor-element-499aaedc > .elementor-widget-wrap {
+  .elementor-element-6a8b24c0 > .elementor-element-populated,
+  .elementor-element-34449a73 > .elementor-element-populated,
+  .elementor-element-4663756 > .elementor-element-populated,
+  .elementor-element-499aaedc > .elementor-element-populated,
+  .elementor-element-6bc25e50 > .elementor-element-populated,
+  .elementor-element-46c42bfd .elementor-element-populated {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 3 !important;
+    background-color: #FFFFFF !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  /* Sub-cards di dalam Acara (Akad, Resepsi, Ngunduh Mantu) */
+  .elementor-element-63855045 > .elementor-element-populated,
+  .elementor-element-289af6a8 > .elementor-element-populated,
+  .elementor-element-512fdcb9 > .elementor-element-populated {
+    position: relative !important;
+    z-index: 4 !important;
+    background-color: #F8FAF8 !important;
+    border: 1px solid rgba(63, 92, 72, 0.12) !important;
+  }
+
+  /* 4. Text & Konten (di dalam card, di atas card putih) */
+  .elementor-widget-heading,
+  .elementor-widget-heading .elementor-heading-title,
+  .elementor-widget-text-editor,
+  .elementor-widget-divider,
+  .elementor-countdown-wrapper,
+  .elementor-widget-icon,
+  .elementor-widget-spacer {
+    position: relative !important;
+    z-index: 5 !important;
+  }
+
+  /* 5. Tombol (paling atas, interaktif) */
+  .elementor-widget-button,
+  .elementor-button,
+  .elementor-button-wrapper,
+  .elementor-widget-wds_calendar,
+  .wds-calendar {
+    position: relative !important;
+    z-index: 10 !important;
   }
 
   /* Pastikan semua ornamen bunga langsung tampil 100% tanpa delay/glitch */
