@@ -168,7 +168,7 @@ export default function BackgroundMusic({ url, isPlaying, start = 0 }) {
           ref={audioRef}
           src={url}
           loop
-          preload="auto"
+          preload="none"
           style={{ display: 'none' }}
         />
       )}

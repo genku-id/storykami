@@ -1,5 +1,20 @@
-import React from 'react';
+import React, { cache } from 'react';
 import { createClient } from '@supabase/supabase-js';
+
+// Helper cached untuk mengambil data undangan 1x per request (deduplikasi antara generateMetadata & InvitationPage)
+const getInvitationBySlug = cache(async (slug) => {
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase
+    .from('invitations')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  return { inv: data, error };
+});
 
 // Import Templates
 import Floral1Template from '@/components/wim-baru/Floral1Template';
@@ -17,17 +32,8 @@ export default async function InvitationPage({ params, searchParams }) {
   const guestRaw = sParams?.to || sParams?.u || sParams?.nama || sParams?.guest || '';
   const guestName = guestRaw ? decodeURIComponent(String(guestRaw).replace(/\+/g, ' ')).trim() : '';
 
-  // Inisialisasi Supabase Server Client
-  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  // Ambil data undangan dari database
-  const { data: inv, error } = await supabase
-    .from('invitations')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  // Ambil data undangan dari database (didukung React cache)
+  const { inv, error } = await getInvitationBySlug(slug);
 
   if (error || !inv) {
     return (
@@ -81,11 +87,8 @@ export async function generateMetadata({ params, searchParams }) {
   const guestRaw = sParams?.to || sParams?.u || sParams?.nama || sParams?.guest || '';
   const guestName = guestRaw ? decodeURIComponent(String(guestRaw).replace(/\+/g, ' ')).trim() : '';
   
-  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  const { data: inv } = await supabase.from('invitations').select('data').eq('slug', slug).single();
+  // Menggunakan fungsi cached yang sama dengan InvitationPage
+  const { inv } = await getInvitationBySlug(slug);
   const data = inv?.data || {};
 
   const namaPasangan = data.coverName || data.coupleName || 

@@ -525,6 +525,31 @@
     background: transparent !important;
   }
 </style>
+
+<style id="storykami-perf-styles">
+  /* GPU Hardware Acceleration for continuous animations & smooth scrolling */
+  .goyang-1, .goyang-2, .goyang-3, .goyang-4,
+  .zoom-1, .zoom-2, .naik-turun {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .goyang-1 img, .goyang-2 img, .goyang-3 img, .goyang-4 img,
+  .zoom-1 img, .zoom-2 img, .naik-turun img {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Isolasi render ornamen bunga agar terpisah dari scroll layer */
+  .elementor-widget-image.elementor-absolute {
+    contain: layout paint;
+    pointer-events: none;
+  }
+</style>
 </head>
 <body class="wp-singular post-template-default single single-post postid-30581 single-format-standard wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-kit-8 elementor-page elementor-page-30581 elementor-page-31121 e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile>
 
@@ -604,7 +629,7 @@
  </div>
  <div class="elementor-element elementor-element-4663331d goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=4663331d data-element_type=widget data-e-type=widget data-settings='{"_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/ornament_header.webp" fetchpriority=high width=500 height=226 class="attachment-large size-large wp-image-31114" alt srcset="./assets/ornament_header.webp" sizes="(max-width: 500px) 100vw, 500px"> </div>
+ <img decoding="async" src="./assets/ornament_header.webp" fetchpriority=high width=500 height=226 class="attachment-large size-large wp-image-31114" alt srcset="./assets/ornament_header.webp" sizes="(max-width: 500px) 100vw, 500px"> </div>
  </div>
  <div class="elementor-element elementor-element-3d215b9a elementor-widget elementor-widget-heading animated fadeInDown" data-id=3d215b9a data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown"}' data-widget_type=heading.default>
  <div class=elementor-widget-container>
@@ -624,23 +649,23 @@
  </section>
  <div class="elementor-element elementor-element-ff3333f elementor-absolute goyang-3 e-transform elementor-widget elementor-widget-image animated fadeInDown" data-id=ff3333f data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_rotateZ_effect":{"unit":"px","size":-5,"sizes":[]},"_animation":"fadeInDown","_transform_rotateZ_effect_tablet":{"unit":"deg","size":"","sizes":[]},"_transform_rotateZ_effect_mobile":{"unit":"deg","size":"","sizes":[]}}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-59111c24 elementor-absolute goyang-2 e-transform elementor-widget elementor-widget-image animated fadeInDown" data-id=59111c24 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_rotateZ_effect":{"unit":"px","size":-48,"sizes":[]},"_animation":"fadeInDown","_animation_delay":1800,"_transform_rotateZ_effect_tablet":{"unit":"deg","size":"","sizes":[]},"_transform_rotateZ_effect_mobile":{"unit":"deg","size":"","sizes":[]}}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-4ef05064 elementor-absolute goyang-1 elementor-widget elementor-widget-image animated fadeInDown" data-id=4ef05064 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_animation":"fadeInDown"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-44442ed1 e-transform elementor-absolute goyang-1 elementor-widget elementor-widget-image animated fadeInUp" data-id=44442ed1 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_transform_rotateZ_effect":{"unit":"px","size":-95,"sizes":[]},"_animation":"fadeInUp","_transform_rotateZ_effect_tablet":{"unit":"deg","size":"","sizes":[]},"_transform_rotateZ_effect_mobile":{"unit":"deg","size":"","sizes":[]}}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-4ff21c84 elementor-absolute goyang-2 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=4ff21c84 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_rotateZ_effect":{"unit":"px","size":163,"sizes":[]},"_animation":"zoomIn","_transform_rotateZ_effect_tablet":{"unit":"deg","size":"","sizes":[]},"_transform_rotateZ_effect_mobile":{"unit":"deg","size":"","sizes":[]}}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -677,7 +702,7 @@
  <div class="elementor-widget-wrap elementor-element-populated">
  <div class="elementor-element elementor-element-7b7433b4 wdsdv-enabled--yes zoom-2 elementor-widget elementor-widget-image animated fadeInLeft" data-id=7b7433b4 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInLeft"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/bride_default.webp" loading=lazy width=1600 height=1611 class="attachment-full size-full wp-image-34112" alt srcset="./assets/bride_default.webp" sizes="(max-width: 1600px) 100vw, 1600px"> </div>
+ <img decoding="async" src="./assets/bride_default.webp" loading=lazy width=1600 height=1611 class="attachment-full size-full wp-image-34112" alt srcset="./assets/bride_default.webp" sizes="(max-width: 1600px) 100vw, 1600px"> </div>
  </div>
  </div>
  </div>
@@ -685,7 +710,7 @@
  <div class="elementor-widget-wrap elementor-element-populated">
  <div class="elementor-element elementor-element-5465011c goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=5465011c data-element_type=widget data-e-type=widget data-settings='{"_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img loading=lazy width=206 height=300 src=data:image/webp;base64,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 class="attachment-large size-large wp-image-31119" alt> </div>
+ <img decoding="async" loading=lazy width=206 height=300 src=data:image/webp;base64,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 class="attachment-large size-large wp-image-31119" alt> </div>
  </div>
  </div>
  </div>
@@ -693,7 +718,7 @@
  <div class="elementor-widget-wrap elementor-element-populated">
  <div class="elementor-element elementor-element-156d96f2 wdsdv-enabled--yes zoom-2 elementor-widget elementor-widget-image animated fadeInRight" data-id=156d96f2 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInRight"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/groom_default.webp" loading=lazy width=1017 height=1024 class="attachment-full size-full wp-image-34113" alt srcset="./assets/groom_default.webp" sizes="(max-width: 1017px) 100vw, 1017px"> </div>
+ <img decoding="async" src="./assets/groom_default.webp" loading=lazy width=1017 height=1024 class="attachment-full size-full wp-image-34113" alt srcset="./assets/groom_default.webp" sizes="(max-width: 1017px) 100vw, 1017px"> </div>
  </div>
  </div>
  </div>
@@ -757,15 +782,15 @@
  </section>
  <div class="elementor-element elementor-element-3f3df273 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=3f3df273 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-696ca939 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=696ca939 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-69c48112 elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=69c48112 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" loading=lazy width=720 height=720 class="attachment-large size-large wp-image-31120" alt srcset="./assets/flower_sage_3.webp" sizes="(max-width: 720px) 100vw, 720px"> </div>
+ <img decoding="async" src="./assets/flower_sage_3.webp" loading=lazy width=720 height=720 class="attachment-large size-large wp-image-31120" alt srcset="./assets/flower_sage_3.webp" sizes="(max-width: 720px) 100vw, 720px"> </div>
  </div>
  </div>
  </article>
@@ -1071,15 +1096,15 @@
  </section>
  <div class="elementor-element elementor-element-187ce017 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=187ce017 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-622736a9 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=622736a9 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-3e9fd44 elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=3e9fd44 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1159,15 +1184,15 @@
  </section>
  <div class="elementor-element elementor-element-cf19181 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=cf19181 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-6fa573a2 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=6fa573a2 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-2e68e908 elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=2e68e908 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1204,7 +1229,7 @@
  <div class="has_eae_slider elementor-element elementor-element-79126dea reveal e-con-full e-flex e-con e-child" data-eae-slider=57166 data-id=79126dea data-element_type=container data-e-type=container data-settings='{"background_background":"classic","jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-75de6211 elementor-widget elementor-widget-image" data-id=75de6211 data-element_type=widget data-e-type=widget data-widget_type=image.default style="display:none !important;">
 <div class=elementor-widget-container>
-<img src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
+<img decoding="async" src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
 </div>
  <div class="elementor-element elementor-element-66a32d01 elementor-widget elementor-widget-heading" data-id=66a32d01 data-element_type=widget data-e-type=widget data-widget_type=heading.default>
  <div class=elementor-widget-container>
@@ -1234,7 +1259,7 @@
  <div class="has_eae_slider elementor-element elementor-element-74d3ad6 reveal e-con-full e-flex e-con e-child" data-eae-slider=35744 data-id=74d3ad6 data-element_type=container data-e-type=container data-settings='{"background_background":"classic","jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-95e04c2 elementor-widget elementor-widget-image" data-id=95e04c2 data-element_type=widget data-e-type=widget data-widget_type=image.default style="display:none !important;">
 <div class=elementor-widget-container>
-<img src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
+<img decoding="async" src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
 </div>
  <div class="elementor-element elementor-element-6899f3da elementor-widget elementor-widget-heading" data-id=6899f3da data-element_type=widget data-e-type=widget data-widget_type=heading.default>
  <div class=elementor-widget-container>
@@ -1264,7 +1289,7 @@
  <div class="has_eae_slider elementor-element elementor-element-61fa718d reveal e-con-full e-flex e-con e-child" data-eae-slider=25049 data-id=61fa718d data-element_type=container data-e-type=container data-settings='{"background_background":"classic","jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-1553512f elementor-widget elementor-widget-image" data-id=1553512f data-element_type=widget data-e-type=widget data-widget_type=image.default style="display:none !important;">
 <div class=elementor-widget-container>
-<img src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
+<img decoding="async" src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
 </div>
  <div class="elementor-element elementor-element-5cde11ac elementor-widget elementor-widget-heading" data-id=5cde11ac data-element_type=widget data-e-type=widget data-widget_type=heading.default>
  <div class=elementor-widget-container>
@@ -1294,7 +1319,7 @@
  <div class="has_eae_slider elementor-element elementor-element-39f0005a reveal e-con-full e-flex e-con e-child" data-eae-slider=52063 data-id=39f0005a data-element_type=container data-e-type=container data-settings='{"background_background":"classic","jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-55a2c381 elementor-widget elementor-widget-image" data-id=55a2c381 data-element_type=widget data-e-type=widget data-widget_type=image.default style="display:none !important;">
 <div class=elementor-widget-container>
-<img src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
+<img decoding="async" src="" loading=lazy width=1920 height=1080 class="attachment-full size-full" alt=""> </div>
 </div>
  <div class="elementor-element elementor-element-1a81961a elementor-widget elementor-widget-heading" data-id=1a81961a data-element_type=widget data-e-type=widget data-widget_type=heading.default>
  <div class=elementor-widget-container>
@@ -1327,15 +1352,15 @@
  </section>
  <div class="elementor-element elementor-element-3ffbf3c1 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=3ffbf3c1 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-5cf0f17 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=5cf0f17 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-7976796a elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=7976796a data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1368,15 +1393,15 @@
  </section>
  <div class="elementor-element elementor-element-311233a2 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=311233a2 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-5de43bd2 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=5de43bd2 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-43803185 elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=43803185 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1473,7 +1498,7 @@
  <div class="has_eae_slider elementor-element elementor-element-1af12dcb e-con-full e-flex e-con e-child" data-eae-slider=17131 data-id=1af12dcb data-element_type=container data-e-type=container data-settings='{"jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-668126f elementor-widget elementor-widget-image" data-id=668126f data-element_type=widget data-e-type=widget data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/bank_ornament.webp" loading=lazy width=1057 height=447 class="attachment-full size-full wp-image-3902" alt srcset="./assets/bank_ornament.webp" sizes="(max-width: 1057px) 100vw, 1057px"> </div>
+ <img decoding="async" src="./assets/bank_ornament.webp" loading=lazy width=1057 height=447 class="attachment-full size-full wp-image-3902" alt srcset="./assets/bank_ornament.webp" sizes="(max-width: 1057px) 100vw, 1057px"> </div>
  </div>
  <div class="elementor-element elementor-element-e3486f2 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id=e3486f2 data-element_type=widget data-e-type=widget data-widget_type=divider.default>
  <div class=elementor-widget-container>
@@ -1550,7 +1575,7 @@
  <div class="has_eae_slider elementor-element elementor-element-4ed4a939 e-con-full e-flex e-con e-child" data-eae-slider=45507 data-id=4ed4a939 data-element_type=container data-e-type=container data-settings='{"jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-791cdeff elementor-widget elementor-widget-image" data-id=791cdeff data-element_type=widget data-e-type=widget data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/asset_icon.png" loading="lazy" width="153" height="50" alt="Bank / Gift Icon" /> </div>
+ <img decoding="async" src="./assets/asset_icon.png" loading="lazy" width="153" height="50" alt="Bank / Gift Icon" /> </div>
  </div>
  <div class="elementor-element elementor-element-1cb374cb elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id=1cb374cb data-element_type=widget data-e-type=widget data-widget_type=divider.default>
  <div class=elementor-widget-container>
@@ -1627,7 +1652,7 @@
  <div class="has_eae_slider elementor-element elementor-element-44eea720 e-con-full e-flex e-con e-child" data-eae-slider=58740 data-id=44eea720 data-element_type=container data-e-type=container data-settings='{"jet_parallax_layout_list":[]}'>
  <div class="elementor-element elementor-element-622d7e92 elementor-widget elementor-widget-image" data-id=622d7e92 data-element_type=widget data-e-type=widget data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/asset_icon.png" loading="lazy" width="153" height="50" alt="Bank / Gift Icon" /> </div>
+ <img decoding="async" src="./assets/asset_icon.png" loading="lazy" width="153" height="50" alt="Bank / Gift Icon" /> </div>
  </div>
  <div class="elementor-element elementor-element-50ec6a1f elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id=50ec6a1f data-element_type=widget data-e-type=widget data-widget_type=divider.default>
  <div class=elementor-widget-container>
@@ -1716,7 +1741,7 @@ Penerima: alamat kado">
  </section>
  <div class="elementor-element elementor-element-cf525fc elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=cf525fc data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-401eee19 elementor-absolute goyang-4 e-transform elementor-hidden-desktop elementor-hidden-tablet elementor-hidden-mobile elementor-invisible elementor-widget elementor-widget-image sf-hidden" data-id=401eee19 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  
@@ -1812,7 +1837,7 @@ Penerima: alamat kado">
  <ul id=saic-container-comment-30581 class="saic-container-comments saic-order-DESC saic-has-3-comments saic-multiple-comments" data-order=DESC style=display:block><li id=saic-item-comment-2976 class="comment even thread-even depth-1 saic-item-comment">
  <div id=saic-comment-2976 class="saic-comment saic-clearfix">
  <div class=saic-comment-avatar>
- <img src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
+ <img decoding="async" src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
  </div>
  <div class=saic-comment-content>
  <div class=saic-comment-info>
@@ -1830,7 +1855,7 @@ Penerima: alamat kado">
 <li id=saic-item-comment-2868 class="comment odd alt thread-odd thread-alt depth-1 saic-item-comment">
  <div id=saic-comment-2868 class="saic-comment saic-clearfix">
  <div class=saic-comment-avatar>
- <img src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
+ <img decoding="async" src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
  </div>
  <div class=saic-comment-content>
  <div class=saic-comment-info>
@@ -1848,7 +1873,7 @@ Penerima: alamat kado">
 <li id=saic-item-comment-2640 class="comment even thread-even depth-1 saic-item-comment">
  <div id=saic-comment-2640 class="saic-comment saic-clearfix">
  <div class=saic-comment-avatar>
- <img src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
+ <img decoding="async" src="./assets/logo.png" class="avatar avatar-28 photo" height="28" width="28" loading="lazy" alt="Avatar" />
  </div>
  <div class=saic-comment-content>
  <div class=saic-comment-info>
@@ -1891,15 +1916,15 @@ Penerima: alamat kado">
  </section>
  <div class="elementor-element elementor-element-1bad9269 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=1bad9269 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-1a669119 e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=1a669119 data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-3fe602e0 elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=3fe602e0 data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1935,7 +1960,7 @@ Penerima: alamat kado">
  </div>
  <div class="elementor-element storykami-closing-couple-container">
  <div class="storykami-arch-frame">
- <img id="closing-couple-img" src="./assets/couple.webp" onerror="this.src='/assets/images/couple.webp'" alt="Foto Mempelai" />
+ <img loading="lazy" decoding="async" id="closing-couple-img" src="./assets/couple.webp" onerror="this.src='/assets/images/couple.webp'" alt="Foto Mempelai" />
  </div>
  </div>
  <div class="elementor-element elementor-element-262755fc elementor-widget elementor-widget-heading animated fadeInDown" data-id=262755fc data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInDown"}' data-widget_type=heading.default>
@@ -1959,15 +1984,15 @@ Penerima: alamat kado">
  </section>
  <div class="elementor-element elementor-element-6f8713f1 elementor-absolute goyang-1 e-transform elementor-widget elementor-widget-image animated zoomIn" data-id=6f8713f1 data-element_type=widget data-e-type=widget data-settings='{"_position":"absolute","_transform_flipX_effect":"transform","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_3.webp" width="450" height="362" class="attachment-large size-large wp-image-31117" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-3c966edd e-transform elementor-absolute goyang-4 elementor-widget elementor-widget-image animated zoomIn" data-id=3c966edd data-element_type=widget data-e-type=widget data-settings='{"_transform_flipX_effect":"transform","_position":"absolute","_animation":"zoomIn"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_2.webp" width="720" height="720" class="attachment-large size-large wp-image-31116" alt="" /> </div>
  </div>
  <div class="elementor-element elementor-element-4ff7b64d elementor-absolute goyang-4 e-transform elementor-widget elementor-widget-image animated fadeInUp" data-id=4ff7b64d data-element_type=widget data-e-type=widget data-settings='{"_animation":"fadeInUp","_position":"absolute","_transform_flipY_effect":"transform"}' data-widget_type=image.default>
  <div class=elementor-widget-container>
- <img src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
+ <img loading="lazy" decoding="async" src="./assets/flower_sage_1.webp" width="720" height="720" class="attachment-large size-large wp-image-31115" alt="" /> </div>
  </div>
  </div>
  </article>
@@ -1981,7 +2006,7 @@ Penerima: alamat kado">
 <!-- StoryKami Footer -->
 <footer class="storykami-footer-wrap">
   <a href="https://storykami.my.id" target="_blank" rel="noopener noreferrer">
-    <img src="./assets/storykami_stacked_allcaps_white.png" onerror="this.src='/images/storykami_stacked_allcaps_white.png'" alt="StoryKami Logo">
+    <img loading="lazy" decoding="async" src="./assets/storykami_stacked_allcaps_white.png" onerror="this.src='/images/storykami_stacked_allcaps_white.png'" alt="StoryKami Logo">
   </a>
   <div style="font-family: 'Poppins', sans-serif; font-size: 12.5px; color: rgba(255,255,255,0.85); margin-top: 2px;">
     Made with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="13" height="13" fill="#e25555" style="display:inline-block;vertical-align:-1px;margin:0 2px;"><path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.4 0 115 0 185v5.8c0 41.5 17.2 81.2 47.6 109.6z"/></svg> by StoryKami
@@ -4072,7 +4097,7 @@ Penerima: alamat kado">
         <li class="saic-item-comment comment" style="border-bottom:1px solid rgba(255,255,255,0.12)!important;padding:8px 4px!important;margin:0!important;list-style:none!important;">
           <div class="saic-comment saic-clearfix" style="display:flex!important;gap:8px!important;align-items:flex-start!important;text-align:left!important;width:100%!important;">
             <div style="width:28px!important;height:28px!important;min-width:28px!important;border-radius:50%!important;background:#ffffff!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;flex-shrink:0!important;box-shadow:0 1px 3px rgba(0,0,0,0.25)!important;margin-top:2px!important;">
-              <img src="./assets/logo.png" onerror="this.src='/assets/images/logo.png'" alt="StoryKami" style="width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" />
+              <img loading="lazy" decoding="async" src="./assets/logo.png" onerror="this.src='/assets/images/logo.png'" alt="StoryKami" style="width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" />
             </div>
             <div class="saic-comment-content" style="flex:1!important;min-width:0!important;margin-left:0!important;padding-left:0!important;text-align:left!important;">
               <div class="saic-comment-info" style="display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:6px!important;margin-bottom:2px!important;text-align:left!important;">
