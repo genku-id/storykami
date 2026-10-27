@@ -2504,7 +2504,7 @@ Penerima: alamat kado">
     z-index: 3 !important;
   }
 
-  /* Card putih: background putih solid bersih agar ornamen tidak menembus teks */
+  /* Card putih: background putih diturunkan opacity-nya jadi 40% (tembus pandang ke ornamen di bawahnya) */
   .elementor-element-6b085b14 > .elementor-element-populated,
   .elementor-element-3c7035ec > .elementor-element-populated,
   .elementor-element-3fa91d68 > .elementor-element-populated,
@@ -2516,8 +2516,10 @@ Penerima: alamat kado">
   .elementor-element-46c42bfd .elementor-element-populated {
     position: relative !important;
     z-index: 3 !important;
-    background-color: #FFFFFF !important;
+    background-color: rgba(255, 255, 255, 0.40) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   /* Sub-cards di dalam Acara (Akad, Resepsi, Ngunduh Mantu) */
@@ -2526,8 +2528,10 @@ Penerima: alamat kado">
   .elementor-element-512fdcb9 > .elementor-element-populated {
     position: relative !important;
     z-index: 4 !important;
-    background-color: #F8FAF8 !important;
-    border: 1px solid rgba(63, 92, 72, 0.12) !important;
+    background-color: rgba(255, 255, 255, 0.50) !important;
+    border: 1px solid rgba(63, 92, 72, 0.15) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   /* 4. Text & Konten (di dalam card, di atas card putih) */
