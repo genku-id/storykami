@@ -13,6 +13,7 @@ import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
 import ProfilePhotoUploader from '@/components/wim-baru/ProfilePhotoUploader';
 import DateInputField from '@/components/wim-baru/DateInputField';
 import GalleryUploader from '@/components/wim-baru/GalleryUploader';
+import StoryPhotoUploader from '@/components/wim-baru/StoryPhotoUploader';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -638,6 +639,16 @@ export default function SubDashboardManage() {
                   <InputField label="Judul Cerita" value={cerita.judul} onChange={e => {
                     const arr = [...data.ceritaCinta]; arr[index].judul = e.target.value; handleChange('ceritaCinta', arr);
                   }} />
+                  <StoryPhotoUploader 
+                    label="Foto Cerita (Opsional)" 
+                    value={cerita.foto || cerita.image || ''} 
+                    slug={slug || 'story'} 
+                    onChange={url => {
+                      const arr = [...data.ceritaCinta];
+                      arr[index] = { ...arr[index], foto: url, image: url };
+                      handleChange('ceritaCinta', arr);
+                    }} 
+                  />
                   <InputField label="Tanggal / Tahun" value={cerita.tanggal} onChange={e => {
                     const arr = [...data.ceritaCinta]; arr[index].tanggal = e.target.value; handleChange('ceritaCinta', arr);
                   }} />

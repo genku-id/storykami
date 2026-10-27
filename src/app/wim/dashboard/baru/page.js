@@ -13,6 +13,7 @@ import ThumbnailUploader from '@/components/wim-baru/ThumbnailUploader';
 import ProfilePhotoUploader from '@/components/wim-baru/ProfilePhotoUploader';
 import DateInputField from '@/components/wim-baru/DateInputField';
 import GalleryUploader from '@/components/wim-baru/GalleryUploader';
+import StoryPhotoUploader from '@/components/wim-baru/StoryPhotoUploader';
 
 // --- Komponen Accordion Item ---
 function AccordionItem({ title, icon, pageKey, isOpen, onClick, visibility, onToggleVisibility, children, hideToggle = false }) {
@@ -592,6 +593,16 @@ function UnifiedEditor() {
                 newCerita[index].judul = e.target.value;
                 handleChange('ceritaCinta', newCerita);
               }} />
+              <StoryPhotoUploader 
+                label="Foto Cerita (Opsional)" 
+                value={cerita.foto || cerita.image || ''} 
+                slug={slug || 'story'} 
+                onChange={url => {
+                  const newCerita = [...data.ceritaCinta];
+                  newCerita[index] = { ...newCerita[index], foto: url, image: url };
+                  handleChange('ceritaCinta', newCerita);
+                }} 
+              />
               <InputField label="Tanggal / Tahun" value={cerita.tanggal} onChange={e => {
                 const newCerita = [...data.ceritaCinta];
                 newCerita[index].tanggal = e.target.value;
