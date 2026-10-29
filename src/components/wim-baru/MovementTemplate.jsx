@@ -22,7 +22,7 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
     if (finalName) params.set('to', finalName);
     if (slug) params.set('slug', slug);
     if (isDemoMode) params.set('demo', '1');
-    params.set('v', '2.2.0');
+    params.set('v', '2.3.0');
     const qs = params.toString();
     return `/templates/movement/index.html${qs ? `?${qs}` : ''}`;
   };
@@ -226,7 +226,7 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
         overflow: 'hidden' 
       }}
     >
-      <BackgroundMusic url={data.musikUrl} isPlaying={isPlaying} start={data.musikStart} />
+      {/* Musik (YouTube & MP3) ditangani langsung di dalam iframe template (Options 1 & 2) agar kompatibel penuh dengan iOS Safari & Android */}
       <iframe
         ref={iframeRef}
         src={iframeSrc}

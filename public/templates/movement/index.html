@@ -4057,6 +4057,15 @@ Penerima: alamat kado">
     } catch (e) {
       console.warn('updateNavbarVisibility error:', e);
     }
+
+    // Inisialisasi Musik (YouTube & MP3) langsung di dalam frame (Options 1 & 2 untuk iOS Safari & Android)
+    try {
+      if (invData && invData.musikUrl) {
+        setupMusic(invData.musikUrl, invData.musikStart);
+      }
+    } catch (e) {
+      console.warn('setupMusic error:', e);
+    }
   }
 
   // --- Helper: Render Comments ---
@@ -4322,7 +4331,124 @@ Penerima: alamat kado">
     }
   }, { passive: true });
 
-  // --- Audio State & Controls ---
+  // --- Audio State & Controls (YouTube & HTML5 Audio in-frame for iOS Safari & Android) ---
+  let ytPlayerReady = false;
+  let activeMusicType = null; // 'youtube' | 'audio' | null
+  let pendingPlayMusic = false;
+
+  function getYouTubeId(url) {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+    const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = trimmed.match(regExp);
+    return match ? match[1] : null;
+  }
+
+  function parseStartTime(val, url) {
+    if (val !== undefined && val !== null && String(val).trim() !== '' && String(val).trim() !== '0') {
+      if (typeof val === 'number') return Math.max(0, Math.floor(val));
+      const s = String(val).trim().replace('.', ':');
+      if (s.includes(':')) {
+        const parts = s.split(':');
+        if (parts.length === 2) {
+          const min = parseInt(parts[0], 10) || 0;
+          const sec = parseInt(parts[1], 10) || 0;
+          return Math.max(0, min * 60 + sec);
+        } else if (parts.length === 3) {
+          const hr = parseInt(parts[0], 10) || 0;
+          const min = parseInt(parts[1], 10) || 0;
+          const sec = parseInt(parts[2], 10) || 0;
+          return Math.max(0, hr * 3600 + min * 60 + sec);
+        }
+      }
+      return Math.max(0, parseInt(s, 10) || 0);
+    }
+    if (url && typeof url === 'string') {
+      const tMatch = url.match(/[?&]t=([0-9hms]+)/);
+      if (tMatch) {
+        const tVal = tMatch[1];
+        if (/^\d+$/.test(tVal)) return parseInt(tVal, 10);
+        let sec = 0;
+        const h = tVal.match(/(\d+)h/);
+        const m = tVal.match(/(\d+)m/);
+        const s = tVal.match(/(\d+)s/);
+        if (h) sec += parseInt(h[1], 10) * 3600;
+        if (m) sec += parseInt(m[1], 10) * 60;
+        if (s) sec += parseInt(s[1], 10);
+        return sec;
+      }
+    }
+    return 0;
+  }
+
+  function sendYtCommand(func, args) {
+    const iframe = document.getElementById('storykami-yt-iframe');
+    if (iframe && iframe.contentWindow) {
+      try {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: func,
+          args: args || []
+        }), '*');
+      } catch (e) {}
+    }
+  }
+
+  function setupMusic(url, startVal) {
+    if (!url || typeof url !== 'string') return;
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return;
+
+    const ytId = getYouTubeId(trimmedUrl);
+    const startSec = parseStartTime(startVal, trimmedUrl);
+
+    if (ytId) {
+      activeMusicType = 'youtube';
+      let ytBox = document.getElementById('storykami-yt-box');
+      if (!ytBox) {
+        ytBox = document.createElement('div');
+        ytBox.id = 'storykami-yt-box';
+        ytBox.style.cssText = 'position:fixed;bottom:0;right:0;width:200px;height:120px;opacity:0.001;pointer-events:none;z-index:-999;overflow:hidden;';
+        document.body.appendChild(ytBox);
+      }
+      const existingIframe = document.getElementById('storykami-yt-iframe');
+      if (!existingIframe || existingIframe.getAttribute('data-ytid') !== ytId) {
+        const originParam = window.location.origin ? '&origin=' + encodeURIComponent(window.location.origin) : '';
+        ytBox.innerHTML = '<iframe id="storykami-yt-iframe" data-ytid="' + ytId + '" width="200" height="120" src="https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&autoplay=0&start=' + startSec + '&loop=1&playlist=' + ytId + '&controls=0&playsinline=1' + originParam + '" title="Musik Undangan" allow="autoplay; encrypted-media; picture-in-picture" style="border:none;"></iframe>';
+        
+        const newIframe = document.getElementById('storykami-yt-iframe');
+        newIframe.onload = function() {
+          ytPlayerReady = true;
+          sendYtCommand('unMute', []);
+          sendYtCommand('setVolume', [100]);
+          if (pendingPlayMusic || isMusicPlaying) {
+            sendYtCommand('playVideo', []);
+            pendingPlayMusic = false;
+          }
+        };
+      }
+    } else {
+      activeMusicType = 'audio';
+      let song = document.getElementById('song');
+      if (!song) {
+        song = document.createElement('audio');
+        song.id = 'song';
+        song.loop = true;
+        document.body.appendChild(song);
+      }
+      song.className = '';
+      song.style.cssText = 'position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-999;';
+      if (song.src !== trimmedUrl) {
+        song.src = trimmedUrl;
+        song.load();
+        if (startSec > 0) {
+          try { song.currentTime = startSec; } catch (e) {}
+        }
+      }
+    }
+  }
+
   function updateMusicBtnUI(playing) {
     isMusicPlaying = Boolean(playing);
     const audioBtn = document.getElementById('storykami-btn-audio');
@@ -4335,21 +4461,33 @@ Penerima: alamat kado">
         audioBtn.setAttribute('title', 'Putar Musik');
       }
     }
-
-    // Update elemen audio tag lokal jika ada
-    const song = document.getElementById('song');
-    if (song) {
-      if (isMusicPlaying) {
-        song.play().catch(() => {});
-      } else {
-        song.pause();
-      }
-    }
   }
 
   function playMusic() {
     isMusicPlaying = true;
     updateMusicBtnUI(true);
+
+    if (activeMusicType === 'youtube') {
+      sendYtCommand('unMute', []);
+      sendYtCommand('setVolume', [100]);
+      sendYtCommand('playVideo', []);
+      setTimeout(function() {
+        if (isMusicPlaying) {
+          sendYtCommand('unMute', []);
+          sendYtCommand('playVideo', []);
+        }
+      }, 500);
+    } else if (activeMusicType === 'audio') {
+      const song = document.getElementById('song');
+      if (song) {
+        song.play().catch(function(e) {
+          console.warn('Audio play catch:', e);
+        });
+      }
+    } else {
+      pendingPlayMusic = true;
+    }
+
     if (window.parent && window.parent !== window) {
       window.parent.postMessage({ type: 'PLAY_MUSIC' }, '*');
     }
@@ -4358,6 +4496,16 @@ Penerima: alamat kado">
   function pauseMusic() {
     isMusicPlaying = false;
     updateMusicBtnUI(false);
+
+    if (activeMusicType === 'youtube') {
+      sendYtCommand('pauseVideo', []);
+    } else if (activeMusicType === 'audio') {
+      const song = document.getElementById('song');
+      if (song) {
+        song.pause();
+      }
+    }
+
     if (window.parent && window.parent !== window) {
       window.parent.postMessage({ type: 'PAUSE_MUSIC' }, '*');
     }
@@ -4430,9 +4578,9 @@ Penerima: alamat kado">
     });
   }
 
-  // Buka Undangan Click -> Autoplay Sekali Saja saat Membuka Undangan
+  // Buka Undangan Click & Touch -> Autoplay Sekali Saja saat Membuka Undangan (iOS Safari & Android)
   let isCoverDismissed = false;
-  document.addEventListener('click', function(e) {
+  function handleBukaUndangan(e) {
     if (isCoverDismissed || document.body.classList.contains('wds-opened')) return;
 
     // Hanya tombol buka undangan pada cover overlay yang memicu pembukaan undangan
@@ -4440,7 +4588,7 @@ Penerima: alamat kado">
     if (!bukaBtn) return;
 
     isCoverDismissed = true;
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     playMusic();
 
     // 1. Dismiss cover overlay
@@ -4473,7 +4621,10 @@ Penerima: alamat kado">
 
     // 4. Menuju halaman pertama (scroll top: 0)
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  }
+
+  document.addEventListener('click', handleBukaUndangan);
+  document.addEventListener('touchend', handleBukaUndangan, { passive: false });
 
   // Countdown Timer
   function initCountdown() {
