@@ -412,6 +412,9 @@ export default function SubDashboardManage() {
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', gap: '2rem', padding: '0 1rem' }}>
           <button onClick={() => setActiveTab('editor')} style={{ background: 'none', border: 'none', borderBottom: activeTab === 'editor' ? '3px solid var(--text-primary)' : '3px solid transparent', padding: '10px 0', fontSize: '1rem', fontWeight: activeTab === 'editor' ? 600 : 400, color: activeTab === 'editor' ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer' }}>Editor Undangan</button>
           <button onClick={() => setActiveTab('guestbook')} style={{ background: 'none', border: 'none', borderBottom: activeTab === 'guestbook' ? '3px solid var(--text-primary)' : '3px solid transparent', padding: '10px 0', fontSize: '1rem', fontWeight: activeTab === 'guestbook' ? 600 : 400, color: activeTab === 'guestbook' ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer' }}>Ucapan & Doa Tamu</button>
+          <a href={`/linktamu?slug=${slug}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', padding: '10px 0', fontSize: '1rem', fontWeight: 500, color: '#2563eb', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>👥</span> Generator Link Tamu ↗
+          </a>
         </div>
       </div>
 

@@ -311,6 +311,16 @@ export default function DashboardPage() {
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             Preview
                           </a>
+                          <a
+                            href={`/linktamu?slug=${inv.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: '4px', cursor: 'pointer', color: '#2563eb', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', textDecoration: 'none', fontWeight: 600 }}
+                            title="Generator Link Tamu"
+                          >
+                            <span>👥</span>
+                            Tamu
+                          </a>
                         </div>
                       </div>
                     </td>
