@@ -4335,6 +4335,7 @@ Penerima: alamat kado">
   let ytPlayerReady = false;
   let activeMusicType = null; // 'youtube' | 'audio' | null
   let pendingPlayMusic = false;
+  let currentMusicStartSec = 0;
 
   function getYouTubeId(url) {
     if (!url || typeof url !== 'string') return null;
@@ -4347,35 +4348,35 @@ Penerima: alamat kado">
 
   function parseStartTime(val, url) {
     if (val !== undefined && val !== null && String(val).trim() !== '' && String(val).trim() !== '0') {
-      if (typeof val === 'number') return Math.max(0, Math.floor(val));
-      const s = String(val).trim().replace('.', ':');
-      if (s.includes(':')) {
-        const parts = s.split(':');
+      if (typeof val === 'number') return Math.max(0, val);
+      const raw = String(val).trim();
+      if (raw.includes(':')) {
+        const parts = raw.split(':');
         if (parts.length === 2) {
-          const min = parseInt(parts[0], 10) || 0;
-          const sec = parseInt(parts[1], 10) || 0;
+          const min = parseFloat(parts[0]) || 0;
+          const sec = parseFloat(parts[1]) || 0;
           return Math.max(0, min * 60 + sec);
         } else if (parts.length === 3) {
-          const hr = parseInt(parts[0], 10) || 0;
-          const min = parseInt(parts[1], 10) || 0;
-          const sec = parseInt(parts[2], 10) || 0;
+          const hr = parseFloat(parts[0]) || 0;
+          const min = parseFloat(parts[1]) || 0;
+          const sec = parseFloat(parts[2]) || 0;
           return Math.max(0, hr * 3600 + min * 60 + sec);
         }
       }
-      return Math.max(0, parseInt(s, 10) || 0);
+      return Math.max(0, parseFloat(raw) || 0);
     }
     if (url && typeof url === 'string') {
-      const tMatch = url.match(/[?&]t=([0-9hms]+)/);
+      const tMatch = url.match(/[?&]t=([0-9hms.]+)/);
       if (tMatch) {
         const tVal = tMatch[1];
-        if (/^\d+$/.test(tVal)) return parseInt(tVal, 10);
+        if (/^\d+(\.\d+)?$/.test(tVal)) return parseFloat(tVal);
         let sec = 0;
         const h = tVal.match(/(\d+)h/);
         const m = tVal.match(/(\d+)m/);
-        const s = tVal.match(/(\d+)s/);
-        if (h) sec += parseInt(h[1], 10) * 3600;
-        if (m) sec += parseInt(m[1], 10) * 60;
-        if (s) sec += parseInt(s[1], 10);
+        const s = tVal.match(/(\d+(?:\.\d+)?)s/);
+        if (h) sec += parseFloat(h[1]) * 3600;
+        if (m) sec += parseFloat(m[1]) * 60;
+        if (s) sec += parseFloat(s[1]);
         return sec;
       }
     }
@@ -4402,6 +4403,7 @@ Penerima: alamat kado">
 
     const ytId = getYouTubeId(trimmedUrl);
     const startSec = parseStartTime(startVal, trimmedUrl);
+    currentMusicStartSec = startSec;
 
     if (ytId) {
       activeMusicType = 'youtube';
@@ -4441,9 +4443,15 @@ Penerima: alamat kado">
       song.style.cssText = 'position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-999;';
       if (song.src !== trimmedUrl) {
         song.src = trimmedUrl;
+        song.preload = 'auto';
         song.load();
-        if (startSec > 0) {
-          try { song.currentTime = startSec; } catch (e) {}
+        song.onloadedmetadata = function() {
+          if (currentMusicStartSec > 0 && song.currentTime < 0.1) {
+            try { song.currentTime = currentMusicStartSec; } catch (e) {}
+          }
+        };
+        if (currentMusicStartSec > 0) {
+          try { song.currentTime = currentMusicStartSec; } catch (e) {}
         }
       }
     }
@@ -4480,6 +4488,9 @@ Penerima: alamat kado">
     } else if (activeMusicType === 'audio') {
       const song = document.getElementById('song');
       if (song) {
+        if (currentMusicStartSec > 0 && song.currentTime < 0.1) {
+          try { song.currentTime = currentMusicStartSec; } catch (e) {}
+        }
         song.play().catch(function(e) {
           console.warn('Audio play catch:', e);
         });

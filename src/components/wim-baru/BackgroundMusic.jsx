@@ -13,40 +13,40 @@ export function getYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-// Helper konversi waktu mulai ke detik (angka murni, format mm:ss / mm.ss, atau t= di URL)
+// Helper konversi waktu mulai ke detik (angka murni, format mm:ss / mm:ss.ms / t= di URL)
 export function parseStartTime(val, url = '') {
   if (val !== undefined && val !== null && String(val).trim() !== '' && String(val).trim() !== '0') {
-    if (typeof val === 'number') return Math.max(0, Math.floor(val));
-    const s = String(val).trim().replace('.', ':');
-    if (s.includes(':')) {
-      const parts = s.split(':');
+    if (typeof val === 'number') return Math.max(0, val);
+    const raw = String(val).trim();
+    if (raw.includes(':')) {
+      const parts = raw.split(':');
       if (parts.length === 2) {
-        const min = parseInt(parts[0], 10) || 0;
-        const sec = parseInt(parts[1], 10) || 0;
+        const min = parseFloat(parts[0]) || 0;
+        const sec = parseFloat(parts[1]) || 0;
         return Math.max(0, min * 60 + sec);
       } else if (parts.length === 3) {
-        const hr = parseInt(parts[0], 10) || 0;
-        const min = parseInt(parts[1], 10) || 0;
-        const sec = parseInt(parts[2], 10) || 0;
+        const hr = parseFloat(parts[0]) || 0;
+        const min = parseFloat(parts[1]) || 0;
+        const sec = parseFloat(parts[2]) || 0;
         return Math.max(0, hr * 3600 + min * 60 + sec);
       }
     }
-    return Math.max(0, parseInt(s, 10) || 0);
+    return Math.max(0, parseFloat(raw) || 0);
   }
 
   // Fallback: deteksi parameter t= di URL YouTube
   if (url && typeof url === 'string') {
-    const tMatch = url.match(/[?&]t=([0-9hms]+)/);
+    const tMatch = url.match(/[?&]t=([0-9hms.]+)/);
     if (tMatch) {
       const tVal = tMatch[1];
-      if (/^\d+$/.test(tVal)) return parseInt(tVal, 10);
+      if (/^\d+(\.\d+)?$/.test(tVal)) return parseFloat(tVal);
       let sec = 0;
       const h = tVal.match(/(\d+)h/);
       const m = tVal.match(/(\d+)m/);
-      const s = tVal.match(/(\d+)s/);
-      if (h) sec += parseInt(h[1], 10) * 3600;
-      if (m) sec += parseInt(m[1], 10) * 60;
-      if (s) sec += parseInt(s[1], 10);
+      const s = tVal.match(/(\d+(?:\.\d+)?)s/);
+      if (h) sec += parseFloat(h[1]) * 3600;
+      if (m) sec += parseFloat(m[1]) * 60;
+      if (s) sec += parseFloat(s[1]);
       return sec;
     }
   }
@@ -105,8 +105,10 @@ export default function BackgroundMusic({ url, isPlaying, start = 0 }) {
       // Audio MP3 biasa
       if (audioRef.current) {
         if (isPlaying) {
-          if (startSeconds > 0 && audioRef.current.currentTime < 1) {
-            audioRef.current.currentTime = startSeconds;
+          if (startSeconds > 0 && audioRef.current.currentTime < 0.1) {
+            try {
+              audioRef.current.currentTime = startSeconds;
+            } catch (err) {}
           }
           audioRef.current.play().catch(e => {
             console.log('Autoplay audio ditahan browser:', e);
@@ -168,7 +170,13 @@ export default function BackgroundMusic({ url, isPlaying, start = 0 }) {
           ref={audioRef}
           src={url}
           loop
-          preload="none"
+          preload="auto"
+          playsInline
+          onLoadedMetadata={(e) => {
+            if (startSeconds > 0 && e.target.currentTime < 0.1) {
+              try { e.target.currentTime = startSeconds; } catch (_) {}
+            }
+          }}
           style={{ display: 'none' }}
         />
       )}

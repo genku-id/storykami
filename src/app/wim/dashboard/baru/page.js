@@ -379,7 +379,13 @@ function UnifiedEditor() {
            <div style={{ height: '1px', background: 'var(--border)', margin: '1.5rem 0' }}></div>
            <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Lagu Latar / Musik Undangan</h3>
            <InputField label="Link Musik (YouTube atau Link MP3)" value={data.musikUrl || ''} onChange={e => handleChange('musikUrl', e.target.value)} placeholder="https://www.youtube.com/watch?v=... atau https://...mp3" />
-           <MusicTimestampPicker url={data.musikUrl} value={data.musikStart} onChange={val => handleChange('musikStart', val)} />
+           <MusicTimestampPicker 
+             url={data.musikUrl} 
+             onUrlChange={newUrl => handleChange('musikUrl', newUrl)}
+             value={data.musikStart} 
+             onChange={val => handleChange('musikStart', val)} 
+             slug={slug || 'undangan'} 
+           />
            
            <h3 style={{ fontSize: '1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Tampilan Thumbnail Link (SEO)</h3>
            <InputField label="Judul Thumbnail" value={data.thumbnailJudul || ''} onChange={e => handleChange('thumbnailJudul', e.target.value)} placeholder="Undangan Pernikahan Budi & Sari" />

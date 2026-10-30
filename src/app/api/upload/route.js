@@ -17,19 +17,29 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Tidak ada file yang dipilih' }, { status: 400 });
     }
 
-    // Batas ukuran 10MB
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Ukuran file maksimal 10MB' }, { status: 400 });
-    }
-
-    const buffer = Buffer.from(await file.arrayBuffer());
+    // Batas ukuran: 20MB untuk audio, 10MB untuk gambar
     const rawExt = file.name && file.name.includes('.') 
       ? file.name.split('.').pop().toLowerCase() 
       : 'jpg';
-    let ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg';
+    const isAudio = ['mp3', 'm4a', 'wav', 'aac', 'ogg', 'opus'].includes(rawExt);
+    const maxSizeBytes = isAudio ? 20 * 1024 * 1024 : 10 * 1024 * 1024;
+
+    if (file.size > maxSizeBytes) {
+      return NextResponse.json({ error: `Ukuran file maksimal ${isAudio ? '20MB' : '10MB'}` }, { status: 400 });
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    let ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp3', 'm4a', 'wav', 'aac', 'ogg', 'opus'].includes(rawExt) ? rawExt : 'jpg';
 
     let finalBuffer = buffer;
-    let finalContentType = file.type || 'image/jpeg';
+    let finalContentType = file.type;
+    if (!finalContentType) {
+      if (ext === 'mp3') finalContentType = 'audio/mpeg';
+      else if (ext === 'm4a' || ext === 'aac') finalContentType = 'audio/mp4';
+      else if (ext === 'wav') finalContentType = 'audio/wav';
+      else if (ext === 'ogg' || ext === 'opus') finalContentType = 'audio/ogg';
+      else finalContentType = 'image/jpeg';
+    }
 
     // Optimasi gambar otomatis agar ringan (< 250 KB) dan ramah thumbnail WhatsApp/Medsos
     if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {

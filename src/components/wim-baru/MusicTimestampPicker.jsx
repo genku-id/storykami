@@ -1,44 +1,97 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getYouTubeId, parseStartTime } from './BackgroundMusic';
+import { getYouTubeId } from './BackgroundMusic';
 
-// Helper format detik ke string mm:ss (atau hh:mm:ss jika > 1 jam)
-export function formatTime(sec) {
-  if (isNaN(sec) || sec < 0) return '00:00';
+// Helper konversi waktu mulai ke detik float (mendukung desimal / milidetik)
+export function parseStartTime(val, url = '') {
+  if (val !== undefined && val !== null && String(val).trim() !== '' && String(val).trim() !== '0') {
+    if (typeof val === 'number') return Math.max(0, val);
+    const str = String(val).trim();
+    if (str.includes(':')) {
+      const parts = str.split(':');
+      if (parts.length === 2) {
+        const min = parseFloat(parts[0]) || 0;
+        const sec = parseFloat(parts[1]) || 0;
+        return Math.max(0, Number((min * 60 + sec).toFixed(3)));
+      } else if (parts.length === 3) {
+        const hr = parseFloat(parts[0]) || 0;
+        const min = parseFloat(parts[1]) || 0;
+        const sec = parseFloat(parts[2]) || 0;
+        return Math.max(0, Number((hr * 3600 + min * 60 + sec).toFixed(3)));
+      }
+    }
+    const num = parseFloat(str);
+    if (!isNaN(num)) return Math.max(0, Number(num.toFixed(3)));
+  }
+
+  if (url && typeof url === 'string') {
+    const tMatch = url.match(/[?&]t=([0-9hms.]+)/);
+    if (tMatch) {
+      const tVal = tMatch[1];
+      if (/^\d+(\.\d+)?$/.test(tVal)) return parseFloat(tVal);
+      let sec = 0;
+      const h = tVal.match(/(\d+)h/);
+      const m = tVal.match(/(\d+)m/);
+      const s = tVal.match(/(\d+(\.\d+)?)s/);
+      if (h) sec += parseFloat(h[1]) * 3600;
+      if (m) sec += parseFloat(m[1]) * 60;
+      if (s) sec += parseFloat(s[1]);
+      return Number(sec.toFixed(3));
+    }
+  }
+
+  return 0;
+}
+
+// Helper format detik ke string mm:ss atau mm:ss.ms
+export function formatTime(sec, showMs = false) {
+  if (isNaN(sec) || sec < 0) return showMs ? '00:00.00' : '00:00';
   const totalSec = Math.floor(sec);
+  const ms = Math.floor((sec - totalSec) * 100);
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
+  const mStr = String(m).padStart(2, '0');
+  const sStr = String(s).padStart(2, '0');
+  const msStr = String(ms).padStart(2, '0');
   if (h > 0) {
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    const hStr = String(h).padStart(2, '0');
+    return showMs ? `${hStr}:${mStr}:${sStr}.${msStr}` : `${hStr}:${mStr}:${sStr}`;
   }
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return showMs ? `${mStr}:${sStr}.${msStr}` : `${mStr}:${sStr}`;
 }
 
-export default function MusicTimestampPicker({ url, value, onChange }) {
-  const [duration, setDuration] = useState(180); // default 3 menit jika belum termuat
+export default function MusicTimestampPicker({ url, onUrlChange, value, onChange, slug = 'undangan' }) {
+  const [duration, setDuration] = useState(180);
   const [hasDuration, setHasDuration] = useState(false);
   const [isLoadingDuration, setIsLoadingDuration] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPlayTime, setCurrentPlayTime] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  // Status Konversi YouTube
+  const [isConverting, setIsConverting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const containerId = useRef(`yt-picker-${Math.random().toString(36).substring(2, 9)}`);
   const playerRef = useRef(null);
   const audioRef = useRef(null);
+  const fileInputRef = useRef(null);
   const intervalRef = useRef(null);
 
   const ytId = getYouTubeId(url);
   const startSeconds = parseStartTime(value, url);
+  const isDirectAudio = url && !ytId;
 
-  // Sync currentPlayTime dengan startSeconds saat tidak sedang memutar tes audio
+  // Sync currentPlayTime saat tidak sedang play
   useEffect(() => {
     if (!isPlaying) {
       setCurrentPlayTime(startSeconds);
     }
   }, [startSeconds, isPlaying]);
 
-  // --- 1. Inisialisasi YouTube API / Durasi ---
+  // --- Inisialisasi Durasi (YouTube API atau HTML5 Audio) ---
   useEffect(() => {
     if (!url) {
       setIsLoadingDuration(false);
@@ -77,22 +130,19 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
             events: {
               onReady: (event) => {
                 if (!isMounted) return;
-                // Polling untuk membaca getDuration()
                 let attempts = 0;
                 const pollTimer = setInterval(() => {
                   if (!isMounted) { clearInterval(pollTimer); return; }
                   try {
                     const dur = event.target.getDuration();
                     if (dur && dur > 0) {
-                      const rounded = Math.floor(dur);
-                      setDuration(rounded);
+                      setDuration(Math.floor(dur));
                       setHasDuration(true);
                       setIsLoadingDuration(false);
                       clearInterval(pollTimer);
                     } else {
                       attempts++;
                       if (attempts > 20) {
-                        // Jika durasi YouTube tidak terdeteksi (fallback 300 detik = 5 menit)
                         setDuration(300);
                         setHasDuration(true);
                         setIsLoadingDuration(false);
@@ -106,7 +156,6 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
               },
               onStateChange: (event) => {
                 if (!isMounted) return;
-                // 1 = PLAYING, 2 = PAUSED, 0 = ENDED
                 if (event.data === 1) {
                   setIsPlaying(true);
                 } else if (event.data === 2 || event.data === 0) {
@@ -119,13 +168,13 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
                 setDuration(300);
                 setHasDuration(true);
                 if (event.data === 101 || event.data === 150) {
-                  setErrorMsg('Pemilik video YouTube ini membatasi pemutaran eksternal (embed). Lagu mungkin tidak berbunyi pada beberapa perangkat.');
+                  setErrorMsg('Video YouTube ini membatasi pemutaran eksternal. Sangat disarankan konversi ke MP3 di bawah.');
                 }
               }
             }
           });
         } catch (err) {
-          console.warn('Gagal membuat YT.Player:', err);
+          console.warn('YT Player init error:', err);
           setIsLoadingDuration(false);
           setDuration(300);
           setHasDuration(true);
@@ -173,7 +222,7 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
         }
       };
     } else {
-      // Audio MP3 biasa
+      // Audio MP3 / M4A Langsung
       setIsLoadingDuration(true);
       setHasDuration(false);
       const audio = audioRef.current;
@@ -182,7 +231,7 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
       const handleLoadedMetadata = () => {
         if (!isMounted) return;
         if (audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
-          setDuration(Math.floor(audio.duration));
+          setDuration(Number(audio.duration.toFixed(2)));
           setHasDuration(true);
         } else {
           setDuration(180);
@@ -193,7 +242,7 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
 
       const handleTimeUpdate = () => {
         if (!isMounted) return;
-        setCurrentPlayTime(Math.floor(audio.currentTime));
+        setCurrentPlayTime(Number(audio.currentTime.toFixed(2)));
       };
 
       const handleEnded = () => {
@@ -215,7 +264,7 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
     }
   }, [ytId, url]);
 
-  // --- 2. Interval Pelacakan Waktu Saat Tes Audio Berjalan (Khusus YouTube) ---
+  // Interval pelacakan waktu (khusus YouTube)
   useEffect(() => {
     if (!isPlaying || !ytId) {
       if (intervalRef.current) {
@@ -230,11 +279,11 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
         try {
           const cur = playerRef.current.getCurrentTime();
           if (typeof cur === 'number') {
-            setCurrentPlayTime(Math.floor(cur));
+            setCurrentPlayTime(Number(cur.toFixed(2)));
           }
         } catch (e) {}
       }
-    }, 250);
+    }, 200);
 
     return () => {
       if (intervalRef.current) {
@@ -248,7 +297,7 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
   useEffect(() => {
     return () => {
       if (playerRef.current) {
-        try { playerRef.current.pauseVideo(); } catch (e) {}
+        try { playerRef.current.destroy(); } catch (e) {}
       }
       if (audioRef.current) {
         audioRef.current.pause();
@@ -256,405 +305,459 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
     };
   }, []);
 
-  // --- 3. Handler Perubahan Slider ---
-  const handleSliderChange = useCallback((newSec) => {
-    const maxDur = duration > 0 ? duration : 300;
-    const clamped = Math.max(0, Math.min(newSec, maxDur));
-    onChange(clamped);
+  // --- Handlers Slider & Micro Adjustments ---
+  const handleSliderChange = (newVal) => {
+    const clamped = Math.max(0, Math.min(Number(newVal), duration));
+    const rounded = Number(clamped.toFixed(2));
+    onChange(rounded);
+    setCurrentPlayTime(rounded);
 
     if (isPlaying) {
-      if (ytId && playerRef.current) {
-        try { playerRef.current.seekTo(clamped, true); } catch (e) {}
+      if (ytId && playerRef.current && typeof playerRef.current.seekTo === 'function') {
+        playerRef.current.seekTo(rounded, true);
       } else if (audioRef.current) {
-        audioRef.current.currentTime = clamped;
+        audioRef.current.currentTime = rounded;
       }
-      setCurrentPlayTime(clamped);
-    } else {
-      setCurrentPlayTime(clamped);
     }
-  }, [duration, isPlaying, onChange, ytId]);
+  };
 
-  // --- 4. Handler Tes Audio (Play / Pause) ---
-  const handleTogglePlay = () => {
+  // --- Handler Play / Pause Tes Audio ---
+  const togglePlayAudio = () => {
+    if (!url) return;
+
     if (isPlaying) {
-      // Pause
-      if (ytId && playerRef.current) {
-        try { playerRef.current.pauseVideo(); } catch (e) {}
+      if (ytId && playerRef.current && typeof playerRef.current.pauseVideo === 'function') {
+        playerRef.current.pauseVideo();
       } else if (audioRef.current) {
         audioRef.current.pause();
       }
       setIsPlaying(false);
     } else {
-      // Play dari titik startSeconds
-      if (ytId && playerRef.current) {
-        try {
-          playerRef.current.seekTo(startSeconds, true);
-          playerRef.current.playVideo();
-          setCurrentPlayTime(startSeconds);
-          setIsPlaying(true);
-        } catch (e) {
-          console.warn('Gagal memutar video YouTube:', e);
-        }
+      if (ytId && playerRef.current && typeof playerRef.current.seekTo === 'function') {
+        playerRef.current.seekTo(startSeconds, true);
+        playerRef.current.playVideo();
+        setIsPlaying(true);
       } else if (audioRef.current) {
         audioRef.current.currentTime = startSeconds;
         audioRef.current.play().then(() => {
           setIsPlaying(true);
-          setCurrentPlayTime(startSeconds);
-        }).catch(e => {
-          console.warn('Gagal memutar audio MP3:', e);
+        }).catch((err) => {
+          console.warn('Audio play failed:', err);
         });
       }
     }
   };
 
-  // --- 5. Tampilan Jika Belum Ada Link Musik ---
+  // --- Action: Konversi YouTube ke Audio MP3 / M4A ---
+  const handleConvertYouTube = async () => {
+    if (!url || !ytId) return;
+    setIsConverting(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      const res = await fetch('/api/convert-youtube', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, slug })
+      });
+
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || 'Gagal mengonversi video YouTube');
+      }
+
+      if (typeof onUrlChange === 'function') {
+        onUrlChange(resData.audioUrl);
+      }
+      setSuccessMsg(`Berhasil dikonversi! "${resData.title}". Audio murni kini aktif (100% lancar di iPhone & Android).`);
+    } catch (err) {
+      console.error('Convert YouTube error:', err);
+      setErrorMsg(err.message || 'Gagal mengekstrak audio dari YouTube. Silakan gunakan opsi upload MP3.');
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
+  // --- Action: Upload File MP3 / M4A Langsung ---
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('slug', slug || 'audio');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const resData = await res.json();
+      if (!res.ok || !resData.url) {
+        throw new Error(resData.error || 'Gagal mengunggah file musik');
+      }
+
+      if (typeof onUrlChange === 'function') {
+        onUrlChange(resData.url);
+      }
+      setSuccessMsg(`File audio "${file.name}" berhasil diunggah dan aktif!`);
+    } catch (err) {
+      console.error('Upload audio error:', err);
+      setErrorMsg(err.message || 'Gagal mengunggah file audio.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   if (!url) {
     return (
-      <div style={{
-        marginTop: '0.75rem',
-        marginBottom: '1.5rem',
-        padding: '1rem',
-        borderRadius: '10px',
-        background: 'rgba(99, 102, 241, 0.05)',
-        border: '1px dashed var(--border)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        color: 'var(--text-muted)',
-        fontSize: '0.85rem'
-      }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.7 }}>
-          <path d="M9 18V5l12-2v13"></path>
-          <circle cx="6" cy="18" r="3"></circle>
-          <circle cx="18" cy="16" r="3"></circle>
-        </svg>
-        <span>Masukkan tautan YouTube atau MP3 di atas untuk mengaktifkan pengaturan garis timestamp &amp; tes audio.</span>
+      <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', borderRadius: '8px', background: 'var(--bg-card)', border: '1px dashed var(--border)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        Masukkan link musik YouTube atau unggah file MP3 di atas untuk mengatur waktu mulai lagu.
       </div>
     );
   }
 
-  const maxVal = duration > 0 ? duration : 300;
-  const startPercent = Math.min(100, Math.max(0, (startSeconds / maxVal) * 100));
-  const playheadPercent = Math.min(100, Math.max(0, (currentPlayTime / maxVal) * 100));
-
   return (
     <div style={{
-      marginTop: '0.75rem',
-      marginBottom: '1.5rem',
+      marginTop: '1rem',
       padding: '1.25rem',
       borderRadius: '12px',
-      background: 'var(--bg-primary)',
+      background: 'var(--bg-card)',
       border: '1px solid var(--border)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-      position: 'relative'
+      boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
     }}>
-      {/* Hidden container untuk YouTube IFrame API */}
-      {ytId && (
-        <div style={{
-          position: 'fixed',
-          bottom: '10px',
-          right: '10px',
-          width: '200px',
-          height: '120px',
-          opacity: 0.005,
-          pointerEvents: 'none',
-          zIndex: -1,
-          overflow: 'hidden'
-        }}>
-          <div id={containerId.current} />
+      {/* Hidden Player Elements */}
+      {ytId ? (
+        <div style={{ position: 'fixed', bottom: '-200px', right: '-200px', width: '200px', height: '120px', opacity: 0.001, pointerEvents: 'none', zIndex: -1 }}>
+          <div id={containerId.current}></div>
         </div>
+      ) : (
+        <audio ref={audioRef} src={url} preload="metadata" style={{ display: 'none' }} />
       )}
 
-      {/* Hidden audio element untuk MP3 */}
-      {!ytId && (
-        <audio
-          ref={audioRef}
-          src={url}
-          preload="metadata"
-          style={{ display: 'none' }}
-        />
-      )}
+      {/* Hidden Audio File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
 
-      {/* Header Info */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+      {/* Header Info Status Format Musik */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '1.1rem' }}>🎵</span>
-          <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-            Garis Penentu Timestamp Lagu
+          <span style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+            Pengatur Waktu Mulai Musik
           </span>
-          {isLoadingDuration && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-              (Memuat durasi...)
-            </span>
-          )}
         </div>
 
-        {/* Badge Mulai */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem',
-          padding: '4px 10px',
-          borderRadius: '20px',
-          background: 'rgba(99, 102, 241, 0.12)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
-          color: '#4f46e5',
-          fontSize: '0.85rem',
-          fontWeight: 600
-        }}>
-          <span>Mulai Lagu:</span>
-          <strong>{formatTime(startSeconds)}</strong>
-          <span style={{ opacity: 0.7, fontSize: '0.75rem', fontWeight: 'normal' }}>
-            ({startSeconds}s)
+        {isDirectAudio ? (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            padding: '3px 10px',
+            borderRadius: '20px',
+            background: 'rgba(16, 185, 129, 0.12)',
+            color: '#059669',
+            fontSize: '0.75rem',
+            fontWeight: 600
+          }}>
+            <span>✅</span>
+            <span>Audio Langsung (100% Kompatibel iPhone & Android)</span>
           </span>
-        </div>
+        ) : (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            padding: '3px 10px',
+            borderRadius: '20px',
+            background: 'rgba(245, 158, 11, 0.12)',
+            color: '#b45309',
+            fontSize: '0.75rem',
+            fontWeight: 600
+          }}>
+            <span>⚠️</span>
+            <span>Link YouTube (Disarankan Konversi)</span>
+          </span>
+        )}
       </div>
 
+      {/* Alert Notifikasi Sukses / Error */}
+      {successMsg && (
+        <div style={{ marginBottom: '1rem', padding: '8px 12px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', color: '#047857', fontSize: '0.82rem' }}>
+          {successMsg}
+        </div>
+      )}
       {errorMsg && (
-        <div style={{ padding: '0.5rem 0.75rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', color: '#991b1b', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+        <div style={{ marginBottom: '1rem', padding: '8px 12px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#b91c1c', fontSize: '0.82rem' }}>
           {errorMsg}
         </div>
       )}
 
-      {/* --- GARIS TIMELINE (YOUTUBE-STYLE SCRUBBER) --- */}
-      <div style={{ position: 'relative', margin: '1.25rem 0 0.5rem 0' }}>
-        {/* Custom Timeline Track Container */}
-        <div style={{ position: 'relative', width: '100%', height: '28px', display: 'flex', alignItems: 'center' }}>
-          {/* Background Bar */}
-          <div style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            height: '8px',
-            background: 'var(--border)',
-            borderRadius: '4px',
-            overflow: 'hidden'
-          }}>
-            {/* Filled Bar sampai ke titik Mulai */}
-            <div style={{
-              height: '100%',
-              width: `${startPercent}%`,
-              background: 'linear-gradient(90deg, #6366f1 0%, #ec4899 100%)',
-              transition: isPlaying ? 'none' : 'width 0.1s ease'
-            }} />
+      {/* Tombol Aksi: Auto Convert YouTube & Upload File Langsung */}
+      {typeof onUrlChange === 'function' && (
+        <div style={{
+          marginBottom: '1.25rem',
+          padding: '10px 14px',
+          borderRadius: '10px',
+          background: 'var(--bg-main, #f8fafc)',
+          border: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem'
+        }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            {ytId ? (
+              <span>Ubah link YouTube ini menjadi audio murni agar langsung berbunyi di iPhone:</span>
+            ) : (
+              <span>Ganti lagu dengan file audio lain:</span>
+            )}
           </div>
 
-          {/* Indikator Posisi Suara Saat Sedang Tes Play (Playhead) */}
-          {isPlaying && (
-            <div style={{
-              position: 'absolute',
-              left: `${playheadPercent}%`,
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              background: '#ef4444',
-              boxShadow: '0 0 8px rgba(239, 68, 68, 0.8)',
-              zIndex: 3,
-              pointerEvents: 'none'
-            }} />
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {ytId && (
+              <button
+                type="button"
+                onClick={handleConvertYouTube}
+                disabled={isConverting}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  background: isConverting ? '#94a3b8' : '#e11d48',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: isConverting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  boxShadow: '0 2px 4px rgba(225, 29, 72, 0.2)'
+                }}
+              >
+                <span>{isConverting ? '⏳' : '⚡'}</span>
+                <span>{isConverting ? 'Mengekstrak Audio...' : 'Konversi YouTube ke Audio'}</span>
+              </button>
+            )}
 
-          {/* Interactive Native Range Slider on top */}
-          <input
-            type="range"
-            min="0"
-            max={maxVal}
-            step="1"
-            value={startSeconds}
-            onChange={(e) => handleSliderChange(parseInt(e.target.value, 10))}
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: '100%',
-              height: '100%',
-              opacity: 0,
-              cursor: 'pointer',
-              zIndex: 5,
-              margin: 0
-            }}
-            title={`Geser untuk memilih detik mulai: ${formatTime(startSeconds)}`}
-          />
-
-          {/* Visible Pin/Thumb untuk Titik Mulai */}
-          <div style={{
-            position: 'absolute',
-            left: `${startPercent}%`,
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '20px',
-            height: '20px',
-            borderRadius: '50%',
-            background: '#ffffff',
-            border: '3px solid #6366f1',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-            zIndex: 4,
-            pointerEvents: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'transform 0.1s'
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1' }} />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              <span>{isUploading ? '⏳' : '📁'}</span>
+              <span>{isUploading ? 'Mengunggah...' : 'Upload File MP3 / M4A'}</span>
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Labels Waktu di Bawah Garis */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px', fontWeight: 500 }}>
-          <span>00:00 (Awal)</span>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-            {isPlaying ? (
-              <span style={{ color: '#ef4444' }}>▶ Tes Suara: {formatTime(currentPlayTime)}</span>
-            ) : (
-              <span>Dipilih: {formatTime(startSeconds)}</span>
-            )}
+      {/* Tampilan Waktu Mulai & Durasi */}
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+        <div>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mulai di: </span>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary, #4f46e5)', fontFamily: 'monospace' }}>
+            {formatTime(startSeconds, true)}
           </span>
-          <span>{formatTime(maxVal)} (Selesai)</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '6px' }}>
+            ({startSeconds.toFixed(2)} detik)
+          </span>
+        </div>
+
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          {isLoadingDuration ? (
+            <span>Membaca durasi...</span>
+          ) : (
+            <span>Total Durasi: <strong>{formatTime(duration)}</strong></span>
+          )}
         </div>
       </div>
 
-      {/* --- TOMBOL KONTROL & PENGATURAN --- */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        
-        {/* Tombol Play / Pause untuk Tes Audio */}
-        <button
-          type="button"
-          onClick={handleTogglePlay}
+      {/* Slider Presisi (Mendukung Milidetik step 0.05 / 50ms) */}
+      <div style={{ position: 'relative', margin: '0.75rem 0' }}>
+        <input
+          type="range"
+          min="0"
+          max={duration || 180}
+          step="0.05"
+          value={startSeconds}
+          onChange={(e) => handleSliderChange(parseFloat(e.target.value) || 0)}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            background: isPlaying ? '#ef4444' : '#4f46e5',
-            color: '#ffffff',
-            border: 'none',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            transition: 'background 0.2s',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            width: '100%',
+            height: '8px',
+            borderRadius: '4px',
+            outline: 'none',
+            accentColor: 'var(--primary, #4f46e5)',
+            cursor: 'pointer'
           }}
-        >
-          {isPlaying ? (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="4" width="4" height="16" rx="1"/>
-                <rect x="14" y="4" width="4" height="16" rx="1"/>
-              </svg>
-              <span>Jeda Tes Audio</span>
-            </>
-          ) : (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-              <span>Tes Audio dari Menit Ini</span>
-            </>
-          )}
-        </button>
+        />
+      </div>
 
-        {/* Tombol Cepat -5s dan +5s */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+      {/* Tombol Kontrol Cepat Presisi (Mikro-Detik) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
           <button
             type="button"
-            onClick={() => handleSliderChange(startSeconds - 5)}
-            title="Mundur 5 Detik"
-            style={{
-              padding: '6px 10px',
-              borderRadius: '6px',
-              background: 'var(--border)',
-              border: 'none',
-              color: 'var(--text-primary)',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
+            onClick={() => handleSliderChange(startSeconds - 1)}
+            title="Mundur 1 Detik"
+            style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--border)', border: 'none', color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
           >
-            -5s
+            -1s
           </button>
-
           <button
             type="button"
-            onClick={() => handleSliderChange(startSeconds + 5)}
-            title="Maju 5 Detik"
-            style={{
-              padding: '6px 10px',
-              borderRadius: '6px',
-              background: 'var(--border)',
-              border: 'none',
-              color: 'var(--text-primary)',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
+            onClick={() => handleSliderChange(startSeconds - 0.1)}
+            title="Mundur 100 Milidetik"
+            style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--border)', border: 'none', color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
           >
-            +5s
+            -0.1s
           </button>
-
+          <button
+            type="button"
+            onClick={() => handleSliderChange(startSeconds + 0.1)}
+            title="Maju 100 Milidetik"
+            style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--border)', border: 'none', color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            +0.1s
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSliderChange(startSeconds + 1)}
+            title="Maju 1 Detik"
+            style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--border)', border: 'none', color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
+          >
+            +1s
+          </button>
           <button
             type="button"
             onClick={() => handleSliderChange(0)}
-            title="Kembali ke Awal Lagu"
-            style={{
-              padding: '6px 10px',
-              borderRadius: '6px',
-              background: 'var(--border)',
-              border: 'none',
-              color: 'var(--text-primary)',
-              fontSize: '0.8rem',
-              fontWeight: 500,
-              cursor: 'pointer'
-            }}
+            title="Mulai dari awal"
+            style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--border)', border: 'none', color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 500, cursor: 'pointer' }}
           >
             00:00
           </button>
         </div>
 
-        {/* Tombol Ambil Waktu Saat Mendengarkan */}
-        {isPlaying && Math.abs(currentPlayTime - startSeconds) > 1 && (
-          <button
-            type="button"
-            onClick={() => handleSliderChange(currentPlayTime)}
-            style={{
-              padding: '6px 12px',
-              borderRadius: '6px',
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid #10b981',
-              color: '#059669',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <span>🎯</span>
-            <span>Jadikan {formatTime(currentPlayTime)} sebagai Mulai</span>
-          </button>
-        )}
+        {/* Tombol Play / Pause Tes Audio */}
+        <button
+          type="button"
+          onClick={togglePlayAudio}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '7px 14px',
+            borderRadius: '8px',
+            background: isPlaying ? '#ef4444' : '#4f46e5',
+            color: '#ffffff',
+            border: 'none',
+            fontWeight: 600,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          <span>{isPlaying ? '⏸️' : '▶️'}</span>
+          <span>{isPlaying ? 'Jeda Tes Audio' : 'Dengarkan dari Waktu Ini'}</span>
+        </button>
       </div>
 
-      {/* Input Manual Terintegrasi */}
-      <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+      {/* Info Live Playback & Tombol Jadikan Titik Ini */}
+      {isPlaying && (
+        <div style={{
+          marginTop: '0.75rem',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          background: 'rgba(79, 70, 229, 0.08)',
+          border: '1px solid rgba(79, 70, 229, 0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
+        }}>
+          <div style={{ fontSize: '0.82rem', color: '#4f46e5', fontWeight: 600 }}>
+            <span>▶️ Sedang Diputar: </span>
+            <span style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{formatTime(currentPlayTime, true)}</span>
+          </div>
+
+          {Math.abs(currentPlayTime - startSeconds) > 0.2 && (
+            <button
+              type="button"
+              onClick={() => handleSliderChange(currentPlayTime)}
+              style={{
+                padding: '4px 10px',
+                borderRadius: '6px',
+                background: '#10b981',
+                color: '#ffffff',
+                border: 'none',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem'
+              }}
+            >
+              <span>🎯</span>
+              <span>Jadikan {formatTime(currentPlayTime, true)} sebagai Mulai</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Input Manual Input Detik & Milidetik */}
+      <div style={{
+        marginTop: '1rem',
+        paddingTop: '0.75rem',
+        borderTop: '1px solid var(--border)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
         <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Atau ubah angka manual (detik atau menit:detik):
+          Ketik angka manual (format mm:ss.ms atau detik):
         </label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <input
             type="text"
-            value={formatTime(startSeconds)}
+            value={formatTime(startSeconds, true)}
             onChange={(e) => {
               const val = e.target.value;
               const parsed = parseStartTime(val);
               handleSliderChange(parsed);
             }}
-            placeholder="01:20 atau 80"
+            placeholder="00:14.250 atau 14.25"
             style={{
-              width: '90px',
+              width: '115px',
               padding: '4px 8px',
               borderRadius: '6px',
               border: '1px solid var(--border)',
@@ -662,12 +765,10 @@ export default function MusicTimestampPicker({ url, value, onChange }) {
               color: 'var(--text-primary)',
               fontSize: '0.85rem',
               textAlign: 'center',
-              fontWeight: 600
+              fontWeight: 600,
+              fontFamily: 'monospace'
             }}
           />
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            (= {startSeconds} detik)
-          </span>
         </div>
       </div>
     </div>
