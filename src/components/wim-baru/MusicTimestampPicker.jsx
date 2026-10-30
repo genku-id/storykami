@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getYouTubeId } from './BackgroundMusic';
+import { supabase } from '@/utils/supabase';
 
 // Helper konversi waktu mulai ke detik float (mendukung desimal / milidetik)
 export function parseStartTime(val, url = '') {
@@ -381,33 +382,52 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
 
   const [isDragging, setIsDragging] = useState(false);
 
-  // --- Action: Upload File MP3 / M4A Langsung ---
+  // --- Action: Upload File MP3 / M4A Langsung (Bypass batas 4.5MB Vercel via Supabase Langsung) ---
   const uploadAudioFile = async (file) => {
     if (!file) return;
+
+    // Batas file audio (maksimal 35 MB)
+    if (file.size > 35 * 1024 * 1024) {
+      setErrorMsg('Ukuran file audio melebihi batas maksimal (maksimal 35 MB).');
+      return;
+    }
 
     setIsUploading(true);
     setErrorMsg('');
     setSuccessMsg('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('slug', slug || 'audio');
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'mp3';
+      const cleanSlug = String(slug).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30) || 'audio';
+      const fileName = `audio-${cleanSlug}-${Date.now()}.${ext}`;
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
+      // Unggah langsung dari browser ke Supabase Storage (wim-assets)
+      // Ini mengatasi error 413 "Request Entity Too Large" dari Vercel
+      const { data: uploadData, error: uploadErr } = await supabase.storage
+        .from('wim-assets')
+        .upload(fileName, file, {
+          contentType: file.type || 'audio/mpeg',
+          upsert: true
+        });
 
-      const resData = await res.json();
-      if (!res.ok || !resData.url) {
-        throw new Error(resData.error || 'Gagal mengunggah file musik');
+      if (uploadErr) {
+        throw new Error(uploadErr.message || 'Gagal menyimpan file audio ke server penyimpanan.');
+      }
+
+      // Dapatkan URL publik dari Supabase
+      const { data: publicData } = supabase.storage
+        .from('wim-assets')
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicData?.publicUrl;
+      if (!publicUrl) {
+        throw new Error('Gagal mendapatkan link audio publik.');
       }
 
       if (typeof onUrlChange === 'function') {
-        onUrlChange(resData.url);
+        onUrlChange(publicUrl);
       }
-      setSuccessMsg(`File audio "${file.name}" berhasil diunggah dan aktif!`);
+      setSuccessMsg(`File audio "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)} MB) berhasil diunggah dan aktif!`);
     } catch (err) {
       console.error('Upload audio error:', err);
       setErrorMsg(err.message || 'Gagal mengunggah file audio.');
