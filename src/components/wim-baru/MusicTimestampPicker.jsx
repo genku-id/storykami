@@ -495,13 +495,25 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
 
       {/* Alert Notifikasi Sukses / Error */}
       {successMsg && (
-        <div style={{ marginBottom: '1rem', padding: '8px 12px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', color: '#047857', fontSize: '0.82rem' }}>
+        <div style={{ marginBottom: '1rem', padding: '10px 14px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', color: '#047857', fontSize: '0.85rem' }}>
           {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div style={{ marginBottom: '1rem', padding: '8px 12px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#b91c1c', fontSize: '0.82rem' }}>
-          {errorMsg}
+        <div style={{ marginBottom: '1rem', padding: '12px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid #ef4444', color: '#b91c1c', fontSize: '0.84rem', lineHeight: '1.5' }}>
+          <div style={{ fontWeight: 600, display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.4rem' }}>
+            <span>⚠️</span>
+            <span>{errorMsg}</span>
+          </div>
+          <div style={{ marginTop: '0.4rem', paddingTop: '0.4rem', borderTop: '1px dashed rgba(239, 68, 68, 0.3)', color: '#475569', fontSize: '0.8rem' }}>
+            <strong>💡 Cara Mudah & 100% Berhasil:</strong>
+            <div style={{ marginTop: '0.2rem' }}>
+              1. Download audio lagu ini lewat web converter gratis seperti{' '}
+              <a href="https://yt1s.com/en" target="_blank" rel="noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'underline' }}>yt1s.com</a> atau{' '}
+              <a href="https://y2mate.is" target="_blank" rel="noreferrer" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'underline' }}>y2mate.is</a>.<br />
+              2. Klik tombol hijau <strong>📁 Upload File MP3 / M4A</strong> di samping untuk langsung mengunggah file tersebut.
+            </div>
+          </div>
         </div>
       )}
 
@@ -509,7 +521,7 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
       {typeof onUrlChange === 'function' && (
         <div style={{
           marginBottom: '1.25rem',
-          padding: '10px 14px',
+          padding: '12px 14px',
           borderRadius: '10px',
           background: 'var(--bg-main, #f8fafc)',
           border: '1px solid var(--border)',
@@ -519,61 +531,63 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
           flexWrap: 'wrap',
           gap: '0.75rem'
         }}>
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '420px', lineHeight: '1.4' }}>
             {ytId ? (
-              <span>Ubah link YouTube ini menjadi audio murni agar langsung berbunyi di iPhone:</span>
+              <span>
+                <strong>Rekomendasi untuk iPhone & Android:</strong> Gunakan audio murni (MP3/M4A) agar musik langsung menyala seketika:
+              </span>
             ) : (
               <span>Ganti lagu dengan file audio lain:</span>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              style={{
+                padding: '7px 16px',
+                borderRadius: '6px',
+                background: '#059669',
+                color: '#ffffff',
+                border: 'none',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 2px 5px rgba(5, 150, 105, 0.25)'
+              }}
+            >
+              <span>{isUploading ? '⏳' : '📁'}</span>
+              <span>{isUploading ? 'Mengunggah...' : 'Upload File MP3 / M4A (Paling Direkomendasikan)'}</span>
+            </button>
+
             {ytId && (
               <button
                 type="button"
                 onClick={handleConvertYouTube}
                 disabled={isConverting}
                 style={{
-                  padding: '6px 14px',
+                  padding: '7px 12px',
                   borderRadius: '6px',
-                  background: isConverting ? '#94a3b8' : '#e11d48',
-                  color: '#ffffff',
-                  border: 'none',
+                  background: 'var(--bg-card, #ffffff)',
+                  color: isConverting ? '#94a3b8' : '#e11d48',
+                  border: '1px solid ' + (isConverting ? 'var(--border)' : '#f43f5e'),
                   fontSize: '0.8rem',
                   fontWeight: 600,
                   cursor: isConverting ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
-                  boxShadow: '0 2px 4px rgba(225, 29, 72, 0.2)'
+                  gap: '0.35rem'
                 }}
               >
                 <span>{isConverting ? '⏳' : '⚡'}</span>
-                <span>{isConverting ? 'Mengekstrak Audio...' : 'Konversi YouTube ke Audio'}</span>
+                <span>{isConverting ? 'Mengekstrak...' : 'Coba Auto-Konversi'}</span>
               </button>
             )}
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border)',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                cursor: isUploading ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem'
-              }}
-            >
-              <span>{isUploading ? '⏳' : '📁'}</span>
-              <span>{isUploading ? 'Mengunggah...' : 'Upload File MP3 / M4A'}</span>
-            </button>
           </div>
         </div>
       )}

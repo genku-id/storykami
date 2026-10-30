@@ -35,7 +35,7 @@ export async function POST(req) {
     } catch (infoErr) {
       console.error('ytdl.getInfo error:', infoErr);
       return NextResponse.json({
-        error: 'Gagal membaca video YouTube. Pastikan video bersifat Publik dan tidak dibatasi usia/wilayah.',
+        error: 'Server cloud dibatasi oleh sistem proteksi bot YouTube (Sign in to confirm you are not a bot). Silakan gunakan opsi "Upload File MP3 / M4A" di bawah untuk memasang lagu secara instan & 100% lancar di iPhone.',
         details: infoErr.message
       }, { status: 500 });
     }
