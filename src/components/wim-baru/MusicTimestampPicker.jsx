@@ -379,9 +379,10 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
     }
   };
 
+  const [isDragging, setIsDragging] = useState(false);
+
   // --- Action: Upload File MP3 / M4A Langsung ---
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
+  const uploadAudioFile = async (file) => {
     if (!file) return;
 
     setIsUploading(true);
@@ -416,23 +417,92 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) uploadAudioFile(file);
+  };
+
   if (!url) {
     return (
-      <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', borderRadius: '8px', background: 'var(--bg-card)', border: '1px dashed var(--border)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-        Masukkan link musik YouTube atau unggah file MP3 di atas untuk mengatur waktu mulai lagu.
+      <div 
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) uploadAudioFile(file);
+        }}
+        style={{
+          marginTop: '0.75rem',
+          padding: '1.25rem',
+          borderRadius: '10px',
+          background: isDragging ? 'rgba(5, 150, 105, 0.08)' : 'var(--bg-card)',
+          border: isDragging ? '2px dashed #059669' : '1px dashed var(--border)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.75rem',
+          textAlign: 'center'
+        }}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="audio/mp3,audio/mpeg,audio/mp4,audio/m4a,audio/wav,audio/aac,audio/ogg,.mp3,.m4a,.wav,.aac,.ogg"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          Masukkan link YouTube di atas, atau langsung unggah file audio lagu Anda:
+        </div>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          style={{
+            padding: '8px 18px',
+            borderRadius: '6px',
+            background: '#059669',
+            color: '#ffffff',
+            border: 'none',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            cursor: isUploading ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 2px 6px rgba(5, 150, 105, 0.25)'
+          }}
+        >
+          <span>{isUploading ? '⏳' : '📁'}</span>
+          <span>{isUploading ? 'Mengunggah File...' : 'Upload File MP3 / M4A (Drag & Drop)'}</span>
+        </button>
       </div>
     );
   }
 
   return (
-    <div style={{
-      marginTop: '1rem',
-      padding: '1.25rem',
-      borderRadius: '12px',
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-    }}>
+    <div 
+      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files?.[0];
+        if (file) uploadAudioFile(file);
+      }}
+      style={{
+        marginTop: '1rem',
+        padding: '1.25rem',
+        borderRadius: '12px',
+        background: isDragging ? 'rgba(5, 150, 105, 0.05)' : 'var(--bg-card)',
+        border: isDragging ? '2px dashed #059669' : '1px solid var(--border)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        transition: 'all 0.2s ease'
+      }}
+    >
       {/* Hidden Player Elements */}
       {ytId ? (
         <div style={{ position: 'fixed', bottom: '-200px', right: '-200px', width: '200px', height: '120px', opacity: 0.001, pointerEvents: 'none', zIndex: -1 }}>
@@ -517,7 +587,7 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
         </div>
       )}
 
-      {/* Tombol Aksi: Auto Convert YouTube & Upload File Langsung */}
+      {/* Tombol Aksi: Auto Convert YouTube, Y2Mate Direct, & Upload File Langsung */}
       {typeof onUrlChange === 'function' && (
         <div style={{
           marginBottom: '1.25rem',
@@ -534,7 +604,7 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
           <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '420px', lineHeight: '1.4' }}>
             {ytId ? (
               <span>
-                <strong>Rekomendasi untuk iPhone & Android:</strong> Gunakan audio murni (MP3/M4A) agar musik langsung menyala seketika:
+                <strong>Jembatan Cepat Audio:</strong> Unduh via Y2Mate (1-klik) lalu upload di sini agar musik langsung menyala di iPhone:
               </span>
             ) : (
               <span>Ganti lagu dengan file audio lain:</span>
@@ -542,6 +612,32 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            {ytId && (
+              <a
+                href={`https://www.youtubepp.com/watch?v=${ytId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  background: '#e11d48',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  boxShadow: '0 2px 5px rgba(225, 29, 72, 0.25)',
+                  cursor: 'pointer'
+                }}
+              >
+                <span>🚀</span>
+                <span>Buka di Y2Mate (1-Klik Unduh)</span>
+              </a>
+            )}
+
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -562,32 +658,8 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
               }}
             >
               <span>{isUploading ? '⏳' : '📁'}</span>
-              <span>{isUploading ? 'Mengunggah...' : 'Upload File MP3 / M4A (Paling Direkomendasikan)'}</span>
+              <span>{isUploading ? 'Mengunggah...' : 'Upload File MP3 / M4A'}</span>
             </button>
-
-            {ytId && (
-              <button
-                type="button"
-                onClick={handleConvertYouTube}
-                disabled={isConverting}
-                style={{
-                  padding: '7px 12px',
-                  borderRadius: '6px',
-                  background: 'var(--bg-card, #ffffff)',
-                  color: isConverting ? '#94a3b8' : '#e11d48',
-                  border: '1px solid ' + (isConverting ? 'var(--border)' : '#f43f5e'),
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: isConverting ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
-              >
-                <span>{isConverting ? '⏳' : '⚡'}</span>
-                <span>{isConverting ? 'Mengekstrak...' : 'Coba Auto-Konversi'}</span>
-              </button>
-            )}
           </div>
         </div>
       )}
