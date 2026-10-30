@@ -105,14 +105,16 @@ export default function BackgroundMusic({ url, isPlaying, start = 0 }) {
       // Audio MP3 biasa
       if (audioRef.current) {
         if (isPlaying) {
-          if (startSeconds > 0 && audioRef.current.currentTime < 0.1) {
-            try {
-              audioRef.current.currentTime = startSeconds;
-            } catch (err) {}
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              if (startSeconds > 0 && Math.abs(audioRef.current.currentTime - startSeconds) > 0.5) {
+                try { audioRef.current.currentTime = startSeconds; } catch (_) {}
+              }
+            }).catch(e => {
+              console.log('Autoplay audio ditahan browser:', e);
+            });
           }
-          audioRef.current.play().catch(e => {
-            console.log('Autoplay audio ditahan browser:', e);
-          });
         } else {
           audioRef.current.pause();
         }
@@ -177,7 +179,7 @@ export default function BackgroundMusic({ url, isPlaying, start = 0 }) {
               try { e.target.currentTime = startSeconds; } catch (_) {}
             }
           }}
-          style={{ display: 'none' }}
+          style={{ position: 'fixed', bottom: 0, right: 0, width: '1px', height: '1px', opacity: 0.001, pointerEvents: 'none', zIndex: -999 }}
         />
       )}
     </>
