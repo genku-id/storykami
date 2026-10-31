@@ -935,6 +935,22 @@
 }
 </style>
 
+
+<style id="storykami-scroll-lock-styles">
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    position: relative !important;
+    touch-action: pan-y !important;
+  }
+  #isi, #desk_cov, .elementor, .elementor-section, .elementor-container {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+</style>
+
 </head>
 <body class="wp-singular page-template page-template-elementor_canvas page page-id-14873 wp-embed-responsive wp-theme-astra ast-header-break-point ast-page-builder-template ast-no-sidebar astra-4.13.2 ast-single-post ast-inherit-site-logo-transparent ast-hfb-header ast-normal-title-enabled elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-14873 ast-header-loaded e--ua-isTouchDevice e--ua-blink e--ua-chrome e--ua-webkit" data-elementor-device-mode=mobile style="overflow-y:auto!important;overflow-x:hidden!important;min-height:100vh!important;">
  
@@ -1959,13 +1975,15 @@
           document.body.classList.remove('cover-active');
           document.documentElement.classList.remove('cover-active');
           document.body.style.removeProperty('overflow');
-          document.body.style.overflow = 'auto';
+          document.body.style.overflowX = 'hidden';
           document.body.style.overflowY = 'auto';
           document.body.style.height = 'auto';
+          document.body.style.maxWidth = '100vw';
           document.documentElement.style.removeProperty('overflow');
-          document.documentElement.style.overflow = 'auto';
+          document.documentElement.style.overflowX = 'hidden';
           document.documentElement.style.overflowY = 'auto';
           document.documentElement.style.height = 'auto';
+          document.documentElement.style.maxWidth = '100vw';
         } catch (e) {
           console.warn("Unlock scroll error:", e);
         }
@@ -2463,6 +2481,27 @@
   }
 
   function applyInvitationData(invData, guestName) {
+    // 1. Guest Name - always resolve and apply immediately
+    let guest = guestName;
+    if (!guest) {
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        guest = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+      } catch (e) {}
+    }
+    if (!guest) {
+      try {
+        guest = sessionStorage.getItem('storykami_guest_name') || '';
+      } catch (e) {}
+    }
+    if (guest) {
+      guest = decodeURIComponent(guest.replace(/\+/g, ' ')).trim();
+      const elGuest = document.querySelector('.elementor-element-7854aeb3 .elementor-heading-title, [data-id="7854aeb3"] .elementor-heading-title');
+      if (elGuest) elGuest.textContent = guest;
+      const authorInput = document.getElementById('author');
+      if (authorInput) authorInput.value = guest;
+    }
+
     if (!invData || typeof invData !== 'object') return;
 
     const couplePhoto = getCouplePhoto(invData);
@@ -2519,15 +2558,7 @@
     if (elVideoTitleName) elVideoTitleName.textContent = coupleName;
 
 
-    // 2. Tamu Undangan
-    const sp = new URLSearchParams(window.location.search);
-    const guest = guestName || sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
-    if (guest) {
-      const elGuest = document.querySelector('.elementor-element-7854aeb3 .elementor-heading-title, [data-id="7854aeb3"] .elementor-heading-title');
-      if (elGuest) elGuest.textContent = guest;
-      const authorInput = document.getElementById('author');
-      if (authorInput) authorInput.value = guest;
-    }
+    // 2. Tamu Undangan handled at top of applyInvitationData
 
     // 3. Hero Photo (Foto Mempelai Berdua setelah intro video)
     const heroFoto = couplePhoto;
@@ -2873,9 +2904,11 @@
     const gName = sessionStorage.getItem('storykami_guest_name');
     if (raw) {
       applyInvitationData(JSON.parse(raw), gName);
+    } else {
+      applyInvitationData(null, gName);
     }
   } catch (e) {
-    console.warn('sessionStorage initial read error:', e);
+    applyInvitationData(null, '');
   }
 
   // Initial read comments

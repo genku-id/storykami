@@ -22,7 +22,7 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
     if (finalName) params.set('to', finalName);
     if (slug) params.set('slug', slug);
     if (isDemoMode) params.set('demo', '1');
-    params.set('v', '2.3.2');
+    params.set('v', '2.3.3');
     const qs = params.toString();
     return `/templates/movement/index.html${qs ? `?${qs}` : ''}`;
   };
@@ -113,9 +113,17 @@ export default function MovementTemplate({ data = {}, slug = 'demo', guestName =
     }
   }, [data, resolvedGuestName, slug, isDemoMode, comments, isPlaying]);
 
-  // 4. Send data on updates
+  // 4. Send data on updates with retries to eliminate race conditions
   useEffect(() => {
     sendDataToIframe();
+    const t1 = setTimeout(sendDataToIframe, 150);
+    const t2 = setTimeout(sendDataToIframe, 500);
+    const t3 = setTimeout(sendDataToIframe, 1200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [sendDataToIframe]);
 
   // Sync music state to iframe

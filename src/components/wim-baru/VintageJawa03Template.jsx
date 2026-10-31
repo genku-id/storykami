@@ -5,8 +5,31 @@ import BackgroundMusic from '@/components/wim-baru/BackgroundMusic';
 
 export default function VintageJawa03Template({ data = {}, slug = 'demo', guestName = '', isDemo = false }) {
   const iframeRef = useRef(null);
-  const [iframeSrc, setIframeSrc] = useState('/templates/vintage-jawa-03/index.html');
-  const [resolvedGuestName, setResolvedGuestName] = useState(guestName || '');
+  const buildIframeSrc = (nameOverride) => {
+    let name = nameOverride !== undefined ? nameOverride : guestName;
+    if (!name && typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      name = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+    }
+    const finalName = name ? decodeURIComponent(name.replace(/\+/g, ' ')).trim() : '';
+    const params = new URLSearchParams();
+    if (finalName) params.set('to', finalName);
+    if (slug) params.set('slug', slug);
+    if (isDemoMode) params.set('demo', '1');
+    params.set('v', '2.3.3');
+    const qs = params.toString();
+    return `/templates/vintage-jawa-03/index.html${qs ? `?${qs}` : ''}`;
+  };
+
+  const [iframeSrc, setIframeSrc] = useState(buildIframeSrc);
+  const [resolvedGuestName, setResolvedGuestName] = useState(() => {
+    let name = guestName;
+    if (!name && typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      name = sp.get('to') || sp.get('u') || sp.get('nama') || sp.get('guest') || '';
+    }
+    return name ? decodeURIComponent(name.replace(/\+/g, ' ')).trim() : '';
+  });
   const [comments, setComments] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -63,7 +86,8 @@ export default function VintageJawa03Template({ data = {}, slug = 'demo', guestN
       console.warn('sessionStorage write error:', e);
     }
 
-    setIframeSrc(`/templates/vintage-jawa-03/index.html?${params.toString()}`);
+    const targetSrc = buildIframeSrc(finalName);
+    setIframeSrc(prev => prev !== targetSrc ? targetSrc : prev);
   }, [guestName, slug, isDemoMode, data]);
 
   // 2. Fetch Comments (Guestbook)
@@ -132,9 +156,17 @@ export default function VintageJawa03Template({ data = {}, slug = 'demo', guestN
     }
   }, [data, resolvedGuestName, slug, isDemoMode, comments, isPlaying]);
 
-  // 4. Send data on updates
+  // 4. Send data on updates with retries to eliminate race conditions
   useEffect(() => {
     sendDataToIframe();
+    const t1 = setTimeout(sendDataToIframe, 150);
+    const t2 = setTimeout(sendDataToIframe, 500);
+    const t3 = setTimeout(sendDataToIframe, 1200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [sendDataToIframe]);
 
   // Sync music state to iframe
