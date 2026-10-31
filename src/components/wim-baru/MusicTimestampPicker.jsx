@@ -400,9 +400,9 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
       const ext = file.name.split('.').pop()?.toLowerCase() || 'mp3';
       const cleanSlug = String(slug).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30) || 'audio';
       const fileName = `audio-${cleanSlug}-${Date.now()}.${ext}`;
+      const oldUrl = url;
 
       // Unggah langsung dari browser ke Supabase Storage (wim-assets)
-      // Ini mengatasi error 413 "Request Entity Too Large" dari Vercel
       const { data: uploadData, error: uploadErr } = await supabase.storage
         .from('wim-assets')
         .upload(fileName, file, {
@@ -427,7 +427,31 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
       if (typeof onUrlChange === 'function') {
         onUrlChange(publicUrl);
       }
-      setSuccessMsg(`File audio "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)} MB) berhasil diunggah dan aktif!`);
+
+      // Hapus file audio lama dari Supabase Storage secara otomatis agar tidak dobel / menumpuk
+      try {
+        if (oldUrl && typeof oldUrl === 'string' && oldUrl.includes('/wim-assets/')) {
+          const oldFileName = oldUrl.split('/wim-assets/').pop()?.split('?')[0];
+          if (oldFileName && oldFileName !== fileName) {
+            await supabase.storage.from('wim-assets').remove([oldFileName]);
+          }
+        }
+        // Bersihkan juga file audio lama yang memiliki prefix slug ini
+        const { data: existingFiles } = await supabase.storage.from('wim-assets').list('', { limit: 100 });
+        if (existingFiles && existingFiles.length) {
+          const prefix = `audio-${cleanSlug}-`;
+          const targets = existingFiles
+            .filter(f => f.name.startsWith(prefix) && f.name !== fileName)
+            .map(f => f.name);
+          if (targets.length > 0) {
+            await supabase.storage.from('wim-assets').remove(targets);
+          }
+        }
+      } catch (cleanupErr) {
+        console.warn('Cleanup old audio warning:', cleanupErr);
+      }
+
+      setSuccessMsg(`File audio "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)} MB) berhasil diunggah! File lama otomatis dibersihkan.`);
     } catch (err) {
       console.error('Upload audio error:', err);
       setErrorMsg(err.message || 'Gagal mengunggah file audio.');
@@ -440,6 +464,40 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) uploadAudioFile(file);
+  };
+
+  const handleDeleteAudio = async () => {
+    if (!url) return;
+    if (!confirm('Apakah Anda yakin ingin menghapus lagu ini? File audio lama di penyimpanan akan dihapus permanen.')) return;
+    try {
+      if (typeof url === 'string' && url.includes('/wim-assets/')) {
+        const oldFileName = url.split('/wim-assets/').pop()?.split('?')[0];
+        if (oldFileName) {
+          await supabase.storage.from('wim-assets').remove([oldFileName]);
+        }
+      }
+      const cleanSlug = String(slug).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30);
+      if (cleanSlug) {
+        const { data: existingFiles } = await supabase.storage.from('wim-assets').list('', { limit: 100 });
+        if (existingFiles && existingFiles.length) {
+          const prefix = `audio-${cleanSlug}-`;
+          const targets = existingFiles.filter(f => f.name.startsWith(prefix)).map(f => f.name);
+          if (targets.length > 0) {
+            await supabase.storage.from('wim-assets').remove(targets);
+          }
+        }
+      }
+      if (typeof onUrlChange === 'function') {
+        onUrlChange('');
+      }
+      if (typeof onChange === 'function') {
+        onChange(0);
+      }
+      setSuccessMsg('Lagu berhasil dihapus dan penyimpanan telah dibersihkan.');
+    } catch (err) {
+      console.error('Delete audio error:', err);
+      setErrorMsg('Gagal menghapus file audio.');
+    }
   };
 
   if (!url) {
@@ -499,6 +557,27 @@ export default function MusicTimestampPicker({ url, onUrlChange, value, onChange
           <span>{isUploading ? '⏳' : '📁'}</span>
           <span>{isUploading ? 'Mengunggah File...' : 'Upload File MP3 / M4A (Drag & Drop)'}</span>
         </button>
+            <button
+              type="button"
+              onClick={handleDeleteAudio}
+              style={{
+                padding: '7px 14px',
+                borderRadius: '6px',
+                background: '#fee2e2',
+                color: '#dc2626',
+                border: '1px solid #fca5a5',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
+              title="Hapus lagu ini dan bersihkan file dari server"
+            >
+              <span>🗑️</span>
+              <span>Hapus Lagu</span>
+            </button>
       </div>
     );
   }

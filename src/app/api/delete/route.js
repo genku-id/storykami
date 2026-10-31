@@ -27,12 +27,13 @@ export async function POST(req) {
       console.error('Gagal hapus storage linktamu:', e);
     }
 
-    // 2) Hapus foto (couple/bride/groom/thumbnail) di Storage (wim-assets/{slug}-*)
+    // 2) Hapus foto dan audio di Storage (wim-assets/{slug}-* dan audio-{slug}-*)
     try {
       const { data: assets } = await supabaseAdmin.storage.from('wim-assets').list('', { limit: 1000 });
       if (assets && assets.length) {
         const prefix = `${slug}-`;
-        const targets = assets.filter(a => a.name.startsWith(prefix)).map(a => a.name);
+        const audioPrefix = `audio-${slug}-`;
+        const targets = assets.filter(a => a.name.startsWith(prefix) || a.name.startsWith(audioPrefix)).map(a => a.name);
         if (targets.length) {
           await supabaseAdmin.storage.from('wim-assets').remove(targets);
         }
