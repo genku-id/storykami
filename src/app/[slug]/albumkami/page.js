@@ -74,7 +74,8 @@ export default function SharedAlbumPage() {
           const res = await fetch(p.r2_image_url);
           const blob = await res.blob();
           const cleanName = (p.guest_name || 'tamu').replace(/[^a-zA-Z0-9]/g, '_');
-          folder.file(`${i + 1}_${cleanName}_${p.id.slice(0, 6)}.webp`, blob);
+          const ext = p.r2_key?.endsWith('.jpg') || p.r2_key?.endsWith('.jpeg') || blob.type === 'image/jpeg' ? 'jpg' : (p.r2_key?.endsWith('.png') ? 'png' : 'webp');
+          folder.file(`${i + 1}_${cleanName}_${p.id.slice(0, 6)}.${ext}`, blob);
         } catch (fetchErr) {
           console.warn('Failed to add photo to zip:', p.r2_image_url);
         }

@@ -3,10 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FILM_PRESETS, addFilmGrain, addRetroDateStamp } from '@/utils/filmPresets';
 import '../albumkami.css';
 
-export default function DisposableCameraPage() {
+export default function GuestCameraHighResPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params?.slug || '';
@@ -17,25 +16,27 @@ export default function DisposableCameraPage() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoadingSession, setIsLoadingSession] = useState(true);
 
-  // Info Album
+  // Info Album & Kuota
   const [albumInfo, setAlbumInfo] = useState(null);
-  const [activePresetId, setActivePresetId] = useState('portra');
-  const [showPresetSheet, setShowPresetSheet] = useState(false);
   const [remainingRolls, setRemainingRolls] = useState(10);
   const [rollLimit, setRollLimit] = useState(10);
 
   // Hardware Kamera
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const fileInputRef = useRef(null);
   const [facingMode, setFacingMode] = useState('environment'); // 'user' | 'environment'
   const [cameraError, setCameraError] = useState(null);
   const [hasTorch, setHasTorch] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
 
-  // Shutter & Effects
+  // Shutter & Preview States
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [snapEffect, setSnapEffect] = useState(false);
-  const [recentPhoto, setRecentPhoto] = useState(null);
+  const [previewPhoto, setPreviewPhoto] = useState(null); // { blob, url, width, height, sizeText }
+  const [senderName, setSenderName] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
   // 1. Inisialisasi Device Token di LocalStorage
@@ -48,7 +49,10 @@ export default function DisposableCameraPage() {
     setDeviceToken(token);
 
     const savedName = localStorage.getItem('storykami_guest_name') || '';
-    if (savedName) setGuestName(savedName);
+    if (savedName) {
+      setGuestName(savedName);
+      setSenderName(savedName);
+    }
   }, []);
 
   // 2. Load info album & status sesi
@@ -63,14 +67,13 @@ export default function DisposableCameraPage() {
 
         if (data.album) {
           setAlbumInfo(data.album);
-          const initialPreset = data.album.preset_id || 'portra';
-          setActivePresetId(FILM_PRESETS[initialPreset] ? initialPreset : 'portra');
           setRollLimit(data.album.roll_limit || 10);
         }
 
         if (data.guestSession) {
           setIsRegistered(true);
           setGuestName(data.guestSession.guest_name);
+          setSenderName(data.guestSession.guest_name);
           setRemainingRolls(data.guestSession.remaining_rolls);
         } else {
           setIsRegistered(false);
@@ -86,9 +89,9 @@ export default function DisposableCameraPage() {
     fetchInfo();
   }, [slug, deviceToken]);
 
-  // 3. Start Camera Stream
+  // 3. Start Camera Stream (Resolusi Maksimal High-Res tanpa filter)
   useEffect(() => {
-    if (!isRegistered) return;
+    if (!isRegistered || previewPhoto) return;
 
     let activeStream = null;
 
@@ -99,16 +102,27 @@ export default function DisposableCameraPage() {
           streamRef.current.getTracks().forEach((t) => t.stop());
         }
 
+        // Meminta resolusi sensor tertinggi yang didukung perangkat (hingga 4K / Full HD)
         const constraints = {
           video: {
             facingMode: { ideal: facingMode },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
+            width: { ideal: 3840, min: 1920 },
+            height: { ideal: 2160, min: 1080 },
           },
           audio: false,
         };
 
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+        } catch (strictErr) {
+          // Fallback resolusi standar jika resolusi 4K ditolak browser
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facingMode } },
+            audio: false,
+          });
+        }
+
         activeStream = stream;
         streamRef.current = stream;
 
@@ -121,7 +135,7 @@ export default function DisposableCameraPage() {
         setHasTorch(Boolean(capabilities.torch));
       } catch (err) {
         console.error('Camera access error:', err);
-        setCameraError('Izin kamera belum aktif. Buka pengaturan browser untuk mengizinkan akses kamera.');
+        setCameraError('Izin kamera belum aktif. Buka pengaturan browser untuk mengizinkan kamera atau gunakan tombol unggah.');
       }
     }
 
@@ -132,9 +146,9 @@ export default function DisposableCameraPage() {
         activeStream.getTracks().forEach((t) => t.stop());
       }
     };
-  }, [isRegistered, facingMode]);
+  }, [isRegistered, facingMode, previewPhoto]);
 
-  // Toggle Torch
+  // Toggle Torch / Flashlight
   const toggleTorch = async () => {
     if (!streamRef.current || !hasTorch) return;
     try {
@@ -159,12 +173,14 @@ export default function DisposableCameraPage() {
 
     try {
       setIsLoadingSession(true);
-      localStorage.setItem('storykami_guest_name', guestName.trim());
+      const trimmed = guestName.trim();
+      localStorage.setItem('storykami_guest_name', trimmed);
+      setSenderName(trimmed);
 
       const res = await fetch(`/api/album/${slug}/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guest_name: guestName.trim(), device_token: deviceToken }),
+        body: JSON.stringify({ guest_name: trimmed, device_token: deviceToken }),
       });
 
       const data = await res.json();
@@ -203,113 +219,199 @@ export default function DisposableCameraPage() {
     } catch (e) {}
   };
 
-  // Keyboard shortcut (Spacebar) untuk pengguna Laptop / Desktop
+  // Format File Size
+  const formatBytes = (bytes) => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Keyboard shortcut (Spacebar) untuk Laptop
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.code === 'Space' && isRegistered && !isCapturing && remainingRolls > 0 && !showPresetSheet) {
+      if (e.code === 'Space' && isRegistered && !isCapturing && !previewPhoto && remainingRolls > 0) {
         e.preventDefault();
         handleCapturePhoto();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRegistered, isCapturing, remainingRolls, showPresetSheet]);
+  }, [isRegistered, isCapturing, previewPhoto, remainingRolls]);
 
-  // Jepret Foto
+  // Tangkap Foto Resolusi Tinggi (Murni tanpa filter, format JPEG berkualitas tinggi)
   const handleCapturePhoto = async () => {
-    if (isCapturing || remainingRolls <= 0 || !videoRef.current) return;
+    if (isCapturing || remainingRolls <= 0) return;
 
     setIsCapturing(true);
     setSnapEffect(true);
     playShutterSound();
-    setTimeout(() => setSnapEffect(false), 380);
-
-    setStatusMessage('Developing...');
+    setTimeout(() => setSnapEffect(false), 300);
 
     try {
       const video = videoRef.current;
-      const canvas = document.createElement('canvas');
-      const vWidth = video.videoWidth || 1280;
-      const vHeight = video.videoHeight || 720;
+      const track = streamRef.current?.getVideoTracks()[0];
 
-      const maxDim = 1920;
-      let width = vWidth;
-      let height = vHeight;
-      if (width > maxDim || height > maxDim) {
-        if (width > height) {
-          height = Math.round((height * maxDim) / width);
-          width = maxDim;
-        } else {
-          width = Math.round((width * maxDim) / height);
-          height = maxDim;
+      let photoBlob = null;
+      let width = 0;
+      let height = 0;
+
+      // 1. Coba gunakan ImageCapture API bawaan browser (mengakses resolusi penuh sensor perangkat tanpa crop)
+      if (typeof window !== 'undefined' && 'ImageCapture' in window && track) {
+        try {
+          const imageCapture = new window.ImageCapture(track);
+          // Ambil foto JPEG resolusi sensor asli
+          photoBlob = await imageCapture.takePhoto({
+            fillLightMode: torchOn ? 'flash' : 'off',
+          });
+        } catch (imgCapErr) {
+          console.warn('ImageCapture API fallback to high-res canvas:', imgCapErr);
         }
       }
 
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
+      // 2. Fallback ke Canvas dengan 100% resolusi native video stream
+      if (!photoBlob && video) {
+        const vWidth = video.videoWidth || 1920;
+        const vHeight = video.videoHeight || 1080;
+        width = vWidth;
+        height = vHeight;
 
-      if (facingMode === 'user') {
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        // Jika kamera depan (selfie), balikkan mirror
+        if (facingMode === 'user') {
+          ctx.translate(width, 0);
+          ctx.scale(-1, 1);
+        }
+        ctx.drawImage(video, 0, 0, width, height);
+
+        // Export murni JPEG tanpa filter dengan kualitas maksimal 0.98 (menghindari artefak kompresi & ukuran besar asli)
+        photoBlob = await new Promise((resolve) => {
+          canvas.toBlob(resolve, 'image/jpeg', 0.98);
+        });
       }
-      ctx.drawImage(video, 0, 0, width, height);
 
-      if (facingMode === 'user') {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (!photoBlob) {
+        throw new Error('Gagal menangkap foto resolusi tinggi dari kamera.');
       }
 
-      const preset = FILM_PRESETS[activePresetId] || FILM_PRESETS['portra'];
-      if (preset && preset.applyCanvas) {
-        preset.applyCanvas(ctx, width, height);
+      // Ukur dimensi foto asli
+      const localUrl = URL.createObjectURL(photoBlob);
+      if (!width || !height) {
+        const img = new Image();
+        img.src = localUrl;
+        await new Promise((res) => {
+          img.onload = () => {
+            width = img.naturalWidth;
+            height = img.naturalHeight;
+            res();
+          };
+        });
       }
 
-      addFilmGrain(ctx, width, height, 0.08);
-      addRetroDateStamp(ctx, width, height);
-
-      const blob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, 'image/webp', 0.85);
+      // Masuk ke Mode Preview & Konfirmasi (Sesuai PRD)
+      setPreviewPhoto({
+        blob: photoBlob,
+        url: localUrl,
+        width,
+        height,
+        sizeText: formatBytes(photoBlob.size),
       });
+      setUploadSuccess(false);
+    } catch (err) {
+      console.error('Capture error:', err);
+      alert(err.message || 'Gagal memotret');
+    } finally {
+      setIsCapturing(false);
+    }
+  };
 
-      if (!blob) throw new Error('Gagal memproses gambar');
+  // Upload dari File / Kamera Bawaan HP (Alternative File Picker)
+  const handleNativeFileInput = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-      const localPreview = URL.createObjectURL(blob);
-      setRecentPhoto(localPreview);
+    if (remainingRolls <= 0) {
+      alert('Kuota foto Anda sudah habis!');
+      return;
+    }
 
-      // 1. Upload Presigned URL R2
+    const localUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = localUrl;
+    img.onload = () => {
+      setPreviewPhoto({
+        blob: file,
+        url: localUrl,
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        sizeText: formatBytes(file.size),
+      });
+      setUploadSuccess(false);
+    };
+  };
+
+  // Batalkan Preview / Foto Ulang (Retake)
+  const handleRetake = () => {
+    if (previewPhoto?.url) {
+      URL.revokeObjectURL(previewPhoto.url);
+    }
+    setPreviewPhoto(null);
+    setUploadSuccess(false);
+  };
+
+  // Kirim Foto Resolusi Tinggi ke Cloudflare R2 & Simpan ke Database
+  const handleConfirmUpload = async () => {
+    if (!previewPhoto?.blob || isUploading) return;
+
+    setIsUploading(true);
+    setStatusMessage('Mengunggah foto resolusi tinggi...');
+
+    try {
+      const finalSenderName = (senderName || guestName || 'Tamu').trim();
+      localStorage.setItem('storykami_guest_name', finalSenderName);
+
+      // 1. Dapatkan Presigned PUT URL ke Cloudflare R2
       const urlRes = await fetch(`/api/album/${slug}/upload-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_token: deviceToken, contentType: 'image/webp' }),
+        body: JSON.stringify({
+          device_token: deviceToken,
+          contentType: 'image/jpeg',
+        }),
       });
 
       const urlData = await urlRes.json();
       if (!urlRes.ok || !urlData.uploadUrl) {
-        throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
+        throw new Error(urlData.error || 'Gagal menyiapkan slot penyimpanan');
       }
 
-      // 2. Upload Direct PUT ke Cloudflare R2
+      // 2. Upload file asli beresolusi tinggi (JPEG) langsung ke Cloudflare R2
       const uploadRes = await fetch(urlData.uploadUrl, {
         method: 'PUT',
-        headers: { 'Content-Type': 'image/webp' },
-        body: blob,
+        headers: { 'Content-Type': 'image/jpeg' },
+        body: previewPhoto.blob,
       });
 
       if (!uploadRes.ok) {
-        throw new Error('Gagal mengirim foto ke Cloudflare R2');
+        throw new Error('Gagal mengunggah foto ke Cloudflare R2');
       }
 
-      // 3. Konfirmasi ke Supabase Database
+      // 3. Catat foto ke Supabase Database
       const confirmRes = await fetch(`/api/album/${slug}/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           album_id: urlData.albumId,
           guest_id: urlData.guestId,
-          guest_name: urlData.guestName,
+          guest_name: finalSenderName,
           r2_key: urlData.key,
           r2_image_url: urlData.publicUrl,
-          preset_applied: activePresetId,
+          preset_applied: 'original-highres',
         }),
       });
 
@@ -320,18 +422,15 @@ export default function DisposableCameraPage() {
         setRemainingRolls((prev) => Math.max(0, prev - 1));
       }
 
-      setStatusMessage('Saved to roll 🎞️');
-      setTimeout(() => setStatusMessage(''), 2000);
-    } catch (err) {
-      console.error('Capture error:', err);
-      alert(err.message || 'Gagal memotret');
+      setUploadSuccess(true);
       setStatusMessage('');
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert(err.message || 'Gagal mengirim foto');
     } finally {
-      setIsCapturing(false);
+      setIsUploading(false);
     }
   };
-
-  const activePreset = FILM_PRESETS[activePresetId] || FILM_PRESETS['portra'];
 
   // 1. Loading Screen
   if (isLoadingSession) {
@@ -343,44 +442,39 @@ export default function DisposableCameraPage() {
     );
   }
 
-  // 2. Guest Registration Screen (Identik dengan satualbum.id)
+  // 2. Guest Registration Screen (Masuk Nama Tamu)
   if (!isRegistered) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-end bg-[#12110f] p-0 md:justify-center md:p-4">
-        {/* Background Film Aesthetic */}
+        {/* Ambient Dark Glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800/20 via-[#12110f] to-[#12110f] pointer-events-none" />
 
-        {/* Modal Sheet ala Satualbum */}
         <div className="relative w-full max-w-md rounded-t-[32px] border border-white/10 bg-[#161616] px-6 pb-10 pt-7 shadow-2xl md:rounded-[32px]">
-          {/* Drag Handle Bar */}
           <div className="mx-auto mb-6 h-1 w-10 rounded-full bg-white/20" />
 
-          {/* Badge & Title */}
           <div className="text-center mb-6">
             <span className="inline-block rounded-full bg-white/[0.06] border border-white/10 px-3 py-1 font-film text-[11px] tracking-widest uppercase text-white/70 mb-3">
-              Kamera Sekali Pakai Digital
+              Album Foto Tamu • High Resolution
             </span>
             <h1 className="font-serif text-2xl font-bold tracking-tight text-white mb-2">
               {albumInfo?.title || `Album ${slug}`}
             </h1>
             <p className="text-[13px] text-white/50 leading-relaxed max-w-xs mx-auto">
-              Scan, jepret foto dengan filter film vintage, lalu terungkap bersama di album pesta.
+              Jepret momen terbaikmu dengan resolusi asli yang jernih dan abadikan di album bersama.
             </p>
           </div>
 
-          {/* Roll Info Card */}
           <div className="mb-6 rounded-2xl bg-white/[0.04] border border-white/[0.08] p-4 flex items-center justify-between">
             <div>
               <span className="block font-film text-[10px] tracking-wider uppercase text-white/40">Kuota Jepretan</span>
               <span className="font-film text-lg font-bold text-white">{rollLimit} Foto / Tamu</span>
             </div>
             <div className="text-right">
-              <span className="block font-film text-[10px] tracking-wider uppercase text-white/40">Preset Film</span>
-              <span className="font-sans text-xs font-medium text-emerald-400">{activePreset.name}</span>
+              <span className="block font-film text-[10px] tracking-wider uppercase text-white/40">Format Foto</span>
+              <span className="font-sans text-xs font-semibold text-emerald-400">High-Res JPEG</span>
             </div>
           </div>
 
-          {/* Form Masukkan Nama */}
           <form onSubmit={handleRegisterGuest} className="space-y-4">
             <div>
               <label className="block font-film text-[11px] tracking-wider uppercase text-white/50 mb-2">
@@ -391,7 +485,10 @@ export default function DisposableCameraPage() {
                 required
                 autoFocus
                 value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
+                onChange={(e) => {
+                  setGuestName(e.target.value);
+                  setSenderName(e.target.value);
+                }}
                 placeholder="Tulis nama panggilanmu..."
                 className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
               />
@@ -402,7 +499,7 @@ export default function DisposableCameraPage() {
               disabled={!guestName.trim()}
               className="w-full rounded-2xl bg-white py-4 font-semibold text-black text-[15px] hover:bg-neutral-200 active:scale-[0.98] transition-all disabled:opacity-40 shadow-xl"
             >
-              Mulai Motret 📷
+              Mulai Memotret 📸
             </button>
           </form>
 
@@ -419,7 +516,131 @@ export default function DisposableCameraPage() {
     );
   }
 
-  // 3. Viewfinder Camera Screen (Identik 1:1 Satualbum.id)
+  // 3. MODAL PREVIEW FOTO & KONFIRMASI (Flow PRD: Jepret -> Preview & Nama -> Kirim / Foto Ulang)
+  if (previewPhoto) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#0d0c0b] text-white overflow-y-auto">
+        <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[92vh] md:rounded-[32px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#12110f] relative p-4">
+          
+          {/* Top Bar Preview */}
+          <div className="flex items-center justify-between pb-3 pt-4 px-2 flex-shrink-0">
+            <div>
+              <h2 className="text-base font-bold text-white">Pratinjau Foto</h2>
+              <p className="text-[11px] text-white/50 font-mono">
+                {previewPhoto.width} × {previewPhoto.height} px • {previewPhoto.sizeText}
+              </p>
+            </div>
+            {!uploadSuccess && (
+              <button
+                onClick={handleRetake}
+                disabled={isUploading}
+                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium text-white/80 transition-colors"
+              >
+                Batal
+              </button>
+            )}
+          </div>
+
+          {/* Photo Preview Container */}
+          <div className="relative flex-1 rounded-2xl overflow-hidden bg-black flex items-center justify-center my-2 border border-white/10 shadow-inner">
+            <img
+              src={previewPhoto.url}
+              alt="Preview"
+              className="w-full h-full object-contain"
+            />
+
+            {/* Success Overlay jika sudah terkirim */}
+            {uploadSuccess && (
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20 anim-slide-up">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl mb-4 shadow-xl">
+                  ✓
+                </div>
+                <h3 className="font-serif text-xl font-bold text-white mb-2">
+                  Foto Berhasil Terkirim!
+                </h3>
+                <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed">
+                  Foto resolusi tinggi tersimpan aman di album pernikahan. Sisa kuota jepretan Anda: <span className="font-bold text-white">{remainingRolls} foto</span>.
+                </p>
+
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                  {remainingRolls > 0 ? (
+                    <button
+                      onClick={handleRetake}
+                      className="w-full py-3.5 rounded-2xl bg-white font-semibold text-black text-sm active:scale-95 transition-transform shadow-lg"
+                    >
+                      📸 Ambil Foto Lagi
+                    </button>
+                  ) : (
+                    <div className="text-xs text-amber-400/80 mb-2 font-mono">
+                      Semua kuota foto Anda telah digunakan.
+                    </div>
+                  )}
+
+                  <Link
+                    href={`/${slug}/albumkami`}
+                    className="w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform"
+                  >
+                    Lihat Galeri Bersama →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Form & Actions */}
+          {!uploadSuccess && (
+            <div className="pt-3 pb-2 px-1 flex-shrink-0 space-y-3">
+              <div>
+                <label className="block text-[11px] font-film uppercase tracking-wider text-white/50 mb-1.5">
+                  Nama Anda (Pengirim)
+                </label>
+                <input
+                  type="text"
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="Nama pengirim foto..."
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:border-white/30 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Tombol Foto Ulang */}
+                <button
+                  onClick={handleRetake}
+                  disabled={isUploading}
+                  className="py-3.5 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 font-semibold text-white text-sm active:scale-95 transition-all text-center"
+                >
+                  🔄 Foto Ulang
+                </button>
+
+                {/* Tombol Kirim Foto */}
+                <button
+                  onClick={handleConfirmUpload}
+                  disabled={isUploading}
+                  className="py-3.5 px-4 rounded-xl bg-white hover:bg-neutral-200 font-semibold text-black text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <span>Mengirim...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Kirim Foto</span>
+                      <span>🚀</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // 4. MAIN VIEWFINDER SCREEN (Kamera Asli High-Res Murni)
   return (
     <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#12110f] select-none touch-none overflow-hidden">
       {/* Snap Flash Animation Overlay */}
@@ -434,7 +655,7 @@ export default function DisposableCameraPage() {
             <span className="text-white text-[16px] font-medium tracking-wide truncate max-w-[170px]">
               {albumInfo?.title || slug}
             </span>
-            <span className="font-film text-white/40 text-[13px] bg-white/[0.06] px-2 py-0.5 rounded-full border border-white/10">
+            <span className="font-film text-white/50 text-[13px] bg-white/[0.06] px-2.5 py-0.5 rounded-full border border-white/10">
               {remainingRolls}/{rollLimit}
             </span>
           </div>
@@ -450,13 +671,19 @@ export default function DisposableCameraPage() {
           </Link>
         </div>
 
-        {/* MIDDLE: VIEWFINDER */}
+        {/* MIDDLE: VIEWFINDER (Jernih tanpa filter) */}
         <div className="relative flex-1 flex items-center justify-center overflow-hidden px-4 pb-4">
           <div className="relative w-full h-full rounded-[28px] overflow-hidden bg-black border border-white/10 shadow-inner flex items-center justify-center">
             {cameraError ? (
-              <div className="p-6 text-center text-white/60">
-                <p className="text-sm font-sans mb-2">📷</p>
-                <p className="text-xs font-sans leading-relaxed">{cameraError}</p>
+              <div className="p-6 text-center text-white/70 max-w-xs">
+                <p className="text-2xl mb-2">📷</p>
+                <p className="text-xs font-sans leading-relaxed mb-4">{cameraError}</p>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2 rounded-xl bg-white text-black font-semibold text-xs shadow-lg active:scale-95"
+                >
+                  Pilih dari Kamera/Galeri HP
+                </button>
               </div>
             ) : (
               <video
@@ -464,13 +691,9 @@ export default function DisposableCameraPage() {
                 autoPlay
                 playsInline
                 muted
-                style={{ filter: activePreset.cssFilter }}
-                className="w-full h-full object-cover transition-all duration-200"
+                className="w-full h-full object-cover"
               />
             )}
-
-            {/* Satualbum Film Glow & Vignette */}
-            <div className="film-glow pointer-events-none" />
 
             {/* Flash Toggle Button */}
             {hasTorch && (
@@ -479,6 +702,7 @@ export default function DisposableCameraPage() {
                 className={`absolute top-4 left-4 z-10 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-transform ${
                   torchOn ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/40' : 'bg-black/50 backdrop-blur-md text-white border border-white/15'
                 }`}
+                title="Flash Kamera"
               >
                 ⚡
               </button>
@@ -488,6 +712,7 @@ export default function DisposableCameraPage() {
             <button
               onClick={switchCamera}
               className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/15 flex items-center justify-center active:scale-90 transition-transform"
+              title="Balik Kamera Depan/Belakang"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -497,54 +722,56 @@ export default function DisposableCameraPage() {
               </svg>
             </button>
 
-            {/* Active Preset Badge (Clickable to switch preset) */}
-            <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4 pointer-events-auto">
-              <button
-                onClick={() => setShowPresetSheet(true)}
-                className="inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-white shadow-xl bg-black/60 backdrop-blur-md border border-white/15 active:scale-95 transition-transform"
-              >
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: activePreset.badgeColor }} />
-                <span className="truncate text-[13px] font-semibold">{activePreset.name}</span>
-                <span className="text-[10px] text-white/50 font-film uppercase">PILIH</span>
-              </button>
+            {/* Subtle High-Res Indicator Badge */}
+            <div className="absolute top-4 inset-x-0 flex justify-center pointer-events-none">
+              <span className="font-film text-[10px] tracking-wider uppercase text-white/70 bg-black/50 backdrop-blur-md border border-white/15 px-3 py-1 rounded-full">
+                High-Res JPEG • No Filter
+              </span>
             </div>
 
-            {/* Retro Date Imprint */}
-            <div className="absolute bottom-4 right-4 pointer-events-none font-film text-[12px] font-bold text-[#ff7b00] drop-shadow-[0_0_8px_rgba(255,100,0,0.8)] tracking-widest opacity-85">
-              {`'${new Date().getFullYear().toString().slice(-2)} ${(new Date().getMonth() + 1).toString().padStart(2, '0')} ${new Date().getDate().toString().padStart(2, '0')}`}
-            </div>
-
-            {/* Developing Toast Notification */}
+            {/* Loading / Status Toast */}
             {statusMessage && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/85 backdrop-blur-md border border-white/20 px-5 py-2 rounded-full text-xs font-film text-white shadow-2xl z-30 animate-pulse">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/85 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full text-xs font-medium text-white shadow-2xl z-30 animate-pulse">
                 {statusMessage}
               </div>
             )}
           </div>
         </div>
 
-        {/* BOTTOM CONTROLS (Identik dengan Satualbum) */}
+        {/* BOTTOM CONTROLS */}
         <div className="relative z-10 flex flex-shrink-0 items-center justify-around px-6 pb-[max(28px,env(safe-area-inset-bottom))] pt-2">
           
-          {/* Preset Pill Button */}
-          <button
-            onClick={() => setShowPresetSheet(true)}
-            className="flex h-[52px] shrink-0 items-center justify-center gap-2 rounded-[26px] bg-white/10 border border-white/10 px-5 text-white transition-transform active:scale-[0.96] max-[430px]:h-12 max-[430px]:w-12 max-[430px]:px-0"
-            title="Ganti Preset Film"
-          >
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activePreset.badgeColor }} />
-            <span className="text-[13px] font-medium text-white max-[430px]:hidden">
-              {activePreset.name.split(' ')[0]}
-            </span>
-          </button>
+          {/* File Picker / Native Camera Fallback Button */}
+          <div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              capture="environment"
+              onChange={handleNativeFileInput}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[26px] bg-white/10 border border-white/10 text-white transition-transform active:scale-[0.94]"
+              title="Ambil dari Kamera Bawaan HP / Unggah Foto"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </button>
+          </div>
 
-          {/* BIG SHUTTER BUTTON (Satualbum White Disc Style) */}
+          {/* BIG SHUTTER BUTTON */}
           <button
             onClick={handleCapturePhoto}
             disabled={isCapturing || remainingRolls <= 0}
-            className={`flex h-[74px] w-[74px] shrink-0 items-center justify-center rounded-full bg-white transition-transform active:scale-[0.92] shadow-2xl p-1 ${
+            className={`flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-full bg-white transition-transform active:scale-[0.92] shadow-2xl p-1 ${
               remainingRolls <= 0 ? 'opacity-40 cursor-not-allowed' : ''
             }`}
+            title="Jepret Foto"
           >
             <div className="w-full h-full rounded-full border-4 border-black/80 bg-white flex items-center justify-center">
               {isCapturing ? (
@@ -555,79 +782,21 @@ export default function DisposableCameraPage() {
             </div>
           </button>
 
-          {/* Gallery Button / Thumbnail */}
+          {/* Gallery Button */}
           <Link
             href={`/${slug}/albumkami`}
-            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[26px] bg-white/10 border border-white/10 transition-transform active:scale-[0.96] overflow-hidden"
-            title="Buka Galeri"
+            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[26px] bg-white/10 border border-white/10 transition-transform active:scale-[0.94] text-white"
+            title="Buka Galeri Album"
           >
-            {recentPhoto ? (
-              <img src={recentPhoto} alt="Recent" className="w-full h-full object-cover" />
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-                <circle cx="9" cy="9" r="2"/>
-                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-              </svg>
-            )}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
           </Link>
         </div>
 
       </div>
-
-      {/* BOTTOM SHEET: PRESET PICKER (Satualbum Style) */}
-      {showPresetSheet && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/75 backdrop-blur-sm p-0 md:items-center md:p-4">
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-t-[32px] border border-white/10 bg-[#161616] px-6 pb-8 pt-5 shadow-2xl md:rounded-[32px] anim-slide-up"
-          >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
-            
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif text-lg font-bold text-white">Preset Film</h3>
-              <button
-                onClick={() => setShowPresetSheet(false)}
-                className="w-8 h-8 rounded-full bg-white/10 text-white/70 flex items-center justify-center text-xs"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-xs text-white/50 mb-5 leading-relaxed">
-              Pilih karakter rol film untuk jepretan acaramu.
-            </p>
-
-            <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
-              {Object.values(FILM_PRESETS).map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => {
-                    setActivePresetId(p.id);
-                    setShowPresetSheet(false);
-                  }}
-                  className={`w-full p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                    activePresetId === p.id
-                      ? 'bg-white/10 border-white/40 shadow-lg'
-                      : 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: p.badgeColor }} />
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">{p.name}</h4>
-                      <p className="text-[11px] text-white/45">{p.description}</p>
-                    </div>
-                  </div>
-                  {activePresetId === p.id && (
-                    <span className="text-emerald-400 text-sm font-bold">✓</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -9,7 +9,7 @@ export async function POST(request, { params }) {
   try {
     const { slug } = await params;
     const body = await request.json();
-    const { device_token, contentType = 'image/webp' } = body || {};
+    const { device_token, contentType = 'image/jpeg' } = body || {};
 
     if (!device_token) {
       return NextResponse.json({ error: 'Device token diperlukan' }, { status: 400 });
