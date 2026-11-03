@@ -40,6 +40,10 @@ export default function SatualbumCameraPage() {
   const [recentPhoto, setRecentPhoto] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
 
+  // Background Upload State (Upload di latar belakang tanpa blokir UI)
+  const [bgUploadQueue, setBgUploadQueue] = useState(0);
+  const [bgToast, setBgToast] = useState({ show: false, type: 'uploading', message: '' });
+
   // Format File Size
   const formatBytes = (bytes) => {
     if (!bytes) return '0 B';
@@ -383,58 +387,82 @@ export default function SatualbumCameraPage() {
     setUploadSuccess(false);
   };
 
-  // 🚀 Unggah Kedua File Sekaligus (Asli ke R2 & Thumbnail ke R2)
+  // 🚀 Unggah di Latar Belakang (Non-Blocking: UI Langsung Kembali ke Kamera Instan!)
   const handleConfirmUpload = async () => {
-    if (!previewPhoto?.originalBlob || isUploading) return;
+    if (!previewPhoto?.originalBlob) return;
 
-    setIsUploading(true);
-    setStatusMessage('Mengunggah file asli & thumbnail...');
+    const photoToUpload = { ...previewPhoto };
+    const finalSenderName = (senderName || guestName || 'Tamu').trim();
+    try {
+      localStorage.setItem('storykami_guest_name', finalSenderName);
+    } catch (e) {}
+
+    // 1. Feedback Instan (0 Milidetik)
+    setRemainingRolls((prev) => Math.max(0, prev - 1));
+    setRecentPhoto(photoToUpload.url);
+    setPreviewPhoto(null); // Langsung tutup preview, kamera seketika aktif kembali!
+
+    // 2. Tambahkan secara optimis ke cache galeri lokal agar saat pengguna buka galeri, foto langsung ada
+    try {
+      const cacheKey = `storykami_cache_${slug}_photos`;
+      const existing = localStorage.getItem(cacheKey);
+      let list = existing ? JSON.parse(existing) : [];
+      const optimisticPhoto = {
+        id: 'opt_' + Date.now(),
+        guest_name: finalSenderName,
+        r2_key: '',
+        r2_image_url: photoToUpload.url,
+        r2_thumb_url: photoToUpload.url,
+        preset_applied: 'original-highres',
+        likes_count: 0,
+        created_at: new Date().toISOString(),
+        isOptimistic: true,
+      };
+      list = [optimisticPhoto, ...list];
+      localStorage.setItem(cacheKey, JSON.stringify(list));
+    } catch (e) {}
+
+    // 3. Eksekusi Upload di Latar Belakang
+    setBgUploadQueue((prev) => prev + 1);
+    setBgToast({ show: true, type: 'uploading', message: 'Mengunggah di latar belakang... ☁️' });
 
     try {
-      const finalSenderName = (senderName || guestName || 'Tamu').trim();
-      localStorage.setItem('storykami_guest_name', finalSenderName);
-
-      // 1. Minta Presigned PUT URL untuk file asli (.jpg) dan thumbnail (.webp)
+      // Step A: Minta Presigned PUT URL
       const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          device_token: deviceToken,
-        }),
+        body: JSON.stringify({ device_token: deviceToken }),
       });
-
       const urlData = await urlRes.json();
       if (!urlRes.ok || !urlData.uploadUrl) {
         throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
       }
 
-      // 2. Upload kedua file ke Cloudflare R2 secara paralel
+      // Step B: Upload file asli JPEG & thumbnail WebP secara paralel
       const uploadPromises = [
-        // Upload File Asli High-Res JPEG
         fetch(urlData.uploadUrl, {
           method: 'PUT',
           headers: { 'Content-Type': 'image/jpeg' },
-          body: previewPhoto.originalBlob,
+          body: photoToUpload.originalBlob,
         }),
       ];
 
-      // Upload Thumbnail WebP jika URL presigned thumbnail tersedia
-      if (urlData.thumbUploadUrl && previewPhoto.thumbBlob) {
+      if (urlData.thumbUploadUrl && photoToUpload.thumbBlob) {
         uploadPromises.push(
           fetch(urlData.thumbUploadUrl, {
             method: 'PUT',
             headers: { 'Content-Type': 'image/webp' },
-            body: previewPhoto.thumbBlob,
+            body: photoToUpload.thumbBlob,
           })
         );
       }
 
       const uploadResults = await Promise.all(uploadPromises);
       for (const res of uploadResults) {
-        if (!res.ok) throw new Error('Gagal mengunggah foto ke Cloudflare R2');
+        if (!res.ok) throw new Error('Gagal mengunggah foto');
       }
 
-      // 3. Konfirmasi ke Supabase Database
+      // Step C: Konfirmasi ke Supabase Database
       const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -451,19 +479,43 @@ export default function SatualbumCameraPage() {
       const confirmData = await confirmRes.json();
       if (confirmData.remainingRolls !== undefined) {
         setRemainingRolls(confirmData.remainingRolls);
-      } else {
-        setRemainingRolls((prev) => Math.max(0, prev - 1));
       }
 
-      // Update thumbnail di kanan bawah
-      setRecentPhoto(previewPhoto.url);
-      setUploadSuccess(true);
-      setStatusMessage('');
+      // Update cache galeri lokal dengan URL permanen dari R2
+      try {
+        const cacheKey = `storykami_cache_${slug}_photos`;
+        const existing = localStorage.getItem(cacheKey);
+        if (existing) {
+          const list = JSON.parse(existing);
+          const updated = list.map((p) => {
+            if (p.isOptimistic && p.r2_image_url === photoToUpload.url) {
+              return {
+                ...p,
+                id: confirmData.photo?.id || p.id,
+                r2_key: urlData.key,
+                r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key)}`,
+                r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key.replace(/\.jpg$/, '_thumb.webp'))}`,
+                isOptimistic: false,
+              };
+            }
+            return p;
+          });
+          localStorage.setItem(cacheKey, JSON.stringify(updated));
+        }
+      } catch (e) {}
+
+      setBgToast({ show: true, type: 'success', message: '✓ Foto berhasil tersimpan di album!' });
+      setTimeout(() => {
+        setBgToast((prev) => (prev.type === 'success' ? { ...prev, show: false } : prev));
+      }, 2500);
     } catch (err) {
-      console.error('Upload error:', err);
-      alert(err.message || 'Gagal mengirim foto');
+      console.error('Background upload error:', err);
+      setBgToast({ show: true, type: 'error', message: '⚠️ Gagal mengunggah. Cek koneksi internet.' });
+      setTimeout(() => {
+        setBgToast((prev) => (prev.type === 'error' ? { ...prev, show: false } : prev));
+      }, 4000);
     } finally {
-      setIsUploading(false);
+      setBgUploadQueue((prev) => Math.max(0, prev - 1));
     }
   };
 
@@ -545,7 +597,7 @@ export default function SatualbumCameraPage() {
 
                   <button
                     onClick={() => {
-                      window.location.href = `/${slug}/albumkami/`;
+                      router.push(`/${slug}/albumkami/`);
                     }}
                     className="w-full h-[50px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center"
                   >
@@ -638,7 +690,7 @@ export default function SatualbumCameraPage() {
           {/* Tombol Back Arrow */}
           <button
             onClick={() => {
-              window.location.href = `/${slug}/albumkami/`;
+              router.push(`/${slug}/albumkami/`);
             }}
             className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-[#181818] border border-white/10 text-white transition-transform active:scale-90 shadow-md"
             title="Kembali ke Galeri"
@@ -680,6 +732,26 @@ export default function SatualbumCameraPage() {
             </svg>
           </Link>
         </div>
+
+        {/* Floating Background Upload Toast (Non-blocking, UI Tetap Halus & Responsif) */}
+        {bgToast.show && (
+          <div className="absolute top-24 inset-x-0 z-40 flex justify-center pointer-events-none px-4 anim-slide-down">
+            <div
+              className={`px-4 py-2 rounded-full backdrop-blur-md border text-xs font-medium shadow-2xl flex items-center gap-2 pointer-events-auto transition-all ${
+                bgToast.type === 'success'
+                  ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40'
+                  : bgToast.type === 'error'
+                  ? 'bg-rose-950/90 text-rose-300 border-rose-500/40'
+                  : 'bg-black/85 text-white/90 border-white/20'
+              }`}
+            >
+              {bgToast.type === 'uploading' && (
+                <div className="w-3.5 h-3.5 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
+              )}
+              <span>{bgToast.message}</span>
+            </div>
+          </div>
+        )}
 
         {/* MIDDLE: VIEWFINDER KAMERA (Presisi Satualbum.id) */}
         <div className="relative flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
@@ -825,7 +897,7 @@ export default function SatualbumCameraPage() {
           {/* 3. GALLERY THUMBNAIL SQUIRCLE (Kanan Bawah) */}
           <button
             onClick={() => {
-              window.location.href = `/${slug}/albumkami/`;
+              router.push(`/${slug}/albumkami/`);
             }}
             className="relative flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-[20px] border border-white/20 bg-[#181818] transition-transform active:scale-95 shadow-lg"
             title="Buka Galeri Album"

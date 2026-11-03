@@ -10,10 +10,10 @@ export default function SharedAlbumPage() {
   const params = useParams();
   const slug = params?.slug || '';
 
-  const [loading, setLoading] = useState(true);
-  const [albumData, setAlbumData] = useState(null);
   const [photos, setPhotos] = useState([]);
+  const [albumData, setAlbumData] = useState(null);
   const [contributors, setContributors] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedContributor, setSelectedContributor] = useState('ALL');
   const [gridColumns, setGridColumns] = useState(2); // 2 col or 3 col toggle
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -23,44 +23,71 @@ export default function SharedAlbumPage() {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
 
-  // Fetch data galeri secara real-time dengan auto-refresh
+  // SWR: Baca cache lokal seketika (0 milidetik, tanpa spinner jika sudah pernah dibuka)
   useEffect(() => {
     if (!slug) return;
 
-    async function loadGallery(isInitial = false) {
-      try {
-        if (isInitial) setLoading(true);
-        // 1. Fetch info album (selalu segar dengan cache buster)
-        const infoRes = await fetch(`/api/album/${slug}/info/?_t=${Date.now()}`, { cache: 'no-store' });
-        const info = await infoRes.json();
-        if (info.album) setAlbumData(info.album);
+    try {
+      const cachedPhotos = localStorage.getItem(`storykami_cache_${slug}_photos`);
+      const cachedInfo = localStorage.getItem(`storykami_cache_${slug}_info`);
+      if (cachedPhotos) {
+        const parsed = JSON.parse(cachedPhotos);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPhotos(parsed);
+          setContributors(Array.from(new Set(parsed.map((p) => p.guest_name).filter(Boolean))));
+          setLoading(false); // Instan tanpa delay!
+        }
+      }
+      if (cachedInfo) {
+        setAlbumData(JSON.parse(cachedInfo));
+      }
+    } catch (e) {}
 
-        // 2. Fetch foto album (dengan URL proxy lokal agar kebal blokir DNS, selalu segar)
-        const photosRes = await fetch(`/api/album/${slug}/photos/?_t=${Date.now()}`, { cache: 'no-store' });
+    // Fetch data galeri secara paralel (Promise.all) agar 2x lebih cepat
+    async function loadGallery(silent = false) {
+      try {
+        if (!silent && photos.length === 0) setLoading(true);
+
+        const [infoRes, photosRes] = await Promise.all([
+          fetch(`/api/album/${slug}/info/`, { cache: 'no-store' }),
+          fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' }),
+        ]);
+
+        const info = await infoRes.json();
         const pData = await photosRes.json();
+
+        if (info.album) {
+          setAlbumData(info.album);
+          try {
+            localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(info.album));
+          } catch (e) {}
+        }
 
         if (pData.photos) {
           setPhotos(pData.photos);
           setContributors(pData.contributors || []);
+          try {
+            localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(pData.photos));
+          } catch (e) {}
         }
       } catch (err) {
         console.error('Error loading gallery:', err);
       } finally {
-        if (isInitial) setLoading(false);
+        setLoading(false);
       }
     }
 
-    loadGallery(true);
+    loadGallery(false);
 
-    // Auto-refresh galeri berkala setiap 4 detik agar foto baru langsung muncul otomatis untuk semua orang
+    // Auto-refresh galeri berkala setiap 4 detik secara silent di background
     const pollInterval = setInterval(() => {
-      loadGallery(false);
+      loadGallery(true);
     }, 4000);
 
     // Refresh seketika saat pengguna kembali ke tab galeri
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        loadGallery(false);
+        loadGallery(true);
       }
     };
     window.addEventListener('visibilitychange', handleVisibility);
@@ -176,6 +203,9 @@ export default function SharedAlbumPage() {
       if (data.success) {
         const remaining = photos.filter((p) => p.id !== currentPhoto.id);
         setPhotos(remaining);
+        try {
+          localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(remaining));
+        } catch (e) {}
         if (remaining.length === 0) {
           setActivePhotoIndex(null);
         } else if (activePhotoIndex >= remaining.length) {
@@ -343,7 +373,7 @@ export default function SharedAlbumPage() {
           <div className="flex items-center gap-2.5 mb-6">
             {/* 1. Big Creamy White Pill Button: Open Camera (Background Putih -> Ikon Hitam) */}
             <Link
-              href={`/${slug}/albumkami/cam`}
+              href={`/${slug}/albumkami/cam/`}
               className="flex-1 h-14 bg-[#f2ece4] hover:bg-white text-black rounded-2xl flex items-center justify-center active:scale-[0.97] transition-all shadow-xl"
               title="Buka Kamera Tamu"
             >
@@ -486,7 +516,7 @@ export default function SharedAlbumPage() {
                 Tekan tombol kamera di atas untuk mengambil foto pertama dengan preset film vintage!
               </p>
               <Link
-                href={`/${slug}/albumkami/cam`}
+                href={`/${slug}/albumkami/cam/`}
                 className="inline-flex items-center gap-2 bg-[#f2ece4] text-[#12110f] font-semibold px-5 py-2.5 rounded-xl text-xs shadow-lg hover:bg-white transition-colors"
               >
                 <span>Buka Kamera Sekarang</span>
@@ -508,6 +538,7 @@ export default function SharedAlbumPage() {
                     src={photo.r2_thumb_url || photo.r2_image_url}
                     alt={photo.guest_name}
                     loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       if (photo.r2_image_url && e.currentTarget.src !== photo.r2_image_url) {
