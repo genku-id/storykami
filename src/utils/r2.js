@@ -1,11 +1,11 @@
 import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID || '436f69b066ca5c2d1a42e1dc77a02881';
-const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID || '9e61286e1b0e6c38207372773375b89a';
-const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY || '99f7638af884c5b8b86b6cf644aa6deae89c56341af2753d9b206079ee08d764';
+const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID || '';
+const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID || '';
+const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY || '';
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || 'albumkami';
-const R2_PUBLIC_DOMAIN = (process.env.R2_PUBLIC_DOMAIN || 'https://pub-00692ab91d24451e94a25d643da4126c.r2.dev').replace(/\/$/, '');
+const R2_PUBLIC_DOMAIN = (process.env.R2_PUBLIC_DOMAIN || '').replace(/\/$/, '');
 
 let s3ClientInstance = null;
 
