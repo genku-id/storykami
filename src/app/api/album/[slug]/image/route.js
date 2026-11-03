@@ -18,7 +18,11 @@ export async function GET(request, { params }) {
       return new NextResponse('Key is required', { status: 400 });
     }
 
-    const cleanKey = decodeURIComponent(key).replace(/^\/+/, '');
+    let cleanKey = key;
+    try {
+      cleanKey = decodeURIComponent(key);
+    } catch (e) {}
+    cleanKey = cleanKey.replace(/^\/+/, '');
     const ext = path.extname(cleanKey).toLowerCase();
     const fallbackMime =
       ext === '.jpg' || ext === '.jpeg'
