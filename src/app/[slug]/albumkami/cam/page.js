@@ -525,12 +525,14 @@ export default function SatualbumCameraPage() {
                     </div>
                   )}
 
-                  <Link
-                    href={`/${slug}/albumkami/`}
+                  <button
+                    onClick={() => {
+                      window.location.href = `/${slug}/albumkami/`;
+                    }}
                     className="w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform"
                   >
                     Buka Galeri Bersama →
-                  </Link>
+                  </button>
                 </div>
               </div>
             )}
@@ -603,15 +605,17 @@ export default function SatualbumCameraPage() {
         {/* TOP BAR (Presisi Identik Satualbum.id) */}
         <div className="relative z-10 flex items-center justify-between px-5 pt-11 pb-2 flex-shrink-0">
           {/* Tombol Back Arrow */}
-          <Link
-            href={`/${slug}/albumkami/`}
+          <button
+            onClick={() => {
+              window.location.href = `/${slug}/albumkami/`;
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-[18px] bg-[#181818] border border-white/10 text-white transition-transform active:scale-90 shadow-md"
             title="Kembali ke Galeri"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
-          </Link>
+          </button>
 
           {/* Judul Acara & Sisa Hari */}
           <div className="flex flex-col items-center justify-center text-center px-2">
@@ -781,8 +785,10 @@ export default function SatualbumCameraPage() {
           </button>
 
           {/* 3. GALLERY THUMBNAIL SQUIRCLE (Kanan Bawah) */}
-          <Link
-            href={`/${slug}/albumkami/`}
+          <button
+            onClick={() => {
+              window.location.href = `/${slug}/albumkami/`;
+            }}
             className="relative flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-[20px] border border-white/20 bg-[#181818] transition-transform active:scale-95 shadow-lg"
             title="Buka Galeri Album"
           >
@@ -799,7 +805,7 @@ export default function SatualbumCameraPage() {
                 <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
               </svg>
             )}
-          </Link>
+          </button>
         </div>
 
       </div>

@@ -23,20 +23,20 @@ export default function SharedAlbumPage() {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
 
-  // Fetch data galeri
+  // Fetch data galeri secara real-time dengan auto-refresh
   useEffect(() => {
     if (!slug) return;
 
-    async function loadGallery() {
+    async function loadGallery(isInitial = false) {
       try {
-        setLoading(true);
-        // 1. Fetch info album (selalu segar)
-        const infoRes = await fetch(`/api/album/${slug}/info/`, { cache: 'no-store' });
+        if (isInitial) setLoading(true);
+        // 1. Fetch info album (selalu segar dengan cache buster)
+        const infoRes = await fetch(`/api/album/${slug}/info/?_t=${Date.now()}`, { cache: 'no-store' });
         const info = await infoRes.json();
-        setAlbumData(info.album);
+        if (info.album) setAlbumData(info.album);
 
         // 2. Fetch foto album (dengan URL proxy lokal agar kebal blokir DNS, selalu segar)
-        const photosRes = await fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' });
+        const photosRes = await fetch(`/api/album/${slug}/photos/?_t=${Date.now()}`, { cache: 'no-store' });
         const pData = await photosRes.json();
 
         if (pData.photos) {
@@ -46,11 +46,31 @@ export default function SharedAlbumPage() {
       } catch (err) {
         console.error('Error loading gallery:', err);
       } finally {
-        setLoading(false);
+        if (isInitial) setLoading(false);
       }
     }
 
-    loadGallery();
+    loadGallery(true);
+
+    // Auto-refresh galeri berkala setiap 4 detik agar foto baru langsung muncul otomatis untuk semua orang
+    const pollInterval = setInterval(() => {
+      loadGallery(false);
+    }, 4000);
+
+    // Refresh seketika saat pengguna kembali ke tab galeri
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        loadGallery(false);
+      }
+    };
+    window.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleVisibility);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleVisibility);
+    };
   }, [slug]);
 
   // Unduh Semua Foto sebagai ZIP
@@ -383,8 +403,9 @@ export default function SharedAlbumPage() {
                     loading="lazy"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      // Fallback jika ada isu koneksi gambar
-                      console.warn('Image load error:', photo.r2_image_url);
+                      if (photo.r2_image_url && e.currentTarget.src !== photo.r2_image_url) {
+                        e.currentTarget.src = photo.r2_image_url;
+                      }
                     }}
                   />
                   {/* Gradient shadow overlay for guest name tag */}
