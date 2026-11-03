@@ -68,23 +68,38 @@ export default function SharedAlbumPage() {
 
     return () => {
       clearInterval(pollInterval);
-      window.removeEventListener('visibilitychange', handleVisibility);
-      window.removeEventListener('focus', handleVisibility);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('visibilitychange', handleVisibility);
+        window.removeEventListener('focus', handleVisibility);
+      }
     };
   }, [slug]);
 
-  const currentPhoto = activePhotoIndex !== null ? filteredPhotos[activePhotoIndex] : null;
+  // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
+  const filteredPhotos =
+    selectedContributor === 'ALL'
+      ? photos
+      : photos.filter((p) => p.guest_name === selectedContributor);
+
+  const albumTitle = albumData?.title || 'Awal dari Selamanya';
+  const maxGuests = albumData?.max_guests || 50;
+  const currentGuestsCount = Math.max(contributors.length, photos.length > 0 ? 1 : 0);
+
+  const currentPhoto =
+    activePhotoIndex !== null && filteredPhotos[activePhotoIndex]
+      ? filteredPhotos[activePhotoIndex]
+      : null;
 
   const handleNextPhoto = (e) => {
     e?.stopPropagation();
-    if (activePhotoIndex !== null) {
+    if (activePhotoIndex !== null && filteredPhotos.length > 0) {
       setActivePhotoIndex((prev) => (prev < filteredPhotos.length - 1 ? prev + 1 : 0));
     }
   };
 
   const handlePrevPhoto = (e) => {
     e?.stopPropagation();
-    if (activePhotoIndex !== null) {
+    if (activePhotoIndex !== null && filteredPhotos.length > 0) {
       setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : filteredPhotos.length - 1));
     }
   };
@@ -97,8 +112,10 @@ export default function SharedAlbumPage() {
       if (e.key === 'ArrowLeft') handlePrevPhoto();
       if (e.key === 'Escape') setActivePhotoIndex(null);
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, [activePhotoIndex, filteredPhotos.length]);
 
   const handleDownloadCurrent = async (e) => {
@@ -117,24 +134,27 @@ export default function SharedAlbumPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(downloadUrl);
     } catch (err) {
-      window.open(currentPhoto.r2_image_url, '_blank');
+      if (typeof window !== 'undefined') {
+        window.open(currentPhoto.r2_image_url, '_blank');
+      }
     }
   };
 
   const handleShareCurrent = async (e) => {
     e?.stopPropagation();
     if (!currentPhoto) return;
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareData = {
-      title: `Foto ${currentPhoto.guest_name} • ${albumTitle}`,
-      text: `Momen seru dari ${currentPhoto.guest_name} di Album Pernikahan!`,
-      url: window.location.href,
+      title: `Foto ${currentPhoto.guest_name || 'Tamu'} • ${albumTitle}`,
+      text: `Momen seru dari ${currentPhoto.guest_name || 'Tamu'} di Album Pernikahan!`,
+      url: shareUrl,
     };
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
       } catch (err) {}
-    } else {
-      navigator.clipboard.writeText(window.location.href);
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl);
       alert('Tautan foto album berhasil disalin!');
     }
   };
@@ -142,7 +162,9 @@ export default function SharedAlbumPage() {
   const handleDeleteCurrent = async (e) => {
     e?.stopPropagation();
     if (!currentPhoto) return;
-    if (!confirm(`Hapus foto dari "${currentPhoto.guest_name}" ini dari galeri album?`)) return;
+    if (typeof window !== 'undefined' && !window.confirm(`Hapus foto dari "${currentPhoto.guest_name}" ini dari galeri album?`)) {
+      return;
+    }
 
     try {
       const res = await fetch(`/api/album/${slug}/delete-photo/`, {
@@ -213,11 +235,6 @@ export default function SharedAlbumPage() {
     }
   };
 
-  const filteredPhotos =
-    selectedContributor === 'ALL'
-      ? photos
-      : photos.filter((p) => p.guest_name === selectedContributor);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#12110f] text-white flex flex-col items-center justify-center p-6 text-center">
@@ -226,10 +243,6 @@ export default function SharedAlbumPage() {
       </div>
     );
   }
-
-  const albumTitle = albumData?.title || 'Awal dari Selamanya';
-  const maxGuests = albumData?.max_guests || 50;
-  const currentGuestsCount = Math.max(contributors.length, photos.length > 0 ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-[#0a0a09] text-white selection:bg-white selection:text-black">
@@ -588,7 +601,7 @@ export default function SharedAlbumPage() {
               {/* Tombol 1: Instagram / Camera View */}
               <button
                 onClick={handleShareCurrent}
-                className="w-13 h-13 rounded-full bg-[#1c1c1c] border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                className="w-[54px] h-[54px] rounded-full bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
                 title="Bagikan ke Instagram / Story"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -601,7 +614,7 @@ export default function SharedAlbumPage() {
               {/* Tombol 2: Unduh Resolusi Asli */}
               <button
                 onClick={handleDownloadCurrent}
-                className="w-13 h-13 rounded-full bg-[#1c1c1c] border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                className="w-[54px] h-[54px] rounded-full bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
                 title="Unduh Resolusi Asli"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -614,7 +627,7 @@ export default function SharedAlbumPage() {
               {/* Tombol 3: Bagikan / Share (Bulat Putih Menonjol di Tengah) */}
               <button
                 onClick={handleShareCurrent}
-                className="w-15 h-15 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-2xl"
+                className="w-[62px] h-[62px] rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-2xl"
                 title="Bagikan Tautan Foto"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -629,7 +642,7 @@ export default function SharedAlbumPage() {
               {/* Tombol 4: Hapus Foto (Bulat Merah Marun) */}
               <button
                 onClick={handleDeleteCurrent}
-                className="w-13 h-13 rounded-full bg-[#5c1c1c] hover:bg-[#6e1c1c] border border-red-500/30 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                className="w-[54px] h-[54px] rounded-full bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/25 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
                 title="Hapus Foto dari Galeri"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

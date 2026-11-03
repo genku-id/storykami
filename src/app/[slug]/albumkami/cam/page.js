@@ -182,16 +182,22 @@ export default function SatualbumCameraPage() {
     };
   }, [facingMode, previewPhoto]);
 
-  // Toggle Torch
+  // Toggle Torch (Hardware flashlight jika didukung, atau screen-flash)
   const toggleTorch = async () => {
-    if (!streamRef.current || !hasTorch) return;
-    try {
-      const track = streamRef.current.getVideoTracks()[0];
-      const next = !torchOn;
-      await track.applyConstraints({ advanced: [{ torch: next }] });
-      setTorchOn(next);
-    } catch (e) {
-      console.warn('Torch toggle failed:', e);
+    const next = !torchOn;
+    setTorchOn(next);
+    if (streamRef.current) {
+      try {
+        const track = streamRef.current.getVideoTracks()[0];
+        if (track) {
+          const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+          if (capabilities.torch) {
+            await track.applyConstraints({ advanced: [{ torch: next }] });
+          }
+        }
+      } catch (e) {
+        console.warn('Torch toggle failed:', e);
+      }
     }
   };
 
@@ -550,19 +556,25 @@ export default function SatualbumCameraPage() {
             )}
           </div>
 
-          {/* Bottom Card Form & Actions */}
+          {/* Bottom Card Form & Actions (UI Pratinjau Bersih & Rapi) */}
           {!uploadSuccess && (
-            <div className="bg-[#181818] border border-white/10 rounded-[28px] p-4 flex-shrink-0 space-y-3 shadow-2xl z-20">
-              <div>
-                <label className="block text-[11px] font-film uppercase tracking-wider text-white/50 mb-1.5">
-                  Nama Anda (Pengirim)
-                </label>
+            <div className="bg-[#141414] border border-white/10 rounded-[28px] p-4 flex-shrink-0 space-y-3 shadow-2xl z-20">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-film uppercase tracking-wider text-white/50">
+                  Nama Pengirim
+                </span>
+                <span className="text-[11px] font-mono text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  High-Res + Thumb WebP
+                </span>
+              </div>
+
+              <div className="relative">
                 <input
                   type="text"
                   value={senderName}
                   onChange={(e) => setSenderName(e.target.value)}
                   placeholder="Tulis nama pengirim foto..."
-                  className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
+                  className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -571,9 +583,12 @@ export default function SatualbumCameraPage() {
                 <button
                   onClick={handleRetake}
                   disabled={isUploading}
-                  className="h-[52px] rounded-2xl border border-white/15 bg-[#242424] hover:bg-[#2c2c2c] font-semibold text-white text-sm active:scale-95 transition-all text-center flex items-center justify-center gap-1.5 shadow"
+                  className="h-[52px] rounded-2xl border border-white/15 bg-[#222222] hover:bg-[#2a2a2a] font-semibold text-white text-sm active:scale-95 transition-all text-center flex items-center justify-center gap-2 shadow"
                 >
-                  <span>🔄</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
                   <span>Foto Ulang</span>
                 </button>
 
@@ -591,7 +606,10 @@ export default function SatualbumCameraPage() {
                   ) : (
                     <>
                       <span>Unggah Foto</span>
-                      <span>🚀</span>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m5 12 7-7 7 7"/>
+                        <path d="M12 19V5"/>
+                      </svg>
                     </>
                   )}
                 </button>
@@ -685,20 +703,27 @@ export default function SatualbumCameraPage() {
               />
             )}
 
-            {/* Flash Toggle Button (Top-Left Viewfinder) */}
-            {hasTorch && (
-              <button
-                onClick={toggleTorch}
-                className={`absolute top-4 left-4 z-20 w-11 h-11 rounded-full flex items-center justify-center active:scale-90 transition-transform ${
-                  torchOn ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/40' : 'bg-black/40 backdrop-blur-md text-white border border-white/15'
-                }`}
-                title="Flash Kamera"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={torchOn ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* Flash Toggle Button (Top-Left Viewfinder - Identik Satualbum Screenshot) */}
+            <button
+              onClick={toggleTorch}
+              className={`absolute top-4 left-4 z-20 w-11 h-11 rounded-full flex items-center justify-center active:scale-90 transition-transform ${
+                torchOn
+                  ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/40'
+                  : 'bg-black/45 backdrop-blur-md text-white/80 border border-white/15'
+              }`}
+              title="Flash Kamera"
+            >
+              {torchOn ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
-              </button>
-            )}
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                  <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              )}
+            </button>
 
             {/* Zoom Pill Button [ 1x | 2x ] (Bottom-Center Viewfinder) */}
             <div className="absolute bottom-4 inset-x-0 z-20 flex justify-center pointer-events-auto">
@@ -779,16 +804,16 @@ export default function SatualbumCameraPage() {
             </div>
           </div>
 
-          {/* 2. BIG SHUTTER BUTTON (Tengah Bawah) */}
+          {/* 2. BIG SHUTTER BUTTON (Tengah Bawah - Identik Satualbum Screenshot) */}
           <button
             onClick={handleCapturePhoto}
             disabled={isCapturing || remainingRolls <= 0}
-            className={`relative flex h-[82px] w-[82px] items-center justify-center rounded-full border-[3.5px] border-white p-1 transition-transform active:scale-90 shadow-2xl ${
+            className={`relative flex h-[82px] w-[82px] items-center justify-center rounded-full border-[3px] border-white p-[5px] transition-transform active:scale-90 shadow-2xl ${
               remainingRolls <= 0 ? 'opacity-40 cursor-not-allowed' : ''
             }`}
             title="Jepret Foto"
           >
-            <div className="h-full w-full rounded-full bg-[#f2ece4] active:bg-white flex items-center justify-center shadow-inner">
+            <div className="h-full w-full rounded-full bg-white active:bg-neutral-200 flex items-center justify-center shadow-lg transition-colors">
               {isCapturing ? (
                 <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : remainingRolls <= 0 ? (
