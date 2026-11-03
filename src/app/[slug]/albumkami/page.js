@@ -378,7 +378,7 @@ export default function SharedAlbumPage() {
                   className="group relative overflow-hidden aspect-square rounded-2xl bg-[#1c1c1a] border border-white/5 cursor-pointer active:scale-95 transition-transform"
                 >
                   <img
-                    src={photo.r2_image_url}
+                    src={photo.r2_thumb_url || photo.r2_image_url}
                     alt={photo.guest_name}
                     loading="lazy"
                     className="w-full h-full object-cover"

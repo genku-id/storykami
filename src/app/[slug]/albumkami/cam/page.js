@@ -30,11 +30,24 @@ export default function SatualbumCameraPage() {
   const [torchOn, setTorchOn] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1); // 1 or 2
 
-  // Shutter & Effects
+  // Shutter & Preview States
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [snapEffect, setSnapEffect] = useState(false);
+  const [previewPhoto, setPreviewPhoto] = useState(null); // { originalBlob, thumbBlob, url, width, height, originalSize, thumbSize }
+  const [senderName, setSenderName] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [recentPhoto, setRecentPhoto] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
+
+  // Format File Size
+  const formatBytes = (bytes) => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   // 1. Inisialisasi Device Token di LocalStorage
   useEffect(() => {
@@ -46,7 +59,10 @@ export default function SatualbumCameraPage() {
     setDeviceToken(token);
 
     const savedName = localStorage.getItem('storykami_guest_name') || '';
-    if (savedName) setGuestName(savedName);
+    if (savedName) {
+      setGuestName(savedName);
+      setSenderName(savedName);
+    }
   }, []);
 
   // 2. Load info album, sesi tamu, dan foto terbaru
@@ -56,7 +72,7 @@ export default function SatualbumCameraPage() {
     async function fetchInfo() {
       try {
         setIsLoadingSession(true);
-        const res = await fetch(`/api/album/${slug}/info/?device_token=${deviceToken}`);
+        const res = await fetch(`/api/album/${slug}/info/?device_token=${deviceToken}`, { cache: 'no-store' });
         const data = await res.json();
 
         if (data.album) {
@@ -71,6 +87,7 @@ export default function SatualbumCameraPage() {
         if (data.guestSession) {
           setIsRegistered(true);
           setGuestName(data.guestSession.guest_name);
+          setSenderName(data.guestSession.guest_name);
           setRemainingRolls(data.guestSession.remaining_rolls);
         } else if (savedName) {
           // Auto-register jika sudah ada nama tersimpan di perangkat
@@ -92,10 +109,10 @@ export default function SatualbumCameraPage() {
 
         // Ambil thumbnail foto terakhir di galeri untuk slot kanan bawah
         try {
-          const photoRes = await fetch(`/api/album/${slug}/photos/`);
+          const photoRes = await fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' });
           const photoData = await photoRes.json();
           if (photoData.photos && photoData.photos.length > 0) {
-            setRecentPhoto(photoData.photos[0].r2_image_url);
+            setRecentPhoto(photoData.photos[0].r2_thumb_url || photoData.photos[0].r2_image_url);
           }
         } catch (e) {}
       } catch (err) {
@@ -110,6 +127,8 @@ export default function SatualbumCameraPage() {
 
   // 3. Start Camera Stream (Langsung start agar viewfinder aktif & jernih)
   useEffect(() => {
+    if (previewPhoto) return; // Jeda kamera saat sedang pratinjau
+
     let activeStream = null;
 
     async function startCamera() {
@@ -161,7 +180,7 @@ export default function SatualbumCameraPage() {
         activeStream.getTracks().forEach((t) => t.stop());
       }
     };
-  }, [facingMode]);
+  }, [facingMode, previewPhoto]);
 
   // Toggle Torch
   const toggleTorch = async () => {
@@ -206,6 +225,7 @@ export default function SatualbumCameraPage() {
       setIsLoadingSession(true);
       const cleanName = guestName.trim();
       localStorage.setItem('storykami_guest_name', cleanName);
+      setSenderName(cleanName);
 
       const res = await fetch(`/api/album/${slug}/session/`, {
         method: 'POST',
@@ -252,16 +272,16 @@ export default function SatualbumCameraPage() {
   // Keyboard shortcut (Spacebar) untuk Laptop
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.code === 'Space' && isRegistered && !isCapturing && remainingRolls > 0) {
+      if (e.code === 'Space' && isRegistered && !isCapturing && !previewPhoto && remainingRolls > 0) {
         e.preventDefault();
         handleCapturePhoto();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRegistered, isCapturing, remainingRolls]);
+  }, [isRegistered, isCapturing, previewPhoto, remainingRolls]);
 
-  // Jepret Foto Resolusi Tinggi (Murni tanpa filter, JPEG berkualitas tinggi)
+  // 📸 Jepret Foto -> Muncul Preview Terlebih Dahulu (Dual-file: Asli High-Res & Thumbnail WebP)
   const handleCapturePhoto = async () => {
     if (isCapturing || remainingRolls <= 0 || !videoRef.current) return;
 
@@ -270,55 +290,110 @@ export default function SatualbumCameraPage() {
     playShutterSound();
     setTimeout(() => setSnapEffect(false), 300);
 
-    // Animasi putaran dial mundur 1 angka langsung
-    setRemainingRolls((prev) => Math.max(0, prev - 1));
-    setStatusMessage('Saved to roll 🎞️');
-    setTimeout(() => setStatusMessage(''), 2000);
-
     try {
       const video = videoRef.current;
       const vWidth = video.videoWidth || 1920;
       const vHeight = video.videoHeight || 1080;
 
-      const canvas = document.createElement('canvas');
-      canvas.width = vWidth;
-      canvas.height = vHeight;
-      const ctx = canvas.getContext('2d');
+      // --- 1. KANVAS RESOLUSI ASLI PENUH (High-Res) ---
+      const origCanvas = document.createElement('canvas');
+      origCanvas.width = vWidth;
+      origCanvas.height = vHeight;
+      const origCtx = origCanvas.getContext('2d');
 
       if (facingMode === 'user') {
-        ctx.translate(vWidth, 0);
-        ctx.scale(-1, 1);
+        origCtx.translate(vWidth, 0);
+        origCtx.scale(-1, 1);
       }
 
-      // Handle digital zoom 2x crop jika zoomLevel === 2
       if (zoomLevel === 2) {
         const cropW = vWidth / 2;
         const cropH = vHeight / 2;
         const startX = (vWidth - cropW) / 2;
         const startY = (vHeight - cropH) / 2;
-        ctx.drawImage(video, startX, startY, cropW, cropH, 0, 0, vWidth, vHeight);
+        origCtx.drawImage(video, startX, startY, cropW, cropH, 0, 0, vWidth, vHeight);
       } else {
-        ctx.drawImage(video, 0, 0, vWidth, vHeight);
+        origCtx.drawImage(video, 0, 0, vWidth, vHeight);
       }
 
-      // Export murni JPEG tanpa filter dengan kualitas maksimal 0.98
-      const blob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, 'image/jpeg', 0.98);
+      // Export file asli High-Res JPEG (kualitas maksimal 0.98)
+      const originalBlob = await new Promise((resolve) => {
+        origCanvas.toBlob(resolve, 'image/jpeg', 0.98);
       });
 
-      if (!blob) throw new Error('Gagal memproses gambar');
+      if (!originalBlob) throw new Error('Gagal memproses gambar asli');
 
-      // Tampilkan langsung di thumbnail kanan bawah
-      const localPreview = URL.createObjectURL(blob);
-      setRecentPhoto(localPreview);
+      // --- 2. KANVAS THUMBNAIL RINGAN (WebP ~600px) ---
+      const maxThumbDim = 600;
+      let thumbW = vWidth;
+      let thumbH = vHeight;
+      if (thumbW > maxThumbDim || thumbH > maxThumbDim) {
+        if (thumbW > thumbH) {
+          thumbH = Math.round((thumbH * maxThumbDim) / thumbW);
+          thumbW = maxThumbDim;
+        } else {
+          thumbW = Math.round((thumbW * maxThumbDim) / thumbH);
+          thumbH = maxThumbDim;
+        }
+      }
 
-      // 1. Minta Presigned PUT URL ke Cloudflare R2
+      const thumbCanvas = document.createElement('canvas');
+      thumbCanvas.width = thumbW;
+      thumbCanvas.height = thumbH;
+      const thumbCtx = thumbCanvas.getContext('2d');
+      thumbCtx.drawImage(origCanvas, 0, 0, thumbW, thumbH);
+
+      // Export file thumbnail WebP ringan (kualitas 0.75)
+      const thumbBlob = await new Promise((resolve) => {
+        thumbCanvas.toBlob(resolve, 'image/webp', 0.75);
+      });
+
+      // Tampilkan Layar Pratinjau (Preview)
+      const previewUrl = URL.createObjectURL(originalBlob);
+      setPreviewPhoto({
+        originalBlob,
+        thumbBlob,
+        url: previewUrl,
+        width: vWidth,
+        height: vHeight,
+        originalSize: formatBytes(originalBlob.size),
+        thumbSize: formatBytes(thumbBlob?.size || 0),
+      });
+      setUploadSuccess(false);
+    } catch (err) {
+      console.error('Capture error:', err);
+      alert(err.message || 'Gagal memotret');
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
+  // Batalkan Preview / Foto Ulang
+  const handleRetake = () => {
+    if (previewPhoto?.url) {
+      URL.revokeObjectURL(previewPhoto.url);
+    }
+    setPreviewPhoto(null);
+    setUploadSuccess(false);
+  };
+
+  // 🚀 Unggah Kedua File Sekaligus (Asli ke R2 & Thumbnail ke R2)
+  const handleConfirmUpload = async () => {
+    if (!previewPhoto?.originalBlob || isUploading) return;
+
+    setIsUploading(true);
+    setStatusMessage('Mengunggah file asli & thumbnail...');
+
+    try {
+      const finalSenderName = (senderName || guestName || 'Tamu').trim();
+      localStorage.setItem('storykami_guest_name', finalSenderName);
+
+      // 1. Minta Presigned PUT URL untuk file asli (.jpg) dan thumbnail (.webp)
       const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           device_token: deviceToken,
-          contentType: 'image/jpeg',
         }),
       });
 
@@ -327,15 +402,30 @@ export default function SatualbumCameraPage() {
         throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
       }
 
-      // 2. Upload file asli resolusi tinggi langsung ke Cloudflare R2
-      const uploadRes = await fetch(urlData.uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'image/jpeg' },
-        body: blob,
-      });
+      // 2. Upload kedua file ke Cloudflare R2 secara paralel
+      const uploadPromises = [
+        // Upload File Asli High-Res JPEG
+        fetch(urlData.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'image/jpeg' },
+          body: previewPhoto.originalBlob,
+        }),
+      ];
 
-      if (!uploadRes.ok) {
-        throw new Error('Gagal mengirim foto ke Cloudflare R2');
+      // Upload Thumbnail WebP jika URL presigned thumbnail tersedia
+      if (urlData.thumbUploadUrl && previewPhoto.thumbBlob) {
+        uploadPromises.push(
+          fetch(urlData.thumbUploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'image/webp' },
+            body: previewPhoto.thumbBlob,
+          })
+        );
+      }
+
+      const uploadResults = await Promise.all(uploadPromises);
+      for (const res of uploadResults) {
+        if (!res.ok) throw new Error('Gagal mengunggah foto ke Cloudflare R2');
       }
 
       // 3. Konfirmasi ke Supabase Database
@@ -345,7 +435,7 @@ export default function SatualbumCameraPage() {
         body: JSON.stringify({
           album_id: urlData.albumId,
           guest_id: urlData.guestId,
-          guest_name: urlData.guestName,
+          guest_name: finalSenderName,
           r2_key: urlData.key,
           r2_image_url: urlData.publicUrl,
           preset_applied: 'original-highres',
@@ -355,18 +445,153 @@ export default function SatualbumCameraPage() {
       const confirmData = await confirmRes.json();
       if (confirmData.remainingRolls !== undefined) {
         setRemainingRolls(confirmData.remainingRolls);
+      } else {
+        setRemainingRolls((prev) => Math.max(0, prev - 1));
       }
-    } catch (err) {
-      console.error('Capture error:', err);
-      alert(err.message || 'Gagal memotret');
+
+      // Update thumbnail di kanan bawah
+      setRecentPhoto(previewPhoto.url);
+      setUploadSuccess(true);
       setStatusMessage('');
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert(err.message || 'Gagal mengirim foto');
     } finally {
-      setIsCapturing(false);
+      setIsUploading(false);
     }
   };
 
   const albumTitle = albumInfo?.title || 'Awal dari Selamanya';
 
+  // =========================================================================
+  // 1. MODAL PRATINJAU FOTO (Preview Sebelum Diunggah)
+  // =========================================================================
+  if (previewPhoto) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#0d0c0b] text-white overflow-hidden select-none">
+        <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[94vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#12110f] relative p-4">
+          
+          {/* Header Preview */}
+          <div className="flex items-center justify-between pb-3 pt-6 px-2 flex-shrink-0">
+            <div>
+              <h2 className="text-base font-bold text-white font-serif tracking-tight">Pratinjau Jepretan</h2>
+              <p className="text-[11px] text-white/50 font-mono">
+                {previewPhoto.width} × {previewPhoto.height} px • {previewPhoto.originalSize} (Asli)
+              </p>
+            </div>
+            {!uploadSuccess && (
+              <button
+                onClick={handleRetake}
+                disabled={isUploading}
+                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium text-white/80 transition-colors"
+              >
+                Batal
+              </button>
+            )}
+          </div>
+
+          {/* Photo Preview Container */}
+          <div className="relative flex-1 rounded-[26px] overflow-hidden bg-black flex items-center justify-center my-1 border border-white/10 shadow-inner">
+            <img
+              src={previewPhoto.url}
+              alt="Preview"
+              className="w-full h-full object-contain"
+            />
+
+            {/* Success Overlay Dialog jika sudah terunggah */}
+            {uploadSuccess && (
+              <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20 anim-slide-up">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl mb-4 shadow-xl">
+                  ✓
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-white mb-2">
+                  Foto Berhasil Diunggah!
+                </h3>
+                <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed">
+                  Foto asli resolusi tinggi & thumbnail ringan sudah tersimpan di album digital bersama. Sisa rol Anda: <span className="font-bold text-white">{remainingRolls} foto</span>.
+                </p>
+
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                  {remainingRolls > 0 ? (
+                    <button
+                      onClick={handleRetake}
+                      className="w-full py-4 rounded-2xl bg-white font-semibold text-black text-sm active:scale-95 transition-transform shadow-lg"
+                    >
+                      📸 Ambil Foto Lagi
+                    </button>
+                  ) : (
+                    <div className="text-xs text-amber-400/80 mb-2 font-mono">
+                      Semua kuota foto Anda telah digunakan.
+                    </div>
+                  )}
+
+                  <Link
+                    href={`/${slug}/albumkami/`}
+                    className="w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform"
+                  >
+                    Buka Galeri Bersama →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Form & Actions Bawah */}
+          {!uploadSuccess && (
+            <div className="pt-3 pb-2 px-1 flex-shrink-0 space-y-3">
+              <div>
+                <label className="block text-[11px] font-film uppercase tracking-wider text-white/50 mb-1.5">
+                  Nama Anda (Pengirim)
+                </label>
+                <input
+                  type="text"
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="Nama pengirim foto..."
+                  className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-white/30 focus:border-white/30 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Tombol Foto Ulang */}
+                <button
+                  onClick={handleRetake}
+                  disabled={isUploading}
+                  className="py-3.5 px-4 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 font-semibold text-white text-sm active:scale-95 transition-all text-center"
+                >
+                  🔄 Foto Ulang
+                </button>
+
+                {/* Tombol Unggah Foto */}
+                <button
+                  onClick={handleConfirmUpload}
+                  disabled={isUploading}
+                  className="py-3.5 px-4 rounded-2xl bg-white hover:bg-neutral-200 font-semibold text-black text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <span>Mengunggah...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Unggah Foto</span>
+                      <span>🚀</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // 2. MAIN VIEWFINDER SCREEN (Kamera Identik 1:1 Satualbum.id)
+  // =========================================================================
   return (
     <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#0d0c0b] select-none touch-none overflow-hidden">
       {/* Snap Flash Animation Overlay */}

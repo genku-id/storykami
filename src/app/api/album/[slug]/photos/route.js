@@ -64,12 +64,20 @@ export async function GET(request, { params }) {
     const contributors = Array.from(new Set((photos || []).map((p) => p.guest_name)));
 
     // Format URL gambar agar menggunakan API proxy lokal dengan trailing slash (kebal blokir DNS & tanpa 308 redirect)
-    const formattedPhotos = (photos || []).map((p) => ({
-      ...p,
-      r2_image_url: p.r2_key
-        ? `/api/album/${slug}/image/?key=${encodeURIComponent(p.r2_key)}`
-        : p.r2_image_url,
-    }));
+    // Sediakan r2_image_url (file asli resolusi tinggi) dan r2_thumb_url (thumbnail webp ringan untuk galeri)
+    const formattedPhotos = (photos || []).map((p) => {
+      const originalKey = p.r2_key || '';
+      const thumbKey = originalKey ? originalKey.replace(/\.(jpg|jpeg|webp|png)$/i, '_thumb.webp') : '';
+      return {
+        ...p,
+        r2_image_url: originalKey
+          ? `/api/album/${slug}/image/?key=${encodeURIComponent(originalKey)}`
+          : p.r2_image_url,
+        r2_thumb_url: thumbKey
+          ? `/api/album/${slug}/image/?key=${encodeURIComponent(thumbKey)}`
+          : p.r2_image_url,
+      };
+    });
 
     return NextResponse.json(
       {

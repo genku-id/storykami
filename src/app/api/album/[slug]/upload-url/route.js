@@ -9,7 +9,7 @@ export async function POST(request, { params }) {
   try {
     const { slug } = await params;
     const body = await request.json();
-    const { device_token, contentType = 'image/jpeg' } = body || {};
+    const { device_token } = body || {};
 
     if (!device_token) {
       return NextResponse.json({ error: 'Device token diperlukan' }, { status: 400 });
@@ -42,35 +42,50 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Roll film Anda sudah habis! Semua jepretan telah terpakai.' }, { status: 429 });
     }
 
-    // 3. Generate key unik di R2
+    // 3. Generate key unik di R2 (file asli .jpg & thumbnail .webp)
     const randomHex = crypto.randomBytes(6).toString('hex');
     const timestamp = Date.now();
-    const ext = contentType.includes('png') ? 'png' : contentType.includes('jpeg') ? 'jpg' : 'webp';
-    const key = `albums/${slug}/${timestamp}_${randomHex}.${ext}`;
+    const originalKey = `albums/${slug}/${timestamp}_${randomHex}.jpg`;
+    const thumbKey = `albums/${slug}/${timestamp}_${randomHex}_thumb.webp`;
 
-    // 4. Generate S3 Presigned URL untuk Cloudflare R2
-    let uploadUrl;
-    let publicUrl;
+    // 4. Generate S3 Presigned URL untuk kedua file
+    let originalPresigned;
+    let thumbPresigned;
+
     try {
-      const presigned = await createPresignedUploadUrl(key, contentType, 300);
-      uploadUrl = presigned.uploadUrl;
-      publicUrl = presigned.publicUrl;
+      originalPresigned = await createPresignedUploadUrl(originalKey, 'image/jpeg', 300);
+      thumbPresigned = await createPresignedUploadUrl(thumbKey, 'image/webp', 300);
     } catch (r2Err) {
-      console.warn('R2 presign failed or R2 not configured. Using direct API fallback:', r2Err.message);
-      // Fallback ke upload endpoint internal jika R2 env belum diisi
-      uploadUrl = `/api/album/${slug}/fallback-upload?key=${encodeURIComponent(key)}`;
-      publicUrl = `/uploads/${key}`;
+      console.warn('R2 presign failed or R2 not configured. Using fallback:', r2Err.message);
+      originalPresigned = {
+        uploadUrl: `/api/album/${slug}/fallback-upload?key=${encodeURIComponent(originalKey)}`,
+        publicUrl: `/uploads/${originalKey}`,
+      };
+      thumbPresigned = {
+        uploadUrl: `/api/album/${slug}/fallback-upload?key=${encodeURIComponent(thumbKey)}`,
+        publicUrl: `/uploads/${thumbKey}`,
+      };
     }
 
-    return NextResponse.json({
-      uploadUrl,
-      publicUrl,
-      key,
-      albumId: album.id,
-      guestId: guest.id,
-      guestName: guest.guest_name,
-      remainingRolls: (album.roll_limit || 10) - (guest.photos_taken || 0),
-    });
+    return NextResponse.json(
+      {
+        uploadUrl: originalPresigned.uploadUrl,
+        publicUrl: originalPresigned.publicUrl,
+        key: originalKey,
+        thumbUploadUrl: thumbPresigned.uploadUrl,
+        thumbPublicUrl: thumbPresigned.publicUrl,
+        thumbKey: thumbKey,
+        albumId: album.id,
+        guestId: guest.id,
+        guestName: guest.guest_name,
+        remainingRolls: (album.roll_limit || 10) - (guest.photos_taken || 0),
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      }
+    );
   } catch (err) {
     console.error('Error generating upload URL:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

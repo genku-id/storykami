@@ -23,6 +23,7 @@ export async function GET(request, { params }) {
       cleanKey = decodeURIComponent(key);
     } catch (e) {}
     cleanKey = cleanKey.replace(/^\/+/, '');
+
     const ext = path.extname(cleanKey).toLowerCase();
     const fallbackMime =
       ext === '.jpg' || ext === '.jpeg'
@@ -31,9 +32,10 @@ export async function GET(request, { params }) {
         ? 'image/png'
         : 'image/webp';
 
-    // 1. Ambil dari Cloudflare R2
+    const client = getR2Client();
+
+    // 1. Coba ambil file yang diminta dari Cloudflare R2
     try {
-      const client = getR2Client();
       const command = new GetObjectCommand({
         Bucket: R2_BUCKET_NAME,
         Key: cleanKey,
@@ -52,10 +54,39 @@ export async function GET(request, { params }) {
         },
       });
     } catch (r2Err) {
-      console.warn('R2 GetObject error, trying local fallback:', r2Err.message);
+      // 2. Jika thumbnail (_thumb.webp) yang diminta belum ada (misal foto lama), fallback ke file aslinya
+      if (cleanKey.includes('_thumb.webp')) {
+        const candidateKeys = [
+          cleanKey.replace('_thumb.webp', '.jpg'),
+          cleanKey.replace('_thumb.webp', '.webp'),
+          cleanKey.replace('_thumb.webp', '.png'),
+        ];
+
+        for (const fallbackKey of candidateKeys) {
+          try {
+            const fallbackCmd = new GetObjectCommand({
+              Bucket: R2_BUCKET_NAME,
+              Key: fallbackKey,
+            });
+            const fbResponse = await client.send(fallbackCmd);
+            const fbArray = await fbResponse.Body.transformToByteArray();
+            return new NextResponse(fbArray, {
+              status: 200,
+              headers: {
+                'Content-Type': fbResponse.ContentType || 'image/jpeg',
+                'Content-Length': String(fbResponse.ContentLength || fbArray.length),
+                'Cache-Control': 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin': '*',
+              },
+            });
+          } catch (e) {
+            // continue next candidate
+          }
+        }
+      }
     }
 
-    // 2. Fallback jika file tersimpan di server lokal (public/uploads)
+    // 3. Fallback jika file tersimpan di server lokal (public/uploads)
     const localPath = path.join(process.cwd(), 'public', 'uploads', cleanKey);
     if (fs.existsSync(localPath)) {
       const fileBuffer = fs.readFileSync(localPath);
