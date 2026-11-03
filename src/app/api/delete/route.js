@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { deleteAlbumFolderFromR2 } from '@/utils/r2';
 
 // Admin client (service role) agar bisa hapus storage & melewati RLS
 const supabaseAdmin = createClient(
@@ -45,7 +46,14 @@ export async function POST(req) {
     // 3) Hapus ucapan di tabel guestbook
     await supabaseAdmin.from('guestbook').delete().eq('invitation_slug', slug);
 
-    // 4) Hapus baris undangan
+    // 3.5) Hapus seluruh foto AlbumKami di Cloudflare R2
+    try {
+      await deleteAlbumFolderFromR2(slug);
+    } catch (e) {
+      console.error('Gagal hapus file album di Cloudflare R2:', e);
+    }
+
+    // 4) Hapus baris undangan (akan otomatis men-cascade hapus invitation_albums, album_photos, album_guests di Supabase)
     const { error } = await supabaseAdmin.from('invitations').delete().eq('slug', slug);
     if (error) {
       return NextResponse.json({ error: `Gagal hapus undangan: ${error.message}` }, { status: 500 });

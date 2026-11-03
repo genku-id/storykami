@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID || '';
@@ -55,4 +55,34 @@ export function getR2PublicUrl(key) {
     return `${R2_PUBLIC_DOMAIN}/${key}`;
   }
   return `https://${R2_BUCKET_NAME}.${R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${key}`;
+}
+
+/**
+ * Menghapus seluruh file foto album di Cloudflare R2 untuk suatu slug (misal: "albums/dika-riyan/*")
+ */
+export async function deleteAlbumFolderFromR2(slug) {
+  try {
+    const client = getR2Client();
+    const prefix = `albums/${slug}/`;
+    const listCmd = new ListObjectsV2Command({
+      Bucket: R2_BUCKET_NAME,
+      Prefix: prefix,
+    });
+    const listRes = await client.send(listCmd);
+    if (listRes.Contents && listRes.Contents.length > 0) {
+      const deleteCmd = new DeleteObjectsCommand({
+        Bucket: R2_BUCKET_NAME,
+        Delete: {
+          Objects: listRes.Contents.map((item) => ({ Key: item.Key })),
+          Quiet: true,
+        },
+      });
+      await client.send(deleteCmd);
+      console.log(`[R2] Berhasil menghapus ${listRes.Contents.length} foto untuk album ${slug}`);
+    }
+    return true;
+  } catch (err) {
+    console.error('Failed to delete album folder from R2:', err);
+    return false;
+  }
 }
