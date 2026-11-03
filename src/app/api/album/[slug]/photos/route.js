@@ -5,7 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const { slug } = await params;
+    const resolvedParams = await params;
+    const slug = resolvedParams?.slug;
+    console.log('[DEBUG /api/album/[slug]/photos] resolvedParams:', resolvedParams, 'slug:', slug);
     const { searchParams } = new URL(request.url);
     const guestFilter = searchParams.get('guest') || '';
 
@@ -63,10 +65,12 @@ export async function GET(request, { params }) {
     // Ambil daftar nama-nama tamu unik yang sudah berkontribusi
     const contributors = Array.from(new Set((photos || []).map((p) => p.guest_name)));
 
-    // Format URL gambar agar menggunakan API proxy lokal (kebal blokir DNS / Internet Positif pada domain *.r2.dev)
+    // Format URL gambar agar menggunakan API proxy lokal dengan trailing slash (kebal blokir DNS & tanpa 308 redirect)
     const formattedPhotos = (photos || []).map((p) => ({
       ...p,
-      r2_image_url: p.r2_key ? `/api/album/${slug}/image?key=${encodeURIComponent(p.r2_key)}` : p.r2_image_url,
+      r2_image_url: p.r2_key
+        ? `/api/album/${slug}/image/?key=${encodeURIComponent(p.r2_key)}`
+        : p.r2_image_url,
     }));
 
     return NextResponse.json({

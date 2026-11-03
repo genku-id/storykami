@@ -62,7 +62,7 @@ export default function GuestCameraHighResPage() {
     async function fetchInfo() {
       try {
         setIsLoadingSession(true);
-        const res = await fetch(`/api/album/${slug}/info?device_token=${deviceToken}`);
+        const res = await fetch(`/api/album/${slug}/info/?device_token=${deviceToken}`);
         const data = await res.json();
 
         if (data.album) {
@@ -177,7 +177,7 @@ export default function GuestCameraHighResPage() {
       localStorage.setItem('storykami_guest_name', trimmed);
       setSenderName(trimmed);
 
-      const res = await fetch(`/api/album/${slug}/session`, {
+      const res = await fetch(`/api/album/${slug}/session/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ guest_name: trimmed, device_token: deviceToken }),
@@ -299,15 +299,20 @@ export default function GuestCameraHighResPage() {
         throw new Error('Gagal menangkap foto resolusi tinggi dari kamera.');
       }
 
-      // Ukur dimensi foto asli
+      // Ukur dimensi foto asli secara aman
       const localUrl = URL.createObjectURL(photoBlob);
       if (!width || !height) {
         const img = new Image();
         img.src = localUrl;
         await new Promise((res) => {
           img.onload = () => {
-            width = img.naturalWidth;
-            height = img.naturalHeight;
+            width = img.naturalWidth || 1920;
+            height = img.naturalHeight || 1080;
+            res();
+          };
+          img.onerror = () => {
+            width = 1920;
+            height = 1080;
             res();
           };
         });
@@ -347,8 +352,18 @@ export default function GuestCameraHighResPage() {
       setPreviewPhoto({
         blob: file,
         url: localUrl,
-        width: img.naturalWidth,
-        height: img.naturalHeight,
+        width: img.naturalWidth || 1920,
+        height: img.naturalHeight || 1080,
+        sizeText: formatBytes(file.size),
+      });
+      setUploadSuccess(false);
+    };
+    img.onerror = () => {
+      setPreviewPhoto({
+        blob: file,
+        url: localUrl,
+        width: 1920,
+        height: 1080,
         sizeText: formatBytes(file.size),
       });
       setUploadSuccess(false);
@@ -375,8 +390,8 @@ export default function GuestCameraHighResPage() {
       const finalSenderName = (senderName || guestName || 'Tamu').trim();
       localStorage.setItem('storykami_guest_name', finalSenderName);
 
-      // 1. Dapatkan Presigned PUT URL ke Cloudflare R2
-      const urlRes = await fetch(`/api/album/${slug}/upload-url`, {
+      // 1. Dapatkan Presigned PUT URL ke Cloudflare R2 (dengan trailing slash)
+      const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -401,8 +416,8 @@ export default function GuestCameraHighResPage() {
         throw new Error('Gagal mengunggah foto ke Cloudflare R2');
       }
 
-      // 3. Catat foto ke Supabase Database
-      const confirmRes = await fetch(`/api/album/${slug}/confirm`, {
+      // 3. Catat foto ke Supabase Database (dengan trailing slash)
+      const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

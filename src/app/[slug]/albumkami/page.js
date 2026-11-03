@@ -31,12 +31,12 @@ export default function SharedAlbumPage() {
       try {
         setLoading(true);
         // 1. Fetch info album
-        const infoRes = await fetch(`/api/album/${slug}/info`);
+        const infoRes = await fetch(`/api/album/${slug}/info/`);
         const info = await infoRes.json();
         setAlbumData(info.album);
 
         // 2. Fetch foto album (dengan URL proxy lokal agar kebal blokir DNS)
-        const photosRes = await fetch(`/api/album/${slug}/photos`);
+        const photosRes = await fetch(`/api/album/${slug}/photos/`);
         const pData = await photosRes.json();
 
         if (pData.photos) {
