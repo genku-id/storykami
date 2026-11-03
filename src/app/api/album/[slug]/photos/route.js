@@ -5,9 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const resolvedParams = await params;
-    const slug = resolvedParams?.slug;
-    console.log('[DEBUG /api/album/[slug]/photos] resolvedParams:', resolvedParams, 'slug:', slug);
+    const { slug } = await params;
     const { searchParams } = new URL(request.url);
     const guestFilter = searchParams.get('guest') || '';
 
