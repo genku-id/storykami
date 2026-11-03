@@ -464,60 +464,72 @@ export default function SatualbumCameraPage() {
   const albumTitle = albumInfo?.title || 'Awal dari Selamanya';
 
   // =========================================================================
-  // 1. MODAL PRATINJAU FOTO (Preview Sebelum Diunggah)
+  // 1. MODAL PRATINJAU FOTO (Preview Sebelum Diunggah - UI Elegan & Rapi)
   // =========================================================================
   if (previewPhoto) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#0d0c0b] text-white overflow-hidden select-none">
-        <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[94vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#12110f] relative p-4">
+        <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[95vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#0d0c0b] relative px-4 py-3">
           
-          {/* Header Preview */}
-          <div className="flex items-center justify-between pb-3 pt-6 px-2 flex-shrink-0">
+          {/* Top Bar Preview */}
+          <div className="flex items-center justify-between pt-8 pb-2 px-2 flex-shrink-0 z-20">
             <div>
-              <h2 className="text-base font-bold text-white font-serif tracking-tight">Pratinjau Jepretan</h2>
-              <p className="text-[11px] text-white/50 font-mono">
-                {previewPhoto.width} × {previewPhoto.height} px • {previewPhoto.originalSize} (Asli)
-              </p>
+              <h2 className="text-[19px] font-bold text-white font-serif tracking-tight leading-tight">
+                Pratinjau Foto
+              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-mono text-[11px] text-white/50 bg-white/[0.06] border border-white/10 px-2 py-0.5 rounded-full">
+                  {previewPhoto.width} × {previewPhoto.height} px
+                </span>
+                <span className="font-sans text-[11px] text-emerald-400/90 font-medium">
+                  {previewPhoto.originalSize}
+                </span>
+              </div>
             </div>
+
             {!uploadSuccess && (
               <button
                 onClick={handleRetake}
                 disabled={isUploading}
-                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium text-white/80 transition-colors"
+                className="w-11 h-11 rounded-[16px] bg-[#1a1a1a] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-md"
+                title="Batal & Foto Ulang"
               >
-                Batal
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
               </button>
             )}
           </div>
 
-          {/* Photo Preview Container */}
-          <div className="relative flex-1 rounded-[26px] overflow-hidden bg-black flex items-center justify-center my-1 border border-white/10 shadow-inner">
+          {/* Middle Photo Container */}
+          <div className="relative flex-1 rounded-[30px] overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center my-2">
             <img
               src={previewPhoto.url}
               alt="Preview"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain pointer-events-none"
             />
 
             {/* Success Overlay Dialog jika sudah terunggah */}
             {uploadSuccess && (
-              <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20 anim-slide-up">
+              <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30 anim-slide-up">
                 <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl mb-4 shadow-xl">
                   ✓
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-white mb-2">
                   Foto Berhasil Diunggah!
                 </h3>
-                <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed">
-                  Foto asli resolusi tinggi & thumbnail ringan sudah tersimpan di album digital bersama. Sisa rol Anda: <span className="font-bold text-white">{remainingRolls} foto</span>.
+                <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed font-sans">
+                  Foto asli resolusi tinggi & thumbnail ringan sudah tersimpan di album bersama. Sisa rol Anda: <span className="font-bold text-white">{remainingRolls} foto</span>.
                 </p>
 
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                   {remainingRolls > 0 ? (
                     <button
                       onClick={handleRetake}
-                      className="w-full py-4 rounded-2xl bg-white font-semibold text-black text-sm active:scale-95 transition-transform shadow-lg"
+                      className="w-full h-[52px] rounded-2xl bg-white font-bold text-black text-sm active:scale-95 transition-transform shadow-xl flex items-center justify-center gap-2"
                     >
-                      📸 Ambil Foto Lagi
+                      <span>📸</span>
+                      <span>Ambil Foto Lagi</span>
                     </button>
                   ) : (
                     <div className="text-xs text-amber-400/80 mb-2 font-mono">
@@ -529,7 +541,7 @@ export default function SatualbumCameraPage() {
                     onClick={() => {
                       window.location.href = `/${slug}/albumkami/`;
                     }}
-                    className="w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform"
+                    className="w-full h-[50px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center"
                   >
                     Buka Galeri Bersama →
                   </button>
@@ -538,9 +550,9 @@ export default function SatualbumCameraPage() {
             )}
           </div>
 
-          {/* Form & Actions Bawah */}
+          {/* Bottom Card Form & Actions */}
           {!uploadSuccess && (
-            <div className="pt-3 pb-2 px-1 flex-shrink-0 space-y-3">
+            <div className="bg-[#181818] border border-white/10 rounded-[28px] p-4 flex-shrink-0 space-y-3 shadow-2xl z-20">
               <div>
                 <label className="block text-[11px] font-film uppercase tracking-wider text-white/50 mb-1.5">
                   Nama Anda (Pengirim)
@@ -549,26 +561,27 @@ export default function SatualbumCameraPage() {
                   type="text"
                   value={senderName}
                   onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="Nama pengirim foto..."
-                  className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-white/30 focus:border-white/30 focus:outline-none"
+                  placeholder="Tulis nama pengirim foto..."
+                  className="w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-1">
+              <div className="grid grid-cols-2 gap-3 pt-0.5">
                 {/* Tombol Foto Ulang */}
                 <button
                   onClick={handleRetake}
                   disabled={isUploading}
-                  className="py-3.5 px-4 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 font-semibold text-white text-sm active:scale-95 transition-all text-center"
+                  className="h-[52px] rounded-2xl border border-white/15 bg-[#242424] hover:bg-[#2c2c2c] font-semibold text-white text-sm active:scale-95 transition-all text-center flex items-center justify-center gap-1.5 shadow"
                 >
-                  🔄 Foto Ulang
+                  <span>🔄</span>
+                  <span>Foto Ulang</span>
                 </button>
 
                 {/* Tombol Unggah Foto */}
                 <button
                   onClick={handleConfirmUpload}
                   disabled={isUploading}
-                  className="py-3.5 px-4 rounded-2xl bg-white hover:bg-neutral-200 font-semibold text-black text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
+                  className="h-[52px] rounded-2xl bg-white hover:bg-neutral-200 font-bold text-black text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
                 >
                   {isUploading ? (
                     <>

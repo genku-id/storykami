@@ -18,8 +18,8 @@ export default function SharedAlbumPage() {
   const [gridColumns, setGridColumns] = useState(2); // 2 col or 3 col toggle
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  // Lightbox Modal
-  const [activePhoto, setActivePhoto] = useState(null);
+  // Lightbox Modal Index
+  const [activePhotoIndex, setActivePhotoIndex] = useState(null);
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
 
@@ -72,6 +72,100 @@ export default function SharedAlbumPage() {
       window.removeEventListener('focus', handleVisibility);
     };
   }, [slug]);
+
+  const currentPhoto = activePhotoIndex !== null ? filteredPhotos[activePhotoIndex] : null;
+
+  const handleNextPhoto = (e) => {
+    e?.stopPropagation();
+    if (activePhotoIndex !== null) {
+      setActivePhotoIndex((prev) => (prev < filteredPhotos.length - 1 ? prev + 1 : 0));
+    }
+  };
+
+  const handlePrevPhoto = (e) => {
+    e?.stopPropagation();
+    if (activePhotoIndex !== null) {
+      setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : filteredPhotos.length - 1));
+    }
+  };
+
+  // Keyboard navigation untuk Laptop
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activePhotoIndex === null) return;
+      if (e.key === 'ArrowRight') handleNextPhoto();
+      if (e.key === 'ArrowLeft') handlePrevPhoto();
+      if (e.key === 'Escape') setActivePhotoIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activePhotoIndex, filteredPhotos.length]);
+
+  const handleDownloadCurrent = async (e) => {
+    e?.stopPropagation();
+    if (!currentPhoto) return;
+    try {
+      const res = await fetch(currentPhoto.r2_image_url);
+      const blob = await res.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      const cleanName = (currentPhoto.guest_name || 'tamu').replace(/[^a-zA-Z0-9]/g, '_');
+      a.download = `foto_${cleanName}_${currentPhoto.id.slice(0, 6)}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      window.open(currentPhoto.r2_image_url, '_blank');
+    }
+  };
+
+  const handleShareCurrent = async (e) => {
+    e?.stopPropagation();
+    if (!currentPhoto) return;
+    const shareData = {
+      title: `Foto ${currentPhoto.guest_name} • ${albumTitle}`,
+      text: `Momen seru dari ${currentPhoto.guest_name} di Album Pernikahan!`,
+      url: window.location.href,
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Tautan foto album berhasil disalin!');
+    }
+  };
+
+  const handleDeleteCurrent = async (e) => {
+    e?.stopPropagation();
+    if (!currentPhoto) return;
+    if (!confirm(`Hapus foto dari "${currentPhoto.guest_name}" ini dari galeri album?`)) return;
+
+    try {
+      const res = await fetch(`/api/album/${slug}/delete-photo/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photo_id: currentPhoto.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        const remaining = photos.filter((p) => p.id !== currentPhoto.id);
+        setPhotos(remaining);
+        if (remaining.length === 0) {
+          setActivePhotoIndex(null);
+        } else if (activePhotoIndex >= remaining.length) {
+          setActivePhotoIndex(remaining.length - 1);
+        }
+      } else {
+        alert(data.error || 'Gagal menghapus foto');
+      }
+    } catch (err) {
+      alert('Gagal menghubungi server untuk menghapus foto');
+    }
+  };
 
   // Unduh Semua Foto sebagai ZIP
   const handleDownloadAllZip = async () => {
@@ -391,10 +485,10 @@ export default function SharedAlbumPage() {
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
-              {filteredPhotos.map((photo) => (
+              {filteredPhotos.map((photo, idx) => (
                 <div
                   key={photo.id}
-                  onClick={() => setActivePhoto(photo)}
+                  onClick={() => setActivePhotoIndex(idx)}
                   className="group relative overflow-hidden aspect-square rounded-2xl bg-[#1c1c1a] border border-white/5 cursor-pointer active:scale-95 transition-transform"
                 >
                   <img
@@ -420,52 +514,133 @@ export default function SharedAlbumPage() {
         </div>
       </div>
 
-      {/* LIGHTBOX MODAL */}
-      {activePhoto && (
+      {/* LIGHTBOX MODAL (Presisi 100% Identik Screenshot Host 2/3) */}
+      {currentPhoto && (
         <div
-          onClick={() => setActivePhoto(null)}
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 anim-slide-up"
+          onClick={() => setActivePhotoIndex(null)}
+          className="fixed inset-0 z-50 bg-[#000000] flex flex-col md:items-center md:justify-center p-0 select-none overflow-hidden anim-slide-up"
         >
+          {/* Mobile Frame Container */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-w-md w-full bg-[#181818] border border-white/10 rounded-[30px] overflow-hidden shadow-2xl relative"
+            className="w-full h-full flex flex-col md:max-w-[480px] md:h-[95vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#000000] relative px-4 py-3"
           >
-            <button
-              onClick={() => setActivePhoto(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center text-sm shadow hover:bg-black/90 transition-colors"
-            >
-              ✕
-            </button>
-
-            <div className="w-full aspect-[3/4] bg-black relative">
-              <img
-                src={activePhoto.r2_image_url}
-                alt={activePhoto.guest_name}
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            <div className="p-4 flex items-center justify-between bg-[#151515]">
-              <div>
-                <p className="text-sm font-sans text-white font-semibold">{activePhoto.guest_name}</p>
-                <p className="text-[11px] font-film text-white/40">
-                  {new Date(activePhoto.created_at).toLocaleString('id-ID', {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
-                  })}
-                </p>
+            {/* 1. TOP BAR */}
+            <div className="flex items-center justify-between pt-8 pb-2 px-2 flex-shrink-0 z-20">
+              <div className="flex items-baseline gap-2">
+                <span className="text-white text-[19px] font-bold tracking-tight font-sans">
+                  {currentPhoto.guest_name || 'Tamu'}
+                </span>
+                <span className="text-[#777777] font-mono text-[14px]">
+                  {activePhotoIndex + 1} / {filteredPhotos.length}
+                </span>
               </div>
 
-              <a
-                href={activePhoto.r2_image_url}
-                target="_blank"
-                rel="noreferrer"
-                download={`foto_${activePhoto.guest_name}.webp`}
-                className="bg-white hover:bg-neutral-200 text-black font-semibold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-colors shadow"
+              <button
+                onClick={() => setActivePhotoIndex(null)}
+                className="w-11 h-11 rounded-[16px] bg-[#1a1a1a] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-md"
+                title="Tutup"
               >
-                <span>⬇️</span>
-                <span>Unduh</span>
-              </a>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* 2. MIDDLE PHOTO CONTAINER WITH LEFT & RIGHT ARROWS */}
+            <div className="relative flex-1 rounded-[30px] overflow-hidden bg-[#0a0a0a] border border-white/10 flex items-center justify-center my-2 shadow-2xl">
+              <img
+                src={currentPhoto.r2_image_url}
+                alt={currentPhoto.guest_name}
+                className="w-full h-full object-contain pointer-events-none"
+              />
+
+              {/* Tombol Panah Kiri */}
+              {filteredPhotos.length > 1 && (
+                <button
+                  onClick={handlePrevPhoto}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/55 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-xl z-10"
+                  title="Foto Sebelumnya"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                  </svg>
+                </button>
+              )}
+
+              {/* Tombol Panah Kanan */}
+              {filteredPhotos.length > 1 && (
+                <button
+                  onClick={handleNextPhoto}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/55 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-xl z-10"
+                  title="Foto Berikutnya"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* 3. BOTTOM ACTIONS (4 Tombol Bulat Identik Screenshot) */}
+            <div className="flex items-center justify-center gap-4 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] flex-shrink-0 z-20">
+              
+              {/* Tombol 1: Instagram / Camera View */}
+              <button
+                onClick={handleShareCurrent}
+                className="w-13 h-13 rounded-full bg-[#1c1c1c] border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                title="Bagikan ke Instagram / Story"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                </svg>
+              </button>
+
+              {/* Tombol 2: Unduh Resolusi Asli */}
+              <button
+                onClick={handleDownloadCurrent}
+                className="w-13 h-13 rounded-full bg-[#1c1c1c] border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                title="Unduh Resolusi Asli"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </button>
+
+              {/* Tombol 3: Bagikan / Share (Bulat Putih Menonjol di Tengah) */}
+              <button
+                onClick={handleShareCurrent}
+                className="w-15 h-15 rounded-full bg-white text-black flex items-center justify-center active:scale-90 transition-transform shadow-2xl"
+                title="Bagikan Tautan Foto"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/>
+                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>
+                </svg>
+              </button>
+
+              {/* Tombol 4: Hapus Foto (Bulat Merah Marun) */}
+              <button
+                onClick={handleDeleteCurrent}
+                className="w-13 h-13 rounded-full bg-[#5c1c1c] hover:bg-[#6e1c1c] border border-red-500/30 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                title="Hapus Foto dari Galeri"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h18"/>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                  <line x1="10" x2="10" y1="11" y2="17"/>
+                  <line x1="14" x2="14" y1="11" y2="17"/>
+                </svg>
+              </button>
+
             </div>
           </div>
         </div>
