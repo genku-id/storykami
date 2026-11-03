@@ -91,22 +91,29 @@ export async function GET(request, { params }) {
       } catch (e) {}
     }
 
-    return NextResponse.json({
-      album: {
-        id: album.id,
-        slug: album.slug,
-        title: album.title,
-        preset_id: album.preset_id || 'portra-400',
-        roll_limit: album.roll_limit || 10,
-        max_guests: album.max_guests || 50,
-        reveal_mode: album.reveal_mode || 'instant',
-        reveal_at: album.reveal_at || null,
-        is_revealed: album.is_revealed ?? true,
-        is_active: album.is_active ?? true,
-        total_photos: totalPhotos,
+    return NextResponse.json(
+      {
+        album: {
+          id: album.id,
+          slug: album.slug,
+          title: album.title,
+          preset_id: album.preset_id || 'portra-400',
+          roll_limit: album.roll_limit || 10,
+          max_guests: album.max_guests || 50,
+          reveal_mode: album.reveal_mode || 'instant',
+          reveal_at: album.reveal_at || null,
+          is_revealed: album.is_revealed ?? true,
+          is_active: album.is_active ?? true,
+          total_photos: totalPhotos,
+        },
+        guestSession,
       },
-      guestSession,
-    });
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (err) {
     console.error('Error fetching album info:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

@@ -30,13 +30,13 @@ export default function SharedAlbumPage() {
     async function loadGallery() {
       try {
         setLoading(true);
-        // 1. Fetch info album
-        const infoRes = await fetch(`/api/album/${slug}/info/`);
+        // 1. Fetch info album (selalu segar)
+        const infoRes = await fetch(`/api/album/${slug}/info/`, { cache: 'no-store' });
         const info = await infoRes.json();
         setAlbumData(info.album);
 
-        // 2. Fetch foto album (dengan URL proxy lokal agar kebal blokir DNS)
-        const photosRes = await fetch(`/api/album/${slug}/photos/`);
+        // 2. Fetch foto album (dengan URL proxy lokal agar kebal blokir DNS, selalu segar)
+        const photosRes = await fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' });
         const pData = await photosRes.json();
 
         if (pData.photos) {

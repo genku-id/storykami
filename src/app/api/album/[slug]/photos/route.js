@@ -71,13 +71,20 @@ export async function GET(request, { params }) {
         : p.r2_image_url,
     }));
 
-    return NextResponse.json({
-      is_revealed: true,
-      reveal_at: album.reveal_at,
-      total_photos: formattedPhotos.length,
-      contributors,
-      photos: formattedPhotos,
-    });
+    return NextResponse.json(
+      {
+        is_revealed: true,
+        reveal_at: album.reveal_at,
+        total_photos: formattedPhotos.length,
+        contributors,
+        photos: formattedPhotos,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (err) {
     console.error('Error fetching album photos:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
