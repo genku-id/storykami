@@ -532,19 +532,14 @@ export default function SatualbumCameraPage() {
         <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[95vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#0d0c0b] relative px-4 py-3">
           
           {/* Top Bar Preview */}
-          <div className="flex items-center justify-between pt-8 pb-2 px-2 flex-shrink-0 z-20">
+          <div className="flex items-center justify-between pt-8 pb-3 px-2 flex-shrink-0 z-20">
             <div>
-              <h2 className="text-[19px] font-bold text-white font-serif tracking-tight leading-tight">
+              <h2 className="text-[20px] font-bold text-white font-serif tracking-tight leading-tight">
                 Pratinjau Foto
               </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="font-mono text-[11px] text-white/50 bg-white/[0.06] border border-white/10 px-2 py-0.5 rounded-full">
-                  {previewPhoto.width} × {previewPhoto.height} px
-                </span>
-                <span className="font-sans text-[11px] text-emerald-400/90 font-medium">
-                  {previewPhoto.originalSize}
-                </span>
-              </div>
+              <p className="text-xs text-white/50 font-sans mt-0.5">
+                Pastikan momen sudah pas sebelum diunggah
+              </p>
             </div>
 
             {!uploadSuccess && (
@@ -610,16 +605,14 @@ export default function SatualbumCameraPage() {
             )}
           </div>
 
-          {/* Bottom Card Form & Actions (UI Pratinjau Bersih & Rapi) */}
+          {/* Bottom Card Form & Actions (UI Pratinjau Bersih & Rapi Sesuai AlbumKami) */}
           {!uploadSuccess && (
-            <div className="bg-[#141414] border border-white/10 rounded-[28px] p-4 flex-shrink-0 space-y-3 shadow-2xl z-20">
+            <div className="bg-[#141312] border border-white/10 rounded-[28px] p-4.5 flex-shrink-0 space-y-3.5 shadow-2xl z-20">
               <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-film uppercase tracking-wider text-white/50">
-                  Nama Pengirim
-                </span>
-                <span className="text-[11px] font-mono text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  High-Res + Thumb WebP
-                </span>
+                <label className="text-xs font-medium text-white/70 font-sans flex items-center gap-1.5">
+                  <span>Nama Pengirim Foto</span>
+                </label>
+                <span className="text-[11px] text-white/40">Tampil di galeri album</span>
               </div>
 
               <div className="relative">
@@ -628,7 +621,7 @@ export default function SatualbumCameraPage() {
                   value={senderName}
                   onChange={(e) => setSenderName(e.target.value)}
                   placeholder="Tulis nama pengirim foto..."
-                  className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
+                  className="w-full rounded-2xl border border-white/15 bg-white/[0.06] hover:bg-white/[0.08] focus:bg-[#1c1b18] px-4 py-3.5 text-sm text-white placeholder-white/30 focus:border-amber-300/40 focus:outline-none transition-all shadow-inner"
                 />
               </div>
 
@@ -702,13 +695,13 @@ export default function SatualbumCameraPage() {
             </svg>
           </button>
 
-          {/* Judul Acara & Sisa Hari */}
+          {/* Judul Acara & Tanggal Acara */}
           <div className="flex flex-col items-center justify-center text-center px-2">
             <h1 className="font-serif text-[17px] font-bold text-white tracking-tight leading-tight truncate max-w-[210px]">
               {albumTitle}
             </h1>
-            <p className="text-[11px] font-sans text-[#888888] font-normal leading-tight mt-0.5">
-              27d 1h tersisa
+            <p className="text-[11px] font-sans text-amber-200/80 font-medium leading-tight mt-0.5">
+              {albumInfo?.event_date_formatted || '22 Nov 2026'}
             </p>
           </div>
 

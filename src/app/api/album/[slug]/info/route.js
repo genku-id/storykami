@@ -57,7 +57,32 @@ export async function GET(request, { params }) {
       }
     }
 
-    // 3. Hitung total foto yang sudah diupload
+    // 3. Ambil data tanggal acara dari undangan WIM
+    let eventDateRaw = null;
+    let eventDateFormatted = null;
+    try {
+      const { data: inv } = await supabaseServer
+        .from('invitations')
+        .select('data')
+        .eq('slug', slug)
+        .maybeSingle();
+
+      if (inv?.data?.acara && Array.isArray(inv.data.acara) && inv.data.acara.length > 0) {
+        eventDateRaw = inv.data.acara[0].tanggal;
+        if (eventDateRaw) {
+          const dParts = eventDateRaw.split('-');
+          if (dParts.length === 3) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const mIdx = parseInt(dParts[1], 10) - 1;
+            const day = parseInt(dParts[2], 10);
+            const year = dParts[0];
+            eventDateFormatted = `${day} ${months[mIdx] || ''} ${year}`;
+          }
+        }
+      }
+    } catch (e) {}
+
+    // 4. Hitung total foto yang sudah diupload
     let totalPhotos = 0;
     try {
       const { count } = await supabaseServer
@@ -105,6 +130,8 @@ export async function GET(request, { params }) {
           is_revealed: album.is_revealed ?? true,
           is_active: album.is_active ?? true,
           total_photos: totalPhotos,
+          event_date: eventDateRaw,
+          event_date_formatted: eventDateFormatted,
         },
         guestSession,
       },
