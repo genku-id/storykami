@@ -47,9 +47,10 @@ export default function SharedAlbumPage() {
     try {
       if (!silent && !hasLoadedOnce.current) setLoading(true);
 
+      const timestamp = Date.now();
       const [infoRes, photosRes] = await Promise.all([
-        fetch(`/api/album/${slug}/info/`, { cache: 'no-store' }),
-        fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' }),
+        fetch(`/api/album/${slug}/info/?_t=${timestamp}`, { cache: 'no-store' }),
+        fetch(`/api/album/${slug}/photos/?_t=${timestamp}`, { cache: 'no-store' }),
       ]);
 
       const info = await infoRes.json();
@@ -625,7 +626,8 @@ export default function SharedAlbumPage() {
                     decoding="async"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      if (photo.r2_image_url && e.currentTarget.src !== photo.r2_image_url) {
+                      if (photo.r2_image_url && !e.currentTarget.dataset.fallback) {
+                        e.currentTarget.dataset.fallback = 'true';
                         e.currentTarget.src = photo.r2_image_url;
                       }
                     }}

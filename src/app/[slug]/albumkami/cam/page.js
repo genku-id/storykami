@@ -113,7 +113,7 @@ export default function SatualbumCameraPage() {
 
         // Ambil thumbnail foto terakhir di galeri untuk slot kanan bawah
         try {
-          const photoRes = await fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' });
+          const photoRes = await fetch(`/api/album/${slug}/photos/?_t=${Date.now()}`, { cache: 'no-store' });
           const photoData = await photoRes.json();
           if (photoData.photos && photoData.photos.length > 0) {
             setRecentPhoto(photoData.photos[0].r2_thumb_url || photoData.photos[0].r2_image_url);
