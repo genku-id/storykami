@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import JSZip from 'jszip';
@@ -26,16 +26,56 @@ export default function SharedAlbumPage() {
   const [enableLikes, setEnableLikes] = useState(false);
   const [emailReminder, setEmailReminder] = useState(false);
 
-  // Lightbox Modal Index
+  // Lightbox Modal Index & Actions State
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
+
+  const hasLoadedOnce = useRef(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setOrigin(window.location.origin);
     }
   }, []);
+
+  // Fetch data galeri secara paralel (Promise.all) agar 2x lebih cepat
+  const loadGallery = useCallback(async (silent = false) => {
+    if (!slug) return;
+    try {
+      if (!silent && !hasLoadedOnce.current) setLoading(true);
+
+      const [infoRes, photosRes] = await Promise.all([
+        fetch(`/api/album/${slug}/info/`, { cache: 'no-store' }),
+        fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' }),
+      ]);
+
+      const info = await infoRes.json();
+      const pData = await photosRes.json();
+
+      if (info.album) {
+        setAlbumData(info.album);
+        try {
+          localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(info.album));
+        } catch (e) {}
+      }
+
+      if (pData.photos) {
+        setPhotos(pData.photos);
+        setContributors(pData.contributors || []);
+        try {
+          localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(pData.photos));
+        } catch (e) {}
+      }
+      hasLoadedOnce.current = true;
+    } catch (err) {
+      console.error('Error loading gallery:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [slug]);
 
   // SWR: Baca cache lokal seketika (0 milidetik, tanpa spinner jika sudah pernah dibuka)
   useEffect(() => {
@@ -50,46 +90,13 @@ export default function SharedAlbumPage() {
           setPhotos(parsed);
           setContributors(Array.from(new Set(parsed.map((p) => p.guest_name).filter(Boolean))));
           setLoading(false); // Instan tanpa delay!
+          hasLoadedOnce.current = true;
         }
       }
       if (cachedInfo) {
         setAlbumData(JSON.parse(cachedInfo));
       }
     } catch (e) {}
-
-    // Fetch data galeri secara paralel (Promise.all) agar 2x lebih cepat
-    async function loadGallery(silent = false) {
-      try {
-        if (!silent && photos.length === 0) setLoading(true);
-
-        const [infoRes, photosRes] = await Promise.all([
-          fetch(`/api/album/${slug}/info/`, { cache: 'no-store' }),
-          fetch(`/api/album/${slug}/photos/`, { cache: 'no-store' }),
-        ]);
-
-        const info = await infoRes.json();
-        const pData = await photosRes.json();
-
-        if (info.album) {
-          setAlbumData(info.album);
-          try {
-            localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(info.album));
-          } catch (e) {}
-        }
-
-        if (pData.photos) {
-          setPhotos(pData.photos);
-          setContributors(pData.contributors || []);
-          try {
-            localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(pData.photos));
-          } catch (e) {}
-        }
-      } catch (err) {
-        console.error('Error loading gallery:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
 
     loadGallery(false);
 
@@ -114,7 +121,7 @@ export default function SharedAlbumPage() {
         window.removeEventListener('focus', handleVisibility);
       }
     };
-  }, [slug]);
+  }, [slug, loadGallery]);
 
   // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
   const filteredPhotos =
@@ -223,34 +230,69 @@ export default function SharedAlbumPage() {
 
   const handleDeleteCurrent = async (e) => {
     e?.stopPropagation();
-    if (!currentPhoto) return;
-    if (typeof window !== 'undefined' && !window.confirm(`Hapus foto dari "${currentPhoto.guest_name}" ini dari galeri album?`)) {
+    if (!currentPhoto || isDeleting) return;
+
+    const guestLabel = currentPhoto.guest_name ? `dari "${currentPhoto.guest_name}"` : '';
+    if (typeof window !== 'undefined' && !window.confirm(`Hapus foto ${guestLabel} ini dari galeri album?`)) {
       return;
     }
+
+    setIsDeleting(true);
+    const photoToDelete = currentPhoto;
 
     try {
       const res = await fetch(`/api/album/${slug}/delete-photo/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photo_id: currentPhoto.id }),
+        body: JSON.stringify({
+          photo_id: photoToDelete.id,
+          r2_key: photoToDelete.r2_key,
+          r2_image_url: photoToDelete.r2_image_url,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        const remaining = photos.filter((p) => p.id !== currentPhoto.id);
-        setPhotos(remaining);
-        try {
-          localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(remaining));
-        } catch (e) {}
-        if (remaining.length === 0) {
+        // Hapus seketika dari state photos
+        setPhotos((prev) => {
+          const next = prev.filter(
+            (p) =>
+              p.id !== photoToDelete.id &&
+              (!photoToDelete.r2_key || p.r2_key !== photoToDelete.r2_key) &&
+              (!photoToDelete.r2_image_url || p.r2_image_url !== photoToDelete.r2_image_url)
+          );
+          try {
+            localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(next));
+          } catch (e) {}
+          return next;
+        });
+
+        // Tampilkan feedback toast
+        setToastMessage('✓ Foto berhasil dihapus');
+        setTimeout(() => setToastMessage(null), 3000);
+
+        // Jika foto habis, tutup lightbox. Jika masih ada, sesuaikan index.
+        const remainingCount = filteredPhotos.filter(
+          (p) =>
+            p.id !== photoToDelete.id &&
+            (!photoToDelete.r2_key || p.r2_key !== photoToDelete.r2_key)
+        ).length;
+
+        if (remainingCount <= 0) {
           setActivePhotoIndex(null);
-        } else if (activePhotoIndex >= remaining.length) {
-          setActivePhotoIndex(remaining.length - 1);
+        } else if (activePhotoIndex >= remainingCount) {
+          setActivePhotoIndex(remainingCount - 1);
         }
+
+        // Sinkronisasi data ke server di background
+        loadGallery(true);
       } else {
         alert(data.error || 'Gagal menghapus foto');
       }
     } catch (err) {
+      console.error('Delete photo error:', err);
       alert('Gagal menghubungi server untuk menghapus foto');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -311,6 +353,13 @@ export default function SharedAlbumPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a09] text-white selection:bg-white selection:text-black">
+      {/* Toast Notification Alert */}
+      {toastMessage && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-neutral-900/95 backdrop-blur-md text-white border border-white/20 px-5 py-2.5 rounded-full text-xs font-medium shadow-2xl flex items-center gap-2 pointer-events-none animate-bounce">
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Ambient background glow di laptop */}
       <div
         className="hidden md:block fixed inset-0 pointer-events-none"
@@ -708,16 +757,21 @@ export default function SharedAlbumPage() {
               {/* Tombol 4: Hapus Foto (Bulat Merah Marun) */}
               <button
                 onClick={handleDeleteCurrent}
-                className="w-[54px] h-[54px] rounded-full bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/25 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                disabled={isDeleting}
+                className="w-[54px] h-[54px] rounded-full bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/25 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg disabled:opacity-50"
                 title="Hapus Foto dari Galeri"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 6h18"/>
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                  <line x1="10" x2="10" y1="11" y2="17"/>
-                  <line x1="14" x2="14" y1="11" y2="17"/>
-                </svg>
+                {isDeleting ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    <line x1="10" x2="10" y1="11" y2="17"/>
+                    <line x1="14" x2="14" y1="11" y2="17"/>
+                  </svg>
+                )}
               </button>
 
             </div>

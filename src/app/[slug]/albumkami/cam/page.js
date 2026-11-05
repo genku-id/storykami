@@ -117,6 +117,8 @@ export default function SatualbumCameraPage() {
           const photoData = await photoRes.json();
           if (photoData.photos && photoData.photos.length > 0) {
             setRecentPhoto(photoData.photos[0].r2_thumb_url || photoData.photos[0].r2_image_url);
+          } else {
+            setRecentPhoto(null);
           }
         } catch (e) {}
       } catch (err) {
