@@ -321,6 +321,30 @@ export default function DashboardPage() {
                             <span>👥</span>
                             Tamu
                           </a>
+                          <a
+                            href={`/${inv.slug}/albumkami?from=wim`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(236,72,153,0.12), rgba(168,85,247,0.12))',
+                              border: '1px solid rgba(236,72,153,0.3)',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              color: '#d946ef',
+                              padding: '4px 8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '0.7rem',
+                              textDecoration: 'none',
+                              fontWeight: 600,
+                              transition: 'all 0.2s ease',
+                            }}
+                            title="Buka & Kelola Album Kami (Host)"
+                          >
+                            <span>📸</span>
+                            Album
+                          </a>
                         </div>
                       </div>
                     </td>

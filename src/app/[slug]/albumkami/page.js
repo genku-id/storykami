@@ -35,6 +35,26 @@ export default function SharedAlbumPage() {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
 
+  // Host & Guest Onboarding State
+  const [isHost, setIsHost] = useState(false);
+  const [showHostSetupModal, setShowHostSetupModal] = useState(false);
+  const [hostAlbumTitleInput, setHostAlbumTitleInput] = useState('');
+  const [hostRollLimitInput, setHostRollLimitInput] = useState(10);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  // Guest Onboarding Modal State
+  const [showGuestNameModal, setShowGuestNameModal] = useState(false);
+  const [guestInputName, setGuestInputName] = useState('');
+
+  // Sub-modals for settings
+  const [showEditTitleModal, setShowEditTitleModal] = useState(false);
+  const [editTitleInput, setEditTitleInput] = useState('');
+  const [showEditRollLimitModal, setShowEditRollLimitModal] = useState(false);
+  const [showEditCapacityModal, setShowEditCapacityModal] = useState(false);
+  const [showEditRevealModal, setShowEditRevealModal] = useState(false);
+  const [showDeletePhotoConfirmModal, setShowDeletePhotoConfirmModal] = useState(false);
+  const [showDeleteAlbumConfirmModal, setShowDeleteAlbumConfirmModal] = useState(false);
+
   const hasLoadedOnce = useRef(false);
 
   useEffect(() => {
@@ -76,6 +96,12 @@ export default function SharedAlbumPage() {
 
       if (info.album) {
         setAlbumData(info.album);
+        if (info.album.settings) {
+          if (info.album.settings.allow_public_view !== undefined) setAllowPublicView(info.album.settings.allow_public_view);
+          if (info.album.settings.hide_uploader_name !== undefined) setHideUploaderName(info.album.settings.hide_uploader_name);
+          if (info.album.settings.enable_likes !== undefined) setEnableLikes(info.album.settings.enable_likes);
+          if (info.album.settings.email_reminder !== undefined) setEmailReminder(info.album.settings.email_reminder);
+        }
         try {
           localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(info.album));
         } catch (e) {}
@@ -141,6 +167,118 @@ export default function SharedAlbumPage() {
       }
     };
   }, [slug, loadGallery]);
+
+  // Deteksi status Host vs Tamu & Tampilkan popup yang sesuai
+  useEffect(() => {
+    if (typeof window === 'undefined' || !slug) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromWim = urlParams.get('from') === 'wim';
+    const wimSession = localStorage.getItem('wim_session');
+    const hostStored = localStorage.getItem(`storykami_is_host_${slug}`) === 'true';
+
+    const hostStatus = fromWim || Boolean(wimSession) || hostStored;
+    setIsHost(hostStatus);
+
+    if (fromWim) {
+      localStorage.setItem(`storykami_is_host_${slug}`, 'true');
+      const setupShown = sessionStorage.getItem(`storykami_host_setup_shown_${slug}`);
+      if (!setupShown) {
+        setShowHostSetupModal(true);
+      }
+    } else if (!hostStatus) {
+      // Pengunjung adalah TAMU: Cek apakah nama sudah tersimpan di localStorage
+      const savedGuestName = localStorage.getItem('storykami_guest_name');
+      if (!savedGuestName) {
+        setShowGuestNameModal(true);
+      }
+    }
+  }, [slug]);
+
+  // Sinkronisasi data album ke input form host
+  useEffect(() => {
+    if (albumData?.title && !hostAlbumTitleInput) {
+      setHostAlbumTitleInput(albumData.title);
+    }
+    if (albumData?.roll_limit) {
+      setHostRollLimitInput(albumData.roll_limit);
+    }
+  }, [albumData, hostAlbumTitleInput]);
+
+  // Helper untuk token device tamu
+  const getOrCreateDeviceToken = () => {
+    if (typeof window === 'undefined') return '';
+    let token = localStorage.getItem('storykami_device_token');
+    if (!token) {
+      token = 'guest_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+      localStorage.setItem('storykami_device_token', token);
+    }
+    return token;
+  };
+
+  // Simpan nama tamu dari modal selamat datang
+  const handleSaveGuestName = async (nameToSave) => {
+    const finalName = (nameToSave !== undefined ? nameToSave : guestInputName).trim() || 'Tamu';
+    localStorage.setItem('storykami_guest_name', finalName);
+    setShowGuestNameModal(false);
+    setToastMessage(`✓ Selamat datang, ${finalName}!`);
+    setTimeout(() => setToastMessage(null), 3000);
+
+    // Daftarkan sesi tamu ke server di background
+    try {
+      const deviceToken = getOrCreateDeviceToken();
+      await fetch(`/api/album/${slug}/session/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          guest_name: finalName,
+          device_token: deviceToken,
+        }),
+      });
+    } catch (e) {}
+  };
+
+  // Simpan pengaturan album ke backend Supabase
+  const saveSetting = async (updates) => {
+    setIsSavingSettings(true);
+    try {
+      const res = await fetch(`/api/album/${slug}/settings/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (data.success && data.album) {
+        setAlbumData((prev) => ({
+          ...prev,
+          ...data.album,
+        }));
+        try {
+          const cached = localStorage.getItem(`storykami_cache_${slug}_info`);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            localStorage.setItem(
+              `storykami_cache_${slug}_info`,
+              JSON.stringify({ ...parsed, ...data.album })
+            );
+          }
+        } catch (e) {}
+        setToastMessage('✓ Pengaturan album berhasil disimpan');
+        setTimeout(() => setToastMessage(null), 3000);
+        return true;
+      } else {
+        setToastMessage('✕ Gagal menyimpan: ' + (data.error || 'Terjadi kesalahan'));
+        setTimeout(() => setToastMessage(null), 3500);
+        return false;
+      }
+    } catch (err) {
+      setToastMessage('✕ Gagal menghubungi server');
+      setTimeout(() => setToastMessage(null), 3500);
+      return false;
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
 
   // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
   const filteredPhotos =
@@ -248,20 +386,21 @@ export default function SharedAlbumPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(downloadUrl);
     } catch (e) {
-      alert('Gagal mengunduh QR, Anda bisa melakukan screenshot kartu QR ini.');
+      setToastMessage('✕ Gagal mengunduh QR, Anda bisa screenshot kartu QR ini');
+      setTimeout(() => setToastMessage(null), 3000);
     }
   };
 
-  const handleDeleteCurrent = async (e) => {
+  const handleDeleteCurrent = (e) => {
     e?.stopPropagation();
     if (!currentPhoto || isDeleting) return;
+    setShowDeletePhotoConfirmModal(true);
+  };
 
-    const guestLabel = currentPhoto.guest_name ? `dari "${currentPhoto.guest_name}"` : '';
-    if (typeof window !== 'undefined' && !window.confirm(`Hapus foto ${guestLabel} ini dari galeri album?`)) {
-      return;
-    }
-
+  const confirmDeletePhotoAction = async () => {
+    if (!currentPhoto || isDeleting) return;
     setIsDeleting(true);
+    setShowDeletePhotoConfirmModal(false);
     const photoToDelete = currentPhoto;
 
     try {
@@ -310,11 +449,13 @@ export default function SharedAlbumPage() {
         // Sinkronisasi data ke server di background
         loadGallery(true);
       } else {
-        alert(data.error || 'Gagal menghapus foto');
+        setToastMessage('✕ ' + (data.error || 'Gagal menghapus foto'));
+        setTimeout(() => setToastMessage(null), 3500);
       }
     } catch (err) {
       console.error('Delete photo error:', err);
-      alert('Gagal menghubungi server untuk menghapus foto');
+      setToastMessage('✕ Gagal menghubungi server untuk menghapus foto');
+      setTimeout(() => setToastMessage(null), 3500);
     } finally {
       setIsDeleting(false);
     }
@@ -323,7 +464,8 @@ export default function SharedAlbumPage() {
   // Unduh Semua Foto sebagai ZIP
   const handleDownloadAllZip = async () => {
     if (!photos || photos.length === 0 || isZipping) {
-      alert('Belum ada foto yang bisa diunduh');
+      setToastMessage('✕ Belum ada foto yang bisa diunduh');
+      setTimeout(() => setToastMessage(null), 3000);
       return;
     }
 
@@ -360,7 +502,8 @@ export default function SharedAlbumPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(downloadUrl);
     } catch (err) {
-      alert('Gagal mendownload ZIP: ' + err.message);
+      setToastMessage('✕ Gagal mengunduh ZIP: ' + err.message);
+      setTimeout(() => setToastMessage(null), 3500);
     } finally {
       setIsZipping(false);
     }
@@ -418,16 +561,19 @@ export default function SharedAlbumPage() {
               </svg>
             </Link>
 
-            <button
-              onClick={() => setShowSettingsModal(true)}
-              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
-              title="Pengaturan Album"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
+            {/* Tombol Pengaturan HANYA MUNCUL JIKA Host Masuk dari WIM */}
+            {isHost && (
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                title="Pengaturan Album (Host)"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
@@ -1088,13 +1234,19 @@ export default function SharedAlbumPage() {
             <div className="px-4 space-y-2.5">
               
               {/* 1. Nama & Sampul */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div
+                onClick={() => {
+                  setEditTitleInput(albumTitle);
+                  setShowEditTitleModal(true);
+                }}
+                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">✏️</span>
                   <span className="font-medium text-white">Nama & Sampul</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span className="truncate max-w-[140px] text-white/70">{albumTitle}</span>
+                  <span className="truncate max-w-[140px] text-white/80 font-medium">{albumTitle}</span>
                   <span>›</span>
                 </div>
               </div>
@@ -1112,31 +1264,39 @@ export default function SharedAlbumPage() {
               </div>
 
               {/* 3. Waktu ungkap */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div
+                onClick={() => setShowEditRevealModal(true)}
+                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">🕒</span>
                   <span className="font-medium text-white">Waktu ungkap</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Selama Acara</span>
+                  <span className="text-white/80 font-medium">
+                    {albumData?.reveal_mode === 'after' ? 'Setelah Acara' : 'Selama Acara'}
+                  </span>
                   <span>›</span>
                 </div>
               </div>
 
               {/* 4. Foto per orang */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div
+                onClick={() => setShowEditRollLimitModal(true)}
+                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">📷</span>
                   <span className="font-medium text-white">Foto per orang</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>{albumData?.roll_limit || 10}</span>
+                  <span className="text-white/80 font-semibold">{albumData?.roll_limit || 10} Foto</span>
                   <span>›</span>
                 </div>
               </div>
 
               {/* 5. Filter kamera */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">⚙️</span>
                   <span className="font-medium text-white">Filter kamera</span>
@@ -1148,7 +1308,7 @@ export default function SharedAlbumPage() {
               </div>
 
               {/* 6. Bingkai foto */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">🔲</span>
                   <span className="font-medium text-white">Bingkai foto</span>
@@ -1160,19 +1320,26 @@ export default function SharedAlbumPage() {
               </div>
 
               {/* 7. Tautan khusus */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div
+                onClick={() => {
+                  navigator.clipboard.writeText(albumShareUrl);
+                  setToastMessage('✓ Tautan khusus album berhasil disalin');
+                  setTimeout(() => setToastMessage(null), 3000);
+                }}
+                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">🔗</span>
                   <span className="font-medium text-white">Tautan khusus</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Buat tautan khusus</span>
+                  <span>Salin Tautan</span>
                   <span>›</span>
                 </div>
               </div>
 
               {/* 8. Bahasa default acara */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
                 <div className="flex items-center gap-3">
                   <span className="text-white/40">🌐</span>
                   <span className="font-medium text-white">Bahasa default acara</span>
@@ -1184,21 +1351,24 @@ export default function SharedAlbumPage() {
               </div>
 
               {/* 9. Kapasitas tamu */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
+              <div
+                onClick={() => setShowEditCapacityModal(true)}
+                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
+              >
                 <div>
                   <div className="flex items-center gap-3">
                     <span className="text-white/40">👥</span>
                     <span className="font-medium text-white">Kapasitas tamu</span>
                   </div>
                   <p className="text-[11px] text-white/40 mt-1 pl-7">
-                    Hingga {maxGuests} Tamu • Paket gratis dibatasi 5 tamu
+                    Hingga {maxGuests} Tamu • Kuota bergabung
                   </p>
                 </div>
                 <button
                   type="button"
                   className="bg-[#1c3a5e] text-sky-200 text-xs font-semibold px-3 py-1.5 rounded-xl border border-sky-500/20 active:scale-95 transition-transform"
                 >
-                  Tambah pax ›
+                  Ubah pax ›
                 </button>
               </div>
 
@@ -1211,7 +1381,11 @@ export default function SharedAlbumPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setAllowPublicView(!allowPublicView)}
+                    onClick={async () => {
+                      const nextVal = !allowPublicView;
+                      setAllowPublicView(nextVal);
+                      await saveSetting({ album_settings: { allow_public_view: nextVal } });
+                    }}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
                       allowPublicView ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
                     }`}
@@ -1224,7 +1398,7 @@ export default function SharedAlbumPage() {
                   </button>
                 </div>
                 <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Aktifkan agar siapa pun dengan link bisa melihat semua foto. Nonaktifkan agar hanya kamu dan tamu undangan yang bisa melihat — tamu tetap hanya melihat foto miliknya.
+                  Aktifkan agar siapa pun dengan link bisa melihat semua foto. Nonaktifkan agar hanya kamu dan tamu undangan yang bisa melihat.
                 </p>
               </div>
 
@@ -1237,7 +1411,11 @@ export default function SharedAlbumPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setHideUploaderName(!hideUploaderName)}
+                    onClick={async () => {
+                      const nextVal = !hideUploaderName;
+                      setHideUploaderName(nextVal);
+                      await saveSetting({ album_settings: { hide_uploader_name: nextVal } });
+                    }}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
                       hideUploaderName ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
                     }`}
@@ -1250,7 +1428,7 @@ export default function SharedAlbumPage() {
                   </button>
                 </div>
                 <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Untuk penjurian buta — sembunyikan nama semua orang saat memilih favorit.
+                  Untuk penjurian buta — sembunyikan nama semua orang saat memilih foto favorit.
                 </p>
               </div>
 
@@ -1263,7 +1441,11 @@ export default function SharedAlbumPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setEnableLikes(!enableLikes)}
+                    onClick={async () => {
+                      const nextVal = !enableLikes;
+                      setEnableLikes(nextVal);
+                      await saveSetting({ album_settings: { enable_likes: nextVal } });
+                    }}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
                       enableLikes ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
                     }`}
@@ -1276,7 +1458,7 @@ export default function SharedAlbumPage() {
                   </button>
                 </div>
                 <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Pengunjung dan tamu dapat menyukai setiap foto satu kali. Matikan untuk menyembunyikan tombol like dan jumlahnya dari semua orang.
+                  Pengunjung dan tamu dapat menyukai setiap foto satu kali.
                 </p>
               </div>
 
@@ -1289,7 +1471,11 @@ export default function SharedAlbumPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setEmailReminder(!emailReminder)}
+                    onClick={async () => {
+                      const nextVal = !emailReminder;
+                      setEmailReminder(nextVal);
+                      await saveSetting({ album_settings: { email_reminder: nextVal } });
+                    }}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
                       emailReminder ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
                     }`}
@@ -1302,7 +1488,7 @@ export default function SharedAlbumPage() {
                   </button>
                 </div>
                 <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  <span className="text-sky-400 hover:underline cursor-pointer">Simpan akun dulu</span> supaya kami punya alamat email.
+                  Kirim pengingat otomatis menjelang hari pernikahan Anda.
                 </p>
               </div>
 
@@ -1310,11 +1496,7 @@ export default function SharedAlbumPage() {
               <div className="pt-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    if (confirm('Apakah Anda yakin ingin menghapus acara ini beserta seluruh fotonya?')) {
-                      alert('Acara ini terhubung dengan undangan pernikahan utama Anda.');
-                    }
-                  }}
+                  onClick={() => setShowDeleteAlbumConfirmModal(true)}
                   className="w-full py-4 rounded-2xl bg-[#241313] hover:bg-[#321717] border border-red-500/20 text-[#ef4444] font-medium text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1327,6 +1509,489 @@ export default function SharedAlbumPage() {
               </div>
 
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. MODAL ONBOARDING TAMU (Pop-up Nama Tamu Pertama Kali)                    */}
+      {/* ========================================================================= */}
+      {showGuestNameModal && (
+        <div className="fixed inset-0 z-[70] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none">
+          <div className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl">
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/20 mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
+                ✨
+              </div>
+              <h3 className="font-serif text-[24px] font-bold text-white tracking-tight mb-2">
+                Selamat Datang di Album Kami
+              </h3>
+              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
+                Tulis namamu agar kedua mempelai tahu siapa yang mengabadikan momen berharga ini.
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <input
+                type="text"
+                value={guestInputName}
+                onChange={(e) => setGuestInputName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveGuestName();
+                }}
+                placeholder="Nama panggilan (contoh: Dimas, Sarah)"
+                autoFocus
+                className="w-full h-14 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-5 text-center text-white placeholder-white/30 text-base outline-none transition-all"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleSaveGuestName()}
+                className="w-full h-13 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                <span>Mulai Abadikan Momen</span>
+                <span>→</span>
+              </button>
+
+              <button
+                onClick={() => handleSaveGuestName('Tamu')}
+                className="w-full h-11 rounded-2xl bg-transparent hover:bg-white/5 text-white/50 hover:text-white font-medium text-xs active:scale-[0.98] transition-all"
+              >
+                Lewati (Sebagai Tamu)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 6. MODAL SETUP HOST (Pop-up Pengaturan Masuk dari WIM Pertama Kali)         */}
+      {/* ========================================================================= */}
+      {showHostSetupModal && (
+        <div className="fixed inset-0 z-[70] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none">
+          <div className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl">
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-3xl bg-fuchsia-500/10 border border-fuchsia-500/20 mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
+                📸
+              </div>
+              <h3 className="font-serif text-[24px] font-bold text-white tracking-tight mb-2">
+                Atur Album Kami
+              </h3>
+              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
+                Ruang penyimpanan R2 untuk album pernikahan Anda telah aktif. Beri nama khusus & tentukan kuota rol kamera tamu.
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-[11px] font-semibold text-white/60 mb-2 uppercase tracking-wider text-left">
+                  Nama Album
+                </label>
+                <input
+                  type="text"
+                  value={hostAlbumTitleInput}
+                  onChange={(e) => setHostAlbumTitleInput(e.target.value)}
+                  placeholder="Contoh: Album Resepsi Dika & Riyan"
+                  className="w-full h-13 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-4 text-white placeholder-white/30 text-sm outline-none transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-white/60 mb-2 uppercase tracking-wider text-left">
+                  Foto per Tamu (Kamera Roll)
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[10, 20, 36, 50].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setHostRollLimitInput(num)}
+                      className={`h-11 rounded-xl text-xs font-bold transition-all border ${
+                        hostRollLimitInput === num
+                          ? 'bg-white text-black border-white shadow-lg'
+                          : 'bg-[#1c1b19] text-white/60 border-white/5 hover:border-white/20'
+                      }`}
+                    >
+                      {num} foto
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                disabled={isSavingSettings}
+                onClick={async () => {
+                  await saveSetting({
+                    title: hostAlbumTitleInput.trim() || albumTitle,
+                    roll_limit: hostRollLimitInput,
+                  });
+                  sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
+                  setShowHostSetupModal(false);
+                }}
+                className="w-full h-13 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isSavingSettings ? (
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Simpan & Buka Galeri</span>
+                    <span>→</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
+                  setShowHostSetupModal(false);
+                }}
+                className="w-full h-11 rounded-2xl bg-transparent hover:bg-white/5 text-white/50 hover:text-white font-medium text-xs active:scale-[0.98] transition-all"
+              >
+                Gunakan Default
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 7. SUB-MODAL: UBAH NAMA ALBUM                                              */}
+      {/* ========================================================================= */}
+      {showEditTitleModal && (
+        <div
+          onClick={() => setShowEditTitleModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-6">
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+                Ubah Nama Album
+              </h3>
+              <p className="text-xs text-white/50 font-sans">
+                Nama ini akan tampil di bagian atas galeri album
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <input
+                type="text"
+                value={editTitleInput}
+                onChange={(e) => setEditTitleInput(e.target.value)}
+                placeholder="Nama Album"
+                className="w-full h-13 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-4 text-white placeholder-white/30 text-sm outline-none transition-all"
+                autoFocus
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setShowEditTitleModal(false)}
+                className="h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+              >
+                Batal
+              </button>
+              <button
+                disabled={isSavingSettings}
+                onClick={async () => {
+                  if (editTitleInput.trim()) {
+                    await saveSetting({ title: editTitleInput.trim() });
+                  }
+                  setShowEditTitleModal(false);
+                }}
+                className="h-12 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                <span>Simpan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 8. SUB-MODAL: PILIH FOTO PER ORANG (ROL FILM)                              */}
+      {/* ========================================================================= */}
+      {showEditRollLimitModal && (
+        <div
+          onClick={() => setShowEditRollLimitModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-5">
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+                Foto per Tamu (Kamera Roll)
+              </h3>
+              <p className="text-xs text-white/50 font-sans">
+                Tentukan batas maksimal foto yang bisa diabadikan tiap tamu
+              </p>
+            </div>
+
+            <div className="space-y-2 mb-6">
+              {[5, 10, 15, 20, 36, 50].map((limit) => {
+                const isSelected = (albumData?.roll_limit || 10) === limit;
+                return (
+                  <div
+                    key={limit}
+                    onClick={async () => {
+                      await saveSetting({ roll_limit: limit });
+                      setShowEditRollLimitModal(false);
+                    }}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-white text-black border-white shadow-lg'
+                        : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                    }`}
+                  >
+                    <span className="font-semibold text-sm">
+                      {limit} Foto {limit === 10 ? '• Rekomendasi' : limit === 36 ? '• Rol Klasik' : ''}
+                    </span>
+                    {isSelected && <span className="font-bold text-sm">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setShowEditRollLimitModal(false)}
+              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 9. SUB-MODAL: PILIH KAPASITAS TAMU                                         */}
+      {/* ========================================================================= */}
+      {showEditCapacityModal && (
+        <div
+          onClick={() => setShowEditCapacityModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-5">
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+                Kapasitas Tamu Bergabung
+              </h3>
+              <p className="text-xs text-white/50 font-sans">
+                Batas jumlah kuota tamu yang dapat mengakses album ini
+              </p>
+            </div>
+
+            <div className="space-y-2 mb-6">
+              {[25, 50, 100, 200, 500].map((cap) => {
+                const isSelected = maxGuests === cap;
+                return (
+                  <div
+                    key={cap}
+                    onClick={async () => {
+                      await saveSetting({ max_guests: cap });
+                      setShowEditCapacityModal(false);
+                    }}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-white text-black border-white shadow-lg'
+                        : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                    }`}
+                  >
+                    <span className="font-semibold text-sm">
+                      Hingga {cap} Tamu {cap === 50 ? '• Default' : ''}
+                    </span>
+                    {isSelected && <span className="font-bold text-sm">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setShowEditCapacityModal(false)}
+              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 10. SUB-MODAL: PILIH WAKTU UNGKAP                                         */}
+      {/* ========================================================================= */}
+      {showEditRevealModal && (
+        <div
+          onClick={() => setShowEditRevealModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-5">
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+                Waktu Ungkap Foto
+              </h3>
+              <p className="text-xs text-white/50 font-sans">
+                Tentukan kapan foto dari tamu dapat dilihat di galeri
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div
+                onClick={async () => {
+                  await saveSetting({ reveal_mode: 'instant', is_revealed: true });
+                  setShowEditRevealModal(false);
+                }}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                  albumData?.reveal_mode !== 'after'
+                    ? 'bg-white text-black border-white shadow-lg'
+                    : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-sm">Selama Acara (Langsung Tampil)</span>
+                  {albumData?.reveal_mode !== 'after' && <span className="font-bold text-sm">✓</span>}
+                </div>
+                <p className={`text-xs ${albumData?.reveal_mode !== 'after' ? 'text-black/60' : 'text-white/40'}`}>
+                  Setiap foto yang dijepret tamu akan langsung muncul di dashboard galeri secara realtime.
+                </p>
+              </div>
+
+              <div
+                onClick={async () => {
+                  await saveSetting({ reveal_mode: 'after', is_revealed: false });
+                  setShowEditRevealModal(false);
+                }}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                  albumData?.reveal_mode === 'after'
+                    ? 'bg-white text-black border-white shadow-lg'
+                    : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-sm">Setelah Acara Selesai (Teka-Teki)</span>
+                  {albumData?.reveal_mode === 'after' && <span className="font-bold text-sm">✓</span>}
+                </div>
+                <p className={`text-xs ${albumData?.reveal_mode === 'after' ? 'text-black/60' : 'text-white/40'}`}>
+                  Foto tamu tetap tersimpan rapi, namun galeri baru akan terbuka bersamaan setelah acara selesai.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowEditRevealModal(false)}
+              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 11. SUB-MODAL: KONFIRMASI HAPUS FOTO LIGHTBOX                              */}
+      {/* ========================================================================= */}
+      {showDeletePhotoConfirmModal && (
+        <div
+          onClick={() => !isDeleting && setShowDeletePhotoConfirmModal(false)}
+          className="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 mx-auto flex items-center justify-center text-3xl mb-4 text-red-400">
+                🗑️
+              </div>
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-2">
+                Hapus Foto Ini?
+              </h3>
+              <p className="text-xs text-white/50 leading-relaxed max-w-xs mx-auto font-sans">
+                Foto yang diabadikan oleh <strong className="text-white">{currentPhoto?.guest_name || 'Tamu'}</strong> akan dihapus permanen dari galeri album bersama.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                disabled={isDeleting}
+                onClick={() => setShowDeletePhotoConfirmModal(false)}
+                className="h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                disabled={isDeleting}
+                onClick={confirmDeletePhotoAction}
+                className="h-12 rounded-2xl bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/20 text-white font-bold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>Ya, Hapus</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 12. SUB-MODAL: KONFIRMASI HAPUS ACARA                                      */}
+      {/* ========================================================================= */}
+      {showDeleteAlbumConfirmModal && (
+        <div
+          onClick={() => setShowDeleteAlbumConfirmModal(false)}
+          className="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 mx-auto flex items-center justify-center text-3xl mb-4 text-red-400">
+                ⚠️
+              </div>
+              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-2">
+                Hapus Acara Ini?
+              </h3>
+              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
+                Album ini terhubung secara langsung dengan undangan pernikahan utama Anda di StoryKami. Untuk mengelola atau menghapus seluruh undangan beserta album, silakan lakukan dari <strong className="text-white">Dashboard WIM</strong>.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowDeleteAlbumConfirmModal(false)}
+              className="w-full h-12 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs active:scale-95 transition-all shadow-xl"
+            >
+              Mengerti & Kembali
+            </button>
           </div>
         </div>
       )}

@@ -57,9 +57,10 @@ export async function GET(request, { params }) {
       }
     }
 
-    // 3. Ambil data tanggal acara dari undangan WIM
+    // 3. Ambil data tanggal acara dari undangan WIM & album_settings
     let eventDateRaw = null;
     let eventDateFormatted = null;
+    let extraSettings = {};
     try {
       const { data: inv } = await supabaseServer
         .from('invitations')
@@ -67,16 +68,19 @@ export async function GET(request, { params }) {
         .eq('slug', slug)
         .maybeSingle();
 
-      if (inv?.data?.acara && Array.isArray(inv.data.acara) && inv.data.acara.length > 0) {
-        eventDateRaw = inv.data.acara[0].tanggal;
-        if (eventDateRaw) {
-          const dParts = eventDateRaw.split('-');
-          if (dParts.length === 3) {
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const mIdx = parseInt(dParts[1], 10) - 1;
-            const day = parseInt(dParts[2], 10);
-            const year = dParts[0];
-            eventDateFormatted = `${day} ${months[mIdx] || ''} ${year}`;
+      if (inv?.data) {
+        extraSettings = inv.data.album_settings || {};
+        if (inv.data.acara && Array.isArray(inv.data.acara) && inv.data.acara.length > 0) {
+          eventDateRaw = inv.data.acara[0].tanggal;
+          if (eventDateRaw) {
+            const dParts = eventDateRaw.split('-');
+            if (dParts.length === 3) {
+              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+              const mIdx = parseInt(dParts[1], 10) - 1;
+              const day = parseInt(dParts[2], 10);
+              const year = dParts[0];
+              eventDateFormatted = `${day} ${months[mIdx] || ''} ${year}`;
+            }
           }
         }
       }
@@ -132,6 +136,7 @@ export async function GET(request, { params }) {
           total_photos: totalPhotos,
           event_date: eventDateRaw,
           event_date_formatted: eventDateFormatted,
+          settings: extraSettings,
         },
         guestSession,
       },
