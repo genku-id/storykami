@@ -588,43 +588,39 @@ export default function SharedAlbumPage() {
             </span>
           </h1>
 
-          {/* 3 STATS COLUMNS WITH VERTICAL DIVIDERS */}
-          <div className="flex justify-around items-center mb-6 py-1">
+          {/* 3 STATS COLUMNS (Nocturne Noir Design System) */}
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.08] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08] mb-6" data-purpose="album-stats-bar">
             {/* Col 1: Momen */}
-            <div className="flex flex-col items-center gap-0.5 flex-1">
-              <span className="font-serif text-[26px] font-bold text-white italic leading-none">
+            <div className="text-center px-1">
+              <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
                 {photos.length}
               </span>
-              <span className="text-[#888888] text-[11px] font-sans">Momen</span>
+              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium">Momen</span>
             </div>
 
-            <div className="w-px h-8 bg-[#2a2a2a]" />
-
-            {/* Col 2: Tanggal Acara (Dari Undangan WIM) */}
-            <div className="flex flex-col items-center gap-0.5 flex-1">
-              <span className="font-serif text-[20px] md:text-[22px] font-bold text-white italic leading-none whitespace-nowrap">
+            {/* Col 2: Tanggal Acara */}
+            <div className="text-center px-1">
+              <span className="block font-serif text-base sm:text-lg font-bold tracking-tight text-white italic leading-none mb-1 truncate">
                 {albumData?.event_date_formatted || '22 Nov 2026'}
               </span>
-              <span className="text-[#888888] text-[11px] font-sans">Tanggal Acara</span>
+              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium">Tanggal Acara</span>
             </div>
 
-            <div className="w-px h-8 bg-[#2a2a2a]" />
-
-            {/* Col 3: Orang (Bisa diklik membuka popup nama pengisi foto) */}
+            {/* Col 3: Orang */}
             <button
               onClick={() => setShowContributorsModal(true)}
-              className="flex flex-col items-center gap-0.5 flex-1 cursor-pointer active:scale-95 transition-transform group"
+              className="text-center px-1 group cursor-pointer active:scale-95 transition-transform"
               title="Lihat Tamu Pengisi Album"
             >
-              <div className="flex items-baseline gap-0.5 leading-none">
-                <span className="font-serif text-[26px] font-bold text-white italic group-hover:text-amber-200 transition-colors">
+              <div className="flex items-baseline justify-center gap-0.5 leading-none mb-1">
+                <span className="font-serif text-2xl font-bold tracking-tight text-white italic group-hover:text-amber-200 transition-colors">
                   {currentGuestsCount}
                 </span>
-                <span className="text-white/30 text-[13px] font-medium font-sans">
+                <span className="text-sm font-sans text-white/40 font-normal">
                   /{maxGuests}
                 </span>
               </div>
-              <span className="text-[#888888] group-hover:text-white text-[11px] font-sans flex items-center gap-0.5 transition-colors">
+              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium group-hover:text-white flex items-center justify-center gap-0.5 transition-colors">
                 Orang &gt;
               </span>
             </button>
@@ -758,19 +754,32 @@ export default function SharedAlbumPage() {
 
           {/* PHOTO GALLERY GRID */}
           {filteredPhotos.length === 0 ? (
-            <div className="text-center py-16 bg-[#161616] border border-[#2a2a2a] rounded-3xl p-6">
-              <span className="text-3xl mb-2 block">📷</span>
-              <h3 className="font-serif text-base font-bold text-white mb-1">Belum Ada Momen</h3>
-              <p className="text-xs text-white/40 mb-5">
-                Tekan tombol kamera di atas untuk mengambil foto pertama dengan preset film vintage!
+            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-2 group" data-purpose="empty-gallery-state">
+              <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#23232c] to-[#121217] border border-white/10 flex items-center justify-center mb-4 text-amber-200 ring-1 ring-amber-400/20">
+                <svg className="w-7 h-7 stroke-[1.8] text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+                <div className="absolute top-3.5 right-4 w-1.5 h-1.5 rounded-full bg-white/40 blur-[0.5px]" />
+              </div>
+              <h2 className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-white mb-2">
+                Belum Ada Momen Tersimpan
+              </h2>
+              <p className="text-xs md:text-sm text-zinc-400 font-light max-w-[280px] leading-relaxed mb-6">
+                Jadilah yang pertama mengabadikan kenangan bahagia dan potret hangat hari istimewa ini.
               </p>
               <Link
                 href={`/${slug}/albumkami/cam/`}
-                className="inline-flex items-center gap-2 bg-[#f2ece4] text-[#12110f] font-semibold px-5 py-2.5 rounded-xl text-xs shadow-lg hover:bg-white transition-colors"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-amber-400/20 via-amber-300/15 to-transparent border border-amber-300/40 text-amber-200 text-xs font-semibold tracking-wide hover:border-amber-300 hover:text-white transition-all shadow-lg active:scale-95"
               >
-                <span>Buka Kamera Sekarang</span>
+                <svg className="w-4 h-4 stroke-[2]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+                <span>Mulai Memotret Sekarang</span>
               </Link>
-            </div>
+            </section>
           ) : (
             <div
               className={`grid gap-2.5 ${
@@ -1037,60 +1046,72 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 2. MODAL KONFIRMASI UNDUH SEMUA FOTO (ZIP)                                */}
+      {/* 2. MODAL KONFIRMASI UNDUH SEMUA FOTO (ZIP) - Nocturne Noir                */}
       {/* ========================================================================= */}
       {showDownloadConfirmModal && (
         <div
           onClick={() => !isZipping && setShowDownloadConfirmModal(false)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 anim-fade-in select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#161514] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="relative w-full max-w-[380px] rounded-3xl bg-[#131315]/95 border border-[#DFC29D]/25 backdrop-blur-2xl p-7 pt-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(207,172,123,0.12)] overflow-hidden"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
-            
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-3xl bg-white/[0.06] border border-white/10 mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
-                📦
+            {/* Top ambient gold line */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DFC29D]/60 to-transparent" />
+
+            <div className="flex flex-col items-center text-center">
+              {/* Floating Package Icon */}
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#202227] to-[#121316] border border-white/10 flex items-center justify-center mb-4 text-[#DFC29D] shadow-inner ring-1 ring-amber-400/20">
+                <svg className="w-7 h-7 text-amber-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                  <path d="m3.3 7 8.7 5 8.7-5"/>
+                  <path d="M12 22V12"/>
+                </svg>
               </div>
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-2">
+
+              <h2 className="font-serif text-[26px] sm:text-[28px] tracking-tight font-medium text-white mb-2 leading-tight">
                 Unduh Semua Momen?
-              </h3>
-              <p className="text-xs text-white/50 leading-relaxed max-w-xs mx-auto font-sans">
-                Sebanyak <span className="text-white font-semibold">{photos.length} foto</span> resolusi asli kualitas tinggi akan dikemas ke dalam satu file ZIP (.zip) langsung ke perangkat Anda.
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-[#B4B2AD] max-w-[300px] font-normal px-1 mb-5">
+                Sebanyak <span className="font-semibold text-amber-200">{photos.length} foto</span> akan didownload dalam file ZIP (<span className="font-mono text-xs text-stone-300">.zip</span>) ke perangkat Anda.
               </p>
             </div>
 
             {isZipping ? (
-              <div className="space-y-3 mb-6 p-4 rounded-2xl bg-white/[0.04] border border-white/10">
+              <div className="space-y-3 p-4 rounded-2xl bg-white/[0.04] border border-white/10 mb-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/60">Mengemas file foto...</span>
-                  <span className="font-mono font-bold text-white">{zipProgress}%</span>
+                  <span className="text-zinc-300">Mengemas file foto...</span>
+                  <span className="font-mono font-bold text-amber-200">{zipProgress}%</span>
                 </div>
                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-white transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-amber-200 to-amber-400 transition-all duration-300"
                     style={{ width: `${zipProgress}%` }}
                   />
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-3 w-full">
                 <button
+                  type="button"
                   onClick={() => setShowDownloadConfirmModal(false)}
-                  className="h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-medium text-[#B4B2AD] bg-[#202227]/90 hover:bg-[#2d3037] border border-white/10 transition-all text-center cursor-pointer active:scale-95"
                 >
                   Batal
                 </button>
                 <button
+                  type="button"
                   onClick={async () => {
                     await handleDownloadAllZip();
                     setShowDownloadConfirmModal(false);
                   }}
-                  className="h-12 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2"
+                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-semibold tracking-wide text-[#0b0c0e] bg-gradient-to-b from-[#FAF5ED] to-[#DFC29D] hover:from-white hover:to-[#F4E8D5] border border-[#F4E8D5]/60 shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-95 group transition-all"
                 >
-                  <span>Unduh Sekarang</span>
+                  <span>Unduh</span>
+                  <svg className="w-4 h-4 text-[#0b0c0e]/80 group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                    <path d="M19 14l-7 7m0 0l-7-7m7 7V3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </button>
               </div>
             )}
@@ -1099,95 +1120,135 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 3. MODAL DAFTAR TAMU / KONTRIBUTOR (Muncul saat "Orang >" diklik)           */}
+      {/* 3. MODAL DAFTAR TAMU / KONTRIBUTOR (Nocturne Noir Bottom Sheet Filter)      */}
       {/* ========================================================================= */}
       {showContributorsModal && (
         <div
           onClick={() => setShowContributorsModal(false)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md max-h-[80vh] bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl flex flex-col"
+            className="w-full max-w-md max-h-[85vh] bg-[#131316]/95 backdrop-blur-xl border-t md:border border-amber-500/20 rounded-t-[32px] md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20 flex-shrink-0" />
-            
-            {/* Header */}
-            <div className="text-center mb-5 flex-shrink-0">
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
-                Tamu Pengisi Album
-              </h3>
-              <p className="text-xs text-white/50 font-sans">
-                Pilih tamu untuk melihat foto yang diabadikan olehnya
-              </p>
+            {/* Top Drag Handle Bar */}
+            <div className="w-full pt-3 pb-2 flex justify-center items-center">
+              <div className="w-10 h-1.5 bg-neutral-600/80 rounded-full" />
             </div>
 
-            {/* List Tamu */}
-            <div className="overflow-y-auto space-y-2.5 flex-1 pr-1 custom-scrollbar">
+            {/* Header Section */}
+            <header className="px-6 pt-1 pb-4 text-center relative border-b border-white/[0.06] flex items-center justify-between">
+              <div className="w-8" />
+              <div className="relative flex-1">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-12 bg-amber-500/15 blur-2xl pointer-events-none rounded-full" />
+                <h1 className="font-serif text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200">
+                  Tamu Pengisi Album
+                </h1>
+                <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                  Saring kenangan berdasarkan pengirim foto
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowContributorsModal(false)}
+                className="w-8 h-8 rounded-full bg-[#18191d] border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </header>
+
+            {/* Scrollable Guest Filter List */}
+            <div className="p-4 sm:p-5 overflow-y-auto space-y-2.5 custom-scrollbar flex-1">
               {/* Option 1: Semua Momen */}
-              <div
+              <button
+                type="button"
                 onClick={() => {
                   setSelectedContributor('ALL');
                   setShowContributorsModal(false);
                 }}
-                className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between transition-all duration-200 transform active:scale-[0.99] border group ${
                   selectedContributor === 'ALL'
-                    ? 'bg-white text-black border-white shadow-lg'
-                    : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                    ? 'bg-gradient-to-r from-white/95 to-amber-50 text-zinc-950 shadow-lg border-amber-200/80'
+                    : 'bg-[#18191d] hover:bg-[#202227] text-white border-white/[0.06]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base ${
-                    selectedContributor === 'ALL' ? 'bg-black/10 text-black' : 'bg-white/10 text-white'
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg shrink-0 ${
+                    selectedContributor === 'ALL' ? 'bg-black/10 text-zinc-950' : 'bg-white/5 text-amber-200'
                   }`}>
                     📸
                   </div>
-                  <div className="text-left">
-                    <p className="font-semibold text-sm">Semua Momen</p>
-                    <p className={`text-xs ${selectedContributor === 'ALL' ? 'text-black/60' : 'text-white/40'}`}>
+                  <div className="truncate">
+                    <h2 className={`font-semibold text-base leading-tight tracking-tight ${
+                      selectedContributor === 'ALL' ? 'text-zinc-950' : 'text-white'
+                    }`}>
+                      Semua Momen
+                    </h2>
+                    <p className={`text-xs mt-0.5 ${
+                      selectedContributor === 'ALL' ? 'text-neutral-700' : 'text-neutral-400'
+                    }`}>
                       {photos.length} total foto terkumpul
                     </p>
                   </div>
                 </div>
                 {selectedContributor === 'ALL' && (
-                  <span className="text-black font-bold text-sm">✓</span>
+                  <div className="w-7 h-7 rounded-full bg-zinc-950/10 flex items-center justify-center shrink-0 ml-2">
+                    <svg className="w-4 h-4 text-zinc-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 )}
-              </div>
+              </button>
 
               {/* Option 2..N: Tiap Kontributor Tamu */}
               {contributors.map((name) => {
                 const count = photos.filter((p) => p.guest_name === name).length;
                 const isSelected = selectedContributor === name;
                 return (
-                  <div
+                  <button
                     key={name}
+                    type="button"
                     onClick={() => {
                       setSelectedContributor(name);
                       setShowContributorsModal(false);
                     }}
-                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between transition-all duration-200 transform active:scale-[0.99] border group ${
                       isSelected
-                        ? 'bg-white text-black border-white shadow-lg'
-                        : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                        ? 'bg-gradient-to-r from-white/95 to-amber-50 text-zinc-950 shadow-lg border-amber-200/80'
+                        : 'bg-[#18191d] hover:bg-[#202227] text-white border-white/[0.06]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl font-bold font-serif flex items-center justify-center text-sm uppercase ${
-                        isSelected ? 'bg-black text-white' : 'bg-[#292825] text-amber-200 border border-white/10'
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className={`w-11 h-11 rounded-full font-serif font-bold text-base flex items-center justify-center shrink-0 uppercase ${
+                        isSelected
+                          ? 'bg-zinc-950 text-white'
+                          : 'bg-[#23242a] text-amber-200 border border-white/10'
                       }`}>
                         {name.charAt(0)}
                       </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-sm">{name}</p>
-                        <p className={`text-xs ${isSelected ? 'text-black/60' : 'text-white/40'}`}>
+                      <div className="truncate">
+                        <h2 className={`font-semibold text-base leading-tight tracking-tight ${
+                          isSelected ? 'text-zinc-950' : 'text-white'
+                        }`}>
+                          {name}
+                        </h2>
+                        <p className={`text-xs mt-0.5 ${
+                          isSelected ? 'text-neutral-700' : 'text-neutral-400'
+                        }`}>
                           {count} foto diabadikan
                         </p>
                       </div>
                     </div>
                     {isSelected && (
-                      <span className="text-black font-bold text-sm">✓</span>
+                      <div className="w-7 h-7 rounded-full bg-zinc-950/10 flex items-center justify-center shrink-0 ml-2">
+                        <svg className="w-4 h-4 text-zinc-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -1608,57 +1669,85 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 5. MODAL ONBOARDING TAMU (Pop-up Nama Tamu Pertama Kali)                    */}
+      {/* 5. MODAL ONBOARDING TAMU (Pop-up Masuk Tamu - Nocturne Noir)               */}
       {/* ========================================================================= */}
       {showGuestNameModal && (
-        <div className="fixed inset-0 z-[70] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none">
-          <div className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl">
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
-            
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/20 mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
-                ✨
+        <main
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md anim-fade-in select-none"
+        >
+          <div className="w-full max-w-[390px] mx-auto">
+            <section className="glass-card rounded-3xl p-6 sm:p-7 border border-white/15 relative overflow-hidden backdrop-blur-2xl shadow-2xl">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-amber-200/50 to-transparent" />
+              
+              <div className="flex flex-col items-center text-center space-y-4 pt-1">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border border-white/15 bg-white/[0.04] text-[10px] sm:text-[11px] font-medium tracking-[0.16em] uppercase text-zinc-300 backdrop-blur-md">
+                  <span>Kamera Tamu</span>
+                  <span className="text-white/40 text-[8px]">•</span>
+                  <span>Album Pernikahan</span>
+                </div>
+
+                {/* Title & Subtitle */}
+                <h1 className="font-serif text-[1.95rem] leading-[1.2] sm:text-3xl text-zinc-50 font-semibold tracking-normal mt-1">
+                  {albumTitle || 'Album Pernikahan'}
+                </h1>
+                <p className="text-zinc-400 text-[13px] sm:text-sm leading-relaxed max-w-[310px] font-normal tracking-wide">
+                  Tulis namamu untuk mulai mengambil foto <br />di album bersama.
+                </p>
+
+                {/* Form Input */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSaveGuestName();
+                  }}
+                  className="w-full pt-2 space-y-4 text-left"
+                >
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-400 pl-1" htmlFor="guest-input-name">
+                      Siapa Namamu?
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="guest-input-name"
+                        type="text"
+                        value={guestInputName}
+                        onChange={(e) => setGuestInputName(e.target.value)}
+                        placeholder="Tulis nama panggilanmu..."
+                        autoFocus
+                        className="input-glass w-full rounded-2xl px-4 py-3.5 text-sm sm:text-base text-zinc-100 placeholder:text-zinc-500 placeholder:font-light outline-none transition focus:ring-0"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="gold-shimmer w-full text-zinc-950 font-semibold text-sm sm:text-base py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.08)] cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    <span>Mulai Memotret</span>
+                    <svg className="w-4 h-4 text-zinc-950 fill-current inline-block shrink-0" viewBox="0 0 24 24">
+                      <path d="M4 7h3.17L9 4.83C9.37 4.31 9.96 4 10.6 4h2.8c.64 0 1.23.31 1.6.83L16.83 7H20c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2zm8 11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-1.8c-1.77 0-3.2-1.43-3.2-3.2s1.43-3.2 3.2-3.2 3.2 1.43 3.2 3.2-1.43 3.2-3.2 3.2z" />
+                    </svg>
+                  </button>
+                </form>
+
+                {/* Skip Link */}
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleSaveGuestName('Tamu')}
+                    className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-zinc-400 hover:text-amber-200/90 transition-colors duration-200 tracking-wide"
+                  >
+                    <span>Lewati &amp; Lihat Galeri</span>
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 font-mono">→</span>
+                  </button>
+                </div>
               </div>
-              <h3 className="font-serif text-[24px] font-bold text-white tracking-tight mb-2">
-                Selamat Datang di Album Kami
-              </h3>
-              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
-                Tulis namamu agar kedua mempelai tahu siapa yang mengabadikan momen berharga ini.
-              </p>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <input
-                type="text"
-                value={guestInputName}
-                onChange={(e) => setGuestInputName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveGuestName();
-                }}
-                placeholder="Nama panggilan (contoh: Dimas, Sarah)"
-                autoFocus
-                className="w-full h-14 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-5 text-center text-white placeholder-white/30 text-base outline-none transition-all"
-              />
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => handleSaveGuestName()}
-                className="w-full h-13 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2"
-              >
-                <span>Mulai Abadikan Momen</span>
-                <span>→</span>
-              </button>
-
-              <button
-                onClick={() => handleSaveGuestName('Tamu')}
-                className="w-full h-11 rounded-2xl bg-transparent hover:bg-white/5 text-white/50 hover:text-white font-medium text-xs active:scale-[0.98] transition-all"
-              >
-                Lewati (Sebagai Tamu)
-              </button>
-            </div>
+            </section>
           </div>
-        </div>
+        </main>
       )}
 
       {/* ========================================================================= */}

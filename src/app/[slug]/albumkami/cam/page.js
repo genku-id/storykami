@@ -524,20 +524,26 @@ export default function SatualbumCameraPage() {
   const albumTitle = albumInfo?.title || 'Awal dari Selamanya';
 
   // =========================================================================
-  // 1. MODAL PRATINJAU FOTO (Preview Sebelum Diunggah - UI Elegan & Rapi)
+  // 1. MODAL PRATINJAU FOTO (Nocturne Noir Luxury Preview Viewfinder)
   // =========================================================================
   if (previewPhoto) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-[#0d0c0b] text-white overflow-hidden select-none">
-        <div className="w-full h-full flex flex-col md:max-w-[480px] md:h-[95vh] md:rounded-[36px] md:overflow-hidden md:border md:border-white/10 md:shadow-2xl bg-[#0d0c0b] relative px-4 py-3">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#070709] text-white p-0 sm:p-4 overflow-x-hidden select-none">
+        <div className="relative w-full max-w-[420px] h-[100dvh] sm:h-[860px] bg-[#0d0d11] sm:rounded-[40px] overflow-hidden flex flex-col justify-between shadow-2xl border border-white/[0.08]">
           
-          {/* Top Bar Preview */}
-          <div className="flex items-center justify-between pt-8 pb-3 px-2 flex-shrink-0 z-20">
-            <div>
-              <h2 className="text-[20px] font-bold text-white font-serif tracking-tight leading-tight">
+          {/* Header */}
+          <header className="relative px-6 pt-6 pb-2 flex items-start justify-between z-20">
+            <div className="pr-4">
+              <div className="flex items-center space-x-2 mb-0.5">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#d4af37]" />
+                <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-amber-300/90 font-sans">
+                  Wedding Album Guest Cam
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-serif text-white font-normal tracking-wide leading-tight">
                 Pratinjau Foto
-              </h2>
-              <p className="text-xs text-white/50 font-sans mt-0.5">
+              </h1>
+              <p className="text-xs text-stone-400 font-light mt-0.5 leading-relaxed font-sans">
                 Pastikan momen sudah pas sebelum diunggah
               </p>
             </div>
@@ -546,104 +552,146 @@ export default function SatualbumCameraPage() {
               <button
                 onClick={handleRetake}
                 disabled={isUploading}
-                className="w-11 h-11 rounded-[16px] bg-[#1a1a1a] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-md"
-                title="Batal & Foto Ulang"
+                aria-label="Tutup pratinjau"
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-[#18191d] border border-stone-700/60 text-stone-300 hover:text-white hover:border-amber-400/50 hover:bg-[#202126] transition duration-200 active:scale-95 shrink-0"
+                type="button"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+                  <line x1="18" x2="6" y1="6" y2="18" />
+                  <line x1="6" x2="18" y1="6" y2="18" />
                 </svg>
               </button>
             )}
-          </div>
+          </header>
 
-          {/* Middle Photo Container */}
-          <div className="relative flex-1 rounded-[30px] overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center my-2">
-            <img
-              src={previewPhoto.url}
-              alt="Preview"
-              className="w-full h-full object-contain pointer-events-none"
-            />
+          {/* Photo Viewfinder Body */}
+          <main className="flex-1 flex flex-col justify-center px-6 py-2 overflow-hidden">
+            <div className="relative w-full aspect-[4/4.8] max-h-[440px] rounded-2xl overflow-hidden p-1.5 glass-surface champagne-glow shadow-2xl border border-white/10">
+              <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-black flex items-center justify-center group">
+                <img
+                  src={previewPhoto.url}
+                  alt="Pratinjau Foto"
+                  className="w-full h-full object-contain pointer-events-none"
+                />
 
-            {/* Success Overlay Dialog jika sudah terunggah */}
-            {uploadSuccess && (
-              <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30 anim-slide-up">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl mb-4 shadow-xl">
-                  ✓
+                {/* Viewfinder Golden Corner Accents */}
+                <div className="pointer-events-none absolute inset-0 p-3 flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <span className="w-3.5 h-3.5 border-t-2 border-l-2 border-amber-300/80" />
+                    <span className="w-3.5 h-3.5 border-t-2 border-r-2 border-amber-300/80" />
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <span className="w-3.5 h-3.5 border-b-2 border-l-2 border-amber-300/80" />
+                    <span className="w-3.5 h-3.5 border-b-2 border-r-2 border-amber-300/80" />
+                  </div>
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-white mb-2">
-                  Foto Berhasil Diunggah!
-                </h3>
-                <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed font-sans">
-                  Foto asli resolusi tinggi & thumbnail ringan sudah tersimpan di album bersama. Sisa rol Anda: <span className="font-bold text-white">{remainingRolls} foto</span>.
-                </p>
 
-                <div className="flex flex-col gap-3 w-full max-w-xs">
-                  {remainingRolls > 0 ? (
-                    <button
-                      onClick={handleRetake}
-                      className="w-full h-[52px] rounded-2xl bg-white font-bold text-black text-sm active:scale-95 transition-transform shadow-xl flex items-center justify-center gap-2"
-                    >
-                      <span>📸</span>
-                      <span>Ambil Foto Lagi</span>
-                    </button>
-                  ) : (
-                    <div className="text-xs text-amber-400/80 mb-2 font-mono">
-                      Semua kuota foto Anda telah digunakan.
+                {/* Live Preview Badge */}
+                <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-black/75 border border-white/10 backdrop-blur-md flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-[10px] text-stone-200 tracking-wider uppercase font-medium">Ready</span>
+                </div>
+
+                {/* Watermark */}
+                <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-mono tracking-widest text-amber-200/80">
+                  RAW • 4:5
+                </div>
+
+                {/* Success Overlay Dialog jika sudah terunggah */}
+                {uploadSuccess && (
+                  <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30 anim-slide-up">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-3xl mb-4 shadow-xl">
+                      ✓
                     </div>
-                  )}
+                    <h3 className="font-serif text-2xl font-bold text-white mb-2">
+                      Foto Berhasil Diunggah!
+                    </h3>
+                    <p className="text-xs text-white/60 mb-6 max-w-xs leading-relaxed font-sans">
+                      Foto asli tersimpan di album bersama. Sisa rol Anda: <span className="font-bold text-amber-200">{remainingRolls} foto</span>.
+                    </p>
 
-                  <button
-                    onClick={() => {
-                      router.push(`/${slug}/albumkami/`);
-                    }}
-                    className="w-full h-[50px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center"
-                  >
-                    Buka Galeri Bersama →
-                  </button>
+                    <div className="flex flex-col gap-3 w-full max-w-xs">
+                      {remainingRolls > 0 ? (
+                        <button
+                          onClick={handleRetake}
+                          className="w-full h-[50px] rounded-2xl bg-white font-bold text-black text-sm active:scale-95 transition-transform shadow-xl flex items-center justify-center gap-2"
+                        >
+                          <span>📸</span>
+                          <span>Ambil Foto Lagi</span>
+                        </button>
+                      ) : (
+                        <div className="text-xs text-amber-400/80 mb-2 font-mono">
+                          Semua kuota foto Anda telah digunakan.
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() => {
+                          router.push(`/${slug}/albumkami/`);
+                        }}
+                        className="w-full h-[48px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center"
+                      >
+                        Buka Galeri Bersama →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Guest Meta Form */}
+            {!uploadSuccess && (
+              <div className="mt-4 px-1" data-purpose="guest-input-form">
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <label className="font-medium text-stone-200 flex items-center space-x-1.5" htmlFor="uploader-name">
+                    <span>Nama Pengirim Foto</span>
+                    <span className="text-amber-400">*</span>
+                  </label>
+                  <span className="text-[11px] font-light text-stone-400 italic">
+                    Tampil di galeri album
+                  </span>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/70">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                      <path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <input
+                    id="uploader-name"
+                    type="text"
+                    value={senderName}
+                    onChange={(e) => setSenderName(e.target.value)}
+                    placeholder="Ketik nama Anda di sini..."
+                    className="w-full bg-[#18191d] text-stone-100 placeholder-stone-500 text-sm rounded-xl pl-10 pr-4 py-3 border border-stone-800 focus:border-amber-400/60 focus:outline-none transition duration-150 shadow-inner"
+                  />
                 </div>
               </div>
             )}
-          </div>
+          </main>
 
-          {/* Bottom Card Form & Actions (UI Pratinjau Bersih & Rapi Sesuai AlbumKami) */}
+          {/* Action Footer Buttons */}
           {!uploadSuccess && (
-            <div className="bg-[#141312] border border-white/10 rounded-[28px] p-4.5 flex-shrink-0 space-y-3.5 shadow-2xl z-20">
-              <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-medium text-white/70 font-sans flex items-center gap-1.5">
-                  <span>Nama Pengirim Foto</span>
-                </label>
-                <span className="text-[11px] text-white/40">Tampil di galeri album</span>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  value={senderName}
-                  onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="Tulis nama pengirim foto..."
-                  className="w-full rounded-2xl border border-white/15 bg-white/[0.06] hover:bg-white/[0.08] focus:bg-[#1c1b18] px-4 py-3.5 text-sm text-white placeholder-white/30 focus:border-amber-300/40 focus:outline-none transition-all shadow-inner"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-0.5">
-                {/* Tombol Foto Ulang */}
+            <footer className="p-6 pt-2 pb-6 bg-gradient-to-t from-[#070709] via-[#070709]/95 to-transparent z-20">
+              <div className="grid grid-cols-2 gap-3.5">
                 <button
+                  type="button"
                   onClick={handleRetake}
                   disabled={isUploading}
-                  className="h-[52px] rounded-2xl border border-white/15 bg-[#222222] hover:bg-[#2a2a2a] font-semibold text-white text-sm active:scale-95 transition-all text-center flex items-center justify-center gap-2 shadow"
+                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-[#18191d] hover:bg-[#202126] active:scale-[0.98] border border-stone-700/70 text-stone-200 transition duration-150 shadow-md cursor-pointer"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                    <path d="M3 3v5h5"/>
+                  <svg className="w-4 h-4 text-stone-400 group-hover:text-amber-300 transition" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
                   </svg>
-                  <span>Foto Ulang</span>
+                  <span className="font-medium text-sm tracking-wide">Foto Ulang</span>
                 </button>
 
-                {/* Tombol Unggah Foto */}
                 <button
+                  type="button"
                   onClick={handleConfirmUpload}
                   disabled={isUploading}
-                  className="h-[52px] rounded-2xl bg-white hover:bg-neutral-200 font-bold text-black text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50"
+                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] hover:brightness-105 active:scale-[0.98] text-black font-semibold tracking-wide text-sm shadow-[0_4px_16px_rgba(212,175,55,0.25)] transition duration-150 cursor-pointer disabled:opacity-50"
                 >
                   {isUploading ? (
                     <>
@@ -652,16 +700,16 @@ export default function SatualbumCameraPage() {
                     </>
                   ) : (
                     <>
-                      <span>Unggah Foto</span>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m5 12 7-7 7 7"/>
-                        <path d="M12 19V5"/>
+                      <span className="tracking-tight text-neutral-900 font-bold">Unggah Foto</span>
+                      <svg className="w-4 h-4 text-neutral-900" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" viewBox="0 0 24 24">
+                        <path d="M12 19V5" />
+                        <path d="M5 12l7-7 7 7" />
                       </svg>
                     </>
                   )}
                 </button>
               </div>
-            </div>
+            </footer>
           )}
 
         </div>
