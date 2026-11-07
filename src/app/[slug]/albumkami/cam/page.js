@@ -295,7 +295,7 @@ export default function SatualbumCameraPage() {
 
   // 📸 Jepret Foto -> Muncul Preview Terlebih Dahulu (Dual-file: Asli High-Res & Thumbnail WebP)
   const handleCapturePhoto = async () => {
-    if (isCapturing || remainingRolls <= 0 || !videoRef.current) return;
+    if (isCapturing || remainingRolls <= 0 || !videoRef.current || albumInfo?.is_closed) return;
 
     setIsCapturing(true);
     setSnapEffect(true);
@@ -819,6 +819,15 @@ export default function SatualbumCameraPage() {
           </div>
         )}
 
+        {/* Floating Closed Album Banner */}
+        {albumInfo?.is_closed && (
+          <div className="absolute top-24 inset-x-0 z-40 flex justify-center px-4 anim-slide-down">
+            <div className="px-4 py-2 rounded-full bg-black/90 backdrop-blur-md border border-amber-500/40 text-amber-200 text-xs font-medium shadow-2xl flex items-center gap-2">
+              <span>🔒 Batas waktu pengunggahan berakhir ({albumInfo.close_date_formatted || 'Ditutup'})</span>
+            </div>
+          </div>
+        )}
+
         {/* MIDDLE: VIEWFINDER KAMERA (Presisi Satualbum.id) */}
         <div className="relative flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
           <div className="relative w-full h-full rounded-[30px] overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center">
@@ -945,15 +954,17 @@ export default function SatualbumCameraPage() {
           {/* 2. BIG SHUTTER BUTTON (Tengah Bawah - Identik Satualbum Screenshot) */}
           <button
             onClick={handleCapturePhoto}
-            disabled={isCapturing || remainingRolls <= 0}
+            disabled={isCapturing || remainingRolls <= 0 || albumInfo?.is_closed}
             className={`relative flex h-[82px] w-[82px] items-center justify-center rounded-full border-[3px] border-white p-[5px] transition-transform active:scale-90 shadow-2xl ${
-              remainingRolls <= 0 ? 'opacity-40 cursor-not-allowed' : ''
+              remainingRolls <= 0 || albumInfo?.is_closed ? 'opacity-40 cursor-not-allowed' : ''
             }`}
-            title="Jepret Foto"
+            title={albumInfo?.is_closed ? 'Album telah ditutup' : 'Jepret Foto'}
           >
             <div className="h-full w-full rounded-full bg-white active:bg-neutral-200 flex items-center justify-center shadow-lg transition-colors">
               {isCapturing ? (
                 <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : albumInfo?.is_closed ? (
+                <span className="text-[9px] font-film font-bold text-black uppercase">Tutup</span>
               ) : remainingRolls <= 0 ? (
                 <span className="text-[9px] font-film font-bold text-black uppercase">Habis</span>
               ) : null}

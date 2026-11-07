@@ -26,6 +26,24 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Album tidak aktif' }, { status: 403 });
     }
 
+    // 1b. Cek apakah album sudah melewati batas tanggal berakhir
+    try {
+      const { data: inv } = await supabaseServer
+        .from('invitations')
+        .select('data')
+        .eq('slug', slug)
+        .maybeSingle();
+
+      if (inv?.data?.album_settings?.close_date) {
+        const closeDateRaw = inv.data.album_settings.close_date;
+        const closeTimeRaw = inv.data.album_settings.close_time || '17:00';
+        const closeDateTime = new Date(`${closeDateRaw}T${closeTimeRaw.replace('.', ':')}:00`);
+        if (!isNaN(closeDateTime.getTime()) && Date.now() > closeDateTime.getTime()) {
+          return NextResponse.json({ error: 'Batas waktu pengunggahan foto untuk album ini telah berakhir.' }, { status: 403 });
+        }
+      }
+    } catch (e) {}
+
     // 2. Ambil data tamu
     const { data: guest } = await supabaseServer
       .from('album_guests')

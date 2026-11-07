@@ -93,6 +93,7 @@ export async function POST(request, { params }) {
     }
 
     // 2. Simpan album_settings ekstra ke invitations.data jika ada
+    let savedAlbumSettings = null;
     if (album_settings && typeof album_settings === 'object') {
       try {
         const { data: inv } = await supabaseServer
@@ -110,6 +111,7 @@ export async function POST(request, { params }) {
               ...album_settings,
             },
           };
+          savedAlbumSettings = mergedData.album_settings;
 
           await supabaseServer
             .from('invitations')
@@ -133,6 +135,12 @@ export async function POST(request, { params }) {
         reveal_mode: album.reveal_mode,
         is_revealed: album.is_revealed,
         is_active: album.is_active,
+        ...(savedAlbumSettings ? {
+          settings: savedAlbumSettings,
+          close_date: savedAlbumSettings.close_date,
+          close_time: savedAlbumSettings.close_time,
+          close_date_formatted: savedAlbumSettings.close_date_formatted,
+        } : {}),
       },
     });
   } catch (err) {

@@ -3,6 +3,18 @@ import { supabaseServer } from '@/utils/supabaseServer';
 
 export const dynamic = 'force-dynamic';
 
+function formatCloseDateIndo(dateStr, timeStr = '17:00') {
+  if (!dateStr) return null;
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const mIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const year = parts[0];
+  const timeFormatted = timeStr ? timeStr.replace(':', '.') : '17.00';
+  return `${day} ${months[mIdx] || ''} ${year}, ${timeFormatted}`;
+}
+
 export async function GET(request, { params }) {
   try {
     const { slug } = await params;
@@ -86,7 +98,40 @@ export async function GET(request, { params }) {
       }
     } catch (e) {}
 
-    // 4. Hitung total foto yang sudah diupload
+    // 4. Hitung tanggal berakhir/ditutup
+    let closeDateRaw = extraSettings.close_date || null;
+    let closeTimeRaw = extraSettings.close_time || '17:00';
+    let closeDateFormatted = null;
+
+    if (!closeDateRaw && eventDateRaw) {
+      try {
+        const evD = new Date(eventDateRaw + 'T17:00:00');
+        evD.setDate(evD.getDate() + 7);
+        const y = evD.getFullYear();
+        const m = String(evD.getMonth() + 1).padStart(2, '0');
+        const d = String(evD.getDate()).padStart(2, '0');
+        closeDateRaw = `${y}-${m}-${d}`;
+      } catch (e) {
+        closeDateRaw = eventDateRaw;
+      }
+    }
+
+    if (closeDateRaw) {
+      closeDateFormatted = formatCloseDateIndo(closeDateRaw, closeTimeRaw);
+    }
+
+    let isClosed = false;
+    if (closeDateRaw) {
+      try {
+        const closeDateTimeStr = `${closeDateRaw}T${closeTimeRaw ? closeTimeRaw.replace('.', ':') : '17:00'}:00`;
+        const closeDateTime = new Date(closeDateTimeStr);
+        if (!isNaN(closeDateTime.getTime()) && Date.now() > closeDateTime.getTime()) {
+          isClosed = true;
+        }
+      } catch (e) {}
+    }
+
+    // 5. Hitung total foto yang sudah diupload
     let totalPhotos = 0;
     try {
       const { count } = await supabaseServer
@@ -98,7 +143,7 @@ export async function GET(request, { params }) {
       // Table might not exist yet
     }
 
-    // 4. Cek sesi tamu jika ada deviceToken
+    // 6. Cek sesi tamu jika ada deviceToken
     let guestSession = null;
     if (deviceToken) {
       try {
@@ -136,6 +181,10 @@ export async function GET(request, { params }) {
           total_photos: totalPhotos,
           event_date: eventDateRaw,
           event_date_formatted: eventDateFormatted,
+          close_date: closeDateRaw,
+          close_time: closeTimeRaw,
+          close_date_formatted: closeDateFormatted,
+          is_closed: isClosed,
           settings: extraSettings,
         },
         guestSession,

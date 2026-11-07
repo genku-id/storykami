@@ -52,6 +52,9 @@ export default function SharedAlbumPage() {
   const [showEditRollLimitModal, setShowEditRollLimitModal] = useState(false);
   const [showEditCapacityModal, setShowEditCapacityModal] = useState(false);
   const [showEditRevealModal, setShowEditRevealModal] = useState(false);
+  const [showEditCloseDateModal, setShowEditCloseDateModal] = useState(false);
+  const [editCloseDate, setEditCloseDate] = useState('');
+  const [editCloseTime, setEditCloseTime] = useState('17:00');
   const [showDeletePhotoConfirmModal, setShowDeletePhotoConfirmModal] = useState(false);
   const [showDeleteAlbumConfirmModal, setShowDeleteAlbumConfirmModal] = useState(false);
 
@@ -304,6 +307,36 @@ export default function SharedAlbumPage() {
     } finally {
       setIsSavingSettings(false);
     }
+  };
+
+  // Helper manipulasi dan format tanggal berakhir
+  const addDaysToDate = (baseDateStr, days) => {
+    if (!baseDateStr) return '';
+    try {
+      const parts = baseDateStr.split('-').map(Number);
+      if (parts.length !== 3 || parts.some(isNaN)) return baseDateStr;
+      const [y, m, d] = parts;
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + days);
+      const resY = dt.getFullYear();
+      const resM = String(dt.getMonth() + 1).padStart(2, '0');
+      const resD = String(dt.getDate()).padStart(2, '0');
+      return `${resY}-${resM}-${resD}`;
+    } catch (e) {
+      return baseDateStr;
+    }
+  };
+
+  const formatCloseDateIndo = (dateStr, timeStr = '17:00') => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const mIdx = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const year = parts[0];
+    const timeFormatted = timeStr ? timeStr.replace(':', '.') : '17.00';
+    return `${day} ${months[mIdx] || ''} ${year}, ${timeFormatted}`;
   };
 
   // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
@@ -1414,7 +1447,17 @@ export default function SharedAlbumPage() {
                 </div>
 
                 {/* 2. Tanggal Berakhir */}
-                <div className="p-3.5 flex items-center justify-between">
+                <div
+                  onClick={() => {
+                    const baseEvDate = albumData?.event_date || new Date().toISOString().split('T')[0];
+                    const initialDate = albumData?.close_date || addDaysToDate(baseEvDate, 7);
+                    const initialTime = albumData?.close_time || '17:00';
+                    setEditCloseDate(initialDate);
+                    setEditCloseTime(initialTime);
+                    setShowEditCloseDateModal(true);
+                  }}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1425,9 +1468,9 @@ export default function SharedAlbumPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-normal text-zinc-400">
-                      {albumData?.event_date_formatted ? `${albumData.event_date_formatted}, 17.00` : '30 Nov 2026, 17.00'}
+                      {albumData?.close_date_formatted || (albumData?.event_date_formatted ? `${albumData.event_date_formatted}, 17.00` : '30 Nov 2026, 17.00')}
                     </span>
-                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m9 18 6-6-6-6"/>
                     </svg>
                   </div>
@@ -2197,7 +2240,184 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 11. SUB-MODAL: KONFIRMASI HAPUS FOTO LIGHTBOX                              */}
+      {/* 11. SUB-MODAL: ATUR TANGGAL BERAKHIR / DITUTUP                            */}
+      {/* ========================================================================= */}
+      {showEditCloseDateModal && (
+        <div
+          onClick={() => setShowEditCloseDateModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
+          >
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
+            
+            <div className="text-center mb-5">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
+                Batas Pengunggahan Foto
+              </h3>
+              <p className="text-xs text-zinc-400 font-sans">
+                Tentukan batas waktu pengunggahan foto dari tamu
+              </p>
+            </div>
+
+            {/* Info Tanggal Acara */}
+            {albumData?.event_date_formatted && (
+              <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+                <span className="text-lg">📅</span>
+                <div className="text-left">
+                  <p className="text-[11px] text-amber-200/80 uppercase tracking-wider font-semibold">Tanggal Acara</p>
+                  <p className="text-xs text-amber-100 font-medium">
+                    {albumData.event_date_formatted} (Batas awal penutupan)
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Presets */}
+            <div className="mb-4">
+              <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                Pilihan Cepat
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  {
+                    label: 'Hari Acara (23.59)',
+                    getDate: () => albumData?.event_date || new Date().toISOString().split('T')[0],
+                    time: '23:59',
+                  },
+                  {
+                    label: '+3 Hari (17.00)',
+                    getDate: () => addDaysToDate(albumData?.event_date || new Date().toISOString().split('T')[0], 3),
+                    time: '17:00',
+                  },
+                  {
+                    label: '+7 Hari (Rekomendasi)',
+                    getDate: () => addDaysToDate(albumData?.event_date || new Date().toISOString().split('T')[0], 7),
+                    time: '17:00',
+                  },
+                  {
+                    label: '+30 Hari (1 Bulan)',
+                    getDate: () => addDaysToDate(albumData?.event_date || new Date().toISOString().split('T')[0], 30),
+                    time: '17:00',
+                  },
+                ].map((preset, idx) => {
+                  const pDate = preset.getDate();
+                  const isSelected = editCloseDate === pDate && editCloseTime === preset.time;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setEditCloseDate(pDate);
+                        setEditCloseTime(preset.time);
+                      }}
+                      className={`py-2 px-2.5 rounded-lg text-xs font-medium border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#d4af37]/20 border-[#d4af37] text-luxury-goldLight font-semibold'
+                          : 'bg-[#18181b] border-white/5 hover:border-white/20 text-zinc-300'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Date & Time Picker */}
+            <div className="grid grid-cols-5 gap-3 mb-4">
+              <div className="col-span-3">
+                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+                  Tanggal Ditutup
+                </label>
+                <input
+                  type="date"
+                  min={albumData?.event_date || new Date().toISOString().split('T')[0]}
+                  value={editCloseDate}
+                  onChange={(e) => setEditCloseDate(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full h-11 bg-[#18181b] border border-white/10 focus:border-luxury-gold rounded-xl px-3 text-white text-xs outline-none transition-all cursor-pointer"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+                  Jam (WIB)
+                </label>
+                <input
+                  type="time"
+                  value={editCloseTime}
+                  onChange={(e) => setEditCloseTime(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full h-11 bg-[#18181b] border border-white/10 focus:border-luxury-gold rounded-xl px-3 text-white text-xs outline-none transition-all cursor-pointer text-center"
+                />
+              </div>
+            </div>
+
+            {/* Live Result Preview */}
+            <div className="mb-6 p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
+              <span className="text-zinc-400">Jadwal Penutupan:</span>
+              <span className="font-semibold text-luxury-goldLight">
+                {editCloseDate ? formatCloseDateIndo(editCloseDate, editCloseTime) : '-'}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setShowEditCloseDateModal(false)}
+                className="h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isSavingSettings}
+                onClick={async () => {
+                  const minDate = albumData?.event_date || '';
+                  if (minDate && editCloseDate < minDate) {
+                    setToastMessage(`✕ Tanggal ditutup tidak boleh sebelum tanggal acara (${albumData?.event_date_formatted || minDate})`);
+                    setTimeout(() => setToastMessage(null), 3500);
+                    return;
+                  }
+                  if (!editCloseDate) {
+                    setToastMessage('✕ Silakan pilih tanggal penutupan');
+                    setTimeout(() => setToastMessage(null), 3000);
+                    return;
+                  }
+
+                  const formatted = formatCloseDateIndo(editCloseDate, editCloseTime);
+                  const success = await saveSetting({
+                    album_settings: {
+                      close_date: editCloseDate,
+                      close_time: editCloseTime,
+                      close_date_formatted: formatted,
+                    },
+                  });
+
+                  if (success) {
+                    setAlbumData((prev) => ({
+                      ...prev,
+                      close_date: editCloseDate,
+                      close_time: editCloseTime,
+                      close_date_formatted: formatted,
+                    }));
+                    setShowEditCloseDateModal(false);
+                  }
+                }}
+                className="h-11 rounded-xl gold-shimmer text-zinc-950 font-semibold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>{isSavingSettings ? 'Menyimpan...' : 'Simpan'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 12. SUB-MODAL: KONFIRMASI HAPUS FOTO LIGHTBOX                              */}
       {/* ========================================================================= */}
       {showDeletePhotoConfirmModal && (
         <div
