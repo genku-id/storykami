@@ -146,6 +146,24 @@ body, .albumkami-root {
 .tracking-luxury { letter-spacing: 0.18em !important; }
 
 /* ========================================================================= */
+/* LAYOUT SPACING & SEPARATION (Matches beranda_album_galeri_elegan)         */
+/* ========================================================================= */
+[data-purpose="main-album-content"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.25rem !important; /* 20px */
+}
+
+[data-purpose="album-stats-bar"] {
+  margin-bottom: 0.25rem !important;
+}
+
+[data-purpose="quick-actions-toolbar"] {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* ========================================================================= */
 /* NOCTURNE NOIR GLASSMORPHISM & SPECIAL EFFECTS                             */
 /* ========================================================================= */
 .glass-card {

@@ -604,9 +604,9 @@ export default function SharedAlbumPage() {
         {/* END: HeroSection */}
 
         {/* BEGIN: ContentArea */}
-        <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 space-y-5" data-purpose="main-album-content">
+        <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 gap-5" data-purpose="main-album-content">
           {/* BEGIN: StatsBar */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08] mb-1" data-purpose="album-stats-bar">
             {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
@@ -651,7 +651,7 @@ export default function SharedAlbumPage() {
           {/* END: StatsBar */}
 
           {/* BEGIN: ActionToolbar */}
-          <div className="flex items-center gap-2.5" data-purpose="quick-actions-toolbar">
+          <div className="flex items-center gap-2.5 my-1.5" data-purpose="quick-actions-toolbar">
             {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
@@ -748,7 +748,7 @@ export default function SharedAlbumPage() {
 
           {/* PHOTO GALLERY GRID / EMPTY STATE */}
           {filteredPhotos.length === 0 ? (
-            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-2 group" data-purpose="empty-gallery-state">
+            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-1 group" data-purpose="empty-gallery-state">
               {/* Subtle Ambient Background Light */}
               <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-luxury-gold/10 rounded-full blur-3xl pointer-events-none" />
               {/* Elegant Camera Icon Badge */}
@@ -771,7 +771,7 @@ export default function SharedAlbumPage() {
             </section>
           ) : (
             <div
-              className={`grid gap-2.5 mt-2 pb-8 ${
+              className={`grid gap-2.5 mt-1 pb-8 ${
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
