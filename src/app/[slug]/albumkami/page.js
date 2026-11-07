@@ -239,7 +239,7 @@ export default function SharedAlbumPage() {
   };
 
   // Simpan nama tamu dari modal selamat datang
-  const handleSaveGuestName = async (nameToSave) => {
+  const handleSaveGuestName = async (nameToSave, shouldNavigateToCam = true) => {
     const finalName = (nameToSave !== undefined ? nameToSave : guestInputName).trim() || 'Tamu';
     localStorage.setItem('storykami_guest_name', finalName);
     setShowGuestNameModal(false);
@@ -258,6 +258,10 @@ export default function SharedAlbumPage() {
         }),
       });
     } catch (e) {}
+
+    if (shouldNavigateToCam) {
+      router.push(`/${slug}/albumkami/cam/`);
+    }
   };
 
   // Simpan pengaturan album ke backend Supabase
@@ -1760,23 +1764,25 @@ export default function SharedAlbumPage() {
         <main
           role="dialog"
           aria-modal="true"
+          aria-labelledby="modal-headline"
           className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md anim-fade-in select-none"
+          data-purpose="guest-entry-modal"
         >
           <div className="w-full max-w-[390px] mx-auto">
-            <section className="glass-card rounded-3xl p-6 sm:p-7 border border-white/15 relative overflow-hidden backdrop-blur-2xl shadow-2xl">
+            <section aria-label="Modal Kamera Tamu" className="glass-card rounded-3xl p-6 sm:p-7 border border-white/15 relative overflow-hidden backdrop-blur-2xl shadow-2xl" data-purpose="guest-entry-card">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-amber-200/50 to-transparent" />
               
               <div className="flex flex-col items-center text-center space-y-4 pt-1">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border border-white/15 bg-white/[0.04] text-[10px] sm:text-[11px] font-medium tracking-[0.16em] uppercase text-zinc-300 backdrop-blur-md">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border border-white/15 bg-white/[0.04] text-[10px] sm:text-[11px] font-medium tracking-[0.16em] uppercase text-zinc-300 backdrop-blur-md" data-purpose="status-badge">
                   <span>Kamera Tamu</span>
                   <span className="text-white/40 text-[8px]">•</span>
                   <span>Album Pernikahan</span>
                 </div>
 
                 {/* Title & Subtitle */}
-                <h1 className="font-serif text-[1.95rem] leading-[1.2] sm:text-3xl text-zinc-50 font-semibold tracking-normal mt-1">
-                  {albumTitle || 'Album Pernikahan'}
+                <h1 className="font-serif text-[1.95rem] leading-[1.2] sm:text-3xl text-zinc-50 font-semibold tracking-normal mt-1" id="modal-headline">
+                  Album Pernikahan<br />{displayCoupleName}
                 </h1>
                 <p className="text-zinc-400 text-[13px] sm:text-sm leading-relaxed max-w-[310px] font-normal tracking-wide">
                   Tulis namamu untuk mulai mengambil foto <br />di album bersama.
@@ -1786,9 +1792,12 @@ export default function SharedAlbumPage() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    handleSaveGuestName();
+                    handleSaveGuestName(undefined, true);
                   }}
                   className="w-full pt-2 space-y-4 text-left"
+                  data-purpose="guest-form"
+                  id="guest-entry-form"
+                  method="POST"
                 >
                   <div className="space-y-1.5">
                     <label className="block text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-400 pl-1" htmlFor="guest-input-name">
@@ -1797,11 +1806,14 @@ export default function SharedAlbumPage() {
                     <div className="relative">
                       <input
                         id="guest-input-name"
+                        name="guestName"
                         type="text"
                         value={guestInputName}
                         onChange={(e) => setGuestInputName(e.target.value)}
                         placeholder="Tulis nama panggilanmu..."
                         autoFocus
+                        autoComplete="off"
+                        required
                         className="input-glass w-full rounded-2xl px-4 py-3.5 text-sm sm:text-base text-zinc-100 placeholder:text-zinc-500 placeholder:font-light outline-none transition focus:ring-0"
                       />
                     </div>
@@ -1810,22 +1822,24 @@ export default function SharedAlbumPage() {
                   <button
                     type="submit"
                     className="gold-shimmer w-full text-zinc-950 font-semibold text-sm sm:text-base py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.08)] cursor-pointer active:scale-[0.98] transition-all"
+                    data-purpose="action-submit"
                   >
                     <span>Mulai Memotret</span>
-                    <svg className="w-4 h-4 text-zinc-950 fill-current inline-block shrink-0" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-zinc-950 fill-current inline-block shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M4 7h3.17L9 4.83C9.37 4.31 9.96 4 10.6 4h2.8c.64 0 1.23.31 1.6.83L16.83 7H20c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2zm8 11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-1.8c-1.77 0-3.2-1.43-3.2-3.2s1.43-3.2 3.2-3.2 3.2 1.43 3.2 3.2-1.43 3.2-3.2 3.2z" />
                     </svg>
                   </button>
                 </form>
 
-                {/* Skip Link */}
+                {/* Secondary Link */}
                 <div className="pt-1">
                   <button
                     type="button"
-                    onClick={() => handleSaveGuestName('Tamu')}
-                    className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-zinc-400 hover:text-amber-200/90 transition-colors duration-200 tracking-wide"
+                    onClick={() => handleSaveGuestName(guestInputName || 'Tamu', false)}
+                    data-purpose="secondary-link"
+                    className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-zinc-400 hover:text-amber-200/90 transition-colors duration-200 tracking-wide cursor-pointer"
                   >
-                    <span>Lewati &amp; Lihat Galeri</span>
+                    <span>Lihat Galeri Bersama</span>
                     <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 font-mono">→</span>
                   </button>
                 </div>
