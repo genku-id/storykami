@@ -601,9 +601,9 @@ export default function SharedAlbumPage() {
         {/* END: HeroSection */}
 
         {/* BEGIN: ContentArea */}
-        <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 space-y-5" data-purpose="main-album-content">
+        <div className="flex-1 flex flex-col justify-start px-4 mt-3 sm:mt-4 z-20 space-y-4" data-purpose="main-album-content">
           {/* BEGIN: StatsBar */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-md shadow-black/30 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
             {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
@@ -648,13 +648,13 @@ export default function SharedAlbumPage() {
           </div>
           {/* END: StatsBar */}
 
-          {/* BEGIN: ActionToolbar */}
-          <div className="flex items-center gap-2.5" data-purpose="quick-actions-toolbar">
+          {/* BEGIN: ActionToolbar (Padding atas & bawah, posisi relative z-30 di atas bayangan) */}
+          <div className="relative z-30 flex items-center gap-2.5 py-2.5 my-1" data-purpose="quick-actions-toolbar">
             {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
               aria-label="Ambil Foto"
-              className="flex-[2.8] h-[58px] bg-gradient-to-r from-[#F7F3E9] via-[#EDE7D9] to-[#E2DAC7] text-zinc-950 font-medium rounded-2xl flex items-center justify-center shadow-lg shadow-white/5 active:scale-[0.98] transition-all duration-200 border border-amber-200/50 group"
+              className="relative z-30 flex-[2.8] h-[58px] bg-gradient-to-r from-[#F7F3E9] via-[#EDE7D9] to-[#E2DAC7] text-zinc-950 font-medium rounded-2xl flex items-center justify-center shadow-lg shadow-white/5 active:scale-[0.98] transition-all duration-200 border border-amber-200/50 group overflow-hidden"
             >
               <div className="flex items-center gap-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-6 h-6 stroke-[2.2] text-zinc-900 group-hover:scale-110 transition-transform">
@@ -666,7 +666,7 @@ export default function SharedAlbumPage() {
             </Link>
 
             {/* Secondary Icon Buttons (QR, Grid/Filter, Download ZIP) */}
-            <div className="flex flex-[2] items-center gap-2">
+            <div className="flex flex-[2] items-center gap-2 relative z-30">
               {/* QR Code Button */}
               <button
                 onClick={() => setShowQrModal(true)}
@@ -744,9 +744,9 @@ export default function SharedAlbumPage() {
             </div>
           )}
 
-          {/* PHOTO GALLERY GRID / EMPTY STATE */}
+          {/* PHOTO GALLERY GRID / EMPTY STATE (Padding atas ekstra agar tidak mepet tombol) */}
           {filteredPhotos.length === 0 ? (
-            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-2 group" data-purpose="empty-gallery-state">
+            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-3 group" data-purpose="empty-gallery-state">
               {/* Subtle Ambient Background Light */}
               <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-luxury-gold/10 rounded-full blur-3xl pointer-events-none" />
               {/* Elegant Camera Icon Badge */}
@@ -769,7 +769,7 @@ export default function SharedAlbumPage() {
             </section>
           ) : (
             <div
-              className={`grid gap-2.5 ${
+              className={`grid gap-2.5 pt-2 pb-6 ${
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
