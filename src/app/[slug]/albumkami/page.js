@@ -933,61 +933,63 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 1. MODAL UNDANG TAMU & TAMPILKAN QR (Layout 3/4 Layar, Rapi & Elegan)     */}
+      {/* 1. MODAL UNDANG TAMU & TAMPILKAN QR (Presisi Sesuai Screenshot 2)          */}
       {/* ========================================================================= */}
       {showQrModal && (
         <div
           onClick={() => setShowQrModal(false)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md h-[78vh] md:h-auto md:max-h-[85vh] bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl flex flex-col justify-between overflow-y-auto"
+            className="w-full max-w-md bg-[#131316] border-t md:border border-white/10 rounded-t-[32px] md:rounded-[32px] px-6 pt-3 pb-8 text-white shadow-2xl flex flex-col justify-between overflow-y-auto max-h-[90vh]"
           >
-            {/* Top Section */}
-            <div>
-              {/* Drag Handle Bar */}
-              <div className="mx-auto mb-5 h-1 w-12 rounded-full bg-white/20" />
+            {/* Grabber Handle Bar Area */}
+            <div className="pt-2 pb-2 flex justify-center items-center">
+              <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+            </div>
 
-              {/* Header */}
-              <div className="text-center mb-2">
-                <h2 className="font-serif text-[24px] font-bold text-white tracking-tight leading-snug">
-                  Undang tamu ke acaramu.
-                </h2>
-                <div className="text-[13px] text-white/50 space-y-0.5 mt-2 leading-relaxed">
-                  <p>Lihat dunia dari sudut pandang mereka.</p>
-                  <p>Undang tamumu untuk membuat acara ini tak terlupakan.</p>
-                </div>
+            {/* Header: Title & Subtitle */}
+            <div className="text-center pt-1 pb-3">
+              <h2 className="font-serif text-[26px] md:text-[28px] font-bold text-white tracking-wide leading-tight">
+                Undang tamu ke acaramu.
+              </h2>
+              <div className="text-xs text-zinc-400 font-sans mt-2 space-y-0.5 leading-relaxed">
+                <p>Lihat dunia dari sudut pandang mereka.</p>
+                <p>Undang tamumu untuk membuat acara ini tak terlupakan.</p>
               </div>
             </div>
 
+            {/* Divider Line */}
+            <div className="w-full h-px bg-white/[0.08] my-1" />
+
             {/* Middle Section: Centered QR Code Card */}
-            <div className="my-auto py-4 flex flex-col items-center justify-center">
-              <div className="w-[210px] h-[210px] bg-[#ede7de] rounded-[28px] p-4 shadow-2xl flex items-center justify-center border-4 border-white/10">
+            <div className="py-4 flex flex-col items-center justify-center">
+              <div className="w-[210px] h-[210px] bg-[#ede7df] rounded-[28px] p-4 shadow-2xl flex items-center justify-center border-4 border-white/10">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&margin=10&data=${encodeURIComponent(albumShareUrl)}`}
                   alt="QR Code Tamu"
-                  className="w-full h-full object-contain pointer-events-none"
+                  className="w-full h-full object-contain pointer-events-none rounded-xl"
                 />
               </div>
-              <p className="text-[11px] font-sans text-white/40 mt-3 text-center">
+              <p className="text-[11px] font-sans text-zinc-400 mt-3 text-center">
                 Scan dengan kamera HP tamu untuk langsung memotret
               </p>
             </div>
 
             {/* Bottom Actions Section */}
-            <div className="space-y-3">
-              {/* Primary: Kirim ke WhatsApp */}
+            <div className="space-y-3 mt-1">
+              {/* Primary: Kirim ke WhatsApp (Green Pill Button) */}
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
                   `Yuk abadikan dan bagikan momen seru kamu di ${albumTitle}! Jepret foto langsung dari kamera tamu di link berikut:\n\n${albumShareUrl}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-[54px] rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold text-sm shadow-xl flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all"
+                className="w-full h-[52px] rounded-2xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-semibold text-sm shadow-xl flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all"
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.34C9.33 7.34 9.13 7.35 8.97 7.63C8.78 7.96 8.21 8.5 8.21 9.58C8.21 10.66 9 11.7 9.12 11.86C9.25 12.03 10.65 14.18 12.8 15.11C14.59 15.88 14.95 15.73 15.36 15.69C15.78 15.65 16.71 15.14 16.91 14.59C17.11 14.04 17.11 13.56 17.05 13.47C16.99 13.37 16.84 13.31 16.61 13.2C16.38 13.08 15.26 12.53 15.05 12.45C14.85 12.37 14.7 12.33 14.56 12.56C14.39 12.82 13.97 13.31 13.85 13.45C13.72 13.6 13.59 13.62 13.36 13.5C13.13 13.39 12.39 13.15 11.51 12.37C10.83 11.76 10.37 11.01 10.24 10.78C10.11 10.55 10.22 10.43 10.34 10.31C10.44 10.21 10.57 10.04 10.69 9.9C10.8 9.77 10.84 9.67 10.92 9.5C11 9.34 10.95 9.19 10.89 9.07C10.83 8.95 10.35 7.78 10.15 7.31C9.96 6.85 9.76 6.91 9.61 6.91C9.47 6.91 9.33 6.91 9.19 6.91L9.53 7.34Z"/>
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12.031 2C6.511 2 2.016 6.495 2.016 12.016c0 1.954.563 3.778 1.534 5.325L2 22l4.82-1.512c1.474.887 3.208 1.393 5.211 1.393 5.52 0 10.016-4.496 10.016-10.016S17.551 2 12.031 2zm5.834 14.179c-.244.686-1.42 1.31-1.956 1.393-.509.08-1.171.116-3.784-.963-3.136-1.296-5.161-4.475-5.321-4.688-.159-.214-1.278-1.7-1.278-3.243 0-1.543.808-2.302 1.096-2.617.288-.316.63-.395.84-.395.21 0 .42.002.604.012.195.01.455-.074.712.544.267.643.91 2.222.99 2.382.08.16.133.348.026.56-.107.213-.16.348-.32.533-.16.187-.336.417-.48.56-.16.16-.328.334-.141.655.187.321.83 1.368 1.78 2.215 1.22 1.087 2.249 1.424 2.57 1.584.321.16.508.134.695-.08.187-.214.802-.934 1.016-1.254.214-.321.428-.268.722-.16.294.107 1.868.88 2.188 1.04.32.16.534.24.614.374.08.134.08.774-.164 1.46z"/>
                 </svg>
                 <span>Kirim ke WhatsApp</span>
               </a>
@@ -996,9 +998,9 @@ export default function SharedAlbumPage() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={handleShareCurrent}
-                  className="h-[50px] bg-[#222220] hover:bg-[#2a2a28] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
+                  className="h-[48px] bg-[#1c1c1f] hover:bg-[#252528] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                   </svg>
@@ -1007,9 +1009,9 @@ export default function SharedAlbumPage() {
 
                 <button
                   onClick={handleDownloadQr}
-                  className="h-[50px] bg-[#222220] hover:bg-[#2a2a28] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
+                  className="h-[48px] bg-[#1c1c1f] hover:bg-[#252528] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" y1="3" x2="12" y2="15"/>
@@ -1019,7 +1021,7 @@ export default function SharedAlbumPage() {
               </div>
 
               {/* Link ke Cetak Kartu Meja (Disesuaikan UI AlbumKami) */}
-              <div className="pt-1 text-center">
+              <div className="pt-2 text-center">
                 <Link
                   href={`/${slug}/albumkami/print-qr/`}
                   className="inline-flex items-center gap-2 text-xs font-sans text-white/60 hover:text-white px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] transition-all"
@@ -1210,175 +1212,249 @@ export default function SharedAlbumPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-[#0e0e0e]" />
 
-              {/* Back Button */}
-              <div className="absolute top-10 left-4 z-20">
+              {/* Back Button (Identik Screenshot 1) */}
+              <div className="absolute top-8 left-4 z-20">
                 <button
                   onClick={() => setShowSettingsModal(false)}
-                  className="w-10 h-10 rounded-full bg-black/45 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
                   title="Kembali ke Galeri"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-6-6 6-6"/>
                   </svg>
                 </button>
               </div>
             </div>
 
-            {/* Title */}
+            {/* Title (Playfair Display) */}
             <div className="px-5 -mt-6 relative z-10 mb-4">
               <h1 className="font-serif text-[28px] font-bold text-white tracking-tight">
                 Pengaturan Acara
               </h1>
             </div>
 
-            {/* List of Settings Cards */}
-            <div className="px-4 space-y-2.5">
+            {/* Content Container */}
+            <div className="px-4 space-y-3.5">
               
-              {/* 1. Nama & Sampul */}
-              <div
-                onClick={() => {
-                  setEditTitleInput(albumTitle);
-                  setShowEditTitleModal(true);
-                }}
-                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">✏️</span>
-                  <span className="font-medium text-white">Nama & Sampul</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span className="truncate max-w-[140px] text-white/80 font-medium">{albumTitle}</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 2. Tanggal berakhir */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm">
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">📅</span>
-                  <span className="font-medium text-white">Tanggal berakhir</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>{albumData?.event_date_formatted ? `${albumData.event_date_formatted}, 23.59` : '22 Nov 2026, 23.59'}</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 3. Waktu ungkap */}
-              <div
-                onClick={() => setShowEditRevealModal(true)}
-                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">🕒</span>
-                  <span className="font-medium text-white">Waktu ungkap</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span className="text-white/80 font-medium">
-                    {albumData?.reveal_mode === 'after' ? 'Setelah Acara' : 'Selama Acara'}
-                  </span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 4. Foto per orang */}
-              <div
-                onClick={() => setShowEditRollLimitModal(true)}
-                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">📷</span>
-                  <span className="font-medium text-white">Foto per orang</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span className="text-white/80 font-semibold">{albumData?.roll_limit || 10} Foto</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 5. Filter kamera */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">⚙️</span>
-                  <span className="font-medium text-white">Filter kamera</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Asli</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 6. Bingkai foto */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">🔲</span>
-                  <span className="font-medium text-white">Bingkai foto</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Tanpa</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 7. Tautan khusus */}
-              <div
-                onClick={() => {
-                  navigator.clipboard.writeText(albumShareUrl);
-                  setToastMessage('✓ Tautan khusus album berhasil disalin');
-                  setTimeout(() => setToastMessage(null), 3000);
-                }}
-                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">🔗</span>
-                  <span className="font-medium text-white">Tautan khusus</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Salin Tautan</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 8. Bahasa default acara */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 flex items-center justify-between text-sm opacity-80">
-                <div className="flex items-center gap-3">
-                  <span className="text-white/40">🌐</span>
-                  <span className="font-medium text-white">Bahasa default acara</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/40 text-xs">
-                  <span>Bahasa Indonesia</span>
-                  <span>›</span>
-                </div>
-              </div>
-
-              {/* 9. Kapasitas tamu */}
-              <div
-                onClick={() => setShowEditCapacityModal(true)}
-                className="p-4 rounded-2xl bg-[#181818] hover:bg-[#222222] border border-white/5 cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between text-sm"
-              >
-                <div>
+              {/* PRIMARY SETTINGS GROUP (Identik Screenshot 1) */}
+              <div className="card-glass rounded-2xl border border-white/[0.08] shadow-lg overflow-hidden divide-y divide-white/[0.06]">
+                
+                {/* 1. Nama & Sampul */}
+                <div
+                  onClick={() => {
+                    setEditTitleInput(albumTitle);
+                    setShowEditTitleModal(true);
+                  }}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
                   <div className="flex items-center gap-3">
-                    <span className="text-white/40">👥</span>
-                    <span className="font-medium text-white">Kapasitas tamu</span>
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Nama &amp; Sampul</span>
                   </div>
-                  <p className="text-[11px] text-white/40 mt-1 pl-7">
-                    Hingga {maxGuests} Tamu • Kuota bergabung
+                  <div className="flex items-center gap-2 max-w-[50%]">
+                    <span className="text-xs font-normal text-zinc-400 truncate">{albumTitle}</span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 2. Tanggal Berakhir */}
+                <div className="p-3.5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8 2v3"/><path d="M16 2v3"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Tanggal berakhir</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">
+                      {albumData?.event_date_formatted ? `${albumData.event_date_formatted}, 17.00` : '30 Nov 2026, 17.00'}
+                    </span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 3. Waktu Ungkap */}
+                <div
+                  onClick={() => setShowEditRevealModal(true)}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Waktu ungkap</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">
+                      {albumData?.reveal_mode === 'after' ? 'Setelah Acara' : 'Selama Acara'}
+                    </span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 4. Foto per Orang */}
+                <div
+                  onClick={() => setShowEditRollLimitModal(true)}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Foto per orang</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">
+                      {albumData?.roll_limit || 36}
+                    </span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 5. Filter Kamera */}
+                <div className="p-3.5 flex items-center justify-between group opacity-90">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Filter kamera</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">Asli</span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 6. Bingkai Foto */}
+                <div className="p-3.5 flex items-center justify-between group opacity-90">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Bingkai foto</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">Tanpa</span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 7. Tautan Khusus */}
+                <div
+                  onClick={() => {
+                    navigator.clipboard.writeText(albumShareUrl);
+                    setToastMessage('✓ Tautan khusus album berhasil disalin');
+                    setTimeout(() => setToastMessage(null), 3000);
+                  }}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Tautan khusus</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">Buat tautan khusus</span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 8. Bahasa Default Acara */}
+                <div className="p-3.5 flex items-center justify-between group opacity-90">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Bahasa default acara</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">Bahasa Indonesia</span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* 9. Kapasitas Tamu (Identik Screenshot 1) */}
+                <div
+                  onClick={() => setShowEditCapacityModal(true)}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex flex-col gap-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-200">Kapasitas tamu</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-[#1a293b] hover:bg-[#20344d] border border-sky-500/30 text-sky-400 transition-all shadow-sm active:scale-95"
+                    >
+                      <span>Tambah pax</span>
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m9 18 6-6-6-6"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-xs text-zinc-400 pl-11">
+                    Hingga {maxGuests} Tamu • Paket gratis dibatasi {maxGuests} tamu
                   </p>
                 </div>
-                <button
-                  type="button"
-                  className="bg-[#1c3a5e] text-sky-200 text-xs font-semibold px-3 py-1.5 rounded-xl border border-sky-500/20 active:scale-95 transition-transform"
-                >
-                  Ubah pax ›
-                </button>
               </div>
 
-              {/* 10. Toggle: Semua orang bisa melihat semua foto */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-white/40">👁️</span>
-                    <span className="font-medium text-white text-sm">Semua orang bisa melihat semua foto</span>
+              {/* TOGGLES SECTION (Identik Screenshot 1) */}
+              <div className="card-glass rounded-2xl border border-white/[0.08] shadow-lg p-4 space-y-4">
+                
+                {/* Toggle 1: Semua orang bisa melihat semua foto (Default Aktif) */}
+                <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-white/[0.06]">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-200">Semua orang bisa melihat semua foto</span>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Aktifkan agar siapa pun dengan link bisa melihat semua foto. Nonaktifkan agar hanya kamu dan tamu undangan yang bisa melihat — tamu tetap hanya melihat foto miliknya.
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -1387,8 +1463,8 @@ export default function SharedAlbumPage() {
                       setAllowPublicView(nextVal);
                       await saveSetting({ album_settings: { allow_public_view: nextVal } });
                     }}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      allowPublicView ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out shrink-0 mt-0.5 ${
+                      allowPublicView ? 'bg-[#3b82f6]' : 'bg-[#2a2a2e]'
                     }`}
                   >
                     <span
@@ -1398,17 +1474,21 @@ export default function SharedAlbumPage() {
                     />
                   </button>
                 </div>
-                <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Aktifkan agar siapa pun dengan link bisa melihat semua foto. Nonaktifkan agar hanya kamu dan tamu undangan yang bisa melihat.
-                </p>
-              </div>
 
-              {/* 11. Toggle: Sembunyikan nama pengunggah */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-white/40">👁️‍🗨️</span>
-                    <span className="font-medium text-white text-sm">Sembunyikan nama pengunggah</span>
+                {/* Toggle 2: Sembunyikan nama pengunggah */}
+                <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-white/[0.06]">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-200">Sembunyikan nama pengunggah</span>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Untuk penjurian buta — sembunyikan nama semua orang saat memilih favorit.
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -1417,8 +1497,8 @@ export default function SharedAlbumPage() {
                       setHideUploaderName(nextVal);
                       await saveSetting({ album_settings: { hide_uploader_name: nextVal } });
                     }}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      hideUploaderName ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out shrink-0 mt-0.5 ${
+                      hideUploaderName ? 'bg-[#3b82f6]' : 'bg-[#2a2a2e]'
                     }`}
                   >
                     <span
@@ -1428,17 +1508,21 @@ export default function SharedAlbumPage() {
                     />
                   </button>
                 </div>
-                <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Untuk penjurian buta — sembunyikan nama semua orang saat memilih foto favorit.
-                </p>
-              </div>
 
-              {/* 12. Toggle: Like foto */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-white/40">❤️</span>
-                    <span className="font-medium text-white text-sm">Like foto</span>
+                {/* Toggle 3: Like foto */}
+                <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-white/[0.06]">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-200">Like foto</span>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        Pengunjung dan tamu dapat menyukai setiap foto satu kali. Matikan untuk menyembunyikan tombol like dan jumlahnya dari semua orang.
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -1447,8 +1531,8 @@ export default function SharedAlbumPage() {
                       setEnableLikes(nextVal);
                       await saveSetting({ album_settings: { enable_likes: nextVal } });
                     }}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      enableLikes ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out shrink-0 mt-0.5 ${
+                      enableLikes ? 'bg-[#3b82f6]' : 'bg-[#2a2a2e]'
                     }`}
                   >
                     <span
@@ -1458,17 +1542,30 @@ export default function SharedAlbumPage() {
                     />
                   </button>
                 </div>
-                <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Pengunjung dan tamu dapat menyukai setiap foto satu kali.
-                </p>
-              </div>
 
-              {/* 13. Toggle: Ingatkan H-2 lewat email */}
-              <div className="p-4 rounded-2xl bg-[#181818] border border-white/5 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-white/40">🔔</span>
-                    <span className="font-medium text-white text-sm">Ingatkan H-2 lewat email</span>
+                {/* Toggle 4: Ingatkan H-2 lewat email */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-200">Ingatkan H-2 lewat email</span>
+                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setToastMessage('Fitur pengingat email otomatis aktif untuk penyelenggara');
+                            setTimeout(() => setToastMessage(null), 3000);
+                          }}
+                          className="text-sky-400 hover:underline text-left inline"
+                        >
+                          Simpan akun dulu supaya kami punya alamat email.
+                        </button>
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -1477,8 +1574,8 @@ export default function SharedAlbumPage() {
                       setEmailReminder(nextVal);
                       await saveSetting({ album_settings: { email_reminder: nextVal } });
                     }}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      emailReminder ? 'bg-[#3b82f6]' : 'bg-[#2a2a2a]'
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out shrink-0 mt-0.5 ${
+                      emailReminder ? 'bg-[#3b82f6]' : 'bg-[#2a2a2e]'
                     }`}
                   >
                     <span
@@ -1488,22 +1585,18 @@ export default function SharedAlbumPage() {
                     />
                   </button>
                 </div>
-                <p className="text-[11px] text-white/40 pl-7 leading-relaxed">
-                  Kirim pengingat otomatis menjelang hari pernikahan Anda.
-                </p>
+
               </div>
 
-              {/* 14. Danger Button: Hapus Acara */}
-              <div className="pt-4">
+              {/* 14. Destructive Action: Hapus Acara (Identik Screenshot 1) */}
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={() => setShowDeleteAlbumConfirmModal(true)}
-                  className="w-full py-4 rounded-2xl bg-[#241313] hover:bg-[#321717] border border-red-500/20 text-[#ef4444] font-medium text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg"
+                  className="w-full py-3.5 px-4 rounded-2xl border border-red-900/40 bg-red-950/20 hover:bg-red-950/35 text-red-400 font-medium text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-lg"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 6h18"/>
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                  <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>
                   </svg>
                   <span>Hapus acara</span>
                 </button>
