@@ -288,6 +288,9 @@ export default function SharedAlbumPage() {
       : photos.filter((p) => p.guest_name === selectedContributor);
 
   const albumTitle = albumData?.title || 'Awal dari Selamanya';
+  const displayCoupleName = (albumTitle || '')
+    .replace(/^album\s+pernikahan\s+/i, '')
+    .trim() || 'fafa-fufu';
   const maxGuests = albumData?.max_guests || 50;
   const currentGuestsCount = Math.max(contributors.length, photos.length > 0 ? 1 : 0);
 
@@ -520,7 +523,7 @@ export default function SharedAlbumPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a09] text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#070709] text-zinc-100 flex justify-center items-start antialiased selection:bg-luxury-gold selection:text-black">
       {/* Toast Notification Alert */}
       {toastMessage && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-neutral-900/95 backdrop-blur-md text-white border border-white/20 px-5 py-2.5 rounded-full text-xs font-medium shadow-2xl flex items-center gap-2 pointer-events-none animate-bounce">
@@ -594,16 +597,16 @@ export default function SharedAlbumPage() {
             {/* Wedding Couple Title */}
             <h1 className="font-serif tracking-tight text-white font-medium drop-shadow-md text-2xl">
               Album Pernikahan <br />
-              <span className="italic font-normal font-serif text-luxury-goldLight">{albumTitle}</span>
+              <span className="italic font-normal font-serif text-luxury-goldLight">{displayCoupleName}</span>
             </h1>
           </div>
         </section>
         {/* END: HeroSection */}
 
         {/* BEGIN: ContentArea */}
-        <div className="flex-1 flex flex-col justify-start px-4 mt-4 sm:mt-5 z-20" data-purpose="main-album-content">
+        <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 space-y-5" data-purpose="main-album-content">
           {/* BEGIN: StatsBar */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-md shadow-black/30 divide-x divide-white/[0.08] mb-4 sm:mb-5" data-purpose="album-stats-bar">
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
             {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
@@ -616,7 +619,7 @@ export default function SharedAlbumPage() {
 
             {/* Event Date */}
             <div className="text-center px-2">
-              <span className="block font-serif text-[17px] sm:text-[19px] font-semibold text-luxury-goldLight tracking-tight italic leading-none mb-1 truncate">
+              <span className="block font-serif text-[19px] font-semibold text-luxury-goldLight tracking-tight italic leading-none mb-1">
                 {albumData?.event_date_formatted || '22 Nov 2026'}
               </span>
               <span className="text-[11px] font-medium tracking-wide text-zinc-400 uppercase">
@@ -627,11 +630,10 @@ export default function SharedAlbumPage() {
             {/* Guest Counter & Link */}
             <div
               onClick={() => setShowContributorsModal(true)}
-              className="text-center px-1 group cursor-pointer active:scale-95 transition-transform"
-              title="Lihat Tamu Pengisi Album"
+              className="text-center px-1 group cursor-pointer"
             >
               <div className="flex items-center justify-center gap-0.5 leading-none mb-1">
-                <span className="font-serif text-2xl font-bold text-white italic group-hover:text-luxury-gold transition-colors">
+                <span className="font-serif text-2xl font-bold text-white italic">
                   {currentGuestsCount}
                 </span>
                 <span className="text-xs font-serif text-zinc-500 font-semibold tracking-tighter">
@@ -648,16 +650,16 @@ export default function SharedAlbumPage() {
           </div>
           {/* END: StatsBar */}
 
-          {/* BEGIN: ActionToolbar (Jarak lega atas & bawah) */}
-          <div className="relative z-30 flex items-center gap-2.5 mb-5 sm:mb-6" data-purpose="quick-actions-toolbar">
+          {/* BEGIN: ActionToolbar */}
+          <div className="flex items-center gap-2.5" data-purpose="quick-actions-toolbar">
             {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
               aria-label="Ambil Foto"
-              className="relative z-30 flex-[2.8] h-[58px] bg-gradient-to-r from-[#F7F3E9] via-[#EDE7D9] to-[#E2DAC7] text-zinc-950 font-medium rounded-2xl flex items-center justify-center shadow-lg shadow-white/5 active:scale-[0.98] transition-all duration-200 border border-amber-200/50 group overflow-hidden"
+              className="flex-[2.8] h-[58px] bg-gradient-to-r from-[#F7F3E9] via-[#EDE7D9] to-[#E2DAC7] text-zinc-950 font-medium rounded-2xl flex items-center justify-center shadow-lg shadow-white/5 active:scale-[0.98] transition-all duration-200 border border-amber-200/50 group"
             >
               <div className="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-6 h-6 stroke-[2.2] text-zinc-900 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-6 h-6 stroke-[2.2] text-zinc-900 group-hover:scale-110 transition-transform">
                   <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
                   <circle cx="12" cy="13" r="3" />
                 </svg>
@@ -666,7 +668,7 @@ export default function SharedAlbumPage() {
             </Link>
 
             {/* Secondary Icon Buttons (QR, Grid/Filter, Download ZIP) */}
-            <div className="flex flex-[2] items-center gap-2 relative z-30">
+            <div className="flex flex-[2] items-center gap-2">
               {/* QR Code Button */}
               <button
                 onClick={() => setShowQrModal(true)}
@@ -729,7 +731,7 @@ export default function SharedAlbumPage() {
 
           {/* ACTIVE CONTRIBUTOR FILTER BANNER */}
           {selectedContributor !== 'ALL' && (
-            <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 mb-4 text-xs shadow-md">
+            <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 text-xs shadow-md">
               <div className="flex items-center gap-2 truncate">
                 <span className="text-zinc-400 font-sans">Filter Tamu:</span>
                 <span className="font-semibold text-white truncate max-w-[150px]">{selectedContributor}</span>
@@ -744,14 +746,14 @@ export default function SharedAlbumPage() {
             </div>
           )}
 
-          {/* PHOTO GALLERY GRID / EMPTY STATE (Jarak lega pemisah foto dari tombol) */}
+          {/* PHOTO GALLERY GRID / EMPTY STATE */}
           {filteredPhotos.length === 0 ? (
-            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-3 group" data-purpose="empty-gallery-state">
+            <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-2 group" data-purpose="empty-gallery-state">
               {/* Subtle Ambient Background Light */}
               <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-luxury-gold/10 rounded-full blur-3xl pointer-events-none" />
               {/* Elegant Camera Icon Badge */}
               <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#23232c] to-[#121217] border border-white/10 shadow-inner-subtle flex items-center justify-center mb-4 text-luxury-goldLight ring-1 ring-luxury-gold/20">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-7 h-7 stroke-[1.8] text-luxury-gold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-7 h-7 stroke-[1.8] text-luxury-gold">
                   <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
                   <circle cx="12" cy="13" r="3" />
                 </svg>
@@ -769,7 +771,7 @@ export default function SharedAlbumPage() {
             </section>
           ) : (
             <div
-              className={`grid gap-2.5 pt-1 pb-8 ${
+              className={`grid gap-2.5 mt-2 pb-8 ${
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
