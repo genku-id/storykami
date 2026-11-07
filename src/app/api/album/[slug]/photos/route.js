@@ -20,11 +20,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Album tidak ditemukan' }, { status: 404 });
     }
 
-    // 2. Cek status reveal
-    const now = new Date();
-    const isRevealScheduled = album.reveal_mode === 'scheduled' && album.reveal_at;
-    const isPastRevealTime = isRevealScheduled && new Date(album.reveal_at) <= now;
-    const isActuallyRevealed = album.is_revealed || isPastRevealTime;
+    // 2. Status reveal: Selalu aktif realtime (fitur waktu ungkap dihapus)
+    const isActuallyRevealed = true;
 
     // Hitung total foto yang sudah masuk
     const { count: totalPhotos } = await supabaseServer

@@ -51,7 +51,6 @@ export default function SharedAlbumPage() {
   const [editTitleInput, setEditTitleInput] = useState('');
   const [showEditRollLimitModal, setShowEditRollLimitModal] = useState(false);
   const [showEditCapacityModal, setShowEditCapacityModal] = useState(false);
-  const [showEditRevealModal, setShowEditRevealModal] = useState(false);
   const [showEditCloseDateModal, setShowEditCloseDateModal] = useState(false);
   const [editCloseDate, setEditCloseDate] = useState('');
   const [editCloseTime, setEditCloseTime] = useState('17:00');
@@ -1476,30 +1475,7 @@ export default function SharedAlbumPage() {
                   </div>
                 </div>
 
-                {/* 3. Waktu Ungkap */}
-                <div
-                  onClick={() => setShowEditRevealModal(true)}
-                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                      </svg>
-                    </div>
-                    <span className="text-sm font-medium text-gray-200">Waktu ungkap</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-normal text-zinc-400">
-                      {albumData?.reveal_mode === 'after' ? 'Setelah Acara' : 'Selama Acara'}
-                    </span>
-                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                  </div>
-                </div>
-
-                {/* 4. Foto per Orang */}
+                {/* 3. Foto per Orang */}
                 <div
                   onClick={() => setShowEditRollLimitModal(true)}
                   className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
@@ -2165,82 +2141,7 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 10. SUB-MODAL: PILIH WAKTU UNGKAP                                         */}
-      {/* ========================================================================= */}
-      {showEditRevealModal && (
-        <div
-          onClick={() => setShowEditRevealModal(false)}
-          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
-          >
-            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
-            
-            <div className="text-center mb-5">
-              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
-                Waktu Ungkap Foto
-              </h3>
-              <p className="text-xs text-zinc-400 font-sans">
-                Tentukan kapan foto dari tamu dapat dilihat di galeri
-              </p>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div
-                onClick={async () => {
-                  await saveSetting({ reveal_mode: 'instant', is_revealed: true });
-                  setShowEditRevealModal(false);
-                }}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  albumData?.reveal_mode !== 'after'
-                    ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
-                    : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-sm">Selama Acara (Langsung Tampil)</span>
-                  {albumData?.reveal_mode !== 'after' && <span className="font-bold text-sm">✓</span>}
-                </div>
-                <p className={`text-xs ${albumData?.reveal_mode !== 'after' ? 'text-black/70' : 'text-zinc-400'}`}>
-                  Setiap foto yang dijepret tamu akan langsung muncul di dashboard galeri secara realtime.
-                </p>
-              </div>
-
-              <div
-                onClick={async () => {
-                  await saveSetting({ reveal_mode: 'after', is_revealed: false });
-                  setShowEditRevealModal(false);
-                }}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  albumData?.reveal_mode === 'after'
-                    ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
-                    : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-sm">Setelah Acara Selesai (Teka-Teki)</span>
-                  {albumData?.reveal_mode === 'after' && <span className="font-bold text-sm">✓</span>}
-                </div>
-                <p className={`text-xs ${albumData?.reveal_mode === 'after' ? 'text-black/70' : 'text-zinc-400'}`}>
-                  Foto tamu tetap tersimpan rapi, namun galeri baru akan terbuka bersamaan setelah acara selesai.
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowEditRevealModal(false)}
-              className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
-            >
-              Tutup
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* 11. SUB-MODAL: ATUR TANGGAL BERAKHIR / DITUTUP                            */}
+      {/* 10. SUB-MODAL: ATUR TANGGAL BERAKHIR / DITUTUP                            */}
       {/* ========================================================================= */}
       {showEditCloseDateModal && (
         <div
