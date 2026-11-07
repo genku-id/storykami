@@ -537,248 +537,235 @@ export default function SharedAlbumPage() {
         }}
       />
 
-      {/* Frame Mobile Centered Shell (Konsisten Rapi di HP maupun Laptop) */}
-      <div className="relative mx-auto w-full max-w-[480px] min-h-[100svh] bg-[#12110f] border-x border-white/5 shadow-2xl pb-24">
-        
-        {/* HERO COVER IMAGE */}
-        <div className="relative h-[44vh] min-h-[270px] max-h-[360px] overflow-hidden">
-          <img
-            src="/images/satualbum_cover.webp"
-            alt={albumTitle}
-            className="w-full h-full object-cover"
-          />
-          {/* Smooth Dark Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-[#12110f]" />
+      {/* MobileDeviceContainer */}
+      <main className="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between overflow-x-hidden bg-[#0a0a0d] shadow-2xl border-x border-white/[0.04] pb-8 mx-auto" data-purpose="mobile-viewport">
+        {/* BEGIN: HeroSection */}
+        <section className="relative w-full select-none h-[220px]" data-purpose="hero-header-banner">
+          {/* Background Hero Wedding Photography */}
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              alt="Foto Pernikahan Polaroid Vintage"
+              className="w-full h-full object-cover object-center scale-105 filter brightness-[0.92] contrast-[1.05]"
+              src="/images/satualbum_cover.webp"
+            />
+            {/* Seamless Multi-stage Vignette & Dark Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0d] via-[#0a0a0d]/85 via-50% to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent h-28" />
+            <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none" />
+          </div>
 
-          {/* Top Floating Buttons */}
-          <div className="absolute top-0 left-0 right-0 flex justify-between items-center px-4 pt-12 z-20">
+          {/* Top Floating Navigation Bar */}
+          <nav className="relative z-20 flex items-center justify-between px-5 pt-8" data-purpose="top-navigation-bar">
+            {/* Back Button with Glassmorphism */}
             <Link
               href={`/${slug}`}
-              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
-              title="Kembali ke Undangan"
+              aria-label="Kembali"
+              className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center text-zinc-200 active:scale-95 transition-all duration-200 hover:bg-black/60 hover:text-white hover:border-luxury-gold/50 shadow-lg cursor-pointer"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left">
+                <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
               </svg>
             </Link>
 
-            {/* Tombol Pengaturan HANYA MUNCUL JIKA Host Masuk dari WIM */}
+            {/* Setting / Gear Button (HANYA MUNCUL JIKA Host Masuk dari WIM) */}
             {isHost && (
               <button
                 onClick={() => setShowSettingsModal(true)}
-                className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
-                title="Pengaturan Album (Host)"
+                aria-label="Pengaturan Album"
+                className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center text-zinc-200 active:scale-95 transition-all duration-200 hover:bg-black/60 hover:text-white hover:border-luxury-gold/50 shadow-lg cursor-pointer"
+                type="button"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                  <circle cx="12" cy="12" r="3"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings">
+                  <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+                  <circle cx="12" cy="12" r="3" />
                 </svg>
               </button>
             )}
+          </nav>
+
+          {/* Title & Sub-header overlay on hero bottom */}
+          <div className="absolute inset-x-0 px-6 text-center z-10 flex flex-col items-center bottom-2">
+            {/* Small Luxury Tagline / Monogram Accent */}
+            <div className="flex items-center gap-2 mb-2 opacity-90">
+              <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-luxury-gold" />
+              <span className="text-[10px] tracking-[0.28em] uppercase text-luxury-gold font-medium">Gallery</span>
+              <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-luxury-gold" />
+            </div>
+            {/* Wedding Couple Title */}
+            <h1 className="font-serif tracking-tight text-white font-medium drop-shadow-md text-2xl">
+              Album Pernikahan <br />
+              <span className="italic font-normal font-serif text-luxury-goldLight">{albumTitle}</span>
+            </h1>
           </div>
-        </div>
+        </section>
+        {/* END: HeroSection */}
 
-        {/* CONTENT AREA */}
-        <div className="px-5 -mt-4 relative z-10 text-center">
-          
-          {/* Main Title */}
-          <h1 className="mb-5">
-            <span className="font-serif font-bold text-white text-center block leading-tight tracking-tight text-[26px]">
-              {albumTitle}
-            </span>
-          </h1>
-
-          {/* 3 STATS COLUMNS (Nocturne Noir Design System) */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.08] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08] mb-6" data-purpose="album-stats-bar">
-            {/* Col 1: Momen */}
+        {/* BEGIN: ContentArea */}
+        <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 space-y-5" data-purpose="main-album-content">
+          {/* BEGIN: StatsBar */}
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
+            {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
                 {photos.length}
               </span>
-              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium">Momen</span>
+              <span className="text-[11px] font-medium tracking-wide text-zinc-400 uppercase">
+                Momen
+              </span>
             </div>
 
-            {/* Col 2: Tanggal Acara */}
-            <div className="text-center px-1">
-              <span className="block font-serif text-base sm:text-lg font-bold tracking-tight text-white italic leading-none mb-1 truncate">
+            {/* Event Date */}
+            <div className="text-center px-2">
+              <span className="block font-serif text-[17px] sm:text-[19px] font-semibold text-luxury-goldLight tracking-tight italic leading-none mb-1 truncate">
                 {albumData?.event_date_formatted || '22 Nov 2026'}
               </span>
-              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium">Tanggal Acara</span>
+              <span className="text-[11px] font-medium tracking-wide text-zinc-400 uppercase">
+                Tanggal Acara
+              </span>
             </div>
 
-            {/* Col 3: Orang */}
-            <button
+            {/* Guest Counter & Link */}
+            <div
               onClick={() => setShowContributorsModal(true)}
               className="text-center px-1 group cursor-pointer active:scale-95 transition-transform"
               title="Lihat Tamu Pengisi Album"
             >
-              <div className="flex items-baseline justify-center gap-0.5 leading-none mb-1">
-                <span className="font-serif text-2xl font-bold tracking-tight text-white italic group-hover:text-amber-200 transition-colors">
+              <div className="flex items-center justify-center gap-0.5 leading-none mb-1">
+                <span className="font-serif text-2xl font-bold text-white italic group-hover:text-luxury-gold transition-colors">
                   {currentGuestsCount}
                 </span>
-                <span className="text-sm font-sans text-white/40 font-normal">
+                <span className="text-xs font-serif text-zinc-500 font-semibold tracking-tighter">
                   /{maxGuests}
                 </span>
               </div>
-              <span className="text-[10px] tracking-wider uppercase text-zinc-400 font-medium group-hover:text-white flex items-center justify-center gap-0.5 transition-colors">
-                Orang &gt;
+              <span className="text-[11px] font-medium tracking-wide text-zinc-400 uppercase flex items-center justify-center gap-0.5 group-hover:text-luxury-gold transition-colors">
+                Orang{' '}
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right w-3 h-3 stroke-[2.5]">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </span>
-            </button>
+            </div>
           </div>
+          {/* END: StatsBar */}
 
-          {/* 4 ACTION BUTTONS ROW (Presisi Sesuai Screenshot WhatsApp) */}
-          <div className="flex items-center gap-2.5 mb-6">
-            {/* 1. Big Creamy White Pill Button: Open Camera (Background Putih -> Ikon Hitam) */}
+          {/* BEGIN: ActionToolbar */}
+          <div className="flex items-center gap-2.5" data-purpose="quick-actions-toolbar">
+            {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
-              className="flex-1 h-14 bg-[#f2ece4] hover:bg-white text-black rounded-2xl flex items-center justify-center active:scale-[0.97] transition-all shadow-xl"
-              title="Buka Kamera Tamu"
+              aria-label="Ambil Foto"
+              className="flex-[2.8] h-[58px] bg-gradient-to-r from-[#F7F3E9] via-[#EDE7D9] to-[#E2DAC7] text-zinc-950 font-medium rounded-2xl flex items-center justify-center shadow-lg shadow-white/5 active:scale-[0.98] transition-all duration-200 border border-amber-200/50 group"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#12110f"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-black stroke-black"
-              >
-                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                <circle cx="12" cy="13" r="3" />
-              </svg>
+              <div className="flex items-center gap-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-6 h-6 stroke-[2.2] text-zinc-900 group-hover:scale-110 transition-transform">
+                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
+                <span className="text-sm font-semibold tracking-wide text-zinc-900">Potret Foto</span>
+              </div>
             </Link>
 
-            {/* 2. QR Code Button: Tampilkan Modal Undang Tamu (Identik Screenshot 2) */}
-            <button
-              onClick={() => setShowQrModal(true)}
-              className="w-14 h-14 bg-[#161616] border border-[#2a2a2a] hover:border-white/20 rounded-2xl flex items-center justify-center text-white active:scale-[0.97] transition-all shadow-md"
-              title="Undang Tamu & Tampilkan QR"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white stroke-white"
+            {/* Secondary Icon Buttons (QR, Grid/Filter, Download ZIP) */}
+            <div className="flex flex-[2] items-center gap-2">
+              {/* QR Code Button */}
+              <button
+                onClick={() => setShowQrModal(true)}
+                aria-label="QR Code Tamu"
+                className="flex-1 h-[58px] bg-[#141419] hover:bg-[#1a1a21] border border-white/[0.08] hover:border-luxury-gold/40 rounded-2xl flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 transition-all shadow-md shadow-black/40 cursor-pointer"
+                type="button"
               >
-                <rect width="5" height="5" x="3" y="3" rx="1" />
-                <rect width="5" height="5" x="16" y="3" rx="1" />
-                <rect width="5" height="5" x="3" y="16" rx="1" />
-                <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
-                <path d="M21 21v.01" />
-                <path d="M12 7v3a2 2 0 0 1-2 2H7" />
-                <path d="M3 12h.01" />
-                <path d="M12 3h.01" />
-                <path d="M12 16v.01" />
-                <path d="M16 12h1" />
-                <path d="M21 12v.01" />
-                <path d="M12 21v-1" />
-              </svg>
-            </button>
-
-            {/* 3. Grid Toggle Button (Background Gelap -> Ikon Putih) */}
-            <button
-              onClick={() => setGridColumns((prev) => (prev === 2 ? 3 : 2))}
-              className="w-14 h-14 bg-[#161616] border border-[#2a2a2a] hover:border-white/20 rounded-2xl flex items-center justify-center text-white active:scale-[0.97] transition-all"
-              title="Ubah Ukuran Grid"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white stroke-white"
-              >
-                <rect width="7" height="7" x="3" y="3" rx="1" />
-                <rect width="7" height="7" x="14" y="3" rx="1" />
-                <rect width="7" height="7" x="14" y="14" rx="1" />
-                <rect width="7" height="7" x="3" y="14" rx="1" />
-              </svg>
-            </button>
-
-            {/* 4. Download All (ZIP) Button: Menampilkan Modal Konfirmasi Unduh */}
-            <button
-              onClick={() => setShowDownloadConfirmModal(true)}
-              disabled={isZipping}
-              className="w-14 h-14 bg-[#161616] border border-[#2a2a2a] hover:border-white/20 rounded-2xl flex items-center justify-center text-white active:scale-[0.97] transition-all disabled:opacity-50"
-              title="Unduh Semua Foto (ZIP)"
-            >
-              {isZipping ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#ffffff"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-white stroke-white"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" x2="12" y1="15" y2="3" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-qr-code w-5 h-5 stroke-[2]">
+                  <rect width="5" height="5" x="3" y="3" rx="1" />
+                  <rect width="5" height="5" x="16" y="3" rx="1" />
+                  <rect width="5" height="5" x="3" y="16" rx="1" />
+                  <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+                  <path d="M21 21v.01" />
+                  <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+                  <path d="M3 12h.01" />
+                  <path d="M12 3h.01" />
+                  <path d="M12 16v.01" />
+                  <path d="M16 12h1" />
+                  <path d="M21 12v.01" />
+                  <path d="M12 21v-1" />
                 </svg>
-              )}
-            </button>
-          </div>
+              </button>
 
-          {/* ACTIVE CONTRIBUTOR FILTER BANNER (Jika filter aktif dari popup Orang >) */}
+              {/* Guest/Grid Filter Button */}
+              <button
+                onClick={() => setGridColumns((prev) => (prev === 2 ? 3 : 2))}
+                aria-label="Tampilan Grid Tamu"
+                className="flex-1 h-[58px] bg-[#141419] hover:bg-[#1a1a21] border border-white/[0.08] hover:border-luxury-gold/40 rounded-2xl flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 transition-all shadow-md shadow-black/40 cursor-pointer"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layout-grid w-5 h-5 stroke-[2]">
+                  <rect width="7" height="7" x="3" y="3" rx="1" />
+                  <rect width="7" height="7" x="14" y="3" rx="1" />
+                  <rect width="7" height="7" x="14" y="14" rx="1" />
+                  <rect width="7" height="7" x="3" y="14" rx="1" />
+                </svg>
+              </button>
+
+              {/* Download ZIP Button */}
+              <button
+                onClick={() => setShowDownloadConfirmModal(true)}
+                disabled={isZipping}
+                aria-label="Unduh Semua Foto"
+                className="flex-1 h-[58px] bg-[#141419] hover:bg-[#1a1a21] border border-white/[0.08] hover:border-luxury-gold/40 rounded-2xl flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 transition-all shadow-md shadow-black/40 disabled:opacity-50 cursor-pointer"
+                type="button"
+              >
+                {isZipping ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download w-5 h-5 stroke-[2]">
+                    <path d="M12 15V3" />
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <path d="m7 10 5 5 5-5" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+          {/* END: ActionToolbar */}
+
+          {/* ACTIVE CONTRIBUTOR FILTER BANNER */}
           {selectedContributor !== 'ALL' && (
-            <div className="flex items-center justify-between bg-[#1c1b18] border border-white/10 rounded-2xl px-4 py-2.5 mb-5 text-xs anim-slide-down shadow-md">
+            <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 mb-2 text-xs shadow-md">
               <div className="flex items-center gap-2 truncate">
-                <span className="text-white/40 font-sans">Filter Tamu:</span>
-                <span className="font-bold text-white truncate max-w-[150px]">{selectedContributor}</span>
-                <span className="text-amber-200/80 font-mono text-[11px]">({filteredPhotos.length} momen)</span>
+                <span className="text-zinc-400 font-sans">Filter Tamu:</span>
+                <span className="font-semibold text-white truncate max-w-[150px]">{selectedContributor}</span>
+                <span className="text-luxury-goldLight font-mono text-[11px]">({filteredPhotos.length} momen)</span>
               </div>
               <button
                 onClick={() => setSelectedContributor('ALL')}
-                className="text-sky-300 hover:text-white text-xs font-medium ml-2 shrink-0 cursor-pointer underline"
+                className="text-luxury-gold hover:text-white text-xs font-medium ml-2 shrink-0 cursor-pointer underline"
               >
                 Tampilkan Semua
               </button>
             </div>
           )}
 
-          {/* PHOTO GALLERY GRID */}
+          {/* PHOTO GALLERY GRID / EMPTY STATE */}
           {filteredPhotos.length === 0 ? (
             <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-2 group" data-purpose="empty-gallery-state">
-              <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#23232c] to-[#121217] border border-white/10 flex items-center justify-center mb-4 text-amber-200 ring-1 ring-amber-400/20">
-                <svg className="w-7 h-7 stroke-[1.8] text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
-                  <circle cx="12" cy="13" r="3"/>
+              {/* Subtle Ambient Background Light */}
+              <div className="absolute -top-16 inset-x-0 mx-auto w-40 h-40 bg-luxury-gold/10 rounded-full blur-3xl pointer-events-none" />
+              {/* Elegant Camera Icon Badge */}
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#23232c] to-[#121217] border border-white/10 shadow-inner-subtle flex items-center justify-center mb-4 text-luxury-goldLight ring-1 ring-luxury-gold/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-camera w-7 h-7 stroke-[1.8] text-luxury-gold">
+                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
+                  <circle cx="12" cy="13" r="3" />
                 </svg>
+                {/* Lens Flash Reflection Detail */}
                 <div className="absolute top-3.5 right-4 w-1.5 h-1.5 rounded-full bg-white/40 blur-[0.5px]" />
               </div>
+              {/* Empty State Title */}
               <h2 className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-white mb-2">
-                Belum Ada Momen Tersimpan
+                Belum Ada Momen
               </h2>
-              <p className="text-xs md:text-sm text-zinc-400 font-light max-w-[280px] leading-relaxed mb-6">
-                Jadilah yang pertama mengabadikan kenangan bahagia dan potret hangat hari istimewa ini.
+              {/* Empty State Description */}
+              <p className="text-xs md:text-sm text-zinc-400 font-normal leading-relaxed max-w-[270px] mb-6">
+                Tekan tombol kamera di atas untuk mengambil foto pertama anda!
               </p>
-              <Link
-                href={`/${slug}/albumkami/cam/`}
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-amber-400/20 via-amber-300/15 to-transparent border border-amber-300/40 text-amber-200 text-xs font-semibold tracking-wide hover:border-amber-300 hover:text-white transition-all shadow-lg active:scale-95"
-              >
-                <svg className="w-4 h-4 stroke-[2]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
-                  <circle cx="12" cy="13" r="3"/>
-                </svg>
-                <span>Mulai Memotret Sekarang</span>
-              </Link>
             </section>
           ) : (
             <div
@@ -790,7 +777,7 @@ export default function SharedAlbumPage() {
                 <div
                   key={photo.id}
                   onClick={() => setActivePhotoIndex(idx)}
-                  className="group relative overflow-hidden aspect-square rounded-2xl bg-[#1c1c1a] border border-white/5 cursor-pointer active:scale-95 transition-transform"
+                  className="group relative overflow-hidden aspect-square rounded-2xl bg-[#16161c] border border-white/[0.06] cursor-pointer active:scale-95 transition-transform shadow-md"
                 >
                   <img
                     src={photo.r2_thumb_url || photo.r2_image_url}
@@ -805,9 +792,9 @@ export default function SharedAlbumPage() {
                       }
                     }}
                   />
-                  {/* Gradient shadow overlay for guest name tag */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
-                  <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white font-medium truncate max-w-[85%] drop-shadow">
+                  {/* Subtle vignette overlay on bottom for guest signature */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
+                  <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white/95 font-medium truncate max-w-[85%] drop-shadow">
                     {photo.guest_name}
                   </span>
                 </div>
@@ -815,7 +802,7 @@ export default function SharedAlbumPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       {/* LIGHTBOX MODAL (Presisi 100% Identik Screenshot Host 2/3) */}
       {currentPhoto && (
@@ -942,7 +929,7 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 1. MODAL UNDANG TAMU & TAMPILKAN QR (Presisi Sesuai Screenshot 2)          */}
+      {/* 1. MODAL UNDANG TAMU & TAMPILKAN QR (bottom_sheet_undang_qr_code_elegan)   */}
       {/* ========================================================================= */}
       {showQrModal && (
         <div
@@ -951,96 +938,124 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#131316] border-t md:border border-white/10 rounded-t-[32px] md:rounded-[32px] px-6 pt-3 pb-8 text-white shadow-2xl flex flex-col justify-between overflow-y-auto max-h-[90vh]"
+            className="w-full max-w-md bg-[#131315]/95 backdrop-blur-xl border-t md:border border-amber-500/20 rounded-t-[32px] md:rounded-[32px] px-6 pt-3 pb-8 text-white shadow-2xl flex flex-col justify-between overflow-y-auto max-h-[85vh] custom-scrollbar"
           >
-            {/* Grabber Handle Bar Area */}
-            <div className="pt-2 pb-2 flex justify-center items-center">
-              <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+            {/* Drag Handle Bar */}
+            <div className="w-full pt-2 pb-1 flex justify-center items-center">
+              <div className="w-12 h-1.5 bg-white/20 rounded-full hover:bg-white/30 transition-colors" />
             </div>
 
-            {/* Header: Title & Subtitle */}
-            <div className="text-center pt-1 pb-3">
-              <h2 className="font-serif text-[26px] md:text-[28px] font-bold text-white tracking-wide leading-tight">
-                Undang tamu ke acaramu.
-              </h2>
-              <div className="text-xs text-zinc-400 font-sans mt-2 space-y-0.5 leading-relaxed">
-                <p>Lihat dunia dari sudut pandang mereka.</p>
-                <p>Undang tamumu untuk membuat acara ini tak terlupakan.</p>
+            {/* Header Section with Close Button & Title */}
+            <header className="px-1 pt-2 pb-2 text-center relative flex items-start justify-between">
+              <div className="w-8 shrink-0" />
+              <div className="relative flex-1 px-1">
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-40 h-10 bg-amber-500/10 blur-2xl pointer-events-none rounded-full" />
+                <h2 className="font-serif text-[28px] sm:text-[30px] font-semibold leading-[1.2] text-white tracking-normal gold-gradient-text">
+                  Undang tamu ke acaramu.
+                </h2>
+                <p className="text-xs text-zinc-400 font-sans mt-1.5 leading-relaxed max-w-[320px] mx-auto">
+                  Lihat dunia dari sudut pandang mereka.<br />
+                  Undang agar acara ini tak terlupakan.
+                </p>
               </div>
-            </div>
+              <button
+                onClick={() => setShowQrModal(false)}
+                aria-label="Tutup"
+                className="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0 ml-1 mt-0.5 cursor-pointer"
+                type="button"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
+              </button>
+            </header>
 
-            {/* Divider Line */}
-            <div className="w-full h-px bg-white/[0.08] my-1" />
-
-            {/* Middle Section: Centered QR Code Card */}
-            <div className="py-4 flex flex-col items-center justify-center">
-              <div className="w-[210px] h-[210px] bg-[#ede7df] rounded-[28px] p-4 shadow-2xl flex items-center justify-center border-4 border-white/10">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&margin=10&data=${encodeURIComponent(albumShareUrl)}`}
-                  alt="QR Code Tamu"
-                  className="w-full h-full object-contain pointer-events-none rounded-xl"
-                />
+            {/* QR Code Section */}
+            <section aria-label="QR Code Tamu" className="mt-3 px-2 flex flex-col items-center w-full">
+              {/* QR Frame Container */}
+              <div className="relative p-3.5 rounded-3xl bg-gradient-to-b from-[#fbf8f2] to-[#ede7dc] shadow-[0_12px_36px_rgba(0,0,0,0.6)] border border-amber-100/20 group">
+                {/* Corner Accents for Luxury Aesthetic */}
+                <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-stone-800/40 rounded-tl-sm pointer-events-none" />
+                <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-stone-800/40 rounded-tr-sm pointer-events-none" />
+                <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-stone-800/40 rounded-bl-sm pointer-events-none" />
+                <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-stone-800/40 rounded-br-sm pointer-events-none" />
+                
+                {/* QR Image Display */}
+                <div className="relative w-48 h-48 sm:w-52 sm:h-52 rounded-xl overflow-hidden flex items-center justify-center bg-white p-2 shadow-inner">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&margin=10&data=${encodeURIComponent(albumShareUrl)}`}
+                    alt="QR Code Tamu"
+                    className="w-full h-full object-contain pointer-events-none rounded-lg"
+                  />
+                  {/* Camera Icon Overlay in Center of QR */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-[#121316] rounded-xl flex items-center justify-center shadow-lg border border-amber-300/30 pointer-events-none">
+                    <svg className="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                      <path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="12" cy="13" r="3" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <p className="text-[11px] font-sans text-zinc-400 mt-3 text-center">
+              {/* Scan Instruction Caption */}
+              <p className="text-[12px] text-zinc-400 mt-3 text-center tracking-wide flex items-center justify-center gap-1.5 font-normal">
                 Scan dengan kamera HP tamu untuk langsung memotret
               </p>
-            </div>
+            </section>
 
-            {/* Bottom Actions Section */}
-            <div className="space-y-3 mt-1">
-              {/* Primary: Kirim ke WhatsApp (Green Pill Button) */}
+            {/* Action Buttons Group */}
+            <section aria-label="Aksi Berbagi" className="w-full mt-4 px-1 flex flex-col gap-2.5 pb-2">
+              {/* WhatsApp Primary Button */}
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
                   `Yuk abadikan dan bagikan momen seru kamu di ${albumTitle}! Jepret foto langsung dari kamera tamu di link berikut:\n\n${albumShareUrl}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-[52px] rounded-2xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-semibold text-sm shadow-xl flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all"
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#22c55e] via-[#16a34a] to-[#15803d] text-white font-semibold text-[15px] flex items-center justify-center gap-2.5 hover:brightness-105 active:scale-[0.98] transition-all duration-200 border border-emerald-300/30 shadow-lg cursor-pointer"
               >
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M12.031 2C6.511 2 2.016 6.495 2.016 12.016c0 1.954.563 3.778 1.534 5.325L2 22l4.82-1.512c1.474.887 3.208 1.393 5.211 1.393 5.52 0 10.016-4.496 10.016-10.016S17.551 2 12.031 2zm5.834 14.179c-.244.686-1.42 1.31-1.956 1.393-.509.08-1.171.116-3.784-.963-3.136-1.296-5.161-4.475-5.321-4.688-.159-.214-1.278-1.7-1.278-3.243 0-1.543.808-2.302 1.096-2.617.288-.316.63-.395.84-.395.21 0 .42.002.604.012.195.01.455-.074.712.544.267.643.91 2.222.99 2.382.08.16.133.348.026.56-.107.213-.16.348-.32.533-.16.187-.336.417-.48.56-.16.16-.328.334-.141.655.187.321.83 1.368 1.78 2.215 1.22 1.087 2.249 1.424 2.57 1.584.321.16.508.134.695-.08.187-.214.802-.934 1.016-1.254.214-.321.428-.268.722-.16.294.107 1.868.88 2.188 1.04.32.16.534.24.614.374.08.134.08.774-.164 1.46z"/>
+                  <path d="M12.031 2C6.511 2 2.016 6.495 2.016 12.016c0 1.954.563 3.778 1.534 5.325L2 22l4.82-1.512c1.474.887 3.208 1.393 5.211 1.393 5.52 0 10.016-4.496 10.016-10.016S17.551 2 12.031 2zm5.834 14.179c-.244.686-1.42 1.31-1.956 1.393-.509.08-1.171.116-3.784-.963-3.136-1.296-5.161-4.475-5.321-4.688-.159-.214-1.278-1.7-1.278-3.243 0-1.543.808-2.302 1.096-2.617.288-.316.63-.395.84-.395.21 0 .42.002.604.012.195.01.455-.074.712.544.267.643.91 2.222.99 2.382.08.16.133.348.026.56-.107.213-.16.348-.32.533-.16.187-.336.417-.48.56-.16.16-.328.334-.141.655.187.321.83 1.368 1.78 2.215 1.22 1.087 2.249 1.424 2.57 1.584.321.16.508.134.695-.08.187-.214.802-.934 1.016-1.254.214-.321.428-.268.722-.16.294.107 1.868.88 2.188 1.04.32.16.534.24.614.374.08.134.08.774-.164 1.46z" />
                 </svg>
                 <span>Kirim ke WhatsApp</span>
               </a>
 
-              {/* Grid 2 Tombol: Bagikan Tautan & Simpan QR */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Secondary Buttons Grid */}
+              <div className="grid grid-cols-2 gap-2.5">
                 <button
                   onClick={handleShareCurrent}
-                  className="h-[48px] bg-[#1c1c1f] hover:bg-[#252528] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
+                  className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/10 hover:border-white/20 text-zinc-200 hover:text-white font-medium text-[13.5px] flex items-center justify-center gap-2 transition-all duration-150 backdrop-blur-md cursor-pointer"
+                  type="button"
                 >
-                  <svg className="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-link w-4 h-4 text-zinc-400">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                   </svg>
                   <span>Bagikan Tautan</span>
                 </button>
 
                 <button
                   onClick={handleDownloadQr}
-                  className="h-[48px] bg-[#1c1c1f] hover:bg-[#252528] border border-white/10 rounded-2xl font-medium text-white text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow"
+                  className="py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] border border-white/10 hover:border-white/20 text-zinc-200 hover:text-white font-medium text-[13.5px] flex items-center justify-center gap-2 transition-all duration-150 backdrop-blur-md cursor-pointer"
+                  type="button"
                 >
-                  <svg className="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download w-4 h-4 text-zinc-400">
+                    <path d="M12 15V3" />
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <path d="m7 10 5 5 5-5" />
                   </svg>
                   <span>Simpan QR</span>
                 </button>
               </div>
 
-              {/* Link ke Cetak Kartu Meja (Disesuaikan UI AlbumKami) */}
-              <div className="pt-2 text-center">
-                <Link
-                  href={`/${slug}/albumkami/print-qr/`}
-                  className="inline-flex items-center gap-2 text-xs font-sans text-white/60 hover:text-white px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] transition-all"
-                >
-                  <span>🖨️</span>
-                  <span className="font-medium">Cetak Kartu Meja Fisik (PDF / Print)</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            </div>
+              {/* Tertiary Special Button: Cetak Kartu Meja */}
+              <Link
+                href={`/${slug}/albumkami/print-qr/`}
+                className="w-full py-2 px-4 rounded-xl text-center text-xs font-medium text-zinc-400 hover:text-amber-200/90 hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-1.5 group cursor-pointer"
+              >
+                <span>Cetak Kartu Meja Fisik (PDF / Print)</span>
+                <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 text-zinc-400 group-hover:text-amber-200">→</span>
+              </Link>
+            </section>
           </div>
         </div>
       )}
@@ -1257,12 +1272,11 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 4. PENGATURAN ACARA (Presisi Sesuai Data & Screenshot)                     */}
-      {/* ========================================================================= */}
+      {/* 4. PENGATURAN ACARA (bottom_sheet_pengaturan_interaktif_full_screen)       */}
       {/* ========================================================================= */}
       {showSettingsModal && (
-        <div className="fixed inset-0 z-50 bg-[#0e0e0e] text-white overflow-y-auto selection:bg-white selection:text-black anim-slide-up">
-          <div className="relative mx-auto w-full max-w-[480px] min-h-screen bg-[#0e0e0e] border-x border-white/5 shadow-2xl pb-16">
+        <div className="fixed inset-0 z-50 bg-[#070709] text-white overflow-y-auto selection:bg-luxury-gold selection:text-black anim-slide-up">
+          <div className="relative mx-auto w-full max-w-[430px] min-h-screen bg-[#0a0a0c] border-x border-white/[0.04] shadow-2xl pb-16">
             
             {/* Top Blurred Cover Header */}
             <div className="relative h-44 overflow-hidden">
@@ -1271,13 +1285,13 @@ export default function SharedAlbumPage() {
                 alt={albumTitle}
                 className="w-full h-full object-cover filter blur-[6px] scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-[#0e0e0e]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/75 to-[#0a0a0c]" />
 
-              {/* Back Button (Identik Screenshot 1) */}
+              {/* Back Button */}
               <div className="absolute top-8 left-4 z-20">
                 <button
                   onClick={() => setShowSettingsModal(false)}
-                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                  className="w-9 h-9 rounded-full bg-black/45 backdrop-blur-md border border-white/15 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg cursor-pointer"
                   title="Kembali ke Galeri"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1289,7 +1303,10 @@ export default function SharedAlbumPage() {
 
             {/* Title (Playfair Display) */}
             <div className="px-5 -mt-6 relative z-10 mb-4">
-              <h1 className="font-serif text-[28px] font-bold text-white tracking-tight">
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-luxury-gold px-2.5 py-0.5 rounded-full bg-luxury-gold/15 border border-luxury-gold/30 inline-block mb-1.5">
+                Wedding Gallery
+              </span>
+              <h1 className="font-serif text-[26px] font-semibold text-white tracking-wide">
                 Pengaturan Acara
               </h1>
             </div>
@@ -1755,37 +1772,37 @@ export default function SharedAlbumPage() {
       {/* ========================================================================= */}
       {showHostSetupModal && (
         <div className="fixed inset-0 z-[70] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none">
-          <div className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl">
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+          <div className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl">
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-3xl bg-fuchsia-500/10 border border-fuchsia-500/20 mx-auto flex items-center justify-center text-3xl mb-4 shadow-inner">
+              <div className="w-14 h-14 rounded-2xl bg-luxury-gold/10 border border-luxury-gold/30 mx-auto flex items-center justify-center text-2xl mb-3 shadow-inner text-luxury-gold">
                 📸
               </div>
-              <h3 className="font-serif text-[24px] font-bold text-white tracking-tight mb-2">
+              <h3 className="font-serif text-[24px] font-semibold text-white tracking-tight mb-1.5">
                 Atur Album Kami
               </h3>
-              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
-                Ruang penyimpanan R2 untuk album pernikahan Anda telah aktif. Beri nama khusus & tentukan kuota rol kamera tamu.
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto font-sans">
+                Ruang penyimpanan R2 untuk album pernikahan Anda telah aktif. Beri nama khusus &amp; tentukan kuota rol kamera tamu.
               </p>
             </div>
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-[11px] font-semibold text-white/60 mb-2 uppercase tracking-wider text-left">
+                <label className="block text-[11px] font-semibold text-luxury-goldLight mb-2 uppercase tracking-wider text-left">
                   Nama Album
                 </label>
                 <input
                   type="text"
                   value={hostAlbumTitleInput}
                   onChange={(e) => setHostAlbumTitleInput(e.target.value)}
-                  placeholder="Contoh: Album Resepsi Dika & Riyan"
-                  className="w-full h-13 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-4 text-white placeholder-white/30 text-sm outline-none transition-all"
+                  placeholder="Contoh: Album Resepsi Dika &amp; Riyan"
+                  className="w-full h-12 bg-[#18181b] border border-white/10 focus:border-luxury-gold rounded-xl px-4 text-white placeholder-zinc-500 text-sm outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-white/60 mb-2 uppercase tracking-wider text-left">
+                <label className="block text-[11px] font-semibold text-luxury-goldLight mb-2 uppercase tracking-wider text-left">
                   Foto per Tamu (Kamera Roll)
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -1794,10 +1811,10 @@ export default function SharedAlbumPage() {
                       key={num}
                       type="button"
                       onClick={() => setHostRollLimitInput(num)}
-                      className={`h-11 rounded-xl text-xs font-bold transition-all border ${
+                      className={`h-11 rounded-xl text-xs font-semibold transition-all border cursor-pointer ${
                         hostRollLimitInput === num
-                          ? 'bg-white text-black border-white shadow-lg'
-                          : 'bg-[#1c1b19] text-white/60 border-white/5 hover:border-white/20'
+                          ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-md font-bold'
+                          : 'bg-[#18181b] text-zinc-400 border-white/5 hover:border-white/20 hover:text-white'
                       }`}
                     >
                       {num} foto
@@ -1807,7 +1824,7 @@ export default function SharedAlbumPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <button
                 disabled={isSavingSettings}
                 onClick={async () => {
@@ -1818,13 +1835,13 @@ export default function SharedAlbumPage() {
                   sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
                   setShowHostSetupModal(false);
                 }}
-                className="w-full h-13 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full h-12 rounded-xl gold-shimmer text-zinc-950 font-semibold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isSavingSettings ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Simpan & Buka Galeri</span>
+                    <span>Simpan &amp; Buka Galeri</span>
                     <span>→</span>
                   </>
                 )}
@@ -1835,7 +1852,7 @@ export default function SharedAlbumPage() {
                   sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
                   setShowHostSetupModal(false);
                 }}
-                className="w-full h-11 rounded-2xl bg-transparent hover:bg-white/5 text-white/50 hover:text-white font-medium text-xs active:scale-[0.98] transition-all"
+                className="w-full h-10 rounded-xl bg-transparent hover:bg-white/5 text-zinc-400 hover:text-white font-medium text-xs active:scale-[0.98] transition-all cursor-pointer"
               >
                 Gunakan Default
               </button>
@@ -1854,15 +1871,15 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
-            <div className="text-center mb-6">
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+            <div className="text-center mb-5">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
                 Ubah Nama Album
               </h3>
-              <p className="text-xs text-white/50 font-sans">
+              <p className="text-xs text-zinc-400 font-sans">
                 Nama ini akan tampil di bagian atas galeri album
               </p>
             </div>
@@ -1873,7 +1890,7 @@ export default function SharedAlbumPage() {
                 value={editTitleInput}
                 onChange={(e) => setEditTitleInput(e.target.value)}
                 placeholder="Nama Album"
-                className="w-full h-13 bg-[#1c1b19] border border-white/10 focus:border-white/40 rounded-2xl px-4 text-white placeholder-white/30 text-sm outline-none transition-all"
+                className="w-full h-12 bg-[#18181b] border border-white/10 focus:border-luxury-gold rounded-xl px-4 text-white placeholder-zinc-500 text-sm outline-none transition-all"
                 autoFocus
               />
             </div>
@@ -1881,7 +1898,7 @@ export default function SharedAlbumPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setShowEditTitleModal(false)}
-                className="h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+                className="h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
               >
                 Batal
               </button>
@@ -1893,7 +1910,7 @@ export default function SharedAlbumPage() {
                   }
                   setShowEditTitleModal(false);
                 }}
-                className="h-12 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2"
+                className="h-11 rounded-xl gold-shimmer text-zinc-950 font-semibold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Simpan</span>
               </button>
@@ -1912,15 +1929,15 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-5">
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
                 Foto per Tamu (Kamera Roll)
               </h3>
-              <p className="text-xs text-white/50 font-sans">
+              <p className="text-xs text-zinc-400 font-sans">
                 Tentukan batas maksimal foto yang bisa diabadikan tiap tamu
               </p>
             </div>
@@ -1935,10 +1952,10 @@ export default function SharedAlbumPage() {
                       await saveSetting({ roll_limit: limit });
                       setShowEditRollLimitModal(false);
                     }}
-                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                       isSelected
-                        ? 'bg-white text-black border-white shadow-lg'
-                        : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                        ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
+                        : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
                     }`}
                   >
                     <span className="font-semibold text-sm">
@@ -1952,7 +1969,7 @@ export default function SharedAlbumPage() {
 
             <button
               onClick={() => setShowEditRollLimitModal(false)}
-              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+              className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
             >
               Tutup
             </button>
@@ -1970,15 +1987,15 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-5">
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
                 Kapasitas Tamu Bergabung
               </h3>
-              <p className="text-xs text-white/50 font-sans">
+              <p className="text-xs text-zinc-400 font-sans">
                 Batas jumlah kuota tamu yang dapat mengakses album ini
               </p>
             </div>
@@ -1993,10 +2010,10 @@ export default function SharedAlbumPage() {
                       await saveSetting({ max_guests: cap });
                       setShowEditCapacityModal(false);
                     }}
-                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                       isSelected
-                        ? 'bg-white text-black border-white shadow-lg'
-                        : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                        ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
+                        : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
                     }`}
                   >
                     <span className="font-semibold text-sm">
@@ -2010,7 +2027,7 @@ export default function SharedAlbumPage() {
 
             <button
               onClick={() => setShowEditCapacityModal(false)}
-              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+              className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
             >
               Tutup
             </button>
@@ -2028,15 +2045,15 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-5">
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-1">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
                 Waktu Ungkap Foto
               </h3>
-              <p className="text-xs text-white/50 font-sans">
+              <p className="text-xs text-zinc-400 font-sans">
                 Tentukan kapan foto dari tamu dapat dilihat di galeri
               </p>
             </div>
@@ -2047,17 +2064,17 @@ export default function SharedAlbumPage() {
                   await saveSetting({ reveal_mode: 'instant', is_revealed: true });
                   setShowEditRevealModal(false);
                 }}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   albumData?.reveal_mode !== 'after'
-                    ? 'bg-white text-black border-white shadow-lg'
-                    : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                    ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
+                    : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-semibold text-sm">Selama Acara (Langsung Tampil)</span>
                   {albumData?.reveal_mode !== 'after' && <span className="font-bold text-sm">✓</span>}
                 </div>
-                <p className={`text-xs ${albumData?.reveal_mode !== 'after' ? 'text-black/60' : 'text-white/40'}`}>
+                <p className={`text-xs ${albumData?.reveal_mode !== 'after' ? 'text-black/70' : 'text-zinc-400'}`}>
                   Setiap foto yang dijepret tamu akan langsung muncul di dashboard galeri secara realtime.
                 </p>
               </div>
@@ -2067,17 +2084,17 @@ export default function SharedAlbumPage() {
                   await saveSetting({ reveal_mode: 'after', is_revealed: false });
                   setShowEditRevealModal(false);
                 }}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   albumData?.reveal_mode === 'after'
-                    ? 'bg-white text-black border-white shadow-lg'
-                    : 'bg-[#1c1b19] border-white/5 hover:border-white/20 text-white'
+                    ? 'bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] text-black border-amber-200 shadow-lg'
+                    : 'bg-[#18181b] border-white/5 hover:border-white/20 text-white'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-semibold text-sm">Setelah Acara Selesai (Teka-Teki)</span>
                   {albumData?.reveal_mode === 'after' && <span className="font-bold text-sm">✓</span>}
                 </div>
-                <p className={`text-xs ${albumData?.reveal_mode === 'after' ? 'text-black/60' : 'text-white/40'}`}>
+                <p className={`text-xs ${albumData?.reveal_mode === 'after' ? 'text-black/70' : 'text-zinc-400'}`}>
                   Foto tamu tetap tersimpan rapi, namun galeri baru akan terbuka bersamaan setelah acara selesai.
                 </p>
               </div>
@@ -2085,7 +2102,7 @@ export default function SharedAlbumPage() {
 
             <button
               onClick={() => setShowEditRevealModal(false)}
-              className="w-full h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all"
+              className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer"
             >
               Tutup
             </button>
@@ -2103,18 +2120,18 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-red-500/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 mx-auto flex items-center justify-center text-3xl mb-4 text-red-400">
+              <div className="w-14 h-14 rounded-2xl bg-red-950/40 border border-red-500/30 mx-auto flex items-center justify-center text-2xl mb-3 text-red-400 shadow-inner">
                 🗑️
               </div>
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-2">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1.5">
                 Hapus Foto Ini?
               </h3>
-              <p className="text-xs text-white/50 leading-relaxed max-w-xs mx-auto font-sans">
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto font-sans">
                 Foto yang diabadikan oleh <strong className="text-white">{currentPhoto?.guest_name || 'Tamu'}</strong> akan dihapus permanen dari galeri album bersama.
               </p>
             </div>
@@ -2123,14 +2140,14 @@ export default function SharedAlbumPage() {
               <button
                 disabled={isDeleting}
                 onClick={() => setShowDeletePhotoConfirmModal(false)}
-                className="h-12 rounded-2xl bg-[#222220] hover:bg-[#2a2a28] border border-white/10 text-white font-medium text-xs active:scale-95 transition-all disabled:opacity-50"
+                className="h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 disabled={isDeleting}
                 onClick={confirmDeletePhotoAction}
-                className="h-12 rounded-2xl bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/20 text-white font-bold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+                className="h-11 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-200 font-semibold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isDeleting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2153,27 +2170,27 @@ export default function SharedAlbumPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#141312] border border-white/10 rounded-t-[36px] md:rounded-[36px] px-6 pt-5 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-amber-500/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-3xl bg-red-500/10 border border-red-500/20 mx-auto flex items-center justify-center text-3xl mb-4 text-red-400">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 mx-auto flex items-center justify-center text-2xl mb-3 text-amber-300 shadow-inner">
                 ⚠️
               </div>
-              <h3 className="font-serif text-[22px] font-bold text-white tracking-tight mb-2">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1.5">
                 Hapus Acara Ini?
               </h3>
-              <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto font-sans">
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto font-sans">
                 Album ini terhubung secara langsung dengan undangan pernikahan utama Anda di StoryKami. Untuk mengelola atau menghapus seluruh undangan beserta album, silakan lakukan dari <strong className="text-white">Dashboard WIM</strong>.
               </p>
             </div>
 
             <button
               onClick={() => setShowDeleteAlbumConfirmModal(false)}
-              className="w-full h-12 rounded-2xl bg-white hover:bg-neutral-200 text-black font-bold text-xs active:scale-95 transition-all shadow-xl"
+              className="w-full h-11 rounded-xl gold-shimmer text-zinc-950 font-semibold text-xs active:scale-95 transition-all shadow-xl cursor-pointer"
             >
-              Mengerti & Kembali
+              Mengerti &amp; Kembali
             </button>
           </div>
         </div>

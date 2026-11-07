@@ -1,14 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
   --font-luxury-serif: 'Playfair Display', Georgia, serif;
   --font-garamond: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
   --font-mono: 'Share Tech Mono', ui-monospace, monospace;
   --font-film: 'Share Tech Mono', ui-monospace, monospace;
 
-  --color-noir-lowest: #070709;
+  --color-noir-lowest: #0a0a0c;
   --color-noir-dim: #0a0a0d;
   --color-noir-950: #070709;
   --color-noir-900: #121214;
@@ -19,7 +20,7 @@
 
   --color-luxury-black: #070709;
   --color-luxury-dark: #101014;
-  --color-luxury-card: #141417;
+  --color-luxury-card: #16161c;
   --color-luxury-card-hover: #1c1c21;
   --color-luxury-border: #222228;
   --color-luxury-gold: #d4af37;
@@ -60,35 +61,93 @@
   --font-film: 'Share Tech Mono', ui-monospace, monospace;
 }
 
-/* Force Dark Luxury Body & Fonts in AlbumKami Context */
+/* ========================================================================= */
+/* STRICT ISOLATION FROM globals.css FOR ALBUMKAMI                          */
+/* ========================================================================= */
 body, .albumkami-root {
   background-color: #070709 !important;
   color: #f4f4f5 !important;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif !important;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-.font-mono, .font-film {
-  font-family: 'Share Tech Mono', ui-monospace, monospace !important;
+.albumkami-root * {
+  font-family: inherit;
 }
 
-.font-serif {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif !important;
-}
-
-.font-luxury-serif {
+.font-serif,
+.albumkami-root .font-serif,
+.albumkami-root h1.font-serif,
+.albumkami-root h2.font-serif,
+.albumkami-root span.font-serif {
   font-family: 'Playfair Display', Georgia, serif !important;
 }
 
-.font-garamond {
+.font-luxury-serif,
+.albumkami-root .font-luxury-serif {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  letter-spacing: -0.015em;
+}
+
+.font-garamond,
+.albumkami-root .font-garamond {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
 }
 
-.font-sans {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+.font-sans,
+.albumkami-root .font-sans {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* Nocturne Noir Glassmorphism & Custom Elements */
+.font-mono,
+.font-film,
+.albumkami-root .font-mono,
+.albumkami-root .font-film {
+  font-family: 'Share Tech Mono', ui-monospace, monospace !important;
+}
+
+/* ========================================================================= */
+/* DIRECT TAILWIND CLASS POLYFILLS (Guarantees Perfect Match With Code.html)   */
+/* ========================================================================= */
+.text-luxury-gold { color: #d4af37 !important; }
+.text-luxury-goldLight { color: #f3e5ab !important; }
+.text-luxury-goldMuted { color: #9e8858 !important; }
+.text-luxury-textMuted { color: #8e8e96 !important; }
+.text-luxury-silver { color: #a1a1aa !important; }
+.text-luxury-danger { color: #ef4444 !important; }
+
+.bg-luxury-black { background-color: #070709 !important; }
+.bg-luxury-dark { background-color: #101014 !important; }
+.bg-luxury-card { background-color: #16161c !important; }
+.bg-luxury-cardHover:hover,
+.hover\:bg-luxury-cardHover:hover { background-color: #1c1c21 !important; }
+.bg-luxury-gold { background-color: #d4af37 !important; }
+.bg-luxury-goldLight { background-color: #f3e5ab !important; }
+.bg-luxury-border { background-color: #222228 !important; }
+
+.border-luxury-border { border-color: #222228 !important; }
+.border-luxury-gold { border-color: #d4af37 !important; }
+
+.text-gold { color: #d4af37 !important; }
+.text-gold-light { color: #f3e5ab !important; }
+.text-gold-400 { color: #e5c07b !important; }
+.text-champagne-200 { color: #f7edd2 !important; }
+.text-champagne-400 { color: #e0c77e !important; }
+.text-champagne-500 { color: #d4af37 !important; }
+
+.bg-noir-950 { background-color: #070709 !important; }
+.bg-noir-900 { background-color: #121214 !important; }
+.bg-noir-850 { background-color: #18171a !important; }
+.bg-noir-800 { background-color: #212024 !important; }
+.bg-noir-dim { background-color: #0a0a0d !important; }
+.bg-noir-lowest { background-color: #0a0a0c !important; }
+
+.tracking-luxury { letter-spacing: 0.18em !important; }
+
+/* ========================================================================= */
+/* NOCTURNE NOIR GLASSMORPHISM & SPECIAL EFFECTS                             */
+/* ========================================================================= */
 .glass-card {
   background: linear-gradient(180deg, rgba(26, 26, 32, 0.95) 0%, rgba(13, 13, 16, 0.98) 100%) !important;
   box-shadow: 0 -10px 40px -5px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
@@ -132,11 +191,29 @@ body, .albumkami-root {
   box-shadow: 0 0 35px -10px rgba(212, 175, 55, 0.25) !important;
 }
 
+.shadow-gold-glow {
+  box-shadow: 0 0 25px -5px rgba(212, 175, 55, 0.25) !important;
+}
+
+.shadow-inner-subtle {
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
 .glass-surface {
   background: rgba(26, 25, 29, 0.75) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border: 1px solid rgba(212, 175, 55, 0.14) !important;
+}
+
+.gold-input-focus:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.65) !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12) !important;
+}
+
+.sheet-transition {
+  transition: height 0.35s cubic-bezier(0.32, 0.72, 0, 1), transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
 }
 
 /* Animations */
@@ -163,13 +240,18 @@ body, .albumkami-root {
   width: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(212, 175, 55, 0.2);
   border-radius: 9999px;
 }
-.no-scrollbar::-webkit-scrollbar {
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.4);
+}
+
+.no-scrollbar::-webkit-scrollbar,
+::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {

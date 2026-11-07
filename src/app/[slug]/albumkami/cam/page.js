@@ -963,62 +963,76 @@ export default function SatualbumCameraPage() {
 
       </div>
 
-      {/* BOTTOM SHEET REGISTRASI TAMU (Jika belum punya nama) */}
+      {/* BOTTOM SHEET REGISTRASI TAMU (popup_masuk_tamu_berlatar_beranda) */}
       {!isRegistered && !isLoadingSession && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/60 backdrop-blur-sm p-0 md:items-center md:p-4 anim-slide-up">
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-t-[34px] border border-white/10 bg-[#161616] px-6 pb-10 pt-6 shadow-2xl md:rounded-[34px]"
-          >
-            <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-white/20" />
+        <main
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md anim-fade-in select-none"
+        >
+          <div className="w-full max-w-[390px] mx-auto">
+            <section className="glass-card rounded-3xl p-6 sm:p-7 border border-white/15 relative overflow-hidden backdrop-blur-2xl shadow-2xl">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-amber-200/50 to-transparent" />
+              
+              <div className="flex flex-col items-center text-center space-y-4 pt-1">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border border-white/15 bg-white/[0.04] text-[10px] sm:text-[11px] font-medium tracking-[0.16em] uppercase text-zinc-300 backdrop-blur-md">
+                  <span>Kamera Tamu</span>
+                  <span className="text-white/40 text-[8px]">•</span>
+                  <span>Album Pernikahan</span>
+                </div>
 
-            <div className="text-center mb-5">
-              <span className="inline-block rounded-full bg-white/[0.06] border border-white/10 px-3 py-1 font-film text-[10px] tracking-widest uppercase text-white/70 mb-2.5">
-                Kamera Tamu • {albumTitle}
-              </span>
-              <h2 className="font-serif text-2xl font-bold tracking-tight text-white mb-1.5">
-                {albumTitle}
-              </h2>
-              <p className="text-[13px] text-white/50 leading-relaxed max-w-xs mx-auto">
-                Tulis namamu untuk mulai mengambil foto jernih beresolusi tinggi di album bersama.
-              </p>
-            </div>
+                {/* Title & Subtitle */}
+                <h1 className="font-serif text-[1.95rem] leading-[1.2] sm:text-3xl text-zinc-50 font-semibold tracking-normal mt-1">
+                  {albumTitle || 'Album Pernikahan'}
+                </h1>
+                <p className="text-zinc-400 text-[13px] sm:text-sm leading-relaxed max-w-[310px] font-normal tracking-wide">
+                  Tulis namamu untuk mulai mengambil foto <br />di album bersama.
+                </p>
 
-            <form onSubmit={handleRegisterGuest} className="space-y-4">
-              <div>
-                <label className="block font-film text-[11px] tracking-wider uppercase text-white/50 mb-2">
-                  Siapa Namamu?
-                </label>
-                <input
-                  type="text"
-                  required
-                  autoFocus
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  placeholder="Tulis nama panggilanmu..."
-                  className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm text-white placeholder-white/25 focus:border-white/30 focus:outline-none transition-colors"
-                />
+                {/* Form Input */}
+                <form onSubmit={handleRegisterGuest} className="w-full pt-2 space-y-4 text-left">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-semibold tracking-[0.2em] uppercase text-zinc-400 pl-1" htmlFor="cam-guest-name">
+                      Siapa Namamu?
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="cam-guest-name"
+                        type="text"
+                        autoFocus
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        placeholder="Tulis nama panggilanmu..."
+                        className="input-glass w-full rounded-2xl px-4 py-3.5 text-sm sm:text-base text-zinc-100 placeholder:text-zinc-500 placeholder:font-light outline-none transition focus:ring-0"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="gold-shimmer w-full text-zinc-950 font-semibold text-sm sm:text-base py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.08)] cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    <span>Mulai Memotret</span>
+                    <svg className="w-4 h-4 text-zinc-900" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                      <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </form>
+
+                <div className="pt-2">
+                  <Link
+                    href={`/${slug}/albumkami/`}
+                    className="group inline-flex items-center gap-1.5 text-xs sm:text-sm text-zinc-400 hover:text-amber-200/90 transition-colors duration-200 tracking-wide"
+                  >
+                    <span>Lihat Galeri Bersama</span>
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 font-mono">→</span>
+                  </Link>
+                </div>
               </div>
-
-              <button
-                type="submit"
-                disabled={!guestName.trim()}
-                className="w-full rounded-2xl bg-white py-4 font-semibold text-black text-[15px] hover:bg-neutral-200 active:scale-[0.98] transition-all disabled:opacity-40 shadow-xl"
-              >
-                Mulai Memotret 📷
-              </button>
-            </form>
-
-            <div className="mt-4 text-center">
-              <Link
-                href={`/${slug}/albumkami/`}
-                className="font-film text-xs text-white/40 hover:text-white transition-colors"
-              >
-                Lihat Galeri Bersama →
-              </Link>
-            </div>
+            </section>
           </div>
-        </div>
+        </main>
       )}
     </div>
   );
