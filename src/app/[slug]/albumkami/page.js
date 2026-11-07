@@ -172,21 +172,22 @@ export default function SharedAlbumPage() {
   useEffect(() => {
     if (typeof window === 'undefined' || !slug) return;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const fromWim = urlParams.get('from') === 'wim';
-    const wimSession = localStorage.getItem('wim_session');
-    const hostStored = localStorage.getItem(`storykami_is_host_${slug}`) === 'true';
+    // Bersihkan legacy host flag di localStorage agar tidak bocor ke tamu
+    try {
+      localStorage.removeItem(`storykami_is_host_${slug}`);
+    } catch (e) {}
 
-    const hostStatus = fromWim || Boolean(wimSession) || hostStored;
-    setIsHost(hostStatus);
+    const urlParams = new URLSearchParams(window.location.search);
+    // Tombol pengaturan dan mode host HANYA jika ada parameter URL ?from=wim
+    const fromWim = urlParams.get('from') === 'wim';
+    setIsHost(fromWim);
 
     if (fromWim) {
-      localStorage.setItem(`storykami_is_host_${slug}`, 'true');
       const setupShown = sessionStorage.getItem(`storykami_host_setup_shown_${slug}`);
       if (!setupShown) {
         setShowHostSetupModal(true);
       }
-    } else if (!hostStatus) {
+    } else {
       // Pengunjung adalah TAMU: Cek apakah nama sudah tersimpan di localStorage
       const savedGuestName = localStorage.getItem('storykami_guest_name');
       if (!savedGuestName) {
