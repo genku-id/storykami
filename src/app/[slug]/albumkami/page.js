@@ -601,9 +601,9 @@ export default function SharedAlbumPage() {
         {/* END: HeroSection */}
 
         {/* BEGIN: ContentArea */}
-        <div className="flex-1 flex flex-col justify-start px-4 mt-3 sm:mt-4 z-20 space-y-4" data-purpose="main-album-content">
+        <div className="flex-1 flex flex-col justify-start px-4 mt-4 sm:mt-5 z-20" data-purpose="main-album-content">
           {/* BEGIN: StatsBar */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-md shadow-black/30 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-md shadow-black/30 divide-x divide-white/[0.08] mb-4 sm:mb-5" data-purpose="album-stats-bar">
             {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
@@ -648,8 +648,8 @@ export default function SharedAlbumPage() {
           </div>
           {/* END: StatsBar */}
 
-          {/* BEGIN: ActionToolbar (Padding atas & bawah, posisi relative z-30 di atas bayangan) */}
-          <div className="relative z-30 flex items-center gap-2.5 py-2.5 my-1" data-purpose="quick-actions-toolbar">
+          {/* BEGIN: ActionToolbar (Jarak lega atas & bawah) */}
+          <div className="relative z-30 flex items-center gap-2.5 mb-5 sm:mb-6" data-purpose="quick-actions-toolbar">
             {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
@@ -729,7 +729,7 @@ export default function SharedAlbumPage() {
 
           {/* ACTIVE CONTRIBUTOR FILTER BANNER */}
           {selectedContributor !== 'ALL' && (
-            <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 mb-2 text-xs shadow-md">
+            <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 mb-4 text-xs shadow-md">
               <div className="flex items-center gap-2 truncate">
                 <span className="text-zinc-400 font-sans">Filter Tamu:</span>
                 <span className="font-semibold text-white truncate max-w-[150px]">{selectedContributor}</span>
@@ -744,7 +744,7 @@ export default function SharedAlbumPage() {
             </div>
           )}
 
-          {/* PHOTO GALLERY GRID / EMPTY STATE (Padding atas ekstra agar tidak mepet tombol) */}
+          {/* PHOTO GALLERY GRID / EMPTY STATE (Jarak lega pemisah foto dari tombol) */}
           {filteredPhotos.length === 0 ? (
             <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-3 group" data-purpose="empty-gallery-state">
               {/* Subtle Ambient Background Light */}
@@ -769,7 +769,7 @@ export default function SharedAlbumPage() {
             </section>
           ) : (
             <div
-              className={`grid gap-2.5 pt-2 pb-6 ${
+              className={`grid gap-2.5 pt-1 pb-8 ${
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
