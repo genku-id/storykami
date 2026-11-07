@@ -9,10 +9,8 @@
   --border: #e0e0e0;
 }
 
-* {
+*, ::before, ::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
@@ -21,6 +19,13 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote {
+  margin: 0;
+  padding: 0;
 }
 
 a {

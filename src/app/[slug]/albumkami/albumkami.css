@@ -72,7 +72,11 @@ body, .albumkami-root {
   user-select: none;
 }
 
-.albumkami-root * {
+.albumkami-root,
+.albumkami-root *,
+.albumkami-root *::before,
+.albumkami-root *::after {
+  box-sizing: border-box !important;
   font-family: inherit;
 }
 
@@ -164,25 +168,99 @@ body, .albumkami-root {
 /* ========================================================================= */
 /* LAYOUT SPACING & SEPARATION (Matches beranda_album_galeri_elegan)         */
 /* ========================================================================= */
-[data-purpose="main-album-content"] {
+.albumkami-root [data-purpose="mobile-viewport"] {
+  width: 100% !important;
+  max-width: 430px !important;
+  min-height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 1.25rem !important; /* 20px */
+  justify-content: space-between !important;
+  padding-bottom: 2rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
-[data-purpose="album-stats-bar"] {
-  margin-bottom: 0.25rem !important;
+.albumkami-root [data-purpose="main-album-content"] {
+  flex: 1 1 0% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding-left: 1rem !important; /* 16px */
+  padding-right: 1rem !important; /* 16px */
+  margin-top: -0.5rem !important;
+  z-index: 20 !important;
+  gap: 1.25rem !important; /* 20px clean separation matching code.html */
 }
 
-[data-purpose="quick-actions-toolbar"] {
-  margin-top: 0.25rem !important;
-  margin-bottom: 0.5rem !important;
+.albumkami-root [data-purpose="album-stats-bar"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  padding-top: 0.875rem !important; /* 14px */
+  padding-bottom: 0.875rem !important; /* 14px */
+  padding-left: 0.75rem !important; /* 12px */
+  padding-right: 0.75rem !important; /* 12px */
+  border-radius: 1rem !important; /* 16px */
+  background-color: rgba(18, 18, 23, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6) !important;
+  margin: 0 !important;
+}
+
+.albumkami-root [data-purpose="quick-actions-toolbar"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.625rem !important; /* 10px exact */
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.albumkami-root [data-purpose="quick-actions-toolbar"] > a,
+.albumkami-root [data-purpose="quick-actions-toolbar"] > button:first-child {
+  flex: 2.8 1 0% !important;
+  height: 58px !important;
+  border-radius: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.albumkami-root [data-purpose="quick-actions-toolbar"] > div {
+  display: flex !important;
+  flex: 2 1 0% !important;
+  align-items: center !important;
+  gap: 0.5rem !important; /* 8px exact */
+}
+
+.albumkami-root [data-purpose="quick-actions-toolbar"] > div > button {
+  flex: 1 1 0% !important;
+  height: 58px !important;
+  border-radius: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.albumkami-root [data-purpose="empty-gallery-state"] {
+  padding: 1.75rem !important; /* 28px */
+  border-radius: 1.5rem !important; /* 24px */
+  margin-top: 0.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.albumkami-root [data-purpose="main-album-content"] .grid {
+  gap: 0.625rem !important; /* 10px */
+  padding-bottom: 2rem !important;
 }
 
 /* ========================================================================= */
 /* BOTTOM SHEET FILTER TAMU (Matches bottom_sheet_filter_tamu_berlatar_beranda) */
 /* ========================================================================= */
-[data-purpose="guest-filter-sheet"] {
+.albumkami-root [data-purpose="guest-filter-sheet"] {
   border-top-left-radius: 32px !important;
   border-top-right-radius: 32px !important;
   background-color: rgba(17, 18, 21, 0.95) !important;
@@ -190,14 +268,24 @@ body, .albumkami-root {
   border-left: 1px solid rgba(245, 158, 11, 0.2) !important;
   border-right: 1px solid rgba(245, 158, 11, 0.2) !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  overflow: hidden !important;
 }
 
-[data-purpose="sheet-header"] {
+.albumkami-root [data-purpose="drag-handle-container"] {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.albumkami-root [data-purpose="sheet-header"] {
   padding: 0.25rem 1.5rem 1rem 1.5rem !important; /* pt-1 pb-4 px-6 */
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  text-align: center !important;
 }
 
-[data-purpose="filter-options-list"] {
+.albumkami-root [data-purpose="filter-options-list"] {
   padding: 1rem 1.25rem 1.5rem 1.25rem !important; /* p-4 sm:p-5 with bottom room */
   display: flex !important;
   flex-direction: column !important;
@@ -205,7 +293,7 @@ body, .albumkami-root {
   overflow-y: auto !important;
 }
 
-[data-purpose="active-filter-item"] {
+.albumkami-root [data-purpose="active-filter-item"] {
   padding: 0.875rem 1rem !important; /* p-3.5 sm:p-4 */
   border-radius: 1rem !important; /* rounded-2xl */
   display: flex !important;
@@ -215,9 +303,10 @@ body, .albumkami-root {
   color: #08080a !important;
   border: 1px solid rgba(254, 230, 133, 0.8) !important;
   box-shadow: 0 0 25px -4px rgba(212, 175, 55, 0.25) !important;
+  width: 100% !important;
 }
 
-[data-purpose="guest-filter-item"] {
+.albumkami-root [data-purpose="guest-filter-item"] {
   padding: 0.75rem 0.875rem !important; /* p-3 sm:p-3.5 */
   border-radius: 1rem !important; /* rounded-2xl */
   display: flex !important;
@@ -225,27 +314,56 @@ body, .albumkami-root {
   justify-content: space-between !important;
   background-color: #17181d !important;
   border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  width: 100% !important;
 }
 
-[data-purpose="guest-filter-item"]:hover {
+.albumkami-root [data-purpose="guest-filter-item"]:hover {
   background-color: #1e2026 !important;
   border-color: rgba(212, 175, 55, 0.3) !important;
 }
 
-[data-purpose="active-filter-item"] > div:first-child,
-[data-purpose="guest-filter-item"] > div:first-child {
+.albumkami-root [data-purpose="active-filter-item"] > div:first-child,
+.albumkami-root [data-purpose="guest-filter-item"] > div:first-child {
   display: flex !important;
   align-items: center !important;
   gap: 0.875rem !important; /* gap-3.5 (14px) */
   min-width: 0 !important;
 }
 
-[data-purpose="sheet-footer"] {
+.albumkami-root [data-purpose="sheet-footer"] {
   padding: 0.75rem 1rem 1.5rem 1rem !important;
   border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
   background-color: rgba(8, 8, 10, 0.8) !important;
   display: flex !important;
   justify-content: center !important;
+}
+
+/* ========================================================================= */
+/* ZIP DOWNLOAD MODAL (Matches popup_unduh_zip_berlatar_beranda)             */
+/* ========================================================================= */
+.albumkami-root [data-purpose="zip-download-modal-card"] {
+  padding: 1.75rem 1.75rem 2rem 1.75rem !important; /* 28px 28px 32px 28px */
+  border-radius: 1.5rem !important; /* 24px */
+  background-color: rgba(19, 19, 21, 0.95) !important;
+  border: 1px solid rgba(223, 194, 157, 0.25) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(207, 172, 123, 0.12) !important;
+}
+
+.albumkami-root [data-purpose="status-icon"] {
+  margin-bottom: 1.25rem !important; /* 20px */
+}
+
+.albumkami-root [data-purpose="action-buttons"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important; /* 12px */
+  width: 100% !important;
+}
+
+.albumkami-root [data-purpose="action-buttons"] > button {
+  width: 50% !important;
+  padding: 0.875rem 1rem !important; /* 14px 16px */
+  border-radius: 0.75rem !important; /* 12px */
 }
 
 /* ========================================================================= */

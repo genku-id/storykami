@@ -310,7 +310,7 @@ export default function SharedAlbumPage() {
 
   const albumTitle = albumData?.title || 'Awal dari Selamanya';
   const displayCoupleName = (albumTitle || '')
-    .replace(/^album\s+pernikahan\s+/i, '')
+    .replace(/^(album\s+pernikahan\s*[:\-–—]?\s*)+/gi, '')
     .trim() || 'fafa-fufu';
   const maxGuests = albumData?.max_guests || 50;
   const currentGuestsCount = Math.max(contributors.length, photos.length > 0 ? 1 : 0);
@@ -627,7 +627,7 @@ export default function SharedAlbumPage() {
         {/* BEGIN: ContentArea */}
         <div className="flex-1 flex flex-col justify-start px-4 -mt-2 z-20 gap-5" data-purpose="main-album-content">
           {/* BEGIN: StatsBar */}
-          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08] mb-1" data-purpose="album-stats-bar">
+          <div className="grid grid-cols-3 items-center py-3.5 px-3 bg-[#121217]/90 backdrop-blur-md border border-white/[0.07] rounded-2xl shadow-xl shadow-black/60 divide-x divide-white/[0.08]" data-purpose="album-stats-bar">
             {/* Total Moments */}
             <div className="text-center px-1">
               <span className="block font-serif text-2xl font-bold tracking-tight text-white italic leading-none mb-1">
@@ -672,7 +672,7 @@ export default function SharedAlbumPage() {
           {/* END: StatsBar */}
 
           {/* BEGIN: ActionToolbar */}
-          <div className="flex items-center gap-2.5 my-1.5" data-purpose="quick-actions-toolbar">
+          <div className="flex items-center gap-2.5" data-purpose="quick-actions-toolbar">
             {/* Primary Large Camera Action Button */}
             <Link
               href={`/${slug}/albumkami/cam/`}
@@ -1094,6 +1094,7 @@ export default function SharedAlbumPage() {
           <div
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-[380px] rounded-3xl bg-[#131315]/95 border border-[#DFC29D]/25 backdrop-blur-2xl p-7 pt-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(207,172,123,0.12)] overflow-hidden anim-fade-in"
+            data-purpose="zip-download-modal-card"
           >
             {/* Top ambient gold line */}
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DFC29D]/50 to-transparent" />
