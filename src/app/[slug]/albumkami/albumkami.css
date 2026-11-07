@@ -177,6 +177,75 @@ body, .albumkami-root {
 }
 
 /* ========================================================================= */
+/* BOTTOM SHEET FILTER TAMU (Matches bottom_sheet_filter_tamu_berlatar_beranda) */
+/* ========================================================================= */
+[data-purpose="guest-filter-sheet"] {
+  border-top-left-radius: 32px !important;
+  border-top-right-radius: 32px !important;
+  background-color: rgba(17, 18, 21, 0.95) !important;
+  border-top: 1px solid rgba(245, 158, 11, 0.2) !important;
+  border-left: 1px solid rgba(245, 158, 11, 0.2) !important;
+  border-right: 1px solid rgba(245, 158, 11, 0.2) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-purpose="sheet-header"] {
+  padding: 0.25rem 1.5rem 1rem 1.5rem !important; /* pt-1 pb-4 px-6 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-purpose="filter-options-list"] {
+  padding: 1rem 1.25rem 1.5rem 1.25rem !important; /* p-4 sm:p-5 with bottom room */
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important; /* 12px vertical spacing between cards */
+  overflow-y: auto !important;
+}
+
+[data-purpose="active-filter-item"] {
+  padding: 0.875rem 1rem !important; /* p-3.5 sm:p-4 */
+  border-radius: 1rem !important; /* rounded-2xl */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.95), #fffbeb) !important;
+  color: #08080a !important;
+  border: 1px solid rgba(254, 230, 133, 0.8) !important;
+  box-shadow: 0 0 25px -4px rgba(212, 175, 55, 0.25) !important;
+}
+
+[data-purpose="guest-filter-item"] {
+  padding: 0.75rem 0.875rem !important; /* p-3 sm:p-3.5 */
+  border-radius: 1rem !important; /* rounded-2xl */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #17181d !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-purpose="guest-filter-item"]:hover {
+  background-color: #1e2026 !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+[data-purpose="active-filter-item"] > div:first-child,
+[data-purpose="guest-filter-item"] > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.875rem !important; /* gap-3.5 (14px) */
+  min-width: 0 !important;
+}
+
+[data-purpose="sheet-footer"] {
+  padding: 0.75rem 1rem 1.5rem 1rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(8, 8, 10, 0.8) !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* ========================================================================= */
 /* NOCTURNE NOIR GLASSMORPHISM & SPECIAL EFFECTS                             */
 /* ========================================================================= */
 .glass-card {

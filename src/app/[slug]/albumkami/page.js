@@ -1178,7 +1178,7 @@ export default function SharedAlbumPage() {
             </header>
 
             {/* Scrollable Guest Filter List */}
-            <div aria-labelledby="sheet-title" className="p-4 sm:p-5 overflow-y-auto space-y-2.5 custom-scrollbar flex-1" data-purpose="filter-options-list" role="radiogroup">
+            <div aria-labelledby="sheet-title" className="p-4 sm:p-5 overflow-y-auto flex flex-col gap-3 custom-scrollbar flex-1" data-purpose="filter-options-list" role="radiogroup">
               {/* Item 1: 'Semua Momen' */}
               {selectedContributor === 'ALL' ? (
                 <button
