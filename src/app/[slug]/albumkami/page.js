@@ -1137,139 +1137,180 @@ export default function SharedAlbumPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 3. MODAL DAFTAR TAMU / KONTRIBUTOR (Nocturne Noir Bottom Sheet Filter)      */}
+      {/* 3. BOTTOM SHEET FILTER TAMU (bottom_sheet_filter_tamu_berlatar_beranda)   */}
       {/* ========================================================================= */}
       {showContributorsModal && (
         <div
           onClick={() => setShowContributorsModal(false)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-[6px] flex items-end justify-center select-none"
         >
-          <div
+          {/* BEGIN: BottomSheetContainer */}
+          <main
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md max-h-[85vh] bg-[#131316]/95 backdrop-blur-xl border-t md:border border-amber-500/20 rounded-t-[32px] md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden"
+            className="relative z-20 w-full max-w-md mx-auto bg-noir-900/95 backdrop-blur-xl border-t border-x border-amber-500/20 rounded-t-[32px] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden anim-slide-up"
+            data-purpose="guest-filter-sheet"
           >
             {/* Top Drag Handle Bar */}
-            <div className="w-full pt-3 pb-2 flex justify-center items-center">
+            <div className="w-full pt-3 pb-2 flex justify-center items-center cursor-grab active:cursor-grabbing" data-purpose="drag-handle-container">
               <div className="w-10 h-1.5 bg-neutral-600/80 rounded-full" />
             </div>
 
-            {/* Header Section */}
-            <header className="px-6 pt-1 pb-4 text-center relative border-b border-white/[0.06] flex items-center justify-between">
+            {/* Header Section with Close Button & Title */}
+            <header className="px-6 pt-1 pb-4 text-center relative border-b border-white/[0.06] flex items-center justify-between" data-purpose="sheet-header">
               <div className="w-8" />
               <div className="relative flex-1">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-12 bg-amber-500/15 blur-2xl pointer-events-none rounded-full" />
-                <h1 className="font-serif text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-12 bg-gold-500/15 blur-2xl pointer-events-none rounded-full" />
+                <h1 className="font-serif text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200" id="sheet-title">
                   Tamu Pengisi Album
                 </h1>
-                <p className="text-xs text-neutral-400 font-sans mt-0.5">
-                  Saring kenangan berdasarkan pengirim foto
-                </p>
+                <p className="text-xs text-neutral-400 font-sans mt-0.5">Saring kenangan berdasarkan pengirim foto</p>
               </div>
               <button
-                type="button"
                 onClick={() => setShowContributorsModal(false)}
-                className="w-8 h-8 rounded-full bg-[#18191d] border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0"
+                aria-label="Tutup"
+                className="w-8 h-8 rounded-full bg-noir-800 border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                type="button"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                 </svg>
               </button>
             </header>
 
             {/* Scrollable Guest Filter List */}
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-2.5 custom-scrollbar flex-1">
-              {/* Option 1: Semua Momen */}
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedContributor('ALL');
-                  setShowContributorsModal(false);
-                }}
-                className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between transition-all duration-200 transform active:scale-[0.99] border group ${
-                  selectedContributor === 'ALL'
-                    ? 'bg-gradient-to-r from-white/95 to-amber-50 text-zinc-950 shadow-lg border-amber-200/80'
-                    : 'bg-[#18191d] hover:bg-[#202227] text-white border-white/[0.06]'
-                }`}
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg shrink-0 ${
-                    selectedContributor === 'ALL' ? 'bg-black/10 text-zinc-950' : 'bg-white/5 text-amber-200'
-                  }`}>
-                    📸
+            <div aria-labelledby="sheet-title" className="p-4 sm:p-5 overflow-y-auto space-y-2.5 custom-scrollbar flex-1" data-purpose="filter-options-list" role="radiogroup">
+              {/* Item 1: 'Semua Momen' */}
+              {selectedContributor === 'ALL' ? (
+                <button
+                  type="button"
+                  aria-checked="true"
+                  onClick={() => {
+                    setSelectedContributor('ALL');
+                    setShowContributorsModal(false);
+                  }}
+                  className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/95 to-amber-50 text-noir-950 flex items-center justify-between shadow-gold-glow transition-all duration-200 transform active:scale-[0.99] border border-amber-200/80 group cursor-pointer"
+                  data-purpose="active-filter-item"
+                  role="radio"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-full bg-noir-900/10 flex items-center justify-center text-lg shrink-0 shadow-inner">
+                      <span className="group-hover:scale-110 transition-transform">📸</span>
+                    </div>
+                    <div className="truncate">
+                      <h2 className="font-semibold text-noir-950 text-base leading-tight tracking-tight">Semua Momen</h2>
+                      <p className="text-xs text-neutral-700 font-normal mt-0.5">{photos.length} total foto terkumpul</p>
+                    </div>
                   </div>
-                  <div className="truncate">
-                    <h2 className={`font-semibold text-base leading-tight tracking-tight ${
-                      selectedContributor === 'ALL' ? 'text-zinc-950' : 'text-white'
-                    }`}>
-                      Semua Momen
-                    </h2>
-                    <p className={`text-xs mt-0.5 ${
-                      selectedContributor === 'ALL' ? 'text-neutral-700' : 'text-neutral-400'
-                    }`}>
-                      {photos.length} total foto terkumpul
-                    </p>
-                  </div>
-                </div>
-                {selectedContributor === 'ALL' && (
-                  <div className="w-7 h-7 rounded-full bg-zinc-950/10 flex items-center justify-center shrink-0 ml-2">
-                    <svg className="w-4 h-4 text-zinc-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                  <div className="w-7 h-7 rounded-full bg-noir-950/10 flex items-center justify-center shrink-0 ml-2">
+                    <svg className="w-4 h-4 text-noir-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                )}
-              </button>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  aria-checked="false"
+                  onClick={() => {
+                    setSelectedContributor('ALL');
+                    setShowContributorsModal(false);
+                  }}
+                  className="w-full text-left p-3 sm:p-3.5 rounded-2xl bg-noir-850 hover:bg-noir-800 active:bg-noir-700 border border-white/5 hover:border-gold-500/30 flex items-center justify-between transition-all duration-200 group cursor-pointer"
+                  data-purpose="guest-filter-item"
+                  role="radio"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-noir-800 to-noir-950 border border-gold-500/30 flex items-center justify-center shrink-0 shadow-inner-subtle group-hover:border-gold-400/60 transition-colors">
+                      <span className="text-base">📸</span>
+                    </div>
+                    <div className="truncate">
+                      <span className="font-medium text-white group-hover:text-amber-100 text-[15px] block leading-tight tracking-normal transition-colors">Semua Momen</span>
+                      <span className="text-xs text-neutral-400 font-light mt-0.5 block">{photos.length} total foto terkumpul</span>
+                    </div>
+                  </div>
+                  <div className="text-neutral-500 group-hover:text-gold-400 transition-colors pr-1">
+                    <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                    </svg>
+                  </div>
+                </button>
+              )}
 
-              {/* Option 2..N: Tiap Kontributor Tamu */}
+              {/* Items 2..N: Tiap Tamu / Kontributor */}
               {contributors.map((name) => {
                 const count = photos.filter((p) => p.guest_name === name).length;
                 const isSelected = selectedContributor === name;
+                const initial = (name.charAt(0) || 'T').toUpperCase();
+
+                if (isSelected) {
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      aria-checked="true"
+                      onClick={() => {
+                        setSelectedContributor(name);
+                        setShowContributorsModal(false);
+                      }}
+                      className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/95 to-amber-50 text-noir-950 flex items-center justify-between shadow-gold-glow transition-all duration-200 transform active:scale-[0.99] border border-amber-200/80 group cursor-pointer"
+                      data-purpose="active-filter-item"
+                      role="radio"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-full bg-noir-900/10 flex items-center justify-center text-lg shrink-0 shadow-inner">
+                          <span className="font-serif font-bold text-noir-950 text-lg">{initial}</span>
+                        </div>
+                        <div className="truncate">
+                          <h2 className="font-semibold text-noir-950 text-base leading-tight tracking-tight">{name}</h2>
+                          <p className="text-xs text-neutral-700 font-normal mt-0.5">{count} foto diabadikan</p>
+                        </div>
+                      </div>
+                      <div className="w-7 h-7 rounded-full bg-noir-950/10 flex items-center justify-center shrink-0 ml-2">
+                        <svg className="w-4 h-4 text-noir-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                    </button>
+                  );
+                }
+
                 return (
                   <button
                     key={name}
                     type="button"
+                    aria-checked="false"
                     onClick={() => {
                       setSelectedContributor(name);
                       setShowContributorsModal(false);
                     }}
-                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between transition-all duration-200 transform active:scale-[0.99] border group ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-white/95 to-amber-50 text-zinc-950 shadow-lg border-amber-200/80'
-                        : 'bg-[#18191d] hover:bg-[#202227] text-white border-white/[0.06]'
-                    }`}
+                    className="w-full text-left p-3 sm:p-3.5 rounded-2xl bg-noir-850 hover:bg-noir-800 active:bg-noir-700 border border-white/5 hover:border-gold-500/30 flex items-center justify-between transition-all duration-200 group cursor-pointer"
+                    data-purpose="guest-filter-item"
+                    role="radio"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className={`w-11 h-11 rounded-full font-serif font-bold text-base flex items-center justify-center shrink-0 uppercase ${
-                        isSelected
-                          ? 'bg-zinc-950 text-white'
-                          : 'bg-[#23242a] text-amber-200 border border-white/10'
-                      }`}>
-                        {name.charAt(0)}
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-noir-800 to-noir-950 border border-gold-500/30 flex items-center justify-center shrink-0 shadow-inner-subtle group-hover:border-gold-400/60 transition-colors">
+                        <span className="font-serif font-bold text-gold-400 text-lg">{initial}</span>
                       </div>
                       <div className="truncate">
-                        <h2 className={`font-semibold text-base leading-tight tracking-tight ${
-                          isSelected ? 'text-zinc-950' : 'text-white'
-                        }`}>
-                          {name}
-                        </h2>
-                        <p className={`text-xs mt-0.5 ${
-                          isSelected ? 'text-neutral-700' : 'text-neutral-400'
-                        }`}>
-                          {count} foto diabadikan
-                        </p>
+                        <span className="font-medium text-white group-hover:text-amber-100 text-[15px] block leading-tight tracking-normal transition-colors">{name}</span>
+                        <span className="text-xs text-neutral-400 font-light mt-0.5 block">{count} foto diabadikan</span>
                       </div>
                     </div>
-                    {isSelected && (
-                      <div className="w-7 h-7 rounded-full bg-zinc-950/10 flex items-center justify-center shrink-0 ml-2">
-                        <svg className="w-4 h-4 text-zinc-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                    )}
+                    <div className="text-neutral-500 group-hover:text-gold-400 transition-colors pr-1">
+                      <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                      </svg>
+                    </div>
                   </button>
                 );
               })}
             </div>
-          </div>
+
+            {/* Bottom Spacing & Safe Area */}
+            <footer className="p-3 border-t border-white/[0.06] bg-noir-950/80 backdrop-blur pb-6 flex justify-center shrink-0" data-purpose="sheet-footer">
+              <div className="w-32 h-1 bg-white/20 rounded-full" />
+            </footer>
+          </main>
         </div>
       )}
 

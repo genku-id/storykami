@@ -132,16 +132,29 @@ body, .albumkami-root {
 .text-gold { color: #d4af37 !important; }
 .text-gold-light { color: #f3e5ab !important; }
 .text-gold-400 { color: #e5c07b !important; }
+.text-gold-500 { color: #d4af37 !important; }
 .text-champagne-200 { color: #f7edd2 !important; }
 .text-champagne-400 { color: #e0c77e !important; }
 .text-champagne-500 { color: #d4af37 !important; }
 
-.bg-noir-950 { background-color: #070709 !important; }
-.bg-noir-900 { background-color: #121214 !important; }
-.bg-noir-850 { background-color: #18171a !important; }
-.bg-noir-800 { background-color: #212024 !important; }
+.bg-noir-950 { background-color: #08080a !important; }
+.bg-noir-900 { background-color: #111215 !important; }
+.bg-noir-850 { background-color: #17181d !important; }
+.bg-noir-800 { background-color: #1e2026 !important; }
+.bg-noir-700 { background-color: #2a2c34 !important; }
 .bg-noir-dim { background-color: #0a0a0d !important; }
 .bg-noir-lowest { background-color: #0a0a0c !important; }
+
+.text-noir-950 { color: #08080a !important; }
+.bg-noir-900\/95 { background-color: rgba(17, 18, 21, 0.95) !important; }
+.bg-noir-950\/80 { background-color: rgba(8, 8, 10, 0.8) !important; }
+.bg-noir-950\/10 { background-color: rgba(8, 8, 10, 0.1) !important; }
+.bg-noir-900\/10 { background-color: rgba(17, 18, 21, 0.1) !important; }
+.bg-gold-500\/15 { background-color: rgba(212, 175, 55, 0.15) !important; }
+.border-gold-500\/30 { border-color: rgba(212, 175, 55, 0.3) !important; }
+.border-amber-500\/20 { border-color: rgba(245, 158, 11, 0.2) !important; }
+.border-amber-200\/80 { border-color: rgba(254, 230, 133, 0.8) !important; }
+.hover\:border-gold-400\/60:hover { border-color: rgba(229, 192, 123, 0.6) !important; }
 
 .tracking-luxury { letter-spacing: 0.18em !important; }
 
