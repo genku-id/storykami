@@ -1155,26 +1155,15 @@ export default function SharedAlbumPage() {
               <div className="w-10 h-1.5 bg-neutral-600/80 rounded-full" />
             </div>
 
-            {/* Header Section with Close Button & Title */}
-            <header className="px-6 pt-1 pb-4 text-center relative border-b border-white/[0.06] flex items-center justify-between" data-purpose="sheet-header">
-              <div className="w-8" />
-              <div className="relative flex-1">
+            {/* Header Section with Title (Tutup cukup klik area luar/atas bottom sheet) */}
+            <header className="px-6 pt-1 pb-4 text-center relative border-b border-white/[0.06]" data-purpose="sheet-header">
+              <div className="relative">
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-12 bg-gold-500/15 blur-2xl pointer-events-none rounded-full" />
                 <h1 className="font-serif text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-white to-amber-200" id="sheet-title">
                   Tamu Pengisi Album
                 </h1>
                 <p className="text-xs text-neutral-400 font-sans mt-0.5">Saring kenangan berdasarkan pengirim foto</p>
               </div>
-              <button
-                onClick={() => setShowContributorsModal(false)}
-                aria-label="Tutup"
-                className="w-8 h-8 rounded-full bg-noir-800 border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                type="button"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                </svg>
-              </button>
             </header>
 
             {/* Scrollable Guest Filter List */}
