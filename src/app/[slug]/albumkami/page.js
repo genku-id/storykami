@@ -96,6 +96,13 @@ export default function SharedAlbumPage() {
 
       if (info.album) {
         setAlbumData(info.album);
+        // Jika album sudah memiliki nama, tandai setup selesai agar popup tidak pernah muncul lagi
+        if (info.album.title && info.album.title.trim()) {
+          try {
+            localStorage.setItem(`storykami_host_setup_completed_${slug}`, 'true');
+          } catch (e) {}
+          setShowHostSetupModal(false);
+        }
         if (info.album.settings) {
           if (info.album.settings.allow_public_view !== undefined) setAllowPublicView(info.album.settings.allow_public_view);
           if (info.album.settings.hide_uploader_name !== undefined) setHideUploaderName(info.album.settings.hide_uploader_name);
@@ -183,8 +190,22 @@ export default function SharedAlbumPage() {
     setIsHost(fromWim);
 
     if (fromWim) {
-      const setupShown = sessionStorage.getItem(`storykami_host_setup_shown_${slug}`);
-      if (!setupShown) {
+      // HANYA minta setup sekali: jika sudah pernah setup atau album sudah punya nama, JANGAN minta lagi
+      const setupCompleted = localStorage.getItem(`storykami_host_setup_completed_${slug}`);
+      const cachedInfo = localStorage.getItem(`storykami_cache_${slug}_info`);
+      let alreadyHasName = false;
+      if (cachedInfo) {
+        try {
+          const parsed = JSON.parse(cachedInfo);
+          if (parsed?.title && parsed.title.trim()) {
+            alreadyHasName = true;
+          }
+        } catch (e) {}
+      }
+
+      if (setupCompleted || alreadyHasName) {
+        setShowHostSetupModal(false);
+      } else {
         setShowHostSetupModal(true);
       }
     } else {
@@ -1870,7 +1891,9 @@ export default function SharedAlbumPage() {
                     title: hostAlbumTitleInput.trim() || albumTitle,
                     roll_limit: hostRollLimitInput,
                   });
-                  sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
+                  try {
+                    localStorage.setItem(`storykami_host_setup_completed_${slug}`, 'true');
+                  } catch (e) {}
                   setShowHostSetupModal(false);
                 }}
                 className="w-full h-12 rounded-xl gold-shimmer text-zinc-950 font-semibold text-sm active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
@@ -1887,7 +1910,9 @@ export default function SharedAlbumPage() {
 
               <button
                 onClick={() => {
-                  sessionStorage.setItem(`storykami_host_setup_shown_${slug}`, 'true');
+                  try {
+                    localStorage.setItem(`storykami_host_setup_completed_${slug}`, 'true');
+                  } catch (e) {}
                   setShowHostSetupModal(false);
                 }}
                 className="w-full h-10 rounded-xl bg-transparent hover:bg-white/5 text-zinc-400 hover:text-white font-medium text-xs active:scale-[0.98] transition-all cursor-pointer"
