@@ -1089,35 +1089,43 @@ export default function SharedAlbumPage() {
       {showDownloadConfirmModal && (
         <div
           onClick={() => !isZipping && setShowDownloadConfirmModal(false)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 anim-fade-in select-none"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-5 sm:p-6 select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[380px] rounded-3xl bg-[#131315]/95 border border-[#DFC29D]/25 backdrop-blur-2xl p-7 pt-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(207,172,123,0.12)] overflow-hidden"
+            className="relative w-full max-w-[380px] rounded-3xl bg-[#131315]/95 border border-[#DFC29D]/25 backdrop-blur-2xl p-7 pt-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(207,172,123,0.12)] overflow-hidden anim-fade-in"
           >
             {/* Top ambient gold line */}
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DFC29D]/60 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DFC29D]/50 to-transparent" />
 
-            <div className="flex flex-col items-center text-center">
-              {/* Floating Package Icon */}
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#202227] to-[#121316] border border-white/10 flex items-center justify-center mb-4 text-[#DFC29D] shadow-inner ring-1 ring-amber-400/20">
-                <svg className="w-7 h-7 text-amber-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                  <path d="m3.3 7 8.7 5 8.7-5"/>
-                  <path d="M12 22V12"/>
-                </svg>
+            <header className="flex flex-col items-center text-center">
+              {/* Floating Package Icon with isometric gold styling */}
+              <div className="relative mb-5" data-purpose="status-icon">
+                <div className="absolute inset-0 bg-champagne-400/20 rounded-2xl blur-xl transform scale-125" />
+                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-b from-[#202227] to-[#121316] border border-[#DFC29D]/40 flex items-center justify-center shadow-lg shadow-black/80">
+                  <div className="absolute inset-[1px] rounded-[15px] bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                  <svg className="w-8 h-8 text-[#EBD8BD] drop-shadow-[0_2px_8px_rgba(207,172,123,0.5)]" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" viewBox="0 0 24 24">
+                    <path d="M12 3L20 7.5L12 12L4 7.5L12 3Z" fill="currentColor" fillOpacity="0.2" stroke="currentColor" />
+                    <path d="M4 7.5V16.5L12 21V12L4 7.5Z" fill="currentColor" fillOpacity="0.1" stroke="currentColor" />
+                    <path d="M12 12V21L20 16.5V7.5L12 12Z" fill="currentColor" fillOpacity="0.28" stroke="currentColor" />
+                    <path d="M12 3V12" stroke="#FAF5ED" strokeOpacity="0.85" strokeWidth="1.4" />
+                    <path d="M8 5.25L16 9.75" stroke="#FAF5ED" strokeOpacity="0.65" strokeWidth="1.2" />
+                  </svg>
+                </div>
               </div>
 
-              <h2 className="font-serif text-[26px] sm:text-[28px] tracking-tight font-medium text-white mb-2 leading-tight">
+              <h2 className="font-serif text-[28px] sm:text-[32px] tracking-tight font-medium text-white mb-2.5 leading-tight">
                 Unduh Semua Momen?
               </h2>
-              <p className="text-xs sm:text-sm leading-relaxed text-[#B4B2AD] max-w-[300px] font-normal px-1 mb-5">
-                Sebanyak <span className="font-semibold text-amber-200">{photos.length} foto</span> akan didownload dalam file ZIP (<span className="font-mono text-xs text-stone-300">.zip</span>) ke perangkat Anda.
+              <p className="text-sm leading-relaxed text-[#B4B2AD] max-w-[300px] font-normal px-1">
+                Sebanyak <span className="font-semibold text-champagne-200">{photos.length} foto</span> akan didownload dalam file ZIP (<span className="font-mono text-xs text-stone-300">.zip</span>) ke perangkat Anda.
               </p>
-            </div>
+            </header>
+
+            <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {isZipping ? (
-              <div className="space-y-3 p-4 rounded-2xl bg-white/[0.04] border border-white/10 mb-2">
+              <div className="space-y-3 p-4 rounded-2xl bg-white/[0.04] border border-white/10 my-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-zinc-300">Mengemas file foto...</span>
                   <span className="font-mono font-bold text-amber-200">{zipProgress}%</span>
@@ -1130,11 +1138,11 @@ export default function SharedAlbumPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3 w-full">
+              <footer className="flex items-center gap-3 w-full" data-purpose="action-buttons">
                 <button
                   type="button"
                   onClick={() => setShowDownloadConfirmModal(false)}
-                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-medium text-[#B4B2AD] bg-[#202227]/90 hover:bg-[#2d3037] border border-white/10 transition-all text-center cursor-pointer active:scale-95"
+                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-medium text-[#B4B2AD] bg-[#202227]/90 hover:bg-[#2d3037] active:bg-[#18191d] border border-white/10 hover:border-white/20 transition-all duration-200 ease-out focus:outline-none focus:ring-1 focus:ring-champagne-400/40 cursor-pointer shadow-sm text-center"
                 >
                   Batal
                 </button>
@@ -1144,14 +1152,14 @@ export default function SharedAlbumPage() {
                     await handleDownloadAllZip();
                     setShowDownloadConfirmModal(false);
                   }}
-                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-semibold tracking-wide text-[#0b0c0e] bg-gradient-to-b from-[#FAF5ED] to-[#DFC29D] hover:from-white hover:to-[#F4E8D5] border border-[#F4E8D5]/60 shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-95 group transition-all"
+                  className="w-1/2 py-3.5 px-4 rounded-xl text-sm font-semibold tracking-wide text-[#0b0c0e] bg-gradient-to-b from-[#FAF5ED] to-[#DFC29D] hover:from-white hover:to-[#F4E8D5] active:brightness-95 border border-[#F4E8D5]/60 shadow-lg shadow-champagne-500/25 hover:shadow-champagne-500/40 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-champagne-300/60 cursor-pointer flex items-center justify-center gap-2 group"
                 >
                   <span>Unduh</span>
                   <svg className="w-4 h-4 text-[#0b0c0e]/80 group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                    <path d="M19 14l-7 7m0 0l-7-7m7 7V3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M19 14l-7 7m0 0l-7-7m7 7V3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
-              </div>
+              </footer>
             )}
           </div>
         </div>

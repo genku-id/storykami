@@ -136,6 +136,9 @@ body, .albumkami-root {
 .text-champagne-200 { color: #f7edd2 !important; }
 .text-champagne-400 { color: #e0c77e !important; }
 .text-champagne-500 { color: #d4af37 !important; }
+.bg-champagne-400\/20 { background-color: rgba(223, 194, 157, 0.2) !important; }
+.border-\[\#DFC29D\]\/25 { border-color: rgba(223, 194, 157, 0.25) !important; }
+.border-\[\#DFC29D\]\/40 { border-color: rgba(223, 194, 157, 0.4) !important; }
 
 .bg-noir-950 { background-color: #08080a !important; }
 .bg-noir-900 { background-color: #111215 !important; }
