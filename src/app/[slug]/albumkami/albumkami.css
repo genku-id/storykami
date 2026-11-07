@@ -137,9 +137,15 @@ body, .albumkami-root {
 .text-gold-light { color: #f3e5ab !important; }
 .text-gold-400 { color: #e5c07b !important; }
 .text-gold-500 { color: #d4af37 !important; }
+.bg-champagne-100 { background-color: #fcf8ee !important; }
+.hover\:bg-champagne-200:hover { background-color: #f7edd2 !important; }
 .text-champagne-200 { color: #f7edd2 !important; }
+.text-champagne-300 { color: #eddcaa !important; }
 .text-champagne-400 { color: #e0c77e !important; }
 .text-champagne-500 { color: #d4af37 !important; }
+.bg-champagne-500 { background-color: #d4af37 !important; }
+.border-champagne-400\/80 { border-color: rgba(224, 199, 126, 0.8) !important; }
+.border-champagne-500\/50 { border-color: rgba(212, 175, 55, 0.5) !important; }
 .bg-champagne-400\/20 { background-color: rgba(223, 194, 157, 0.2) !important; }
 .border-\[\#DFC29D\]\/25 { border-color: rgba(223, 194, 157, 0.25) !important; }
 .border-\[\#DFC29D\]\/40 { border-color: rgba(223, 194, 157, 0.4) !important; }
@@ -153,10 +159,17 @@ body, .albumkami-root {
 .bg-noir-lowest { background-color: #0a0a0c !important; }
 
 .text-noir-950 { color: #08080a !important; }
+.border-noir-800\/80 { border-color: rgba(33, 32, 36, 0.8) !important; }
+.bg-noir-800\/80 { background-color: rgba(33, 32, 36, 0.8) !important; }
+.bg-noir-850\/90 { background-color: rgba(24, 23, 26, 0.9) !important; }
+.bg-noir-950\/75 { background-color: rgba(9, 9, 10, 0.75) !important; }
+.bg-noir-950\/60 { background-color: rgba(9, 9, 10, 0.6) !important; }
 .bg-noir-900\/95 { background-color: rgba(17, 18, 21, 0.95) !important; }
 .bg-noir-950\/80 { background-color: rgba(8, 8, 10, 0.8) !important; }
 .bg-noir-950\/10 { background-color: rgba(8, 8, 10, 0.1) !important; }
 .bg-noir-900\/10 { background-color: rgba(17, 18, 21, 0.1) !important; }
+.border-stone-700\/60 { border-color: rgba(68, 64, 60, 0.6) !important; }
+.border-stone-700\/70 { border-color: rgba(68, 64, 60, 0.7) !important; }
 .bg-gold-500\/15 { background-color: rgba(212, 175, 55, 0.15) !important; }
 .border-gold-500\/30 { border-color: rgba(212, 175, 55, 0.3) !important; }
 .border-amber-500\/20 { border-color: rgba(245, 158, 11, 0.2) !important; }
@@ -364,6 +377,133 @@ body, .albumkami-root {
   width: 50% !important;
   padding: 0.875rem 1rem !important; /* 14px 16px */
   border-radius: 0.75rem !important; /* 12px */
+}
+
+/* ========================================================================= */
+/* PRATINJAU FOTO TAMU (Matches pratinjau_foto_tamu_elegan)                  */
+/* ========================================================================= */
+.albumkami-root [data-purpose="photo-preview-container"] {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 412px !important;
+  height: 100dvh !important;
+  background-color: #121214 !important; /* bg-noir-900 */
+  border: 1px solid rgba(33, 32, 36, 0.8) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+@media (min-width: 640px) {
+  .albumkami-root [data-purpose="photo-preview-container"] {
+    height: 844px !important;
+    border-radius: 44px !important;
+  }
+}
+
+.albumkami-root [data-purpose="status-bar-spacer"] {
+  width: 100% !important;
+  padding-top: 0.75rem !important; /* 12px */
+  padding-bottom: 0.25rem !important; /* 4px */
+  padding-left: 2rem !important; /* 32px */
+  padding-right: 2rem !important; /* 32px */
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="modal-header"] {
+  position: relative !important;
+  padding-left: 1.5rem !important; /* 24px */
+  padding-right: 1.5rem !important; /* 24px */
+  padding-top: 0.75rem !important; /* 12px */
+  padding-bottom: 0.75rem !important; /* 12px */
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  z-index: 20 !important;
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="preview-body"] {
+  flex: 1 1 0% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding-left: 1.5rem !important; /* 24px */
+  padding-right: 1.5rem !important; /* 24px */
+  padding-top: 0.5rem !important; /* 8px */
+  padding-bottom: 0.5rem !important; /* 8px */
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="adaptive-preview-wrapper"] {
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 4 / 4.8 !important;
+  max-height: 460px !important;
+  border-radius: 1rem !important; /* 16px */
+  padding: 0.375rem !important; /* 6px = p-1.5 */
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="guest-input-form"] {
+  margin-top: 1rem !important; /* 16px = mt-4 */
+  padding-left: 0.25rem !important; /* 4px = px-1 */
+  padding-right: 0.25rem !important; /* 4px = px-1 */
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="guest-input-form"] input {
+  padding-left: 2.5rem !important; /* 40px = pl-10 */
+  padding-right: 1rem !important; /* 16px = pr-4 */
+  padding-top: 0.625rem !important; /* 10px = py-2.5 */
+  padding-bottom: 0.625rem !important; /* 10px = py-2.5 */
+  border-radius: 0.75rem !important; /* 12px = rounded-xl */
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="preview-action-footer"] {
+  padding-left: 1.5rem !important; /* 24px = p-6 */
+  padding-right: 1.5rem !important; /* 24px = p-6 */
+  padding-top: 0.75rem !important; /* 12px = pt-3 */
+  padding-bottom: 2rem !important; /* 32px = pb-8 */
+  background: linear-gradient(to top, #09090a, rgba(9, 9, 10, 0.95), transparent) !important;
+  z-index: 20 !important;
+  box-sizing: border-box !important;
+}
+
+@media (min-width: 640px) {
+  .albumkami-root [data-purpose="preview-action-footer"] {
+    padding-bottom: 1.5rem !important; /* 24px = sm:pb-6 */
+  }
+}
+
+.albumkami-root [data-purpose="preview-action-footer"] .preview-action-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.875rem !important; /* 14px = gap-3.5 */
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.albumkami-root [data-purpose="preview-action-footer"] button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important; /* 8px = space-x-2 */
+  padding-top: 0.875rem !important; /* 14px = py-3.5 */
+  padding-bottom: 0.875rem !important; /* 14px = py-3.5 */
+  padding-left: 1rem !important; /* 16px = px-4 */
+  padding-right: 1rem !important; /* 16px = px-4 */
+  border-radius: 9999px !important; /* rounded-full */
+  box-sizing: border-box !important;
 }
 
 /* ========================================================================= */

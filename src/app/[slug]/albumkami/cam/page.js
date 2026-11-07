@@ -528,19 +528,27 @@ export default function SatualbumCameraPage() {
   // =========================================================================
   if (previewPhoto) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#070709] text-white p-0 sm:p-4 overflow-x-hidden select-none">
-        <div className="relative w-full max-w-[420px] h-[100dvh] sm:h-[860px] bg-[#0d0d11] sm:rounded-[40px] overflow-hidden flex flex-col justify-between shadow-2xl border border-white/[0.08]">
-          
-          {/* Header */}
-          <header className="relative px-6 pt-6 pb-2 flex items-start justify-between z-20">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-noir-950 antialiased overflow-x-hidden select-none">
+        {/* BEGIN: MobileDeviceContainer */}
+        <div
+          className="relative w-full max-w-[412px] h-[100dvh] sm:h-[844px] bg-noir-900 sm:rounded-[44px] overflow-hidden flex flex-col justify-between shadow-2xl border border-noir-800/80"
+          data-purpose="photo-preview-container"
+        >
+          {/* iOS Dynamic Island & Status Bar Space */}
+          <div className="w-full pt-3 pb-1 px-8 flex justify-between items-center text-xs tracking-wider text-stone-400 font-medium z-30 select-none" data-purpose="status-bar-spacer">
+            <div className="w-20 h-4 bg-black rounded-full mx-auto hidden sm:block" />
+          </div>
+
+          {/* BEGIN: ModalHeader */}
+          <header className="relative px-6 pt-3 pb-3 flex items-start justify-between z-20" data-purpose="modal-header">
             <div className="pr-4">
               <div className="flex items-center space-x-2 mb-0.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#d4af37]" />
-                <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-amber-300/90 font-sans">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-champagne-500 shadow-[0_0_8px_#d4af37]" />
+                <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-champagne-400/90 font-sans">
                   Wedding Album Guest Cam
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-serif text-white font-normal tracking-wide leading-tight">
+              <h1 className="text-3xl font-serif text-white font-normal tracking-wide leading-tight">
                 Pratinjau Foto
               </h1>
               <p className="text-xs text-stone-400 font-light mt-0.5 leading-relaxed font-sans">
@@ -553,7 +561,7 @@ export default function SatualbumCameraPage() {
                 onClick={handleRetake}
                 disabled={isUploading}
                 aria-label="Tutup pratinjau"
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-[#18191d] border border-stone-700/60 text-stone-300 hover:text-white hover:border-amber-400/50 hover:bg-[#202126] transition duration-200 active:scale-95 shrink-0"
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-noir-800/80 border border-stone-700/60 text-stone-300 hover:text-white hover:border-champagne-500/50 hover:bg-noir-700 transition duration-200 active:scale-95 shrink-0 cursor-pointer"
                 type="button"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
@@ -563,37 +571,39 @@ export default function SatualbumCameraPage() {
               </button>
             )}
           </header>
+          {/* END: ModalHeader */}
 
-          {/* Photo Viewfinder Body */}
-          <main className="flex-1 flex flex-col justify-center px-6 py-2 overflow-hidden">
-            <div className="relative w-full aspect-[4/4.8] max-h-[440px] rounded-2xl overflow-hidden p-1.5 glass-surface champagne-glow shadow-2xl border border-white/10">
+          {/* BEGIN: PhotoDisplaySection */}
+          <main className="flex-1 flex flex-col justify-center px-6 py-2 overflow-hidden" data-purpose="preview-body">
+            <div className="relative w-full aspect-[4/4.8] max-h-[460px] rounded-2xl overflow-hidden p-1.5 glass-surface champagne-glow" id="adaptive-preview-wrapper" data-purpose="adaptive-preview-wrapper">
+              {/* Inner image frame */}
               <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-black flex items-center justify-center group">
                 <img
                   src={previewPhoto.url}
                   alt="Pratinjau Foto"
-                  className="w-full h-full object-contain pointer-events-none"
+                  className="w-full h-full object-cover pointer-events-none"
                 />
 
-                {/* Viewfinder Golden Corner Accents */}
+                {/* Viewfinder Golden Aesthetic Corner Accents */}
                 <div className="pointer-events-none absolute inset-0 p-3 flex flex-col justify-between">
                   <div className="flex justify-between items-start">
-                    <span className="w-3.5 h-3.5 border-t-2 border-l-2 border-amber-300/80" />
-                    <span className="w-3.5 h-3.5 border-t-2 border-r-2 border-amber-300/80" />
+                    <span className="w-3.5 h-3.5 border-t border-l border-champagne-400/80" />
+                    <span className="w-3.5 h-3.5 border-t border-r border-champagne-400/80" />
                   </div>
                   <div className="flex justify-between items-end">
-                    <span className="w-3.5 h-3.5 border-b-2 border-l-2 border-amber-300/80" />
-                    <span className="w-3.5 h-3.5 border-b-2 border-r-2 border-amber-300/80" />
+                    <span className="w-3.5 h-3.5 border-b border-l border-champagne-400/80" />
+                    <span className="w-3.5 h-3.5 border-b border-r border-champagne-400/80" />
                   </div>
                 </div>
 
-                {/* Live Preview Badge */}
-                <div className="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-black/75 border border-white/10 backdrop-blur-md flex items-center space-x-1.5">
+                {/* Subtle Live Preview Badge */}
+                <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-noir-950/75 border border-white/10 backdrop-blur-md flex items-center space-x-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span className="text-[10px] text-stone-200 tracking-wider uppercase font-medium">Ready</span>
                 </div>
 
-                {/* Watermark */}
-                <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[9px] font-mono tracking-widest text-amber-200/80">
+                {/* Shutter timestamp metadata watermark */}
+                <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-noir-950/60 backdrop-blur-sm text-[9px] font-mono tracking-widest text-champagne-300/80">
                   RAW • 4:5
                 </div>
 
@@ -614,7 +624,7 @@ export default function SatualbumCameraPage() {
                       {remainingRolls > 0 ? (
                         <button
                           onClick={handleRetake}
-                          className="w-full h-[50px] rounded-2xl bg-white font-bold text-black text-sm active:scale-95 transition-transform shadow-xl flex items-center justify-center gap-2"
+                          className="w-full h-[50px] rounded-2xl bg-white font-bold text-black text-sm active:scale-95 transition-transform shadow-xl flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <span>📸</span>
                           <span>Ambil Foto Lagi</span>
@@ -629,7 +639,7 @@ export default function SatualbumCameraPage() {
                         onClick={() => {
                           router.push(`/${slug}/albumkami/`);
                         }}
-                        className="w-full h-[48px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center"
+                        className="w-full h-[48px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 font-medium text-white text-sm text-center active:scale-95 transition-transform flex items-center justify-center cursor-pointer"
                       >
                         Buka Galeri Bersama →
                       </button>
@@ -639,69 +649,77 @@ export default function SatualbumCameraPage() {
               </div>
             </div>
 
-            {/* Guest Meta Form */}
+            {/* BEGIN: GuestMetaForm */}
             {!uploadSuccess && (
               <div className="mt-4 px-1" data-purpose="guest-input-form">
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <label className="font-medium text-stone-200 flex items-center space-x-1.5" htmlFor="uploader-name">
                     <span>Nama Pengirim Foto</span>
-                    <span className="text-amber-400">*</span>
+                    <span className="text-champagne-500">*</span>
                   </label>
                   <span className="text-[11px] font-light text-stone-400 italic">
                     Tampil di galeri album
                   </span>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400/70">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-champagne-500/70">
+                    {/* Signature / User Pen Icon */}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                       <path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <input
                     id="uploader-name"
+                    name="uploaderName"
                     type="text"
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
                     placeholder="Ketik nama Anda di sini..."
-                    className="w-full bg-[#18191d] text-stone-100 placeholder-stone-500 text-sm rounded-xl pl-10 pr-4 py-3 border border-stone-800 focus:border-amber-400/60 focus:outline-none transition duration-150 shadow-inner"
+                    className="w-full bg-noir-850/90 text-stone-100 placeholder-stone-500 text-sm rounded-xl pl-10 pr-4 py-2.5 border border-stone-800 gold-input-focus transition duration-150 shadow-inner"
                   />
                 </div>
               </div>
             )}
+            {/* END: GuestMetaForm */}
           </main>
+          {/* END: PhotoDisplaySection */}
 
-          {/* Action Footer Buttons */}
+          {/* BEGIN: ModalActionFooter */}
           {!uploadSuccess && (
-            <footer className="p-6 pt-2 pb-6 bg-gradient-to-t from-[#070709] via-[#070709]/95 to-transparent z-20">
-              <div className="grid grid-cols-2 gap-3.5">
+            <footer className="p-6 pt-3 pb-8 sm:pb-6 bg-gradient-to-t from-noir-950 via-noir-950/95 to-transparent z-20" data-purpose="preview-action-footer">
+              <div className="grid grid-cols-2 gap-3.5 preview-action-grid">
+                {/* Retake / Foto Ulang Button */}
                 <button
                   type="button"
                   onClick={handleRetake}
                   disabled={isUploading}
-                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-[#18191d] hover:bg-[#202126] active:scale-[0.98] border border-stone-700/70 text-stone-200 transition duration-150 shadow-md cursor-pointer"
+                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-noir-850 hover:bg-noir-800 active:scale-[0.98] border border-stone-700/70 text-stone-200 transition duration-150 group shadow-md cursor-pointer disabled:opacity-50"
                 >
-                  <svg className="w-4 h-4 text-stone-400 group-hover:text-amber-300 transition" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
+                  {/* Redo / Retry Icon */}
+                  <svg className="w-4 h-4 text-stone-400 group-hover:text-champagne-400 transition" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                     <path d="M3 3v5h5" />
                   </svg>
                   <span className="font-medium text-sm tracking-wide">Foto Ulang</span>
                 </button>
 
+                {/* Upload / Unggah Foto CTA */}
                 <button
                   type="button"
                   onClick={handleConfirmUpload}
                   disabled={isUploading}
-                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-gradient-to-r from-[#FAF5ED] to-[#DFC29D] hover:brightness-105 active:scale-[0.98] text-black font-semibold tracking-wide text-sm shadow-[0_4px_16px_rgba(212,175,55,0.25)] transition duration-150 cursor-pointer disabled:opacity-50"
+                  className="flex items-center justify-center space-x-2 py-3.5 px-4 rounded-full bg-champagne-100 hover:bg-champagne-200 active:scale-[0.98] text-noir-950 font-semibold tracking-wide text-sm shadow-[0_4px_16px_rgba(212,175,55,0.25)] transition duration-150 group cursor-pointer disabled:opacity-50"
                 >
                   {isUploading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                      <span>Mengunggah...</span>
+                      <div className="w-4 h-4 border-2 border-noir-950 border-t-transparent rounded-full animate-spin" />
+                      <span className="tracking-tight text-noir-900 font-bold">Mengunggah...</span>
                     </>
                   ) : (
                     <>
-                      <span className="tracking-tight text-neutral-900 font-bold">Unggah Foto</span>
-                      <svg className="w-4 h-4 text-neutral-900" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" viewBox="0 0 24 24">
+                      <span className="tracking-tight text-noir-900 font-bold">Unggah Foto</span>
+                      {/* Upload Arrow Icon */}
+                      <svg className="w-4 h-4 text-noir-900 group-hover:-translate-y-0.5 transition-transform duration-150" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" viewBox="0 0 24 24">
                         <path d="M12 19V5" />
                         <path d="M5 12l7-7 7 7" />
                       </svg>
@@ -709,9 +727,11 @@ export default function SatualbumCameraPage() {
                   )}
                 </button>
               </div>
+              {/* iOS Home Indicator bar */}
+              <div className="w-32 h-1 bg-stone-700/50 rounded-full mx-auto mt-5" />
             </footer>
           )}
-
+          {/* END: ModalActionFooter */}
         </div>
       </div>
     );
