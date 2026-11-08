@@ -6,9 +6,9 @@ import Link from 'next/link';
 import JSZip from 'jszip';
 import './albumkami.css';
 
-export default function SharedAlbumPage() {
+export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const params = useParams();
-  const slug = params?.slug || '';
+  const slug = propSlug || params?.slug || '';
 
   const [photos, setPhotos] = useState([]);
   const [albumData, setAlbumData] = useState(null);
@@ -66,21 +66,26 @@ export default function SharedAlbumPage() {
     }
   }, []);
 
-  // Buka lightbox otomatis jika ada query parameter ?photo=...
+  // Buka lightbox otomatis jika ada query parameter ?photo=... atau prop initialPhotoId
   useEffect(() => {
     if (typeof window !== 'undefined' && photos.length > 0 && activePhotoIndex === null) {
       const urlParams = new URLSearchParams(window.location.search);
-      const photoParam = urlParams.get('photo');
-      if (photoParam) {
+      const targetPhotoId = initialPhotoId || urlParams.get('photo');
+      if (targetPhotoId) {
         const foundIdx = photos.findIndex(
-          (p) => p.id === photoParam || p.r2_key === photoParam || (p.r2_key && p.r2_key.includes(photoParam))
+          (p) => p.id === targetPhotoId || p.r2_key === targetPhotoId || (p.r2_key && p.r2_key.includes(targetPhotoId))
         );
         if (foundIdx !== -1) {
+          setSelectedContributor('ALL');
           setActivePhotoIndex(foundIdx);
+          setTimeout(() => {
+            const el = document.getElementById(`photo-card-${targetPhotoId}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 350);
         }
       }
     }
-  }, [photos, activePhotoIndex]);
+  }, [photos, activePhotoIndex, initialPhotoId]);
 
   // Fetch data galeri secara paralel (Promise.all) agar 2x lebih cepat
   const loadGallery = useCallback(async (silent = false) => {
@@ -443,20 +448,50 @@ export default function SharedAlbumPage() {
     e?.stopPropagation();
     if (!currentPhoto) return;
     try {
-      const res = await fetch(currentPhoto.r2_image_url);
+      setToastMessage('⏳ Menyiapkan file foto asli...');
+      // Selalu unduh file asli JPEG berkualitas penuh (bukan file thumbnail .webp)
+      let originalKey = currentPhoto.r2_key;
+      if (!originalKey && currentPhoto.r2_image_url) {
+        const match = currentPhoto.r2_image_url.match(/key=([^&]+)/);
+        if (match) {
+          originalKey = decodeURIComponent(match[1]);
+        }
+      }
+      if (originalKey && originalKey.includes('_thumb.webp')) {
+        originalKey = originalKey.replace('_thumb.webp', '.jpg');
+      }
+
+      const cleanName = (currentPhoto.guest_name || 'tamu').replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `foto_${cleanName}_${(currentPhoto.id || 'asli').slice(0, 6)}.jpg`;
+
+      const downloadEndpoint = originalKey
+        ? `/api/album/${slug}/image/?key=${encodeURIComponent(originalKey)}&download=1&filename=${encodeURIComponent(filename)}`
+        : currentPhoto.r2_image_url;
+
+      const res = await fetch(downloadEndpoint);
+      if (!res.ok) throw new Error('Gagal mengunduh file foto');
       const blob = await res.blob();
       const downloadUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = downloadUrl;
-      const cleanName = (currentPhoto.guest_name || 'tamu').replace(/[^a-zA-Z0-9]/g, '_');
-      a.download = `foto_${cleanName}_${currentPhoto.id.slice(0, 6)}.jpg`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(downloadUrl);
+      setToastMessage('✓ Foto asli resolusi penuh berhasil diunduh!');
+      setTimeout(() => setToastMessage(null), 2500);
     } catch (err) {
+      console.error('Download error:', err);
+      setToastMessage('✕ Gagal mengunduh, mencoba tautan langsung...');
+      setTimeout(() => setToastMessage(null), 3000);
       if (typeof window !== 'undefined') {
-        window.open(currentPhoto.r2_image_url, '_blank');
+        const fallbackKey = (currentPhoto.r2_key || '').replace('_thumb.webp', '.jpg');
+        if (fallbackKey) {
+          window.open(`/api/album/${slug}/image/?key=${encodeURIComponent(fallbackKey)}&download=1`, '_blank');
+        } else if (currentPhoto.r2_image_url) {
+          window.open(currentPhoto.r2_image_url, '_blank');
+        }
       }
     }
   };
@@ -892,6 +927,7 @@ export default function SharedAlbumPage() {
                 return (
                   <div
                     key={photo.id}
+                    id={`photo-card-${photo.id}`}
                     onClick={() => {
                       if (photo.isPending) {
                         setToastMessage('⏳ Foto sedang diunggah ke album...');
