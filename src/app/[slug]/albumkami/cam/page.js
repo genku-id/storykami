@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CAMERA_FILTERS, DEFAULT_ENABLED_FILTERS } from '../filters';
+import { PhotoFrameDecoration } from '../frames';
 import '../albumkami.css';
 
 // Global memory queue untuk proses upload latar belakang yang kebal unmount/navigasi halaman
@@ -116,6 +117,7 @@ export default function SatualbumCameraPage() {
 
   // Info Album & Kuota
   const [albumInfo, setAlbumInfo] = useState(null);
+  const [frameStyle, setFrameStyle] = useState('none');
   const [selectedFilterId, setSelectedFilterId] = useState('original');
   const [enabledFilters, setEnabledFilters] = useState(DEFAULT_ENABLED_FILTERS);
   const [remainingRolls, setRemainingRolls] = useState(() => {
@@ -202,6 +204,9 @@ export default function SatualbumCameraPage() {
           setRollLimit(limit);
           if (data.album.settings?.enabled_filters && Array.isArray(data.album.settings.enabled_filters) && data.album.settings.enabled_filters.length > 0) {
             setEnabledFilters(data.album.settings.enabled_filters);
+          }
+          if (data.album.settings?.frame_style) {
+            setFrameStyle(data.album.settings.frame_style);
           }
         }
 
@@ -735,6 +740,9 @@ export default function SatualbumCameraPage() {
                   className="w-full h-full object-cover pointer-events-none"
                 />
 
+                {/* Hiasan Bingkai Foto Terpilih */}
+                <PhotoFrameDecoration frameId={frameStyle} />
+
                 {/* Viewfinder Golden Aesthetic Corner Accents */}
                 <div className="pointer-events-none absolute inset-0 p-3 flex flex-col justify-between">
                   <div className="flex justify-between items-start">
@@ -1012,6 +1020,9 @@ export default function SatualbumCameraPage() {
                 className="w-full h-full object-cover transition-transform duration-300"
               />
             )}
+
+            {/* Hiasan Bingkai Foto Terpilih (Live Viewfinder) */}
+            <PhotoFrameDecoration frameId={frameStyle} />
 
             {/* Flash Toggle Button (Top-Left Viewfinder - Identik Satualbum Screenshot) */}
             <button

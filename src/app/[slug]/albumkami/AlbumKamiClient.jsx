@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import JSZip from 'jszip';
 import { CAMERA_FILTERS, DEFAULT_ENABLED_FILTERS } from './filters';
+import { PHOTO_FRAMES, PhotoFrameDecoration } from './frames';
 import './albumkami.css';
 
 export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
@@ -57,6 +58,8 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const [showEditCapacityModal, setShowEditCapacityModal] = useState(false);
   const [showEditFiltersModal, setShowEditFiltersModal] = useState(false);
   const [enabledFilters, setEnabledFilters] = useState(DEFAULT_ENABLED_FILTERS);
+  const [showEditFrameModal, setShowEditFrameModal] = useState(false);
+  const [frameStyle, setFrameStyle] = useState('none');
   const [showEditCloseDateModal, setShowEditCloseDateModal] = useState(false);
   const [editCloseDate, setEditCloseDate] = useState('');
   const [editCloseTime, setEditCloseTime] = useState('17:00');
@@ -135,6 +138,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
           if (info.album.settings.email_reminder !== undefined) setEmailReminder(info.album.settings.email_reminder);
           if (info.album.settings.enabled_filters && Array.isArray(info.album.settings.enabled_filters)) {
             setEnabledFilters(info.album.settings.enabled_filters);
+          }
+          if (info.album.settings.frame_style !== undefined) {
+            setFrameStyle(info.album.settings.frame_style || 'none');
           }
         }
         try {
@@ -382,6 +388,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
           if (data.album.settings.enabled_filters && Array.isArray(data.album.settings.enabled_filters)) {
             setEnabledFilters(data.album.settings.enabled_filters);
           }
+          if (data.album.settings.frame_style !== undefined) {
+            setFrameStyle(data.album.settings.frame_style || 'none');
+          }
         }
         try {
           const cached = localStorage.getItem(`storykami_cache_${slug}_info`);
@@ -471,6 +480,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
     .trim() || 'fafa-fufu';
   const maxGuests = albumData?.max_guests || 50;
   const currentGuestsCount = Math.max(contributors.length, photos.length > 0 ? 1 : 0);
+  const activeFrameObj = useMemo(() => {
+    return PHOTO_FRAMES.find((f) => f.id === frameStyle) || PHOTO_FRAMES[0];
+  }, [frameStyle]);
 
   const currentPhoto =
     activePhotoIndex !== null && filteredPhotos[activePhotoIndex]
@@ -1120,6 +1132,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                       }}
                     />
 
+                    {/* Hiasan Bingkai Foto Terpilih */}
+                    <PhotoFrameDecoration frameId={frameStyle} />
+
                     {/* Subtle vignette overlay on bottom for guest signature */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 pointer-events-none z-10" />
                     {!hideUploaderName && (
@@ -1214,6 +1229,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                 }}
                 className="w-full h-full object-contain pointer-events-none"
               />
+
+              {/* Hiasan Bingkai Foto Terpilih (Lightbox) */}
+              <PhotoFrameDecoration frameId={frameStyle} />
 
               {/* Tombol Panah Kiri */}
               {filteredPhotos.length > 1 && (
@@ -1880,7 +1898,10 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                 </div>
 
                 {/* 6. Bingkai Foto */}
-                <div className="p-3.5 flex items-center justify-between group opacity-90">
+                <div
+                  onClick={() => setShowEditFrameModal(true)}
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1890,8 +1911,10 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                     <span className="text-sm font-medium text-gray-200">Bingkai foto</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-normal text-zinc-400">Tanpa</span>
-                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="text-xs font-normal text-zinc-400">
+                      {activeFrameObj.name}
+                    </span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m9 18 6-6-6-6"/>
                     </svg>
                   </div>
@@ -2565,6 +2588,92 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
             <button
               onClick={() => setShowEditFiltersModal(false)}
+              className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer shrink-0"
+            >
+              Selesai
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 9c. SUB-MODAL: ATUR BINGKAI FOTO                                          */}
+      {/* ========================================================================= */}
+      {showEditFrameModal && (
+        <div
+          onClick={() => setShowEditFrameModal(false)}
+          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-[#121215] border-t md:border border-luxury-gold/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl max-h-[85vh] flex flex-col"
+          >
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20 shrink-0" />
+            
+            <div className="text-center mb-4 shrink-0">
+              <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1">
+                Bingkai Foto
+              </h3>
+              <p className="text-xs text-zinc-400 font-sans">
+                Berlaku untuk semua foto di album, termasuk yang sudah diambil.
+              </p>
+            </div>
+
+            <div className="space-y-2 mb-6 overflow-y-auto flex-1 custom-scrollbar pr-1">
+              {PHOTO_FRAMES.map((f) => {
+                const isSelected = frameStyle === f.id;
+                return (
+                  <div
+                    key={f.id}
+                    onClick={async () => {
+                      setFrameStyle(f.id);
+                      await saveSetting({ album_settings: { frame_style: f.id } });
+                    }}
+                    className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-[#1a1a20] border-amber-400/40 text-white shadow-md'
+                        : 'bg-[#141417] border-white/5 hover:border-white/15 text-zinc-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-white/20 shrink-0 bg-black flex items-center justify-center">
+                        <img
+                          src="/images/satualbum_cover.webp"
+                          alt={f.name}
+                          className="w-full h-full object-cover pointer-events-none"
+                        />
+                        <PhotoFrameDecoration frameId={f.id} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-zinc-400'}`}>
+                          {f.name}
+                        </span>
+                        <span className="text-[11px] text-zinc-400 font-sans leading-tight mt-0.5">
+                          {f.desc}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors border ${
+                          isSelected
+                            ? 'border-amber-400 bg-amber-400 text-black font-bold'
+                            : 'border-white/20 bg-white/5'
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setShowEditFrameModal(false)}
               className="w-full h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all cursor-pointer shrink-0"
             >
               Selesai
