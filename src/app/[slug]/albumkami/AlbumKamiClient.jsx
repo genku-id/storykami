@@ -1868,33 +1868,27 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                   </div>
                 </div>
 
-                {/* 9. Kapasitas Tamu (Identik Screenshot 1) */}
+                {/* 9. Kapasitas Tamu */}
                 <div
                   onClick={() => setShowEditCapacityModal(true)}
-                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex flex-col gap-1.5"
+                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-200">Kapasitas tamu</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-[#1a293b] hover:bg-[#20344d] border border-sky-500/30 text-sky-400 transition-all shadow-sm active:scale-95"
-                    >
-                      <span>Tambah pax</span>
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m9 18 6-6-6-6"/>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                       </svg>
-                    </button>
+                    </div>
+                    <span className="text-sm font-medium text-gray-200">Kapasitas tamu</span>
                   </div>
-                  <p className="text-xs text-zinc-400 pl-11">
-                    Hingga {maxGuests} Tamu • Paket gratis dibatasi {maxGuests} tamu
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-normal text-zinc-400">
+                      {maxGuests}
+                    </span>
+                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
 

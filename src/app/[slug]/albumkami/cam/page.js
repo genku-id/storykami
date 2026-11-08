@@ -113,7 +113,15 @@ export default function SatualbumCameraPage() {
 
   // Info Album & Kuota
   const [albumInfo, setAlbumInfo] = useState(null);
-  const [remainingRolls, setRemainingRolls] = useState(10);
+  const [remainingRolls, setRemainingRolls] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(`storykami_remaining_rolls_${slug}`);
+      if (cached !== null && !isNaN(Number(cached))) {
+        return Number(cached);
+      }
+    }
+    return null;
+  });
   const [rollLimit, setRollLimit] = useState(10);
 
   // Hardware Kamera
@@ -178,16 +186,16 @@ export default function SatualbumCameraPage() {
           setAlbumInfo(data.album);
           const limit = data.album.roll_limit || 10;
           setRollLimit(limit);
-          setRemainingRolls(limit);
         }
 
         const savedName = localStorage.getItem('storykami_guest_name') || '';
 
+        let finalRolls = null;
         if (data.guestSession) {
           setIsRegistered(true);
           setGuestName(data.guestSession.guest_name);
           setSenderName(data.guestSession.guest_name);
-          setRemainingRolls(data.guestSession.remaining_rolls);
+          finalRolls = data.guestSession.remaining_rolls ?? 0;
         } else if (savedName) {
           // Auto-register jika sudah ada nama tersimpan di perangkat
           try {
@@ -199,11 +207,19 @@ export default function SatualbumCameraPage() {
             const regData = await regRes.json();
             if (regData.guest) {
               setIsRegistered(true);
-              setRemainingRolls(regData.guest.remaining_rolls);
+              finalRolls = regData.guest.remaining_rolls ?? 0;
             }
           } catch (e) {}
         } else {
           setIsRegistered(false);
+          finalRolls = data.album?.roll_limit || 10;
+        }
+
+        if (finalRolls !== null) {
+          setRemainingRolls(finalRolls);
+          try {
+            localStorage.setItem(`storykami_remaining_rolls_${slug}`, String(finalRolls));
+          } catch (e) {}
         }
 
         // Ambil thumbnail foto terakhir di galeri untuk slot kanan bawah
@@ -379,18 +395,33 @@ export default function SatualbumCameraPage() {
   // Keyboard shortcut (Spacebar) untuk Laptop
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.code === 'Space' && isRegistered && !isCapturing && !previewPhoto && remainingRolls > 0) {
+      if (
+        e.code === 'Space' &&
+        isRegistered &&
+        !isCapturing &&
+        !isLoadingSession &&
+        !previewPhoto &&
+        (remainingRolls ?? 0) > 0
+      ) {
         e.preventDefault();
         handleCapturePhoto();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRegistered, isCapturing, previewPhoto, remainingRolls]);
+  }, [isRegistered, isCapturing, isLoadingSession, previewPhoto, remainingRolls]);
 
   // 📸 Jepret Foto -> Muncul Preview Terlebih Dahulu (Dual-file: Asli High-Res & Thumbnail WebP)
   const handleCapturePhoto = async () => {
-    if (isCapturing || remainingRolls <= 0 || !videoRef.current || albumInfo?.is_closed) return;
+    if (
+      isCapturing ||
+      (isLoadingSession && remainingRolls === null) ||
+      (remainingRolls !== null && remainingRolls <= 0) ||
+      !videoRef.current ||
+      albumInfo?.is_closed
+    ) {
+      return;
+    }
 
     setIsCapturing(true);
     setSnapEffect(true);
@@ -573,11 +604,17 @@ export default function SatualbumCameraPage() {
         pendingId,
       });
 
+      let updatedRolls = 0;
       if (res.confirmData?.remainingRolls !== undefined) {
-        setRemainingRolls(res.confirmData.remainingRolls);
+        updatedRolls = res.confirmData.remainingRolls;
+      } else {
+        updatedRolls = Math.max(0, (remainingRolls ?? 1) - 1);
       }
 
-      setRemainingRolls((prev) => Math.max(0, prev - 1));
+      setRemainingRolls(updatedRolls);
+      try {
+        localStorage.setItem(`storykami_remaining_rolls_${slug}`, String(updatedRolls));
+      } catch (e) {}
       setUploadSuccess(true);
 
       // Bersihkan preview object URL
@@ -1027,13 +1064,15 @@ export default function SatualbumCameraPage() {
             {/* Vertical Dial Roll Window */}
             <div className="flex flex-col items-center justify-center leading-none text-right">
               <span className="text-[11px] font-serif italic text-white/30 select-none">
-                {remainingRolls + 1}
+                {(remainingRolls ?? 0) + 1}
               </span>
-              <span className="text-[20px] font-serif italic font-bold text-white select-none my-0.5">
-                {remainingRolls}
+              <span className={`text-[20px] font-serif italic font-bold select-none my-0.5 ${
+                remainingRolls !== null && remainingRolls <= 0 ? 'text-red-400' : 'text-white'
+              }`}>
+                {remainingRolls ?? (isLoadingSession ? '...' : 0)}
               </span>
               <span className="text-[11px] font-serif italic text-white/30 select-none">
-                {Math.max(0, remainingRolls - 1)}
+                {Math.max(0, (remainingRolls ?? 0) - 1)}
               </span>
             </div>
           </div>
@@ -1041,18 +1080,29 @@ export default function SatualbumCameraPage() {
           {/* 2. BIG SHUTTER BUTTON (Tengah Bawah - Identik Satualbum Screenshot) */}
           <button
             onClick={handleCapturePhoto}
-            disabled={isCapturing || remainingRolls <= 0 || albumInfo?.is_closed}
+            disabled={
+              isCapturing ||
+              (isLoadingSession && remainingRolls === null) ||
+              (remainingRolls !== null && remainingRolls <= 0) ||
+              albumInfo?.is_closed
+            }
             className={`relative flex h-[82px] w-[82px] items-center justify-center rounded-full border-[3px] border-white p-[5px] transition-transform active:scale-90 shadow-2xl ${
-              remainingRolls <= 0 || albumInfo?.is_closed ? 'opacity-40 cursor-not-allowed' : ''
+              (remainingRolls !== null && remainingRolls <= 0) || albumInfo?.is_closed ? 'opacity-40 cursor-not-allowed' : ''
             }`}
-            title={albumInfo?.is_closed ? 'Album telah ditutup' : 'Jepret Foto'}
+            title={
+              albumInfo?.is_closed
+                ? 'Album telah ditutup'
+                : remainingRolls !== null && remainingRolls <= 0
+                ? 'Rol film habis'
+                : 'Jepret Foto'
+            }
           >
             <div className="h-full w-full rounded-full bg-white active:bg-neutral-200 flex items-center justify-center shadow-lg transition-colors">
-              {isCapturing ? (
+              {isCapturing || (isLoadingSession && remainingRolls === null) ? (
                 <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : albumInfo?.is_closed ? (
                 <span className="text-[9px] font-film font-bold text-black uppercase">Tutup</span>
-              ) : remainingRolls <= 0 ? (
+              ) : remainingRolls !== null && remainingRolls <= 0 ? (
                 <span className="text-[9px] font-film font-bold text-black uppercase">Habis</span>
               ) : null}
             </div>
