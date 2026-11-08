@@ -1897,31 +1897,6 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                   </div>
                 </div>
 
-                {/* 7. Tautan Khusus */}
-                <div
-                  onClick={() => {
-                    navigator.clipboard.writeText(albumShareUrl);
-                    setToastMessage('✓ Tautan khusus album berhasil disalin');
-                    setTimeout(() => setToastMessage(null), 3000);
-                  }}
-                  className="p-3.5 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99] transition-all flex items-center justify-between group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>
-                      </svg>
-                    </div>
-                    <span className="text-sm font-medium text-gray-200">Tautan khusus</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-normal text-zinc-400">Buat tautan khusus</span>
-                    <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                  </div>
-                </div>
-
                 {/* 8. Bahasa Default Acara */}
                 <div className="p-3.5 flex items-center justify-between group opacity-90">
                   <div className="flex items-center gap-3">
