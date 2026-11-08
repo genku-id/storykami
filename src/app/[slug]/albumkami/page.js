@@ -899,8 +899,15 @@ export default function SharedAlbumPage() {
             {/* 2. MIDDLE PHOTO CONTAINER WITH LEFT & RIGHT ARROWS */}
             <div className="relative flex-1 rounded-[30px] overflow-hidden bg-[#0a0a0a] border border-white/10 flex items-center justify-center my-2 shadow-2xl">
               <img
-                src={currentPhoto.r2_image_url}
+                src={currentPhoto.r2_thumb_url || currentPhoto.r2_image_url}
                 alt={currentPhoto.guest_name}
+                onError={(e) => {
+                  // Fallback ke JPEG asli hanya jika file tidak punya webp atau gagal dimuat
+                  if (currentPhoto.r2_image_url && !e.currentTarget.dataset.fallback) {
+                    e.currentTarget.dataset.fallback = 'true';
+                    e.currentTarget.src = currentPhoto.r2_image_url;
+                  }
+                }}
                 className="w-full h-full object-contain pointer-events-none"
               />
 
