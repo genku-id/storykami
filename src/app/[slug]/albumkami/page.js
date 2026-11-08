@@ -123,18 +123,33 @@ export default function SharedAlbumPage() {
           const pendingKey = `storykami_pending_uploads_${slug}`;
           const pendingList = JSON.parse(localStorage.getItem(pendingKey) || '[]');
           const now = Date.now();
-          // Filter pending uploads yang masih dalam rentang 60 detik
-          const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 60000);
+          // Filter pending uploads yang masih dalam rentang 90 detik
+          const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 90000);
 
           if (validPending.length > 0) {
-            // Hilangkan pending yang sudah terkonfirmasi ada di server
+            // Hanya hilangkan pending yang BENAR-BENAR sudah masuk ke pData.photos
             const remainingPending = validPending.filter((pending) => {
-              return !pData.photos.some((serverPhoto) => {
-                if (serverPhoto.guest_name !== pending.guest_name) return false;
-                const serverTime = new Date(serverPhoto.created_at).getTime();
-                return Math.abs(serverTime - (pending.timestamp || 0)) < 30000;
-              });
+              // 1. Jika sudah punya serverPhotoId dan ada di pData.photos
+              if (pending.serverPhotoId && pData.photos.some((sp) => sp.id === pending.serverPhotoId)) {
+                return false;
+              }
+              // 2. Jika punya r2_key dan ada di pData.photos
+              if (pending.r2_key && pData.photos.some((sp) => sp.r2_key === pending.r2_key)) {
+                return false;
+              }
+              // 3. Jika ada foto server dengan nama yang sama yang dibuat SETELAH pending timestamp (toleransi jam 3 detik)
+              if (pending.timestamp) {
+                const isSavedOnServer = pData.photos.some((sp) => {
+                  if (sp.guest_name !== pending.guest_name) return false;
+                  const spTime = new Date(sp.created_at).getTime();
+                  return spTime >= pending.timestamp - 3000;
+                });
+                if (isSavedOnServer) return false;
+              }
+              // Jika belum ada di server, TETAP TAMPILKAN KOTAKNYA!
+              return true;
             });
+
             localStorage.setItem(pendingKey, JSON.stringify(remainingPending));
             finalPhotos = [...remainingPending, ...pData.photos];
           } else if (pendingList.length > 0) {
@@ -205,11 +220,18 @@ export default function SharedAlbumPage() {
     window.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('focus', handleVisibility);
 
+    // Sinkronisasi seketika begitu proses upload latar belakang terkonfirmasi
+    const handlePhotoUploaded = () => {
+      loadGallery(true);
+    };
+    window.addEventListener('storykami_photo_uploaded', handlePhotoUploaded);
+
     return () => {
       clearInterval(pollInterval);
       if (typeof window !== 'undefined') {
         window.removeEventListener('visibilitychange', handleVisibility);
         window.removeEventListener('focus', handleVisibility);
+        window.removeEventListener('storykami_photo_uploaded', handlePhotoUploaded);
       }
     };
   }, [slug, loadGallery]);
@@ -898,11 +920,22 @@ export default function SharedAlbumPage() {
 
                     {/* 2. PENDING UPLOAD OVERLAY (Animasi khusus foto yang baru saja dijepret & diupload) */}
                     {photo.isPending && (
-                      <div className="absolute inset-0 z-20 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none p-2 text-center anim-fade-in">
-                        <div className="w-8 h-8 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin mb-1.5 shadow-lg" />
-                        <span className="text-[10px] font-medium text-amber-200 tracking-wide font-sans bg-black/75 px-2.5 py-0.5 rounded-full border border-amber-400/30 shadow-md">
-                          Memproses...
-                        </span>
+                      <div className="absolute inset-0 z-20 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none p-2 text-center anim-fade-in">
+                        {photo.status === 'error' ? (
+                          <>
+                            <span className="text-xl mb-1">⚠️</span>
+                            <span className="text-[10px] font-semibold text-rose-300 font-sans bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-500/30">
+                              {photo.errorMessage || 'Gagal Unggah'}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-8 h-8 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin mb-1.5 shadow-lg" />
+                            <span className="text-[10px] font-medium text-amber-200 tracking-wide font-sans bg-black/75 px-2.5 py-0.5 rounded-full border border-amber-400/30 shadow-md">
+                              Memproses...
+                            </span>
+                          </>
+                        )}
                       </div>
                     )}
 

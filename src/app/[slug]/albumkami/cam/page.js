@@ -5,6 +5,138 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import '../albumkami.css';
 
+// Global memory queue untuk proses upload latar belakang yang kebal unmount/navigasi halaman
+if (typeof window !== 'undefined') {
+  window.__storykami_upload_tasks = window.__storykami_upload_tasks || [];
+}
+
+const executeBackgroundUploadTask = async ({
+  slug,
+  deviceToken,
+  originalBlob,
+  thumbBlob,
+  finalSenderName,
+  pendingId,
+}) => {
+  try {
+    // Step A: Minta Presigned PUT URL
+    const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_token: deviceToken }),
+    });
+    const urlData = await urlRes.json();
+    if (!urlRes.ok || !urlData.uploadUrl) {
+      throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
+    }
+
+    // Update pending photo dengan r2_key agar sinkronisasi galeri akurat
+    try {
+      const pendingKey = `storykami_pending_uploads_${slug}`;
+      const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+      const updated = curPending.map((p) =>
+        p.id === pendingId ? { ...p, r2_key: urlData.key } : p
+      );
+      localStorage.setItem(pendingKey, JSON.stringify(updated));
+    } catch (e) {}
+
+    // Step B: Upload file asli JPEG & thumbnail WebP secara paralel
+    const uploadPromises = [
+      fetch(urlData.uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'image/jpeg' },
+        body: originalBlob,
+      }),
+    ];
+
+    if (urlData.thumbUploadUrl && thumbBlob) {
+      uploadPromises.push(
+        fetch(urlData.thumbUploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'image/webp' },
+          body: thumbBlob,
+        })
+      );
+    }
+
+    const uploadResults = await Promise.all(uploadPromises);
+    for (const res of uploadResults) {
+      if (!res.ok) throw new Error('Gagal mengunggah foto ke storage');
+    }
+
+    // Step C: Konfirmasi ke Supabase Database
+    const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        album_id: urlData.albumId,
+        guest_id: urlData.guestId,
+        guest_name: finalSenderName,
+        r2_key: urlData.key,
+        r2_image_url: urlData.publicUrl,
+        preset_applied: 'original-highres',
+      }),
+    });
+
+    const confirmData = await confirmRes.json();
+    const serverPhotoId = confirmData.photo?.id;
+
+    // Update pending photo dengan serverPhotoId
+    try {
+      const pendingKey = `storykami_pending_uploads_${slug}`;
+      const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+      const updatedPending = curPending.map((p) =>
+        p.id === pendingId
+          ? { ...p, serverPhotoId, isConfirmed: true, status: 'done', isPending: false }
+          : p
+      );
+      localStorage.setItem(pendingKey, JSON.stringify(updatedPending));
+
+      const cacheKey = `storykami_cache_${slug}_photos`;
+      const existingCache = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+      const updatedCache = existingCache.map((p) => {
+        if (p.id === pendingId) {
+          return {
+            ...p,
+            id: serverPhotoId || p.id,
+            r2_key: urlData.key,
+            r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key)}`,
+            r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key.replace(/\.jpg$/, '_thumb.webp'))}`,
+            isPending: false,
+            isConfirmed: true,
+          };
+        }
+        return p;
+      });
+      localStorage.setItem(cacheKey, JSON.stringify(updatedCache));
+    } catch (e) {}
+
+    // Dispatch custom event agar galeri seketika sinkronisasi jika pengguna sedang berada di galeri
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('storykami_photo_uploaded', {
+          detail: { slug, photoId: serverPhotoId },
+        })
+      );
+    }
+
+    return { success: true, confirmData };
+  } catch (err) {
+    console.error('Background upload execution error:', err);
+    try {
+      const pendingKey = `storykami_pending_uploads_${slug}`;
+      const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+      const updatedPending = curPending.map((p) =>
+        p.id === pendingId
+          ? { ...p, status: 'error', errorMessage: err.message || 'Gagal mengunggah foto' }
+          : p
+      );
+      localStorage.setItem(pendingKey, JSON.stringify(updatedPending));
+    } catch (e) {}
+    throw err;
+  }
+};
+
 export default function SatualbumCameraPage() {
   const params = useParams();
   const router = useRouter();
@@ -460,110 +592,40 @@ export default function SatualbumCameraPage() {
       } catch (e) {}
     }
 
-    // 3. Eksekusi Upload di Latar Belakang
+    // 3. Eksekusi Upload di Latar Belakang (Kebal Unmount / Navigasi Halaman)
     setBgUploadQueue((prev) => prev + 1);
     setBgToast({ show: true, type: 'uploading', message: 'Mengunggah di latar belakang... ☁️' });
 
-    try {
-      // Step A: Minta Presigned PUT URL
-      const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_token: deviceToken }),
-      });
-      const urlData = await urlRes.json();
-      if (!urlRes.ok || !urlData.uploadUrl) {
-        throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
-      }
-
-      // Step B: Upload file asli JPEG & thumbnail WebP secara paralel
-      const uploadPromises = [
-        fetch(urlData.uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'image/jpeg' },
-          body: photoToUpload.originalBlob,
-        }),
-      ];
-
-      if (urlData.thumbUploadUrl && photoToUpload.thumbBlob) {
-        uploadPromises.push(
-          fetch(urlData.thumbUploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'image/webp' },
-            body: photoToUpload.thumbBlob,
-          })
-        );
-      }
-
-      const uploadResults = await Promise.all(uploadPromises);
-      for (const res of uploadResults) {
-        if (!res.ok) throw new Error('Gagal mengunggah foto');
-      }
-
-      // Step C: Konfirmasi ke Supabase Database
-      const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          album_id: urlData.albumId,
-          guest_id: urlData.guestId,
-          guest_name: finalSenderName,
-          r2_key: urlData.key,
-          r2_image_url: urlData.publicUrl,
-          preset_applied: 'original-highres',
-        }),
-      });
-
-      const confirmData = await confirmRes.json();
-      if (confirmData.remainingRolls !== undefined) {
-        setRemainingRolls(confirmData.remainingRolls);
-      }
-
-      // Update cache galeri lokal dan bersihkan pending upload
-      try {
-        const pendingKey = `storykami_pending_uploads_${slug}`;
-        const existingPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-        localStorage.setItem(pendingKey, JSON.stringify(existingPending.filter((p) => p.id !== pendingId)));
-
-        const cacheKey = `storykami_cache_${slug}_photos`;
-        const existing = localStorage.getItem(cacheKey);
-        if (existing) {
-          const list = JSON.parse(existing);
-          const updated = list.map((p) => {
-            if (p.id === pendingId || (p.isPending && p.r2_image_url === photoToUpload.url)) {
-              return {
-                ...p,
-                id: confirmData.photo?.id || p.id,
-                r2_key: urlData.key,
-                r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key)}`,
-                r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key.replace(/\.jpg$/, '_thumb.webp'))}`,
-                isPending: false,
-              };
-            }
-            return p;
-          });
-          localStorage.setItem(cacheKey, JSON.stringify(updated));
+    executeBackgroundUploadTask({
+      slug,
+      deviceToken,
+      originalBlob: photoToUpload.originalBlob,
+      thumbBlob: photoToUpload.thumbBlob,
+      finalSenderName,
+      pendingId,
+    })
+      .then((res) => {
+        if (res.confirmData?.remainingRolls !== undefined) {
+          setRemainingRolls(res.confirmData.remainingRolls);
         }
-      } catch (e) {}
-
-      setBgToast({ show: true, type: 'success', message: '✓ Foto berhasil tersimpan di album!' });
-      setTimeout(() => {
-        setBgToast((prev) => (prev.type === 'success' ? { ...prev, show: false } : prev));
-      }, 2500);
-    } catch (err) {
-      console.error('Background upload error:', err);
-      try {
-        const pendingKey = `storykami_pending_uploads_${slug}`;
-        const existingPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-        localStorage.setItem(pendingKey, JSON.stringify(existingPending.filter((p) => p.id !== pendingId)));
-      } catch (e) {}
-      setBgToast({ show: true, type: 'error', message: '⚠️ Gagal mengunggah. Cek koneksi internet.' });
-      setTimeout(() => {
-        setBgToast((prev) => (prev.type === 'error' ? { ...prev, show: false } : prev));
-      }, 4000);
-    } finally {
-      setBgUploadQueue((prev) => Math.max(0, prev - 1));
-    }
+        setBgToast({ show: true, type: 'success', message: '✓ Foto berhasil tersimpan di album!' });
+        setTimeout(() => {
+          setBgToast((prev) => (prev.type === 'success' ? { ...prev, show: false } : prev));
+        }, 2500);
+      })
+      .catch((err) => {
+        setBgToast({
+          show: true,
+          type: 'error',
+          message: `⚠️ ${err.message || 'Gagal mengunggah foto'}`,
+        });
+        setTimeout(() => {
+          setBgToast((prev) => (prev.type === 'error' ? { ...prev, show: false } : prev));
+        }, 4000);
+      })
+      .finally(() => {
+        setBgUploadQueue((prev) => Math.max(0, prev - 1));
+      });
   };
 
   const albumTitle = albumInfo?.title || 'Awal dari Selamanya';
