@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import JSZip from 'jszip';
@@ -28,6 +28,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const [enableLikes, setEnableLikes] = useState(false);
   const [emailReminder, setEmailReminder] = useState(false);
   const [likedPhotoIds, setLikedPhotoIds] = useState(new Set());
+  const [currentGuestName, setCurrentGuestName] = useState('');
 
   // Lightbox Modal Index & Actions State
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
@@ -68,6 +69,12 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
         const savedLikes = localStorage.getItem(`storykami_liked_photos_${slug}`);
         if (savedLikes) {
           setLikedPhotoIds(new Set(JSON.parse(savedLikes)));
+        }
+      } catch (e) {}
+      try {
+        const savedName = localStorage.getItem('storykami_guest_name') || '';
+        if (savedName) {
+          setCurrentGuestName(savedName);
         }
       } catch (e) {}
     }
@@ -254,9 +261,21 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
     } catch (e) {}
 
     const urlParams = new URLSearchParams(window.location.search);
-    // Tombol pengaturan dan mode host HANYA jika ada parameter URL ?from=wim
+    // Tombol pengaturan dan mode host jika ada parameter URL ?from=wim atau session host
     const fromWim = urlParams.get('from') === 'wim';
-    setIsHost(fromWim);
+    let hostStatus = fromWim;
+    if (fromWim) {
+      try {
+        sessionStorage.setItem(`storykami_is_host_${slug}`, 'true');
+      } catch (e) {}
+    } else {
+      try {
+        if (sessionStorage.getItem(`storykami_is_host_${slug}`) === 'true') {
+          hostStatus = true;
+        }
+      } catch (e) {}
+    }
+    setIsHost(hostStatus);
 
     if (fromWim) {
       // HANYA minta setup sekali: jika sudah pernah setup atau album sudah punya nama, JANGAN minta lagi
@@ -311,6 +330,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const handleSaveGuestName = async (nameToSave, shouldNavigateToCam = true) => {
     const finalName = (nameToSave !== undefined ? nameToSave : guestInputName).trim() || 'Tamu';
     localStorage.setItem('storykami_guest_name', finalName);
+    setCurrentGuestName(finalName);
     setShowGuestNameModal(false);
     setToastMessage(`✓ Selamat datang, ${finalName}!`);
     setTimeout(() => setToastMessage(null), 3000);
@@ -411,11 +431,30 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
     return `${day} ${months[mIdx] || ''} ${year}, ${timeFormatted}`;
   };
 
-  // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
-  const filteredPhotos =
-    hideUploaderName || selectedContributor === 'ALL'
-      ? photos
-      : photos.filter((p) => p.guest_name === selectedContributor);
+  // 1. Filter visibilitas berdasarkan pengaturan "Semua orang bisa melihat semua foto" (allowPublicView)
+  // Jika allowPublicView = false: Host bisa melihat semua, tetapi tamu HANYA melihat foto miliknya sendiri
+  const visiblePhotos = useMemo(() => {
+    if (allowPublicView || isHost) {
+      return photos;
+    }
+    const myName = (currentGuestName || '').trim().toLowerCase();
+    if (!myName) {
+      return photos.filter((p) => p.isPending);
+    }
+    return photos.filter((p) => {
+      if (p.isPending) return true;
+      const uploader = (p.guest_name || '').trim().toLowerCase();
+      return uploader === myName;
+    });
+  }, [photos, allowPublicView, isHost, currentGuestName]);
+
+  // 2. Filter sekunder (kontributor / penjurian buta)
+  const filteredPhotos = useMemo(() => {
+    if (hideUploaderName || selectedContributor === 'ALL' || (!allowPublicView && !isHost)) {
+      return visiblePhotos;
+    }
+    return visiblePhotos.filter((p) => p.guest_name === selectedContributor);
+  }, [visiblePhotos, hideUploaderName, selectedContributor, allowPublicView, isHost]);
 
   const albumTitle = albumData?.title || 'Awal dari Selamanya';
   const displayCoupleName = (albumTitle || '')
@@ -677,7 +716,8 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
   // Unduh Semua Foto sebagai ZIP
   const handleDownloadAllZip = async () => {
-    if (!photos || photos.length === 0 || isZipping) {
+    const photosToZip = allowPublicView || isHost ? photos : visiblePhotos;
+    if (!photosToZip || photosToZip.length === 0 || isZipping) {
       setToastMessage('✕ Belum ada foto yang bisa diunduh');
       setTimeout(() => setToastMessage(null), 3000);
       return;
@@ -691,8 +731,8 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
       const folder = zip.folder(`albumkami-${slug}`);
 
       let completed = 0;
-      for (let i = 0; i < photos.length; i++) {
-        const p = photos[i];
+      for (let i = 0; i < photosToZip.length; i++) {
+        const p = photosToZip[i];
         try {
           const res = await fetch(p.r2_image_url);
           const blob = await res.blob();
@@ -703,7 +743,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
           console.warn('Failed to add photo to zip:', p.r2_image_url);
         }
         completed++;
-        setZipProgress(Math.round((completed / photos.length) * 100));
+        setZipProgress(Math.round((completed / photosToZip.length) * 100));
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -956,6 +996,20 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
             </div>
           )}
 
+          {/* PRIVATE MODE BANNER */}
+          {!allowPublicView && (
+            <div className="flex items-center justify-between bg-[#141419] border border-amber-500/25 rounded-2xl px-4 py-2.5 text-xs shadow-md">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                <span className="text-zinc-300 font-sans text-[11px] leading-tight">
+                  {isHost
+                    ? 'Mode Privat Aktif: Tamu hanya dapat melihat foto miliknya sendiri.'
+                    : 'Mode Privat: Hanya foto yang kamu abadikan yang ditampilkan.'}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* PHOTO GALLERY GRID / EMPTY STATE */}
           {filteredPhotos.length === 0 ? (
             <section className="relative overflow-hidden bg-gradient-to-b from-[#14141a]/90 via-[#0e0e13]/95 to-[#0b0b0e] border border-white/[0.08] rounded-3xl p-7 text-center shadow-2xl flex flex-col items-center justify-center mt-1 group" data-purpose="empty-gallery-state">
@@ -972,11 +1026,13 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
               </div>
               {/* Empty State Title */}
               <h2 className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-white mb-2">
-                Belum Ada Momen
+                {!allowPublicView && !isHost ? 'Belum Ada Foto Milikmu' : 'Belum Ada Momen'}
               </h2>
               {/* Empty State Description */}
               <p className="text-xs md:text-sm text-zinc-400 font-normal leading-relaxed max-w-[270px] mb-6">
-                Tekan tombol kamera di atas untuk mengambil foto pertama anda!
+                {!allowPublicView && !isHost
+                  ? 'Album ini diatur privat. Kamu hanya dapat melihat foto yang kamu abadikan sendiri. Ambil fotomu sekarang!'
+                  : 'Tekan tombol kamera di atas untuk mengambil foto pertama anda!'}
               </p>
             </section>
           ) : (
