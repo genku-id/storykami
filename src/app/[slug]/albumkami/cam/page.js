@@ -421,11 +421,6 @@ export default function SatualbumCameraPage() {
       origCanvas.height = oH;
       const origCtx = origCanvas.getContext('2d');
 
-      if (facingMode === 'user') {
-        origCtx.translate(oW, 0);
-        origCtx.scale(-1, 1);
-      }
-
       if (zoomLevel === 2) {
         const cropW = vWidth / 2;
         const cropH = vHeight / 2;
