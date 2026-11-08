@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { CAMERA_FILTERS, DEFAULT_ENABLED_FILTERS } from '../filters';
 import '../albumkami.css';
 
 // Global memory queue untuk proses upload latar belakang yang kebal unmount/navigasi halaman
@@ -17,6 +18,7 @@ const executeBackgroundUploadTask = async ({
   thumbBlob,
   finalSenderName,
   pendingId,
+  filterApplied = 'original',
 }) => {
   try {
     // Pastikan deviceToken terisi
@@ -37,6 +39,7 @@ const executeBackgroundUploadTask = async ({
     }
     formData.append('device_token', effectiveToken);
     formData.append('guest_name', finalSenderName);
+    formData.append('filter', filterApplied || 'original');
 
     const uploadRes = await fetch(`/api/album/${slug}/upload/`, {
       method: 'POST',
@@ -67,7 +70,7 @@ const executeBackgroundUploadTask = async ({
         r2_key: r2Key,
         r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key)}`,
         r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key.replace(/\.jpg$/, '_thumb.webp'))}`,
-        preset_applied: 'original-highres',
+        preset_applied: filterApplied || 'original',
         likes_count: 0,
         created_at: new Date().toISOString(),
       };
@@ -113,6 +116,8 @@ export default function SatualbumCameraPage() {
 
   // Info Album & Kuota
   const [albumInfo, setAlbumInfo] = useState(null);
+  const [selectedFilterId, setSelectedFilterId] = useState('original');
+  const [enabledFilters, setEnabledFilters] = useState(DEFAULT_ENABLED_FILTERS);
   const [remainingRolls, setRemainingRolls] = useState(() => {
     if (typeof window !== 'undefined') {
       const cached = localStorage.getItem(`storykami_remaining_rolls_${slug}`);
@@ -146,6 +151,15 @@ export default function SatualbumCameraPage() {
   // Background Upload State (Upload di latar belakang tanpa blokir UI)
   const [bgUploadQueue, setBgUploadQueue] = useState(0);
   const [bgToast, setBgToast] = useState({ show: false, type: 'uploading', message: '' });
+
+  // Filter kamera aktif
+  const activeFilters = useMemo(() => {
+    return CAMERA_FILTERS.filter((f) => enabledFilters.includes(f.id));
+  }, [enabledFilters]);
+
+  const currentFilterObj = useMemo(() => {
+    return CAMERA_FILTERS.find((f) => f.id === selectedFilterId) || CAMERA_FILTERS[0];
+  }, [selectedFilterId]);
 
   // Format File Size
   const formatBytes = (bytes) => {
@@ -186,6 +200,9 @@ export default function SatualbumCameraPage() {
           setAlbumInfo(data.album);
           const limit = data.album.roll_limit || 10;
           setRollLimit(limit);
+          if (data.album.settings?.enabled_filters && Array.isArray(data.album.settings.enabled_filters) && data.album.settings.enabled_filters.length > 0) {
+            setEnabledFilters(data.album.settings.enabled_filters);
+          }
         }
 
         const savedName = localStorage.getItem('storykami_guest_name') || '';
@@ -413,12 +430,20 @@ export default function SatualbumCameraPage() {
 
   // 📸 Jepret Foto -> Muncul Preview Terlebih Dahulu (Dual-file: Asli High-Res & Thumbnail WebP)
   const handleCapturePhoto = async () => {
+    if (albumInfo?.is_closed) {
+      setStatusMessage('⚠️ Album telah ditutup');
+      setTimeout(() => setStatusMessage(''), 3000);
+      return;
+    }
+    if (remainingRolls !== null && remainingRolls <= 0) {
+      setStatusMessage('⚠️ Kuota rol film habis');
+      setTimeout(() => setStatusMessage(''), 3000);
+      return;
+    }
     if (
       isCapturing ||
       (isLoadingSession && remainingRolls === null) ||
-      (remainingRolls !== null && remainingRolls <= 0) ||
-      !videoRef.current ||
-      albumInfo?.is_closed
+      !videoRef.current
     ) {
       return;
     }
@@ -451,6 +476,11 @@ export default function SatualbumCameraPage() {
       origCanvas.width = oW;
       origCanvas.height = oH;
       const origCtx = origCanvas.getContext('2d');
+
+      // Terapkan filter yang dipilih langsung ke kanvas resolusi penuh
+      if (currentFilterObj.css && currentFilterObj.css !== 'none') {
+        origCtx.filter = currentFilterObj.css;
+      }
 
       if (zoomLevel === 2) {
         const cropW = vWidth / 2;
@@ -534,6 +564,13 @@ export default function SatualbumCameraPage() {
       localStorage.setItem('storykami_guest_name', finalSenderName);
     } catch (e) {}
 
+    // Sisa rol film seketika berkurang (0ms optimistic) agar dial & shutter langsung nonaktif jika habis
+    const immediateNextRolls = Math.max(0, (remainingRolls ?? 1) - 1);
+    setRemainingRolls(immediateNextRolls);
+    try {
+      localStorage.setItem(`storykami_remaining_rolls_${slug}`, String(immediateNextRolls));
+    } catch (e) {}
+
     setIsUploading(true);
     setStatusMessage('Mengunggah ke galeri...');
 
@@ -546,7 +583,7 @@ export default function SatualbumCameraPage() {
       r2_key: '',
       r2_image_url: photoToUpload.url,
       r2_thumb_url: photoToUpload.url,
-      preset_applied: 'original-highres',
+      preset_applied: currentFilterObj.id || 'original',
       likes_count: 0,
       created_at: new Date().toISOString(),
       isPending: true,
@@ -602,6 +639,7 @@ export default function SatualbumCameraPage() {
         thumbBlob: photoToUpload.thumbBlob,
         finalSenderName,
         pendingId,
+        filterApplied: currentFilterObj.id || 'original',
       });
 
       let updatedRolls = 0;
@@ -969,6 +1007,7 @@ export default function SatualbumCameraPage() {
                 style={{
                   transform: `scale(${zoomLevel})`,
                   transformOrigin: 'center center',
+                  filter: currentFilterObj.css || 'none',
                 }}
                 className="w-full h-full object-cover transition-transform duration-300"
               />
@@ -1045,16 +1084,59 @@ export default function SatualbumCameraPage() {
           </div>
         </div>
 
+        {/* FILTER SELECTOR ROW (Diatas Shutter Kamera - Identik sow.ubdaw.workers.dev) */}
+        {activeFilters.length > 0 && (
+          <div className="relative z-10 w-full flex items-center justify-center gap-3.5 sm:gap-4 px-4 pt-2 pb-1.5 overflow-x-auto scrollbar-none select-none">
+            {activeFilters.map((f) => {
+              const isSelected = selectedFilterId === f.id;
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setSelectedFilterId(f.id)}
+                  className="flex flex-col items-center gap-1.5 shrink-0 transition-transform active:scale-95 focus:outline-none cursor-pointer"
+                >
+                  <div
+                    className={`w-[48px] h-[48px] rounded-full overflow-hidden transition-all duration-200 ${
+                      isSelected
+                        ? 'ring-[3px] ring-white ring-offset-2 ring-offset-black scale-105 shadow-lg shadow-white/20'
+                        : 'border border-white/20 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <div className="w-full h-full rounded-full overflow-hidden bg-neutral-900">
+                      <img
+                        src="/images/satualbum_cover.webp"
+                        alt={f.name}
+                        className="w-full h-full object-cover pointer-events-none"
+                        style={{ filter: f.css }}
+                      />
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[11px] leading-tight transition-colors ${
+                      isSelected ? 'text-white font-bold' : 'text-[#8e8e93] font-medium'
+                    }`}
+                  >
+                    {f.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* BOTTOM CONTROLS (Identik 1:1 Satualbum.id Screenshot) */}
-        <div className="relative z-10 flex flex-shrink-0 items-center justify-between px-7 pb-[max(32px,env(safe-area-inset-bottom))] pt-2">
+        <div className="relative z-10 flex flex-shrink-0 items-center justify-between px-7 pb-[max(32px,env(safe-area-inset-bottom))] pt-1">
           
           {/* 1. MECHANICAL FILM COUNTER DIAL (Kiri Bawah) */}
           <div
-            className="flex h-[58px] w-[84px] items-center justify-between rounded-[20px] bg-[#181818] border border-white/10 px-3 py-1 shadow-lg"
+            className={`flex h-[58px] w-[84px] items-center justify-between rounded-[20px] bg-[#181818] border px-3 py-1 shadow-lg transition-all ${
+              remainingRolls !== null && remainingRolls <= 0 ? 'border-red-500/30 opacity-60' : 'border-white/10'
+            }`}
             title="Sisa Rol Film"
           >
             {/* Film Strip Icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/40">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={remainingRolls !== null && remainingRolls <= 0 ? 'text-red-400/60' : 'text-white/40'}>
               <rect width="18" height="18" x="3" y="3" rx="2"/>
               <path d="M7 3v18"/><path d="M17 3v18"/>
               <path d="M3 7.5h4"/><path d="M3 12h4"/><path d="M3 16.5h4"/>
@@ -1064,7 +1146,7 @@ export default function SatualbumCameraPage() {
             {/* Vertical Dial Roll Window */}
             <div className="flex flex-col items-center justify-center leading-none text-right">
               <span className="text-[11px] font-serif italic text-white/30 select-none">
-                {(remainingRolls ?? 0) + 1}
+                {Math.max(1, (remainingRolls ?? 0) + 1)}
               </span>
               <span className={`text-[20px] font-serif italic font-bold select-none my-0.5 ${
                 remainingRolls !== null && remainingRolls <= 0 ? 'text-red-400' : 'text-white'
@@ -1087,7 +1169,9 @@ export default function SatualbumCameraPage() {
               albumInfo?.is_closed
             }
             className={`relative flex h-[82px] w-[82px] items-center justify-center rounded-full border-[3px] border-white p-[5px] transition-transform active:scale-90 shadow-2xl ${
-              (remainingRolls !== null && remainingRolls <= 0) || albumInfo?.is_closed ? 'opacity-40 cursor-not-allowed' : ''
+              (remainingRolls !== null && remainingRolls <= 0) || albumInfo?.is_closed
+                ? 'opacity-40 cursor-not-allowed pointer-events-none grayscale'
+                : ''
             }`}
             title={
               albumInfo?.is_closed

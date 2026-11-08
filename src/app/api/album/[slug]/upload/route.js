@@ -20,6 +20,7 @@ export async function POST(request, { params }) {
     const guestName = (formData.get('guest_name') || 'Tamu').trim();
     const originalFile = formData.get('file');
     const thumbFile = formData.get('thumb');
+    const filterPreset = formData.get('filter') || formData.get('preset_applied') || 'original';
 
     if (!deviceToken) {
       return NextResponse.json({ error: 'Device token diperlukan' }, { status: 400 });
@@ -163,7 +164,7 @@ export async function POST(request, { params }) {
           guest_name: guestName,
           r2_key: originalKey,
           r2_image_url: publicUrl,
-          preset_applied: 'original-highres',
+          preset_applied: filterPreset,
         })
         .select()
         .single(),
