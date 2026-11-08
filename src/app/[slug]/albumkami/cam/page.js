@@ -51,34 +51,27 @@ const executeBackgroundUploadTask = async ({
     const serverPhotoId = uploadData.photo?.id;
     const r2Key = uploadData.key;
 
-    // Update pending photo dengan serverPhotoId & r2_key
+    // Bersihkan pending upload seketika & simpan foto resmi ke cache galeri lokal
     try {
       const pendingKey = `storykami_pending_uploads_${slug}`;
       const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-      const updatedPending = curPending.map((p) =>
-        p.id === pendingId
-          ? { ...p, serverPhotoId, r2_key: r2Key, isConfirmed: true, status: 'done', isPending: false }
-          : p
-      );
-      localStorage.setItem(pendingKey, JSON.stringify(updatedPending));
+      localStorage.setItem(pendingKey, JSON.stringify(curPending.filter((p) => p.id !== pendingId)));
 
       const cacheKey = `storykami_cache_${slug}_photos`;
       const existingCache = JSON.parse(localStorage.getItem(cacheKey) || '[]');
-      const updatedCache = existingCache.map((p) => {
-        if (p.id === pendingId) {
-          return {
-            ...p,
-            id: serverPhotoId || p.id,
-            r2_key: r2Key,
-            r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key)}`,
-            r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key.replace(/\.jpg$/, '_thumb.webp'))}`,
-            isPending: false,
-            isConfirmed: true,
-          };
-        }
-        return p;
-      });
-      localStorage.setItem(cacheKey, JSON.stringify(updatedCache));
+      const cleanCache = existingCache.filter((p) => p.id !== pendingId && p.id !== serverPhotoId);
+      const serverPhotoObj = uploadData.photo || {
+        id: serverPhotoId,
+        album_id: uploadData.photo?.album_id,
+        guest_name: finalSenderName,
+        r2_key: r2Key,
+        r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key)}`,
+        r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key.replace(/\.jpg$/, '_thumb.webp'))}`,
+        preset_applied: 'original-highres',
+        likes_count: 0,
+        created_at: new Date().toISOString(),
+      };
+      localStorage.setItem(cacheKey, JSON.stringify([serverPhotoObj, ...cleanCache]));
     } catch (e) {}
 
     // Dispatch custom event agar galeri seketika sinkronisasi jika pengguna sedang berada di galeri

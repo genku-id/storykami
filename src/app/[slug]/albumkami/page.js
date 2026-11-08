@@ -127,8 +127,9 @@ export default function SharedAlbumPage() {
           const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 180000);
 
           if (validPending.length > 0) {
-            // Hanya hilangkan pending yang BENAR-BENAR sudah pasti terdaftar di pData.photos
+            // Hanya simpan pending yang BENAR-BENAR belum terkonfirmasi dan belum ada di server
             const remainingPending = validPending.filter((pending) => {
+              if (pending.isConfirmed || pending.status === 'done') return false;
               // 1. Jika sudah punya serverPhotoId dan ada di pData.photos
               if (pending.serverPhotoId && pData.photos.some((sp) => sp.id === pending.serverPhotoId)) {
                 return false;
@@ -179,8 +180,12 @@ export default function SharedAlbumPage() {
       }
 
       if (pendingPhotos.length > 0) {
+        // Abaikan pending yang sudah selesai terunggah agar tidak muncul foto hantu duplikat
+        const activePending = pendingPhotos.filter(
+          (p) => p.isPending && !p.isConfirmed && p.status !== 'done' && !p.serverPhotoId
+        );
         const existingIds = new Set(initialList.map((p) => p.id));
-        const missingPending = pendingPhotos.filter((p) => !existingIds.has(p.id));
+        const missingPending = activePending.filter((p) => !existingIds.has(p.id));
         initialList = [...missingPending, ...initialList];
       }
 
