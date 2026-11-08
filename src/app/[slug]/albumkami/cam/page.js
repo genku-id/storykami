@@ -19,14 +19,24 @@ const executeBackgroundUploadTask = async ({
   pendingId,
 }) => {
   try {
-    // Step A: Minta Presigned PUT URL
+    // Pastikan deviceToken terisi
+    let effectiveToken = deviceToken;
+    if (!effectiveToken && typeof window !== 'undefined') {
+      effectiveToken = localStorage.getItem('storykami_cam_token') || localStorage.getItem('storykami_device_token') || '';
+    }
+    if (!effectiveToken && typeof window !== 'undefined') {
+      effectiveToken = 'guest_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+      localStorage.setItem('storykami_cam_token', effectiveToken);
+    }
+
+    // Step A: Minta Presigned PUT URL & Key R2
     const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_token: deviceToken }),
+      body: JSON.stringify({ device_token: effectiveToken, guest_name: finalSenderName }),
     });
     const urlData = await urlRes.json();
-    if (!urlRes.ok || !urlData.uploadUrl) {
+    if (!urlRes.ok || !urlData.key) {
       throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
     }
 
@@ -40,29 +50,56 @@ const executeBackgroundUploadTask = async ({
       localStorage.setItem(pendingKey, JSON.stringify(updated));
     } catch (e) {}
 
-    // Step B: Upload file asli JPEG & thumbnail WebP secara paralel
+    // Step B: Upload file dengan fallback server otomatis jika R2 memblokir CORS di HP/perangkat luar
+    const uploadSingleFile = async (targetUrl, fileBlob, contentType, targetKey) => {
+      let uploaded = false;
+      const isLocalhost =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+      // Jika di localhost dan URL direct R2 tersedia, coba direct PUT
+      if (isLocalhost && targetUrl && !targetUrl.startsWith('/')) {
+        try {
+          const directRes = await fetch(targetUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': contentType },
+            body: fileBlob,
+          });
+          if (directRes.ok) {
+            uploaded = true;
+          }
+        } catch (corsErr) {
+          console.warn('[Upload] Direct R2 PUT threw CORS/network error, switching to server fallback:', corsErr);
+        }
+      }
+
+      // Jika direct upload gagal (atau di mobile / domain luar di mana CORS memblokir preflight),
+      // gunakan route server-side fallback yang mengunggah langsung ke R2 tanpa halangan CORS!
+      if (!uploaded) {
+        const fallbackUrl = `/api/album/${slug}/fallback-upload/?key=${encodeURIComponent(targetKey)}`;
+        const fbRes = await fetch(fallbackUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': contentType },
+          body: fileBlob,
+        });
+        if (!fbRes.ok) {
+          const fbErr = await fbRes.json().catch(() => ({}));
+          throw new Error(fbErr.error || 'Gagal mengunggah foto ke penyimpanan server');
+        }
+      }
+    };
+
     const uploadPromises = [
-      fetch(urlData.uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'image/jpeg' },
-        body: originalBlob,
-      }),
+      uploadSingleFile(urlData.uploadUrl, originalBlob, 'image/jpeg', urlData.key),
     ];
 
-    if (urlData.thumbUploadUrl && thumbBlob) {
+    if (urlData.thumbKey && thumbBlob) {
       uploadPromises.push(
-        fetch(urlData.thumbUploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'image/webp' },
-          body: thumbBlob,
-        })
+        uploadSingleFile(urlData.thumbUploadUrl, thumbBlob, 'image/webp', urlData.thumbKey)
       );
     }
 
-    const uploadResults = await Promise.all(uploadPromises);
-    for (const res of uploadResults) {
-      if (!res.ok) throw new Error('Gagal mengunggah foto ke storage');
-    }
+    await Promise.all(uploadPromises);
 
     // Step C: Konfirmasi ke Supabase Database
     const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
@@ -77,6 +114,11 @@ const executeBackgroundUploadTask = async ({
         preset_applied: 'original-highres',
       }),
     });
+
+    if (!confirmRes.ok) {
+      const confirmErr = await confirmRes.json().catch(() => ({}));
+      throw new Error(confirmErr.error || 'Gagal mengonfirmasi simpan foto');
+    }
 
     const confirmData = await confirmRes.json();
     const serverPhotoId = confirmData.photo?.id;

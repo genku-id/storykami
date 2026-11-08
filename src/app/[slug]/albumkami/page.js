@@ -123,11 +123,11 @@ export default function SharedAlbumPage() {
           const pendingKey = `storykami_pending_uploads_${slug}`;
           const pendingList = JSON.parse(localStorage.getItem(pendingKey) || '[]');
           const now = Date.now();
-          // Filter pending uploads yang masih dalam rentang 90 detik
-          const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 90000);
+          // Filter pending uploads yang masih dalam rentang 3 menit (180 detik)
+          const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 180000);
 
           if (validPending.length > 0) {
-            // Hanya hilangkan pending yang BENAR-BENAR sudah masuk ke pData.photos
+            // Hanya hilangkan pending yang BENAR-BENAR sudah pasti terdaftar di pData.photos
             const remainingPending = validPending.filter((pending) => {
               // 1. Jika sudah punya serverPhotoId dan ada di pData.photos
               if (pending.serverPhotoId && pData.photos.some((sp) => sp.id === pending.serverPhotoId)) {
@@ -136,15 +136,6 @@ export default function SharedAlbumPage() {
               // 2. Jika punya r2_key dan ada di pData.photos
               if (pending.r2_key && pData.photos.some((sp) => sp.r2_key === pending.r2_key)) {
                 return false;
-              }
-              // 3. Jika ada foto server dengan nama yang sama yang dibuat SETELAH pending timestamp (toleransi jam 3 detik)
-              if (pending.timestamp) {
-                const isSavedOnServer = pData.photos.some((sp) => {
-                  if (sp.guest_name !== pending.guest_name) return false;
-                  const spTime = new Date(sp.created_at).getTime();
-                  return spTime >= pending.timestamp - 3000;
-                });
-                if (isSavedOnServer) return false;
               }
               // Jika belum ada di server, TETAP TAMPILKAN KOTAKNYA!
               return true;

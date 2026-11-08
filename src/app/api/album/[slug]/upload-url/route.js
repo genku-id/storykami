@@ -44,8 +44,8 @@ export async function POST(request, { params }) {
       }
     } catch (e) {}
 
-    // 2. Ambil data tamu
-    const { data: guest } = await supabaseServer
+    // 2. Ambil data tamu (atau auto-register jika belum ada agar upload tidak gagal)
+    let { data: guest } = await supabaseServer
       .from('album_guests')
       .select('*')
       .eq('album_id', album.id)
@@ -53,7 +53,23 @@ export async function POST(request, { params }) {
       .maybeSingle();
 
     if (!guest) {
-      return NextResponse.json({ error: 'Sesi tamu belum terdaftar. Silakan masukkan nama terlebih dahulu.' }, { status: 401 });
+      const initialGuestName = (body.guest_name || 'Tamu').trim();
+      const { data: newGuest } = await supabaseServer
+        .from('album_guests')
+        .insert({
+          album_id: album.id,
+          device_token,
+          guest_name: initialGuestName,
+          photos_taken: 0,
+        })
+        .select()
+        .maybeSingle();
+
+      if (newGuest) {
+        guest = newGuest;
+      } else {
+        return NextResponse.json({ error: 'Sesi tamu belum terdaftar. Silakan masukkan nama terlebih dahulu.' }, { status: 401 });
+      }
     }
 
     if ((guest.photos_taken || 0) >= (album.roll_limit || 10)) {
