@@ -27,6 +27,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const [hideUploaderName, setHideUploaderName] = useState(false);
   const [enableLikes, setEnableLikes] = useState(false);
   const [emailReminder, setEmailReminder] = useState(false);
+  const [likedPhotoIds, setLikedPhotoIds] = useState(new Set());
 
   // Lightbox Modal Index & Actions State
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
@@ -63,8 +64,14 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setOrigin(window.location.origin);
+      try {
+        const savedLikes = localStorage.getItem(`storykami_liked_photos_${slug}`);
+        if (savedLikes) {
+          setLikedPhotoIds(new Set(JSON.parse(savedLikes)));
+        }
+      } catch (e) {}
     }
-  }, []);
+  }, [slug]);
 
   // Buka lightbox otomatis jika ada query parameter ?photo=... atau prop initialPhotoId
   useEffect(() => {
@@ -341,6 +348,12 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
           ...prev,
           ...data.album,
         }));
+        if (data.album.settings) {
+          if (data.album.settings.allow_public_view !== undefined) setAllowPublicView(data.album.settings.allow_public_view);
+          if (data.album.settings.hide_uploader_name !== undefined) setHideUploaderName(data.album.settings.hide_uploader_name);
+          if (data.album.settings.enable_likes !== undefined) setEnableLikes(data.album.settings.enable_likes);
+          if (data.album.settings.email_reminder !== undefined) setEmailReminder(data.album.settings.email_reminder);
+        }
         try {
           const cached = localStorage.getItem(`storykami_cache_${slug}_info`);
           if (cached) {
@@ -400,7 +413,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
   // Derived state (Ditempatkan di awal sebelum handlers & effects agar aman dari Temporal Dead Zone saat SSR)
   const filteredPhotos =
-    selectedContributor === 'ALL'
+    hideUploaderName || selectedContributor === 'ALL'
       ? photos
       : photos.filter((p) => p.guest_name === selectedContributor);
 
@@ -496,6 +509,51 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
     }
   };
 
+  const handleToggleLike = async (photoId, e) => {
+    e?.stopPropagation();
+    if (!photoId) return;
+
+    const isLiked = likedPhotoIds.has(photoId);
+    const nextLiked = !isLiked;
+
+    // Optimistic local update
+    setLikedPhotoIds((prev) => {
+      const updated = new Set(prev);
+      if (nextLiked) updated.add(photoId);
+      else updated.delete(photoId);
+      try {
+        localStorage.setItem(`storykami_liked_photos_${slug}`, JSON.stringify(Array.from(updated)));
+      } catch (err) {}
+      return updated;
+    });
+
+    setPhotos((prev) =>
+      prev.map((p) => {
+        if (p.id === photoId) {
+          const current = p.likes_count || 0;
+          return {
+            ...p,
+            likes_count: nextLiked ? current + 1 : Math.max(0, current - 1),
+          };
+        }
+        return p;
+      })
+    );
+
+    try {
+      await fetch(`/api/album/${slug}/like/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          photo_id: photoId,
+          action: nextLiked ? 'like' : 'unlike',
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to toggle like:', err);
+    }
+  };
+
   const handleShareCurrent = async (e) => {
     e?.stopPropagation();
     const cleanOrigin = (origin || (typeof window !== 'undefined' ? window.location.origin : ''))
@@ -505,9 +563,11 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
       ? `${baseDomain}/${slug}/albumkami/?photo=${encodeURIComponent(currentPhoto.id)}`
       : `${baseDomain}/${slug}/albumkami/`;
     const shareData = {
-      title: currentPhoto ? `Foto ${currentPhoto.guest_name || 'Tamu'} • ${albumTitle}` : albumTitle,
+      title: currentPhoto
+        ? (hideUploaderName ? albumTitle : `Foto ${currentPhoto.guest_name || 'Tamu'} • ${albumTitle}`)
+        : albumTitle,
       text: currentPhoto
-        ? `Lihat momen dari ${currentPhoto.guest_name || 'Tamu'} di ${albumTitle}! ✨`
+        ? (hideUploaderName ? `Lihat momen seru di ${albumTitle}! ✨` : `Lihat momen dari ${currentPhoto.guest_name || 'Tamu'} di ${albumTitle}! ✨`)
         : `Yuk abadikan momen terbaikmu di ${albumTitle}!`,
       url: shareUrl,
     };
@@ -880,7 +940,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
           {/* END: ActionToolbar */}
 
           {/* ACTIVE CONTRIBUTOR FILTER BANNER */}
-          {selectedContributor !== 'ALL' && (
+          {selectedContributor !== 'ALL' && !hideUploaderName && (
             <div className="flex items-center justify-between bg-[#141419] border border-luxury-gold/30 rounded-2xl px-4 py-2.5 text-xs shadow-md">
               <div className="flex items-center gap-2 truncate">
                 <span className="text-zinc-400 font-sans">Filter Tamu:</span>
@@ -997,9 +1057,43 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
                     {/* Subtle vignette overlay on bottom for guest signature */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 pointer-events-none z-10" />
-                    <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white/95 font-medium truncate max-w-[85%] drop-shadow pointer-events-none z-10">
-                      {photo.guest_name}
-                    </span>
+                    {!hideUploaderName && (
+                      <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white/95 font-medium truncate max-w-[65%] drop-shadow pointer-events-none z-10">
+                        {photo.guest_name}
+                      </span>
+                    )}
+
+                    {/* Tombol Like Foto (Card Galeri) */}
+                    {enableLikes && (
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleLike(photo.id, e)}
+                        className={`absolute bottom-2 right-2 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md transition-all active:scale-90 shadow-md ${
+                          likedPhotoIds.has(photo.id)
+                            ? 'bg-rose-500/25 border border-rose-500/40 text-rose-400'
+                            : 'bg-black/50 hover:bg-black/70 border border-white/15 text-white/85 hover:text-white'
+                        }`}
+                        title={likedPhotoIds.has(photo.id) ? 'Batal suka' : 'Sukai foto ini'}
+                      >
+                        <svg
+                          className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
+                            likedPhotoIds.has(photo.id) ? 'fill-rose-500 text-rose-500' : 'fill-none'
+                          }`}
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                        </svg>
+                        {(photo.likes_count > 0 || likedPhotoIds.has(photo.id)) && (
+                          <span className="text-[11px] font-bold font-sans">
+                            {photo.likes_count || (likedPhotoIds.has(photo.id) ? 1 : 0)}
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -1023,7 +1117,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
             <div className="flex items-center justify-between pt-8 pb-2 px-2 flex-shrink-0 z-20">
               <div className="flex items-baseline gap-2">
                 <span className="text-white text-[19px] font-bold tracking-tight font-sans">
-                  {currentPhoto.guest_name || 'Tamu'}
+                  {hideUploaderName ? 'Foto Album' : (currentPhoto.guest_name || 'Tamu')}
                 </span>
                 <span className="text-[#777777] font-mono text-[14px]">
                   {activePhotoIndex + 1} / {filteredPhotos.length}
@@ -1083,13 +1177,13 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
               )}
             </div>
 
-            {/* 3. BOTTOM ACTIONS (3 Tombol: Unduh, Bagikan Tautan Langsung, Hapus) */}
-            <div className="flex items-center justify-center gap-6 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] flex-shrink-0 z-20">
+            {/* 3. BOTTOM ACTIONS (Unduh, Like [jika aktif], Bagikan Tautan Langsung, Hapus) */}
+            <div className="flex items-center justify-center gap-4 sm:gap-6 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] flex-shrink-0 z-20">
               
               {/* Tombol 1: Unduh Resolusi Asli */}
               <button
                 onClick={handleDownloadCurrent}
-                className="w-[56px] h-[56px] rounded-full bg-[#1e1e1e] hover:bg-[#282828] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                className="w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full bg-[#1e1e1e] hover:bg-[#282828] border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg shrink-0"
                 title="Unduh Resolusi Asli"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1099,10 +1193,41 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                 </svg>
               </button>
 
+              {/* Tombol Like (Muncul jika Like foto aktif) */}
+              {enableLikes && (
+                <button
+                  onClick={(e) => handleToggleLike(currentPhoto.id, e)}
+                  className={`relative w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full flex flex-col items-center justify-center active:scale-90 transition-all shadow-lg shrink-0 ${
+                    likedPhotoIds.has(currentPhoto.id)
+                      ? 'bg-rose-500/25 hover:bg-rose-500/35 border border-rose-500/50 text-rose-400'
+                      : 'bg-[#1e1e1e] hover:bg-[#282828] border border-white/10 text-white'
+                  }`}
+                  title={likedPhotoIds.has(currentPhoto.id) ? "Batal Suka" : "Sukai Foto Ini"}
+                >
+                  <svg
+                    className={`w-5 h-5 transition-transform active:scale-125 ${
+                      likedPhotoIds.has(currentPhoto.id) ? 'fill-rose-500 text-rose-500' : 'fill-none'
+                    }`}
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                  </svg>
+                  {(currentPhoto.likes_count > 0 || likedPhotoIds.has(currentPhoto.id)) && (
+                    <span className="text-[10px] font-bold font-sans mt-0.5 leading-none">
+                      {currentPhoto.likes_count || (likedPhotoIds.has(currentPhoto.id) ? 1 : 0)}
+                    </span>
+                  )}
+                </button>
+              )}
+
               {/* Tombol 2: Bagikan / Share Langsung ke Foto Ini (Bulat Putih Menonjol di Tengah) */}
               <button
                 onClick={handleShareCurrent}
-                className="w-[66px] h-[66px] rounded-full bg-white hover:bg-neutral-200 text-black flex items-center justify-center active:scale-90 transition-transform shadow-2xl"
+                className="w-[62px] h-[62px] sm:w-[66px] sm:h-[66px] rounded-full bg-white hover:bg-neutral-200 text-black flex items-center justify-center active:scale-90 transition-transform shadow-2xl shrink-0"
                 title="Bagikan Tautan Foto Ini"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1118,7 +1243,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
               <button
                 onClick={handleDeleteCurrent}
                 disabled={isDeleting}
-                className="w-[56px] h-[56px] rounded-full bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/25 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg disabled:opacity-50"
+                className="w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full bg-[#7a1c1c] hover:bg-[#8e2222] border border-red-500/25 flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg disabled:opacity-50 shrink-0"
                 title="Hapus Foto dari Galeri"
               >
                 {isDeleting ? (
@@ -1450,73 +1575,87 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
               )}
 
               {/* Items 2..N: Tiap Tamu / Kontributor */}
-              {contributors.map((name) => {
-                const count = photos.filter((p) => p.guest_name === name).length;
-                const isSelected = selectedContributor === name;
-                const initial = (name.charAt(0) || 'T').toUpperCase();
+              {hideUploaderName ? (
+                <div className="p-6 text-center rounded-2xl bg-white/[0.03] border border-white/5 my-2">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[#d4af37] mx-auto mb-2.5">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/>
+                    </svg>
+                  </div>
+                  <span className="font-semibold text-white text-sm block mb-1">Mode Penjurian Buta Aktif</span>
+                  <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
+                    Nama pengunggah disembunyikan agar semua tamu dapat memilih momen favorit secara netral tanpa melihat identitas pengirim foto.
+                  </p>
+                </div>
+              ) : (
+                contributors.map((name) => {
+                  const count = photos.filter((p) => p.guest_name === name).length;
+                  const isSelected = selectedContributor === name;
+                  const initial = (name.charAt(0) || 'T').toUpperCase();
 
-                if (isSelected) {
+                  if (isSelected) {
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        aria-checked="true"
+                        onClick={() => {
+                          setSelectedContributor(name);
+                          setShowContributorsModal(false);
+                        }}
+                        className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/95 to-amber-50 text-noir-950 flex items-center justify-between shadow-gold-glow transition-all duration-200 transform active:scale-[0.99] border border-amber-200/80 group cursor-pointer"
+                        data-purpose="active-filter-item"
+                        role="radio"
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="w-11 h-11 rounded-full bg-noir-900/10 flex items-center justify-center text-lg shrink-0 shadow-inner">
+                            <span className="font-serif font-bold text-noir-950 text-lg">{initial}</span>
+                          </div>
+                          <div className="truncate">
+                            <h2 className="font-semibold text-noir-950 text-base leading-tight tracking-tight">{name}</h2>
+                            <p className="text-xs text-neutral-700 font-normal mt-0.5">{count} foto diabadikan</p>
+                          </div>
+                        </div>
+                        <div className="w-7 h-7 rounded-full bg-noir-950/10 flex items-center justify-center shrink-0 ml-2">
+                          <svg className="w-4 h-4 text-noir-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      </button>
+                    );
+                  }
+
                   return (
                     <button
                       key={name}
                       type="button"
-                      aria-checked="true"
+                      aria-checked="false"
                       onClick={() => {
                         setSelectedContributor(name);
                         setShowContributorsModal(false);
                       }}
-                      className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-white/95 to-amber-50 text-noir-950 flex items-center justify-between shadow-gold-glow transition-all duration-200 transform active:scale-[0.99] border border-amber-200/80 group cursor-pointer"
-                      data-purpose="active-filter-item"
+                      className="w-full text-left p-3 sm:p-3.5 rounded-2xl bg-noir-850 hover:bg-noir-800 active:bg-noir-700 border border-white/5 hover:border-gold-500/30 flex items-center justify-between transition-all duration-200 group cursor-pointer"
+                      data-purpose="guest-filter-item"
                       role="radio"
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-11 h-11 rounded-full bg-noir-900/10 flex items-center justify-center text-lg shrink-0 shadow-inner">
-                          <span className="font-serif font-bold text-noir-950 text-lg">{initial}</span>
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-noir-800 to-noir-950 border border-gold-500/30 flex items-center justify-center shrink-0 shadow-inner-subtle group-hover:border-gold-400/60 transition-colors">
+                          <span className="font-serif font-bold text-gold-400 text-lg">{initial}</span>
                         </div>
                         <div className="truncate">
-                          <h2 className="font-semibold text-noir-950 text-base leading-tight tracking-tight">{name}</h2>
-                          <p className="text-xs text-neutral-700 font-normal mt-0.5">{count} foto diabadikan</p>
+                          <span className="font-medium text-white group-hover:text-amber-100 text-[15px] block leading-tight tracking-normal transition-colors">{name}</span>
+                          <span className="text-xs text-neutral-400 font-light mt-0.5 block">{count} foto diabadikan</span>
                         </div>
                       </div>
-                      <div className="w-7 h-7 rounded-full bg-noir-950/10 flex items-center justify-center shrink-0 ml-2">
-                        <svg className="w-4 h-4 text-noir-950 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                      <div className="text-neutral-500 group-hover:text-gold-400 transition-colors pr-1">
+                        <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                         </svg>
                       </div>
                     </button>
                   );
-                }
-
-                return (
-                  <button
-                    key={name}
-                    type="button"
-                    aria-checked="false"
-                    onClick={() => {
-                      setSelectedContributor(name);
-                      setShowContributorsModal(false);
-                    }}
-                    className="w-full text-left p-3 sm:p-3.5 rounded-2xl bg-noir-850 hover:bg-noir-800 active:bg-noir-700 border border-white/5 hover:border-gold-500/30 flex items-center justify-between transition-all duration-200 group cursor-pointer"
-                    data-purpose="guest-filter-item"
-                    role="radio"
-                  >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-noir-800 to-noir-950 border border-gold-500/30 flex items-center justify-center shrink-0 shadow-inner-subtle group-hover:border-gold-400/60 transition-colors">
-                        <span className="font-serif font-bold text-gold-400 text-lg">{initial}</span>
-                      </div>
-                      <div className="truncate">
-                        <span className="font-medium text-white group-hover:text-amber-100 text-[15px] block leading-tight tracking-normal transition-colors">{name}</span>
-                        <span className="text-xs text-neutral-400 font-light mt-0.5 block">{count} foto diabadikan</span>
-                      </div>
-                    </div>
-                    <div className="text-neutral-500 group-hover:text-gold-400 transition-colors pr-1">
-                      <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                      </svg>
-                    </div>
-                  </button>
-                );
-              })}
+                })
+              )}
             </div>
 
             {/* Bottom Spacing & Safe Area */}
@@ -1642,7 +1781,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-normal text-zinc-400">
-                      {albumData?.roll_limit || 36}
+                      {albumData?.roll_limit || 10}
                     </span>
                     <svg className="w-4 h-4 text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m9 18 6-6-6-6"/>

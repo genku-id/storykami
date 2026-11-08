@@ -113,8 +113,8 @@ export default function SatualbumCameraPage() {
 
   // Info Album & Kuota
   const [albumInfo, setAlbumInfo] = useState(null);
-  const [remainingRolls, setRemainingRolls] = useState(35);
-  const [rollLimit, setRollLimit] = useState(35);
+  const [remainingRolls, setRemainingRolls] = useState(10);
+  const [rollLimit, setRollLimit] = useState(10);
 
   // Hardware Kamera
   const videoRef = useRef(null);
@@ -176,7 +176,7 @@ export default function SatualbumCameraPage() {
 
         if (data.album) {
           setAlbumInfo(data.album);
-          const limit = data.album.roll_limit || 35;
+          const limit = data.album.roll_limit || 10;
           setRollLimit(limit);
           setRemainingRolls(limit);
         }
