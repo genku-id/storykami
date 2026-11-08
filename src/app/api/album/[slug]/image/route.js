@@ -32,6 +32,9 @@ export async function GET(request, { params }) {
         ? 'image/png'
         : 'image/webp';
 
+    const isDownload = searchParams.get('download') === '1' || searchParams.get('dl') === '1';
+    const downloadFilename = searchParams.get('filename') || path.basename(cleanKey);
+
     const client = getR2Client();
 
     // 1. Coba ambil file yang diminta dari Cloudflare R2
@@ -44,14 +47,20 @@ export async function GET(request, { params }) {
       const response = await client.send(command);
       const byteArray = await response.Body.transformToByteArray();
 
+      const headers = {
+        'Content-Type': response.ContentType || fallbackMime,
+        'Content-Length': String(response.ContentLength || byteArray.length),
+        'Cache-Control': isDownload ? 'private, no-cache' : 'public, max-age=31536000, immutable',
+        'Access-Control-Allow-Origin': '*',
+      };
+
+      if (isDownload) {
+        headers['Content-Disposition'] = `attachment; filename="${downloadFilename}"`;
+      }
+
       return new NextResponse(byteArray, {
         status: 200,
-        headers: {
-          'Content-Type': response.ContentType || fallbackMime,
-          'Content-Length': String(response.ContentLength || byteArray.length),
-          'Cache-Control': 'public, max-age=31536000, immutable',
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers,
       });
     } catch (r2Err) {
       // 2. Jika thumbnail (_thumb.webp) yang diminta belum ada (misal foto lama), fallback ke file aslinya
@@ -70,14 +79,21 @@ export async function GET(request, { params }) {
             });
             const fbResponse = await client.send(fallbackCmd);
             const fbArray = await fbResponse.Body.transformToByteArray();
+
+            const fbHeaders = {
+              'Content-Type': fbResponse.ContentType || 'image/jpeg',
+              'Content-Length': String(fbResponse.ContentLength || fbArray.length),
+              'Cache-Control': isDownload ? 'private, no-cache' : 'public, max-age=31536000, immutable',
+              'Access-Control-Allow-Origin': '*',
+            };
+
+            if (isDownload) {
+              fbHeaders['Content-Disposition'] = `attachment; filename="${downloadFilename}"`;
+            }
+
             return new NextResponse(fbArray, {
               status: 200,
-              headers: {
-                'Content-Type': fbResponse.ContentType || 'image/jpeg',
-                'Content-Length': String(fbResponse.ContentLength || fbArray.length),
-                'Cache-Control': 'public, max-age=31536000, immutable',
-                'Access-Control-Allow-Origin': '*',
-              },
+              headers: fbHeaders,
             });
           } catch (e) {
             // continue next candidate
@@ -90,14 +106,18 @@ export async function GET(request, { params }) {
     const localPath = path.join(process.cwd(), 'public', 'uploads', cleanKey);
     if (fs.existsSync(localPath)) {
       const fileBuffer = fs.readFileSync(localPath);
+      const localHeaders = {
+        'Content-Type': fallbackMime,
+        'Content-Length': String(fileBuffer.length),
+        'Cache-Control': isDownload ? 'private, no-cache' : 'public, max-age=31536000, immutable',
+        'Access-Control-Allow-Origin': '*',
+      };
+      if (isDownload) {
+        localHeaders['Content-Disposition'] = `attachment; filename="${downloadFilename}"`;
+      }
       return new NextResponse(fileBuffer, {
         status: 200,
-        headers: {
-          'Content-Type': fallbackMime,
-          'Content-Length': String(fileBuffer.length),
-          'Cache-Control': 'public, max-age=31536000, immutable',
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: localHeaders,
       });
     }
 

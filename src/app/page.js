@@ -120,6 +120,22 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Card 4.5 - Vintage Belle Jardin */}
+            <div className={styles.card}>
+              <div className={styles.cardImageWrapper}>
+                <img 
+                  src="/assets/templates/vintage-belle-jardin/preview.jpg" 
+                  alt="Vintage Belle Jardin Preview" 
+                  style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center'}} 
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>Vintage Belle Jardin</h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Botanical Vintage &amp; Motion Intro</p>
+                <a href="/demo/vintage-belle-jardin" target="_blank" rel="noreferrer" className="btn btn-primary" style={{width: '100%'}}>Lihat Demo</a>
+              </div>
+            </div>
+
             {/* Card 5 */}
             <div className={styles.card}>
               <div className={styles.cardImageWrapper}>

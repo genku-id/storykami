@@ -27,6 +27,12 @@ const TEMPLATES = [
     image: '/assets/templates/vintage-jawa-03/preview.webp',
   },
   {
+    id: 'vintage-belle-jardin',
+    name: 'Vintage Belle Jardin (Motion Intro)',
+    description: 'Tema pernikahan vintage botanical Prancis mewah dengan video animasi intro gerbang taman terbuka, ornamen floral klasik, dan alunan musik romantis.',
+    image: '/assets/templates/vintage-belle-jardin/preview.jpg',
+  },
+  {
     id: 'movement',
     name: 'Movement',
     description: 'Tema pernikahan modern floral bernuansa soft sage green yang elegan, ornamen cat air lembut, dan tipografi romantis.',

@@ -6,6 +6,7 @@ import Floral1Template from '@/components/wim-baru/Floral1Template';
 import JawaTemplate from '@/components/wim-baru/JawaTemplate';
 import DilanTemplate from '@/components/wim-baru/DilanTemplate';
 import VintageJawa03Template from '@/components/wim-baru/VintageJawa03Template';
+import VintageBelleJardinTemplate from '@/components/wim-baru/VintageBelleJardinTemplate';
 import MovementTemplate from '@/components/wim-baru/MovementTemplate';
 
 export default async function DemoPage({ params }) {
