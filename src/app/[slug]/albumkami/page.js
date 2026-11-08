@@ -34,6 +34,7 @@ export default function SharedAlbumPage() {
   const [toastMessage, setToastMessage] = useState(null);
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState(0);
+  const [imageLoadedMap, setImageLoadedMap] = useState({});
 
   // Host & Guest Onboarding State
   const [isHost, setIsHost] = useState(false);
@@ -117,10 +118,34 @@ export default function SharedAlbumPage() {
       }
 
       if (pData.photos) {
-        setPhotos(pData.photos);
+        let finalPhotos = pData.photos;
+        try {
+          const pendingKey = `storykami_pending_uploads_${slug}`;
+          const pendingList = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+          const now = Date.now();
+          // Filter pending uploads yang masih dalam rentang 60 detik
+          const validPending = pendingList.filter((p) => now - (p.timestamp || 0) < 60000);
+
+          if (validPending.length > 0) {
+            // Hilangkan pending yang sudah terkonfirmasi ada di server
+            const remainingPending = validPending.filter((pending) => {
+              return !pData.photos.some((serverPhoto) => {
+                if (serverPhoto.guest_name !== pending.guest_name) return false;
+                const serverTime = new Date(serverPhoto.created_at).getTime();
+                return Math.abs(serverTime - (pending.timestamp || 0)) < 30000;
+              });
+            });
+            localStorage.setItem(pendingKey, JSON.stringify(remainingPending));
+            finalPhotos = [...remainingPending, ...pData.photos];
+          } else if (pendingList.length > 0) {
+            localStorage.setItem(pendingKey, '[]');
+          }
+        } catch (e) {}
+
+        setPhotos(finalPhotos);
         setContributors(pData.contributors || []);
         try {
-          localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(pData.photos));
+          localStorage.setItem(`storykami_cache_${slug}_photos`, JSON.stringify(finalPhotos));
         } catch (e) {}
       }
       hasLoadedOnce.current = true;
@@ -138,14 +163,26 @@ export default function SharedAlbumPage() {
     try {
       const cachedPhotos = localStorage.getItem(`storykami_cache_${slug}_photos`);
       const cachedInfo = localStorage.getItem(`storykami_cache_${slug}_info`);
+      const pendingKey = `storykami_pending_uploads_${slug}`;
+      const pendingPhotos = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+
+      let initialList = [];
       if (cachedPhotos) {
         const parsed = JSON.parse(cachedPhotos);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setPhotos(parsed);
-          setContributors(Array.from(new Set(parsed.map((p) => p.guest_name).filter(Boolean))));
-          setLoading(false); // Instan tanpa delay!
-          hasLoadedOnce.current = true;
-        }
+        if (Array.isArray(parsed)) initialList = parsed;
+      }
+
+      if (pendingPhotos.length > 0) {
+        const existingIds = new Set(initialList.map((p) => p.id));
+        const missingPending = pendingPhotos.filter((p) => !existingIds.has(p.id));
+        initialList = [...missingPending, ...initialList];
+      }
+
+      if (initialList.length > 0) {
+        setPhotos(initialList);
+        setContributors(Array.from(new Set(initialList.map((p) => p.guest_name).filter(Boolean))));
+        setLoading(false); // Instan tanpa delay!
+        hasLoadedOnce.current = true;
       }
       if (cachedInfo) {
         setAlbumData(JSON.parse(cachedInfo));
@@ -832,32 +869,72 @@ export default function SharedAlbumPage() {
                 gridColumns === 2 ? 'grid-cols-2' : 'grid-cols-3'
               }`}
             >
-              {filteredPhotos.map((photo, idx) => (
-                <div
-                  key={photo.id}
-                  onClick={() => setActivePhotoIndex(idx)}
-                  className="group relative overflow-hidden aspect-square rounded-2xl bg-[#16161c] border border-white/[0.06] cursor-pointer active:scale-95 transition-transform shadow-md"
-                >
-                  <img
-                    src={photo.r2_thumb_url || photo.r2_image_url}
-                    alt={photo.guest_name}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      if (photo.r2_image_url && !e.currentTarget.dataset.fallback) {
-                        e.currentTarget.dataset.fallback = 'true';
-                        e.currentTarget.src = photo.r2_image_url;
+              {filteredPhotos.map((photo, idx) => {
+                const isImgLoaded = Boolean(imageLoadedMap[photo.id]);
+                return (
+                  <div
+                    key={photo.id}
+                    onClick={() => {
+                      if (photo.isPending) {
+                        setToastMessage('⏳ Foto sedang diunggah ke album...');
+                        setTimeout(() => setToastMessage(null), 2500);
+                        return;
                       }
+                      setActivePhotoIndex(idx);
                     }}
-                  />
-                  {/* Subtle vignette overlay on bottom for guest signature */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
-                  <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white/95 font-medium truncate max-w-[85%] drop-shadow">
-                    {photo.guest_name}
-                  </span>
-                </div>
-              ))}
+                    className={`group relative overflow-hidden aspect-square rounded-2xl bg-[#141417] border border-white/[0.07] cursor-pointer active:scale-95 transition-transform shadow-md ${
+                      photo.isPending ? 'ring-1 ring-amber-400/50' : ''
+                    }`}
+                  >
+                    {/* 1. SKELETON SHIMMER LOADING (Tampil saat foto belum selesai termuat) */}
+                    {!isImgLoaded && (
+                      <div className="absolute inset-0 z-0 bg-[#151518] flex items-center justify-center animate-card-shimmer">
+                        <div className="flex flex-col items-center justify-center gap-1.5 opacity-60">
+                          <div className="w-6 h-6 border-2 border-white/20 border-t-[#d4af37] rounded-full animate-spin" />
+                          <span className="text-[9px] font-film text-zinc-400 uppercase tracking-wider">Memuat...</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. PENDING UPLOAD OVERLAY (Animasi khusus foto yang baru saja dijepret & diupload) */}
+                    {photo.isPending && (
+                      <div className="absolute inset-0 z-20 bg-black/45 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none p-2 text-center anim-fade-in">
+                        <div className="w-8 h-8 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin mb-1.5 shadow-lg" />
+                        <span className="text-[10px] font-medium text-amber-200 tracking-wide font-sans bg-black/75 px-2.5 py-0.5 rounded-full border border-amber-400/30 shadow-md">
+                          Memproses...
+                        </span>
+                      </div>
+                    )}
+
+                    {/* 3. GAMBAR FOTO (Fade-in mulus seketika selesai termuat) */}
+                    <img
+                      src={photo.r2_thumb_url || photo.r2_image_url}
+                      alt={photo.guest_name}
+                      loading="lazy"
+                      decoding="async"
+                      onLoad={() => {
+                        setImageLoadedMap((prev) => ({ ...prev, [photo.id]: true }));
+                      }}
+                      className={`w-full h-full object-cover transition-opacity duration-500 will-change-transform group-hover:scale-105 ${
+                        isImgLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      onError={(e) => {
+                        setImageLoadedMap((prev) => ({ ...prev, [photo.id]: true }));
+                        if (photo.r2_image_url && !e.currentTarget.dataset.fallback) {
+                          e.currentTarget.dataset.fallback = 'true';
+                          e.currentTarget.src = photo.r2_image_url;
+                        }
+                      }}
+                    />
+
+                    {/* Subtle vignette overlay on bottom for guest signature */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 pointer-events-none z-10" />
+                    <span className="absolute bottom-2.5 left-2.5 text-[11px] font-sans text-white/95 font-medium truncate max-w-[85%] drop-shadow pointer-events-none z-10">
+                      {photo.guest_name}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

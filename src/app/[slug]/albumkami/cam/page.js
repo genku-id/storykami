@@ -404,25 +404,61 @@ export default function SatualbumCameraPage() {
     setRecentPhoto(photoToUpload.url);
     setPreviewPhoto(null); // Langsung tutup preview, kamera seketika aktif kembali!
 
-    // 2. Tambahkan secara optimis ke cache galeri lokal agar saat pengguna buka galeri, foto langsung ada
+    const pendingId = 'pending_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
+    // 2. Tambahkan kotak foto secara instan ke pending uploads & cache galeri lokal
+    const optimisticPhoto = {
+      id: pendingId,
+      guest_name: finalSenderName,
+      r2_key: '',
+      r2_image_url: photoToUpload.url,
+      r2_thumb_url: photoToUpload.url,
+      preset_applied: 'original-highres',
+      likes_count: 0,
+      created_at: new Date().toISOString(),
+      isPending: true,
+      timestamp: Date.now(),
+    };
+
     try {
+      const pendingKey = `storykami_pending_uploads_${slug}`;
+      const existingPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+      localStorage.setItem(pendingKey, JSON.stringify([optimisticPhoto, ...existingPending]));
+
       const cacheKey = `storykami_cache_${slug}_photos`;
       const existing = localStorage.getItem(cacheKey);
       let list = existing ? JSON.parse(existing) : [];
-      const optimisticPhoto = {
-        id: 'opt_' + Date.now(),
-        guest_name: finalSenderName,
-        r2_key: '',
-        r2_image_url: photoToUpload.url,
-        r2_thumb_url: photoToUpload.url,
-        preset_applied: 'original-highres',
-        likes_count: 0,
-        created_at: new Date().toISOString(),
-        isOptimistic: true,
-      };
-      list = [optimisticPhoto, ...list];
+      list = [optimisticPhoto, ...list.filter((p) => p.id !== pendingId)];
       localStorage.setItem(cacheKey, JSON.stringify(list));
     } catch (e) {}
+
+    // Konversi thumbnail WebP ke Base64 Data URL secara asinkron agar foto permanen di storage
+    if (photoToUpload.thumbBlob) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const b64 = reader.result;
+          if (b64) {
+            try {
+              const pendingKey = `storykami_pending_uploads_${slug}`;
+              const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+              const updated = curPending.map((p) =>
+                p.id === pendingId ? { ...p, r2_thumb_url: b64, r2_image_url: b64 } : p
+              );
+              localStorage.setItem(pendingKey, JSON.stringify(updated));
+
+              const cacheKey = `storykami_cache_${slug}_photos`;
+              const curCache = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+              const updatedCache = curCache.map((p) =>
+                p.id === pendingId ? { ...p, r2_thumb_url: b64, r2_image_url: b64 } : p
+              );
+              localStorage.setItem(cacheKey, JSON.stringify(updatedCache));
+            } catch (e) {}
+          }
+        };
+        reader.readAsDataURL(photoToUpload.thumbBlob);
+      } catch (e) {}
+    }
 
     // 3. Eksekusi Upload di Latar Belakang
     setBgUploadQueue((prev) => prev + 1);
@@ -483,21 +519,25 @@ export default function SatualbumCameraPage() {
         setRemainingRolls(confirmData.remainingRolls);
       }
 
-      // Update cache galeri lokal dengan URL permanen dari R2
+      // Update cache galeri lokal dan bersihkan pending upload
       try {
+        const pendingKey = `storykami_pending_uploads_${slug}`;
+        const existingPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+        localStorage.setItem(pendingKey, JSON.stringify(existingPending.filter((p) => p.id !== pendingId)));
+
         const cacheKey = `storykami_cache_${slug}_photos`;
         const existing = localStorage.getItem(cacheKey);
         if (existing) {
           const list = JSON.parse(existing);
           const updated = list.map((p) => {
-            if (p.isOptimistic && p.r2_image_url === photoToUpload.url) {
+            if (p.id === pendingId || (p.isPending && p.r2_image_url === photoToUpload.url)) {
               return {
                 ...p,
                 id: confirmData.photo?.id || p.id,
                 r2_key: urlData.key,
                 r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key)}`,
                 r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key.replace(/\.jpg$/, '_thumb.webp'))}`,
-                isOptimistic: false,
+                isPending: false,
               };
             }
             return p;
@@ -512,6 +552,11 @@ export default function SatualbumCameraPage() {
       }, 2500);
     } catch (err) {
       console.error('Background upload error:', err);
+      try {
+        const pendingKey = `storykami_pending_uploads_${slug}`;
+        const existingPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+        localStorage.setItem(pendingKey, JSON.stringify(existingPending.filter((p) => p.id !== pendingId)));
+      } catch (e) {}
       setBgToast({ show: true, type: 'error', message: '⚠️ Gagal mengunggah. Cek koneksi internet.' });
       setTimeout(() => {
         setBgToast((prev) => (prev.type === 'error' ? { ...prev, show: false } : prev));

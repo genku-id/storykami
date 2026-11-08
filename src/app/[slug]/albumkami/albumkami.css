@@ -688,3 +688,38 @@ body, .albumkami-root {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Luxury Skeleton Shimmer Loading */
+@keyframes photo-card-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-card-shimmer::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(212, 175, 55, 0.12) 50%,
+    rgba(255, 255, 255, 0.04) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: photo-card-shimmer 1.8s infinite ease-in-out;
+  content: '';
+  pointer-events: none;
+}
