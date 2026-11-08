@@ -29,107 +29,35 @@ const executeBackgroundUploadTask = async ({
       localStorage.setItem('storykami_cam_token', effectiveToken);
     }
 
-    // Step A: Minta Presigned PUT URL & Key R2
-    const urlRes = await fetch(`/api/album/${slug}/upload-url/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_token: effectiveToken, guest_name: finalSenderName }),
-    });
-    const urlData = await urlRes.json();
-    if (!urlRes.ok || !urlData.key) {
-      throw new Error(urlData.error || 'Gagal menyiapkan slot upload');
+    // 🚀 SINGLE-SHOT UNIFIED UPLOAD: 1x HTTP request, server memproses R2 & DB secara paralel kilat (<400ms)
+    const formData = new FormData();
+    formData.append('file', originalBlob, 'photo.jpg');
+    if (thumbBlob) {
+      formData.append('thumb', thumbBlob, 'thumb.webp');
     }
+    formData.append('device_token', effectiveToken);
+    formData.append('guest_name', finalSenderName);
 
-    // Update pending photo dengan r2_key agar sinkronisasi galeri akurat
-    try {
-      const pendingKey = `storykami_pending_uploads_${slug}`;
-      const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
-      const updated = curPending.map((p) =>
-        p.id === pendingId ? { ...p, r2_key: urlData.key } : p
-      );
-      localStorage.setItem(pendingKey, JSON.stringify(updated));
-    } catch (e) {}
-
-    // Step B: Upload file dengan fallback server otomatis jika R2 memblokir CORS di HP/perangkat luar
-    const uploadSingleFile = async (targetUrl, fileBlob, contentType, targetKey) => {
-      let uploaded = false;
-      const isLocalhost =
-        typeof window !== 'undefined' &&
-        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-      // Jika di localhost dan URL direct R2 tersedia, coba direct PUT
-      if (isLocalhost && targetUrl && !targetUrl.startsWith('/')) {
-        try {
-          const directRes = await fetch(targetUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': contentType },
-            body: fileBlob,
-          });
-          if (directRes.ok) {
-            uploaded = true;
-          }
-        } catch (corsErr) {
-          console.warn('[Upload] Direct R2 PUT threw CORS/network error, switching to server fallback:', corsErr);
-        }
-      }
-
-      // Jika direct upload gagal (atau di mobile / domain luar di mana CORS memblokir preflight),
-      // gunakan route server-side fallback yang mengunggah langsung ke R2 tanpa halangan CORS!
-      if (!uploaded) {
-        const fallbackUrl = `/api/album/${slug}/fallback-upload/?key=${encodeURIComponent(targetKey)}`;
-        const fbRes = await fetch(fallbackUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': contentType },
-          body: fileBlob,
-        });
-        if (!fbRes.ok) {
-          const fbErr = await fbRes.json().catch(() => ({}));
-          throw new Error(fbErr.error || 'Gagal mengunggah foto ke penyimpanan server');
-        }
-      }
-    };
-
-    const uploadPromises = [
-      uploadSingleFile(urlData.uploadUrl, originalBlob, 'image/jpeg', urlData.key),
-    ];
-
-    if (urlData.thumbKey && thumbBlob) {
-      uploadPromises.push(
-        uploadSingleFile(urlData.thumbUploadUrl, thumbBlob, 'image/webp', urlData.thumbKey)
-      );
-    }
-
-    await Promise.all(uploadPromises);
-
-    // Step C: Konfirmasi ke Supabase Database
-    const confirmRes = await fetch(`/api/album/${slug}/confirm/`, {
+    const uploadRes = await fetch(`/api/album/${slug}/upload/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        album_id: urlData.albumId,
-        guest_id: urlData.guestId,
-        guest_name: finalSenderName,
-        r2_key: urlData.key,
-        r2_image_url: urlData.publicUrl,
-        preset_applied: 'original-highres',
-      }),
+      body: formData,
     });
 
-    if (!confirmRes.ok) {
-      const confirmErr = await confirmRes.json().catch(() => ({}));
-      throw new Error(confirmErr.error || 'Gagal mengonfirmasi simpan foto');
+    const uploadData = await uploadRes.json();
+    if (!uploadRes.ok || !uploadData.success) {
+      throw new Error(uploadData.error || 'Gagal mengunggah foto');
     }
 
-    const confirmData = await confirmRes.json();
-    const serverPhotoId = confirmData.photo?.id;
+    const serverPhotoId = uploadData.photo?.id;
+    const r2Key = uploadData.key;
 
-    // Update pending photo dengan serverPhotoId
+    // Update pending photo dengan serverPhotoId & r2_key
     try {
       const pendingKey = `storykami_pending_uploads_${slug}`;
       const curPending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
       const updatedPending = curPending.map((p) =>
         p.id === pendingId
-          ? { ...p, serverPhotoId, isConfirmed: true, status: 'done', isPending: false }
+          ? { ...p, serverPhotoId, r2_key: r2Key, isConfirmed: true, status: 'done', isPending: false }
           : p
       );
       localStorage.setItem(pendingKey, JSON.stringify(updatedPending));
@@ -141,9 +69,9 @@ const executeBackgroundUploadTask = async ({
           return {
             ...p,
             id: serverPhotoId || p.id,
-            r2_key: urlData.key,
-            r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key)}`,
-            r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(urlData.key.replace(/\.jpg$/, '_thumb.webp'))}`,
+            r2_key: r2Key,
+            r2_image_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key)}`,
+            r2_thumb_url: `/api/album/${slug}/image/?key=${encodeURIComponent(r2Key.replace(/\.jpg$/, '_thumb.webp'))}`,
             isPending: false,
             isConfirmed: true,
           };
@@ -162,7 +90,7 @@ const executeBackgroundUploadTask = async ({
       );
     }
 
-    return { success: true, confirmData };
+    return { success: true, confirmData: uploadData };
   } catch (err) {
     console.error('Background upload execution error:', err);
     try {
@@ -481,8 +409,8 @@ export default function SatualbumCameraPage() {
       const vWidth = video.videoWidth || 1920;
       const vHeight = video.videoHeight || 1080;
 
-      // --- 1. KANVAS RESOLUSI ASLI PENUH (High-Res) ---
-      const maxOrigDim = 2560; // Max 2.5K UHD (Sangat tajam untuk cetak & layar besar, hemat bandwidth)
+      // --- 1. KANVAS RESOLUSI ASLI (1920px Full HD - Kualitas Tinggi & Transfer Instan) ---
+      const maxOrigDim = 1920; // 1920px Full HD (sangat tajam & jernih di semua smartphone/layar retina)
       let oW = vWidth;
       let oH = vHeight;
       if (oW > maxOrigDim || oH > maxOrigDim) {
@@ -515,15 +443,15 @@ export default function SatualbumCameraPage() {
         origCtx.drawImage(video, 0, 0, oW, oH);
       }
 
-      // Export file asli High-Res JPEG (kualitas 0.88 - super tajam & cepat terunggah)
+      // Export file asli High-Res JPEG (kualitas 0.82 - visual kristal tajam, ukuran ~200KB, upload super kilat)
       const originalBlob = await new Promise((resolve) => {
-        origCanvas.toBlob(resolve, 'image/jpeg', 0.88);
+        origCanvas.toBlob(resolve, 'image/jpeg', 0.82);
       });
 
       if (!originalBlob) throw new Error('Gagal memproses gambar asli');
 
-      // --- 2. KANVAS THUMBNAIL RINGAN (WebP ~600px) ---
-      const maxThumbDim = 600;
+      // --- 2. KANVAS THUMBNAIL RINGAN (WebP ~500px, ~20KB) ---
+      const maxThumbDim = 500;
       let thumbW = vWidth;
       let thumbH = vHeight;
       if (thumbW > maxThumbDim || thumbH > maxThumbDim) {
@@ -542,9 +470,9 @@ export default function SatualbumCameraPage() {
       const thumbCtx = thumbCanvas.getContext('2d');
       thumbCtx.drawImage(origCanvas, 0, 0, thumbW, thumbH);
 
-      // Export file thumbnail WebP ringan (kualitas 0.75)
+      // Export file thumbnail WebP ringan (kualitas 0.70)
       const thumbBlob = await new Promise((resolve) => {
-        thumbCanvas.toBlob(resolve, 'image/webp', 0.75);
+        thumbCanvas.toBlob(resolve, 'image/webp', 0.70);
       });
 
       // Tampilkan Layar Pratinjau (Preview)
