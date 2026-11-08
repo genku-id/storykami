@@ -1914,24 +1914,6 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                   </div>
                 </div>
 
-                {/* 8. Bahasa Default Acara */}
-                <div className="p-3.5 flex items-center justify-between group opacity-90">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37]">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
-                      </svg>
-                    </div>
-                    <span className="text-sm font-medium text-gray-200">Bahasa default acara</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-normal text-zinc-400">Bahasa Indonesia</span>
-                    <svg className="w-4 h-4 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                  </div>
-                </div>
-
                 {/* 9. Kapasitas Tamu */}
                 <div
                   onClick={() => setShowEditCapacityModal(true)}
