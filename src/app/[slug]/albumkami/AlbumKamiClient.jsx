@@ -498,15 +498,16 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
   const handleShareCurrent = async (e) => {
     e?.stopPropagation();
-    const shareUrl = typeof window !== 'undefined'
-      ? (currentPhoto
-          ? `${window.location.origin}/${slug}/albumkami/?photo=${encodeURIComponent(currentPhoto.id)}`
-          : `${window.location.origin}/${slug}/albumkami/`)
-      : '';
+    const cleanOrigin = (origin || (typeof window !== 'undefined' ? window.location.origin : ''))
+      .replace(/^(https?:\/\/)?(www\.)/i, '$1');
+    const baseDomain = cleanOrigin || 'https://storykami.my.id';
+    const shareUrl = currentPhoto
+      ? `${baseDomain}/${slug}/albumkami/?photo=${encodeURIComponent(currentPhoto.id)}`
+      : `${baseDomain}/${slug}/albumkami/`;
     const shareData = {
       title: currentPhoto ? `Foto ${currentPhoto.guest_name || 'Tamu'} • ${albumTitle}` : albumTitle,
       text: currentPhoto
-        ? `Lihat momen dari ${currentPhoto.guest_name || 'Tamu'} di ${albumTitle}!`
+        ? `Lihat momen dari ${currentPhoto.guest_name || 'Tamu'} di ${albumTitle}! ✨`
         : `Yuk abadikan momen terbaikmu di ${albumTitle}!`,
       url: shareUrl,
     };
@@ -521,7 +522,9 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
     }
   };
 
-  const albumShareUrl = origin ? `${origin}/${slug}/albumkami/` : `https://storykami.my.id/${slug}/albumkami/`;
+  const cleanOrigin = (origin || (typeof window !== 'undefined' ? window.location.origin : ''))
+    .replace(/^(https?:\/\/)?(www\.)/i, '$1');
+  const albumShareUrl = `${cleanOrigin || 'https://storykami.my.id'}/${slug}/albumkami/`;
 
   const handleDownloadQr = async () => {
     try {

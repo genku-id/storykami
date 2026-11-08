@@ -18,7 +18,8 @@ export default function PrintQrPage() {
     }
   }, []);
 
-  const albumUrl = origin ? `${origin}/${slug}/albumkami` : `https://www.storykami.my.id/${slug}/albumkami`;
+  const cleanOrigin = (origin || '').replace(/^(https?:\/\/)?(www\.)/i, '$1');
+  const albumUrl = cleanOrigin ? `${cleanOrigin}/${slug}/albumkami` : `https://storykami.my.id/${slug}/albumkami`;
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&format=png&margin=10&data=${encodeURIComponent(albumUrl)}`;
 
   const handleCopyLink = () => {

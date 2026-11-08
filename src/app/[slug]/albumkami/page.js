@@ -9,10 +9,11 @@ export async function generateMetadata({ params, searchParams }) {
   const sParams = await searchParams;
   const photoId = sParams?.photo;
 
-  let baseUrl = 'https://storykami.com';
+  let baseUrl = 'https://storykami.my.id';
   try {
     const headerList = await headers();
-    const host = headerList.get('x-forwarded-host') || headerList.get('host') || 'storykami.com';
+    let host = headerList.get('x-forwarded-host') || headerList.get('host') || 'storykami.my.id';
+    host = host.replace(/^www\./i, ''); // Hapus prefix www. agar link selalu bersih
     const proto = headerList.get('x-forwarded-proto') || 'https';
     baseUrl = `${proto}://${host}`;
   } catch (e) {}
