@@ -2028,7 +2028,7 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                 </div>
 
                 {/* Toggle 3: Like foto */}
-                <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-white/[0.06]">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2056,49 +2056,6 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out ${
                         enableLikes ? 'translate-x-5' : 'translate-x-0'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {/* Toggle 4: Ingatkan H-2 lewat email */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#d4af37] mt-0.5 shrink-0">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                      </svg>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-200">Ingatkan H-2 lewat email</span>
-                      <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setToastMessage('Fitur pengingat email otomatis aktif untuk penyelenggara');
-                            setTimeout(() => setToastMessage(null), 3000);
-                          }}
-                          className="text-sky-400 hover:underline text-left inline"
-                        >
-                          Simpan akun dulu supaya kami punya alamat email.
-                        </button>
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const nextVal = !emailReminder;
-                      setEmailReminder(nextVal);
-                      await saveSetting({ album_settings: { email_reminder: nextVal } });
-                    }}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out shrink-0 mt-0.5 ${
-                      emailReminder ? 'bg-[#3b82f6]' : 'bg-[#2a2a2e]'
-                    }`}
-                  >
-                    <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition duration-200 ease-in-out ${
-                        emailReminder ? 'translate-x-5' : 'translate-x-0'
                       }`}
                     />
                   </button>
