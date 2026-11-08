@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CAMERA_FILTERS, DEFAULT_ENABLED_FILTERS } from '../filters';
-import { PhotoFrameDecoration } from '../frames';
+import { PHOTO_FRAMES, FramedPhoto, FRAME_MAP } from '../frames';
 import '../albumkami.css';
 
 // Global memory queue untuk proses upload latar belakang yang kebal unmount/navigasi halaman
@@ -732,16 +732,15 @@ export default function SatualbumCameraPage() {
           {/* BEGIN: PhotoDisplaySection */}
           <main className="flex-1 flex flex-col justify-center px-6 py-2 overflow-hidden" data-purpose="preview-body">
             <div className="relative w-full aspect-[4/4.8] max-h-[460px] rounded-2xl overflow-hidden p-1.5 glass-surface champagne-glow" id="adaptive-preview-wrapper" data-purpose="adaptive-preview-wrapper">
-              {/* Inner image frame */}
+              {/* Inner image frame with selected frame cutout */}
               <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-black flex items-center justify-center group">
-                <img
-                  src={previewPhoto.url}
+                <FramedPhoto
+                  frameId={frameStyle}
+                  photoUrl={previewPhoto.url}
                   alt="Pratinjau Foto"
-                  className="w-full h-full object-cover pointer-events-none"
+                  className="w-full h-full"
+                  imgClassName="object-cover"
                 />
-
-                {/* Hiasan Bingkai Foto Terpilih */}
-                <PhotoFrameDecoration frameId={frameStyle} />
 
                 {/* Viewfinder Golden Aesthetic Corner Accents */}
                 <div className="pointer-events-none absolute inset-0 p-3 flex flex-col justify-between">
@@ -1021,8 +1020,46 @@ export default function SatualbumCameraPage() {
               />
             )}
 
-            {/* Hiasan Bingkai Foto Terpilih (Live Viewfinder) */}
-            <PhotoFrameDecoration frameId={frameStyle} />
+            {/* Hiasan Bingkai Foto Terpilih (Live Viewfinder Overlay) */}
+            {frameStyle && frameStyle !== 'none' && (
+              <>
+                {FRAME_MAP[frameStyle]?.art && (
+                  <img
+                    src={FRAME_MAP[frameStyle].art}
+                    alt=""
+                    aria-hidden="true"
+                    draggable={false}
+                    className="absolute inset-0 w-full h-full object-fill pointer-events-none z-10 select-none opacity-90"
+                  />
+                )}
+                {frameStyle === 'film' && (
+                  <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between border-y-[14px] border-black/85">
+                    <div className="absolute top-0.5 inset-x-0 h-2 flex items-center justify-around px-1 overflow-hidden opacity-85">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={`st-${i}`} className="w-1.5 h-1 rounded-[1px] bg-white/70 shadow-sm" />
+                      ))}
+                    </div>
+                    <div className="absolute bottom-0 inset-x-0 h-2 flex items-center justify-around px-1 overflow-hidden opacity-85">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={`sb-${i}`} className="w-1.5 h-1 rounded-[1px] bg-white/70 shadow-sm" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {frameStyle === 'polaroid' && (
+                  <div className="pointer-events-none absolute inset-0 z-10 border-[8px] border-b-[28px] border-[#fdfcf9]/80 shadow-inner flex items-end justify-center pb-1">
+                    <span className="font-serif italic text-[9px] text-[#2b2b2b]/60 uppercase tracking-widest">
+                      Instax
+                    </span>
+                  </div>
+                )}
+                {frameStyle === 'vintage' && (
+                  <div className="pointer-events-none absolute inset-0 z-10 p-2.5">
+                    <div className="w-full h-full border border-[#f3e9d2]/40 border-dashed" />
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Flash Toggle Button (Top-Left Viewfinder - Identik Satualbum Screenshot) */}
             <button

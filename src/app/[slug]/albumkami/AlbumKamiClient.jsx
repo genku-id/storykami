@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import JSZip from 'jszip';
 import { CAMERA_FILTERS, DEFAULT_ENABLED_FILTERS } from './filters';
-import { PHOTO_FRAMES, PhotoFrameDecoration } from './frames';
+import { PHOTO_FRAMES, FramedPhoto, FramePreviewSwatch } from './frames';
 import './albumkami.css';
 
 export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
@@ -1111,29 +1111,25 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                       </div>
                     )}
 
-                    {/* 3. GAMBAR FOTO (Fade-in mulus seketika selesai termuat) */}
-                    <img
-                      src={photo.r2_thumb_url || photo.r2_image_url}
+                    {/* 3. GAMBAR FOTO DI AREA BOLONG BINGKAI */}
+                    <FramedPhoto
+                      frameId={frameStyle}
+                      photoUrl={photo.r2_thumb_url || photo.r2_image_url}
                       alt={photo.guest_name}
-                      loading="lazy"
-                      decoding="async"
+                      className={`transition-opacity duration-500 will-change-transform group-hover:scale-105 ${
+                        isImgLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
                       onLoad={() => {
                         setImageLoadedMap((prev) => ({ ...prev, [photo.id]: true }));
                       }}
-                      className={`w-full h-full object-cover transition-opacity duration-500 will-change-transform group-hover:scale-105 ${
-                        isImgLoaded ? 'opacity-100' : 'opacity-0'
-                      }`}
                       onError={(e) => {
                         setImageLoadedMap((prev) => ({ ...prev, [photo.id]: true }));
-                        if (photo.r2_image_url && !e.currentTarget.dataset.fallback) {
+                        if (photo.r2_image_url && !e.currentTarget.dataset?.fallback) {
                           e.currentTarget.dataset.fallback = 'true';
                           e.currentTarget.src = photo.r2_image_url;
                         }
                       }}
                     />
-
-                    {/* Hiasan Bingkai Foto Terpilih */}
-                    <PhotoFrameDecoration frameId={frameStyle} />
 
                     {/* Subtle vignette overlay on bottom for guest signature */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 pointer-events-none z-10" />
@@ -1217,21 +1213,19 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
 
             {/* 2. MIDDLE PHOTO CONTAINER WITH LEFT & RIGHT ARROWS */}
             <div className="relative flex-1 rounded-[30px] overflow-hidden bg-[#0a0a0a] border border-white/10 flex items-center justify-center my-2 shadow-2xl">
-              <img
-                src={currentPhoto.r2_thumb_url || currentPhoto.r2_image_url}
+              <FramedPhoto
+                frameId={frameStyle}
+                photoUrl={currentPhoto.r2_thumb_url || currentPhoto.r2_image_url}
                 alt={currentPhoto.guest_name}
+                className="w-full h-full"
+                imgClassName="object-contain"
                 onError={(e) => {
-                  // Fallback ke JPEG asli hanya jika file tidak punya webp atau gagal dimuat
-                  if (currentPhoto.r2_image_url && !e.currentTarget.dataset.fallback) {
+                  if (currentPhoto.r2_image_url && !e.currentTarget.dataset?.fallback) {
                     e.currentTarget.dataset.fallback = 'true';
                     e.currentTarget.src = currentPhoto.r2_image_url;
                   }
                 }}
-                className="w-full h-full object-contain pointer-events-none"
               />
-
-              {/* Hiasan Bingkai Foto Terpilih (Lightbox) */}
-              <PhotoFrameDecoration frameId={frameStyle} />
 
               {/* Tombol Panah Kiri */}
               {filteredPhotos.length > 1 && (
@@ -2636,13 +2630,8 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-white/20 shrink-0 bg-black flex items-center justify-center">
-                        <img
-                          src="/images/satualbum_cover.webp"
-                          alt={f.name}
-                          className="w-full h-full object-cover pointer-events-none"
-                        />
-                        <PhotoFrameDecoration frameId={f.id} />
+                      <div className="relative w-11 h-14 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black flex items-center justify-center shadow">
+                        <FramePreviewSwatch frameId={f.id} />
                       </div>
                       <div className="flex flex-col">
                         <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-zinc-400'}`}>

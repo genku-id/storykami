@@ -10,214 +10,245 @@ export const PHOTO_FRAMES = [
   {
     id: 'polaroid',
     name: 'Polaroid',
-    desc: 'Format instan klasik dengan border putih dan dagu lebar di bawah',
-    color: '#f5f5f7',
+    desc: 'Format instan klasik dengan border putih dan dagu bawah lebar',
+    color: '#fdfcf9',
+    bg: '#fdfcf9',
+    cutout: { left: 7.2, right: 7.2, top: 7.2, height: 66.8 },
   },
   {
     id: 'film',
     name: 'Film',
-    desc: 'Strip klise film analog 35mm dengan sproket dan kode frame',
-    color: '#d4af37',
+    desc: 'Strip klise film analog 35mm dengan lubang sproket dan stempel kode',
+    color: '#0e0e0e',
+    bg: '#0e0e0e',
+    cutout: { left: 7, right: 7, top: 7, height: 65 },
   },
   {
     id: 'damask',
     name: 'Damask',
-    desc: 'Ornamen ukiran damask baroque royal emas mewah di setiap sudut',
+    desc: 'Bingkai seni ornamen ukiran damask baroque royal mewah',
     color: '#e5c05d',
+    art: '/images/frames/damask.webp',
+    bg: '#fbf9f4',
+    cutout: { left: 12.12, right: 12.12, top: 9.09, height: 69.29 },
   },
   {
     id: 'floral',
     name: 'Bunga',
-    desc: 'Sentuhan ornamen sudut bunga mekar estetik yang romantis',
-    color: '#f3c68f',
+    desc: 'Bingkai seni bunga mekar nan anggun dan romantis',
+    color: '#5b1f26',
+    art: '/images/frames/floral.webp',
+    bg: '#5b1f26',
+    cutout: { left: 12.12, right: 12.12, top: 9.09, height: 69.29 },
   },
   {
     id: 'deco',
     name: 'Deco',
-    desc: 'Garis ganda simetris Art-Deco sudut geometris khas arsitektur klasik',
-    color: '#c5a059',
+    desc: 'Bingkai seni garis geometris ganda Art-Deco klasik elegan',
+    color: '#f7f2e7',
+    art: '/images/frames/deco.webp',
+    bg: '#f7f2e7',
+    cutout: { left: 12.12, right: 12.12, top: 9.09, height: 69.29 },
   },
   {
     id: 'botanical',
     name: 'Botani',
-    desc: 'Ranting dedaunan botani minimalis yang anggun dan natural',
-    color: '#a3b899',
+    desc: 'Bingkai seni dedaunan botani alami yang segar dan estetik',
+    color: '#fbfaf6',
+    art: '/images/frames/botanical.webp',
+    bg: '#fbfaf6',
+    cutout: { left: 12.12, right: 12.12, top: 9.09, height: 69.29 },
   },
   {
     id: 'vintage',
     name: 'Vintage',
-    desc: 'Border ganda antik bertekstur dengan aksen sudut era nostalgia',
-    color: '#d6a374',
+    desc: 'Bingkai border ganda antik nuansa nostalgia kertas klasik',
+    color: '#f3e9d2',
+    bg: '#f3e9d2',
+    cutout: { left: 9.5, right: 9.5, top: 9.5, height: 60.5 },
   },
 ];
 
+export const FRAME_MAP = PHOTO_FRAMES.reduce((acc, f) => {
+  acc[f.id] = f;
+  return acc;
+}, {});
+
 /**
- * Komponen ornamen overlay bingkai untuk foto galeri, lightbox, dan kamera.
+ * Komponen FramedPhoto:
+ * Meletakkan foto persis di area bolong / cutout bingkai,
+ * dengan gambar PNG/WebP bingkai transparan menutupi tepi di atasnya.
  */
-export function PhotoFrameDecoration({ frameId }) {
-  if (!frameId || frameId === 'none') return null;
-
-  if (frameId === 'polaroid') {
+export function FramedPhoto({
+  frameId = 'none',
+  photoUrl,
+  alt = 'Foto',
+  className = '',
+  imgClassName = '',
+  onLoad,
+  onError,
+}) {
+  if (!frameId || frameId === 'none') {
     return (
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-2 pb-6 sm:p-3 sm:pb-8 border-[6px] sm:border-[8px] border-white/90 bg-transparent shadow-inner">
-        <div className="w-full flex justify-between items-start opacity-70">
-          <div className="w-1.5 h-1.5 rounded-full bg-stone-300/60" />
-          <div className="w-1.5 h-1.5 rounded-full bg-stone-300/60" />
-        </div>
-        <div className="w-full flex justify-center items-center">
-          <span className="font-serif italic text-[10px] text-stone-400/90 tracking-widest uppercase">
-            StoryKami • Instant
-          </span>
-        </div>
-      </div>
+      <img
+        src={photoUrl}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={onLoad}
+        onError={onError}
+        className={`w-full h-full object-cover ${imgClassName} ${className}`}
+      />
     );
   }
 
-  if (frameId === 'film') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between border-y-[14px] sm:border-y-[18px] border-x-2 border-black/95">
-        {/* Top Sprocket Perforations */}
-        <div className="absolute -top-[13px] sm:-top-[17px] inset-x-0 h-3 sm:h-3.5 flex items-center justify-around px-1 overflow-hidden">
-          {[...Array(12)].map((_, i) => (
-            <div key={`st-${i}`} className="w-2 sm:w-2.5 h-1.5 sm:h-2 rounded-[2px] bg-white/70 shadow-sm" />
-          ))}
-        </div>
+  const frame = FRAME_MAP[frameId] || FRAME_MAP.polaroid;
+  const cutout = frame.cutout || { left: 7.2, right: 7.2, top: 7.2, height: 66.8 };
 
-        {/* Film metadata stamps */}
-        <div className="w-full flex justify-between items-center px-2 py-0.5 text-[8px] sm:text-[9px] font-mono text-amber-400/80 tracking-widest uppercase">
-          <span>KODAK 400</span>
-          <span>▶ 24A</span>
-        </div>
-
-        {/* Bottom Sprocket Perforations */}
-        <div className="absolute -bottom-[13px] sm:-bottom-[17px] inset-x-0 h-3 sm:h-3.5 flex items-center justify-around px-1 overflow-hidden">
-          {[...Array(12)].map((_, i) => (
-            <div key={`sb-${i}`} className="w-2 sm:w-2.5 h-1.5 sm:h-2 rounded-[2px] bg-white/70 shadow-sm" />
-          ))}
-        </div>
+  return (
+    <div
+      className={`relative w-full h-full overflow-hidden select-none ${className}`}
+      style={{ backgroundColor: frame.bg || '#000000' }}
+    >
+      {/* 1. AREA BOLONG (Cutout) Tempat Foto Ditempatkan */}
+      <div
+        className="absolute overflow-hidden z-0"
+        style={{
+          left: `${cutout.left}%`,
+          right: `${cutout.right}%`,
+          top: `${cutout.top}%`,
+          height: `${cutout.height}%`,
+        }}
+      >
+        <img
+          src={photoUrl}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          onLoad={onLoad}
+          onError={onError}
+          className={`w-full h-full object-cover ${imgClassName}`}
+        />
       </div>
-    );
-  }
 
-  if (frameId === 'damask') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 p-2 sm:p-2.5">
-        {/* Inset Border Line */}
-        <div className="w-full h-full border border-amber-300/40 relative">
-          {/* Top-Left Damask Accent */}
-          <svg className="absolute -top-1.5 -left-1.5 w-6 h-6 text-amber-300/90 drop-shadow" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C12 2 10.5 5 8 5C5.5 5 4 3 4 3C4 3 4.5 6 3 8C1.5 10 0 10 0 10C0 10 3 11.5 4 14C5 16.5 3 19 3 19C3 19 6 18 8 20C10 22 10.5 24 10.5 24C10.5 24 11 21 13 19C15 17 18 18 18 18C18 18 16.5 15.5 18 13C19.5 10.5 22 10 22 10C22 10 19.5 9.5 18 7C16.5 4.5 18 2 18 2C18 2 15 3.5 13 2.5C11 1.5 12 2 12 2Z" opacity="0.9" />
-          </svg>
-          {/* Top-Right Damask Accent */}
-          <svg className="absolute -top-1.5 -right-1.5 w-6 h-6 text-amber-300/90 drop-shadow scale-x-[-1]" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C12 2 10.5 5 8 5C5.5 5 4 3 4 3C4 3 4.5 6 3 8C1.5 10 0 10 0 10C0 10 3 11.5 4 14C5 16.5 3 19 3 19C3 19 6 18 8 20C10 22 10.5 24 10.5 24C10.5 24 11 21 13 19C15 17 18 18 18 18C18 18 16.5 15.5 18 13C19.5 10.5 22 10 22 10C22 10 19.5 9.5 18 7C16.5 4.5 18 2 18 2C18 2 15 3.5 13 2.5C11 1.5 12 2 12 2Z" opacity="0.9" />
-          </svg>
-          {/* Bottom-Left Damask Accent */}
-          <svg className="absolute -bottom-1.5 -left-1.5 w-6 h-6 text-amber-300/90 drop-shadow scale-y-[-1]" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C12 2 10.5 5 8 5C5.5 5 4 3 4 3C4 3 4.5 6 3 8C1.5 10 0 10 0 10C0 10 3 11.5 4 14C5 16.5 3 19 3 19C3 19 6 18 8 20C10 22 10.5 24 10.5 24C10.5 24 11 21 13 19C15 17 18 18 18 18C18 18 16.5 15.5 18 13C19.5 10.5 22 10 22 10C22 10 19.5 9.5 18 7C16.5 4.5 18 2 18 2C18 2 15 3.5 13 2.5C11 1.5 12 2 12 2Z" opacity="0.9" />
-          </svg>
-          {/* Bottom-Right Damask Accent */}
-          <svg className="absolute -bottom-1.5 -right-1.5 w-6 h-6 text-amber-300/90 drop-shadow scale-[-1]" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C12 2 10.5 5 8 5C5.5 5 4 3 4 3C4 3 4.5 6 3 8C1.5 10 0 10 0 10C0 10 3 11.5 4 14C5 16.5 3 19 3 19C3 19 6 18 8 20C10 22 10.5 24 10.5 24C10.5 24 11 21 13 19C15 17 18 18 18 18C18 18 16.5 15.5 18 13C19.5 10.5 22 10 22 10C22 10 19.5 9.5 18 7C16.5 4.5 18 2 18 2C18 2 15 3.5 13 2.5C11 1.5 12 2 12 2Z" opacity="0.9" />
-          </svg>
-        </div>
-      </div>
-    );
-  }
+      {/* 2. OVERLAY FRAME TRANSPARAN DARI SATUALBUM (Damask, Floral, Deco, Botanical) */}
+      {frame.art && (
+        <img
+          src={frame.art}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-fill pointer-events-none z-10 select-none"
+        />
+      )}
 
-  if (frameId === 'floral') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 p-2 sm:p-2.5">
-        <div className="w-full h-full border border-rose-200/35 relative">
-          {/* Top-Left Floral Spray */}
-          <svg className="absolute -top-1 -left-1 w-7 h-7 text-rose-200/90 drop-shadow" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path d="M2 2 C8 6, 14 6, 20 2 M2 2 C6 8, 6 14, 2 20" strokeLinecap="round" />
-            <circle cx="9" cy="9" r="2.5" fill="currentColor" fillOpacity="0.4" />
-            <circle cx="15" cy="5" r="1.5" fill="currentColor" />
-            <circle cx="5" cy="15" r="1.5" fill="currentColor" />
-          </svg>
-          {/* Top-Right Floral Spray */}
-          <svg className="absolute -top-1 -right-1 w-7 h-7 text-rose-200/90 drop-shadow scale-x-[-1]" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path d="M2 2 C8 6, 14 6, 20 2 M2 2 C6 8, 6 14, 2 20" strokeLinecap="round" />
-            <circle cx="9" cy="9" r="2.5" fill="currentColor" fillOpacity="0.4" />
-            <circle cx="15" cy="5" r="1.5" fill="currentColor" />
-            <circle cx="5" cy="15" r="1.5" fill="currentColor" />
-          </svg>
-          {/* Bottom-Left Floral Spray */}
-          <svg className="absolute -bottom-1 -left-1 w-7 h-7 text-rose-200/90 drop-shadow scale-y-[-1]" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path d="M2 2 C8 6, 14 6, 20 2 M2 2 C6 8, 6 14, 2 20" strokeLinecap="round" />
-            <circle cx="9" cy="9" r="2.5" fill="currentColor" fillOpacity="0.4" />
-            <circle cx="15" cy="5" r="1.5" fill="currentColor" />
-            <circle cx="5" cy="15" r="1.5" fill="currentColor" />
-          </svg>
-          {/* Bottom-Right Floral Spray */}
-          <svg className="absolute -bottom-1 -right-1 w-7 h-7 text-rose-200/90 drop-shadow scale-[-1]" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path d="M2 2 C8 6, 14 6, 20 2 M2 2 C6 8, 6 14, 2 20" strokeLinecap="round" />
-            <circle cx="9" cy="9" r="2.5" fill="currentColor" fillOpacity="0.4" />
-            <circle cx="15" cy="5" r="1.5" fill="currentColor" />
-            <circle cx="5" cy="15" r="1.5" fill="currentColor" />
-          </svg>
-        </div>
-      </div>
-    );
-  }
-
-  if (frameId === 'deco') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 p-2 sm:p-2.5">
-        <div className="w-full h-full border-2 border-amber-400/50 relative p-1">
-          <div className="w-full h-full border border-amber-300/30 relative">
-            {/* 4 Art-Deco Corner Diamonds */}
-            <div className="absolute -top-1.5 -left-1.5 w-2.5 h-2.5 bg-amber-300 rotate-45 shadow-sm" />
-            <div className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 bg-amber-300 rotate-45 shadow-sm" />
-            <div className="absolute -bottom-1.5 -left-1.5 w-2.5 h-2.5 bg-amber-300 rotate-45 shadow-sm" />
-            <div className="absolute -bottom-1.5 -right-1.5 w-2.5 h-2.5 bg-amber-300 rotate-45 shadow-sm" />
+      {/* 3. DEKORASI BINGKAI KHUSUS (Polaroid, Film, Vintage) */}
+      {frameId === 'polaroid' && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-2 pb-3.5 border border-black/5 shadow-inner">
+          <div className="w-full flex justify-between items-start opacity-40">
+            <div className="w-1 h-1 rounded-full bg-stone-400" />
+            <div className="w-1 h-1 rounded-full bg-stone-400" />
+          </div>
+          <div className="w-full flex justify-center items-center pb-0.5">
+            <span className="font-serif italic text-[9px] text-[#2b2b2b]/60 tracking-widest uppercase">
+              StoryKami
+            </span>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  if (frameId === 'botanical') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 p-2 sm:p-3">
-        <div className="w-full h-full border border-emerald-200/30 relative">
-          {/* Botanical Olive Branches */}
-          <svg className="absolute -top-2 -left-2 w-8 h-8 text-emerald-300/80 drop-shadow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M3 21 C8 15, 14 9, 21 3" strokeLinecap="round" />
-            <path d="M9 13 C9 10, 6 9, 6 9 C6 9, 7 12, 9 13" fill="currentColor" />
-            <path d="M13 9 C13 6, 10 5, 10 5 C10 5, 11 8, 13 9" fill="currentColor" />
-            <path d="M17 5 C17 2, 14 1, 14 1 C14 1, 15 4, 17 5" fill="currentColor" />
-          </svg>
-          <svg className="absolute -bottom-2 -right-2 w-8 h-8 text-emerald-300/80 drop-shadow scale-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M3 21 C8 15, 14 9, 21 3" strokeLinecap="round" />
-            <path d="M9 13 C9 10, 6 9, 6 9 C6 9, 7 12, 9 13" fill="currentColor" />
-            <path d="M13 9 C13 6, 10 5, 10 5 C10 5, 11 8, 13 9" fill="currentColor" />
-            <path d="M17 5 C17 2, 14 1, 14 1 C14 1, 15 4, 17 5" fill="currentColor" />
-          </svg>
+      {frameId === 'film' && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between border-y-2 border-black/40">
+          {/* Top Sprocket Perforations */}
+          <div className="absolute top-0.5 inset-x-0 h-2 flex items-center justify-around px-1 overflow-hidden opacity-85">
+            {[...Array(10)].map((_, i) => (
+              <div key={`st-${i}`} className="w-1.5 h-1 rounded-[1px] bg-white/70 shadow-sm" />
+            ))}
+          </div>
+
+          {/* Bottom Film Stamps */}
+          <div className="absolute bottom-1 inset-x-0 flex justify-between items-center px-2 text-[8px] font-mono text-amber-400/90 tracking-widest uppercase">
+            <span>KODAK 400</span>
+            <span>▶ 24A</span>
+          </div>
+
+          {/* Bottom Sprocket Perforations */}
+          <div className="absolute bottom-0 inset-x-0 h-2 flex items-center justify-around px-1 overflow-hidden opacity-85">
+            {[...Array(10)].map((_, i) => (
+              <div key={`sb-${i}`} className="w-1.5 h-1 rounded-[1px] bg-white/70 shadow-sm" />
+            ))}
+          </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  if (frameId === 'vintage') {
-    return (
-      <div className="pointer-events-none absolute inset-0 z-10 p-2 sm:p-2.5">
-        <div className="w-full h-full border-2 border-stone-300/40 border-dashed relative p-1">
-          <div className="w-full h-full border border-stone-300/25 relative flex flex-col justify-between p-1">
-            <div className="flex justify-between items-center text-[7px] font-serif text-stone-300/60 tracking-wider">
-              <span>EST.</span>
+      {frameId === 'vintage' && (
+        <div className="pointer-events-none absolute inset-0 z-10 p-1.5">
+          <div className="w-full h-full border border-[#5b4a32]/35 border-dashed relative flex flex-col justify-between p-1">
+            <div className="flex justify-between items-center text-[7px] font-serif text-[#5b4a32]/60 tracking-wider">
+              <span>✦</span>
+              <span>✦</span>
+            </div>
+            <div className="flex justify-between items-center text-[7px] font-serif text-[#5b4a32]/70 tracking-widest">
               <span>MEMORIES</span>
-            </div>
-            <div className="flex justify-between items-center text-[7px] font-mono text-stone-300/60 tracking-widest">
-              <span>✦</span>
-              <span>✦</span>
+              <span>EST.</span>
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Preview swatch kecil untuk modal pengaturan bingkai
+ */
+export function FramePreviewSwatch({ frameId }) {
+  const frame = FRAME_MAP[frameId] || FRAME_MAP.none;
+  if (!frameId || frameId === 'none') {
+    return (
+      <div className="w-full h-full bg-[#18181c] flex items-center justify-center text-zinc-500 font-sans text-xs">
+        Tanpa
       </div>
     );
   }
 
-  return null;
+  return (
+    <div
+      className="relative w-full h-full overflow-hidden"
+      style={{ backgroundColor: frame.bg || '#000' }}
+    >
+      <div
+        className="absolute bg-neutral-700/60"
+        style={{
+          left: `${frame.cutout?.left || 10}%`,
+          right: `${frame.cutout?.right || 10}%`,
+          top: `${frame.cutout?.top || 10}%`,
+          height: `${frame.cutout?.height || 70}%`,
+        }}
+      >
+        <img
+          src="/images/satualbum_cover.webp"
+          alt=""
+          className="w-full h-full object-cover pointer-events-none"
+        />
+      </div>
+      {frame.art && (
+        <img
+          src={frame.art}
+          alt=""
+          className="absolute inset-0 w-full h-full object-fill pointer-events-none"
+        />
+      )}
+      {frameId === 'polaroid' && (
+        <div className="absolute bottom-0 inset-x-0 h-2 bg-[#fdfcf9] flex items-center justify-center">
+          <span className="text-[6px] text-[#2b2b2b]/60 font-serif italic">instax</span>
+        </div>
+      )}
+      {frameId === 'film' && (
+        <div className="absolute bottom-0 inset-x-0 h-1.5 bg-[#0e0e0e] flex items-center justify-between px-1 text-[5px] text-amber-400 font-mono">
+          <span>FILM</span>
+        </div>
+      )}
+    </div>
+  );
 }
