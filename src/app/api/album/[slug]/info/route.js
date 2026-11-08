@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
       .eq('slug', slug)
       .maybeSingle();
 
-    // 2. Jika belum ada, cek apakah slug ini ada di tabel invitations (auto create default album)
+    // 2. Jika belum ada di invitation_albums:
     if (!album) {
       const { data: inv } = await supabaseServer
         .from('invitations')
@@ -36,36 +36,60 @@ export async function GET(request, { params }) {
         .eq('slug', slug)
         .maybeSingle();
 
-      if (inv) {
+      if (!inv) {
+        return NextResponse.json({ error: 'Undangan tidak ditemukan' }, { status: 404 });
+      }
+
+      // Hanya buat album baru jika ada parameter create=1 atau init=1 (misal dari WIM Dashboard)
+      const shouldCreate = searchParams.get('create') === '1' || searchParams.get('init') === '1';
+
+      if (!shouldCreate) {
         const invTitle = inv.data?.mempelaiPria && inv.data?.mempelaiWanita
           ? `Album ${inv.data.mempelaiPria} & ${inv.data.mempelaiWanita}`
           : `Album Pernikahan ${inv.slug}`;
 
-        const newAlbumData = {
-          invitation_id: inv.id,
-          slug: inv.slug,
-          title: invTitle,
-          preset_id: 'portra-400',
-          roll_limit: 10,
-          max_guests: 50,
-          reveal_mode: 'instant',
-          is_revealed: true,
-          is_active: true,
-        };
+        return NextResponse.json(
+          {
+            exists: false,
+            album: null,
+            invitationTitle: invTitle,
+            invitationSlug: inv.slug,
+            message: 'Album belum diaktifkan atau telah dihapus untuk acara ini',
+          },
+          {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            },
+          }
+        );
+      }
 
-        const { data: inserted, error: insertError } = await supabaseServer
-          .from('invitation_albums')
-          .insert(newAlbumData)
-          .select()
-          .single();
+      const invTitle = inv.data?.mempelaiPria && inv.data?.mempelaiWanita
+        ? `Album ${inv.data.mempelaiPria} & ${inv.data.mempelaiWanita}`
+        : `Album Pernikahan ${inv.slug}`;
 
-        if (!insertError && inserted) {
-          album = inserted;
-        } else {
-          album = { ...newAlbumData, id: inv.id };
-        }
+      const newAlbumData = {
+        invitation_id: inv.id,
+        slug: inv.slug,
+        title: invTitle,
+        preset_id: 'portra-400',
+        roll_limit: 10,
+        max_guests: 50,
+        reveal_mode: 'instant',
+        is_revealed: true,
+        is_active: true,
+      };
+
+      const { data: inserted, error: insertError } = await supabaseServer
+        .from('invitation_albums')
+        .insert(newAlbumData)
+        .select()
+        .single();
+
+      if (!insertError && inserted) {
+        album = inserted;
       } else {
-        return NextResponse.json({ error: 'Undangan tidak ditemukan' }, { status: 404 });
+        album = { ...newAlbumData, id: inv.id };
       }
     }
 

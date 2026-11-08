@@ -64,22 +64,35 @@ export async function deleteAlbumFolderFromR2(slug) {
   try {
     const client = getR2Client();
     const prefix = `albums/${slug}/`;
-    const listCmd = new ListObjectsV2Command({
-      Bucket: R2_BUCKET_NAME,
-      Prefix: prefix,
-    });
-    const listRes = await client.send(listCmd);
-    if (listRes.Contents && listRes.Contents.length > 0) {
-      const deleteCmd = new DeleteObjectsCommand({
+    let isTruncated = true;
+    let continuationToken = undefined;
+    let totalDeleted = 0;
+
+    while (isTruncated) {
+      const listCmd = new ListObjectsV2Command({
         Bucket: R2_BUCKET_NAME,
-        Delete: {
-          Objects: listRes.Contents.map((item) => ({ Key: item.Key })),
-          Quiet: true,
-        },
+        Prefix: prefix,
+        ContinuationToken: continuationToken,
       });
-      await client.send(deleteCmd);
-      console.log(`[R2] Berhasil menghapus ${listRes.Contents.length} foto untuk album ${slug}`);
+      const listRes = await client.send(listCmd);
+
+      if (listRes.Contents && listRes.Contents.length > 0) {
+        const deleteCmd = new DeleteObjectsCommand({
+          Bucket: R2_BUCKET_NAME,
+          Delete: {
+            Objects: listRes.Contents.map((item) => ({ Key: item.Key })),
+            Quiet: true,
+          },
+        });
+        await client.send(deleteCmd);
+        totalDeleted += listRes.Contents.length;
+      }
+
+      isTruncated = Boolean(listRes.IsTruncated);
+      continuationToken = listRes.NextContinuationToken;
     }
+
+    console.log(`[R2] Berhasil menghapus ${totalDeleted} foto untuk album ${slug}`);
     return true;
   } catch (err) {
     console.error('Failed to delete album folder from R2:', err);

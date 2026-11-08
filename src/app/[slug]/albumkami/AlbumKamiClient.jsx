@@ -65,6 +65,8 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
   const [editCloseTime, setEditCloseTime] = useState('17:00');
   const [showDeletePhotoConfirmModal, setShowDeletePhotoConfirmModal] = useState(false);
   const [showDeleteAlbumConfirmModal, setShowDeleteAlbumConfirmModal] = useState(false);
+  const [isDeletingAlbum, setIsDeletingAlbum] = useState(false);
+  const [isCreatingAlbum, setIsCreatingAlbum] = useState(false);
 
   const hasLoadedOnce = useRef(false);
 
@@ -145,6 +147,14 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
         }
         try {
           localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(info.album));
+        } catch (e) {}
+      } else if (info.exists === false || infoRes.status === 404) {
+        setAlbumData(null);
+        setPhotos([]);
+        setContributors([]);
+        try {
+          localStorage.removeItem(`storykami_cache_${slug}_info`);
+          localStorage.removeItem(`storykami_cache_${slug}_photos`);
         } catch (e) {}
       }
 
@@ -416,6 +426,71 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
       return false;
     } finally {
       setIsSavingSettings(false);
+    }
+  };
+
+  // Hapus seluruh album, foto, data tamu, dan reset pengaturan di database & R2
+  const handleDeleteAlbum = async () => {
+    try {
+      setIsDeletingAlbum(true);
+      const res = await fetch(`/api/album/${slug}/delete-album/`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Bersihkan cache lokal
+        try {
+          localStorage.removeItem(`storykami_cache_${slug}_info`);
+          localStorage.removeItem(`storykami_cache_${slug}_photos`);
+          localStorage.removeItem(`storykami_pending_uploads_${slug}`);
+          localStorage.removeItem(`storykami_host_setup_completed_${slug}`);
+          localStorage.removeItem(`storykami_remaining_rolls_${slug}`);
+        } catch (e) {}
+
+        setAlbumData(null);
+        setPhotos([]);
+        setContributors([]);
+        setShowDeleteAlbumConfirmModal(false);
+        setShowHostSettingsModal(false);
+        setToastMessage('✓ Seluruh data album berhasil dihapus bersih');
+        setTimeout(() => setToastMessage(null), 3500);
+      } else {
+        setToastMessage('✕ Gagal menghapus album: ' + (data.error || 'Terjadi kesalahan'));
+        setTimeout(() => setToastMessage(null), 3500);
+      }
+    } catch (err) {
+      setToastMessage('✕ Gagal menghubungi server');
+      setTimeout(() => setToastMessage(null), 3500);
+    } finally {
+      setIsDeletingAlbum(false);
+    }
+  };
+
+  // Buat / Aktifkan kembali album baru dari dashboard atau halaman host
+  const handleCreateAlbum = async () => {
+    try {
+      setIsCreatingAlbum(true);
+      const res = await fetch(`/api/album/${slug}/info/?create=1&_t=${Date.now()}`, {
+        cache: 'no-store',
+      });
+      const data = await res.json();
+      if (res.ok && data.album) {
+        setAlbumData(data.album);
+        try {
+          localStorage.setItem(`storykami_cache_${slug}_info`, JSON.stringify(data.album));
+        } catch (e) {}
+        setToastMessage('✓ Album baru berhasil diaktifkan!');
+        setTimeout(() => setToastMessage(null), 3000);
+        loadGallery(true);
+      } else {
+        setToastMessage('✕ Gagal membuat album: ' + (data.error || 'Terjadi kesalahan'));
+        setTimeout(() => setToastMessage(null), 3500);
+      }
+    } catch (err) {
+      setToastMessage('✕ Gagal menghubungi server');
+      setTimeout(() => setToastMessage(null), 3500);
+    } finally {
+      setIsCreatingAlbum(false);
     }
   };
 
@@ -789,6 +864,78 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
       <div className="min-h-screen bg-[#12110f] text-white flex flex-col items-center justify-center p-6 text-center">
         <div className="block h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70 mb-3" />
         <p className="font-film text-xs uppercase tracking-widest text-white/50">Memuat album...</p>
+      </div>
+    );
+  }
+
+  // Jika album belum dibuat atau telah dihapus bersih
+  if (!albumData) {
+    if (isHost) {
+      return (
+        <div className="min-h-screen bg-[#070709] text-white flex flex-col items-center justify-center p-6 text-center select-none">
+          {toastMessage && (
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-neutral-900/95 backdrop-blur-md text-white border border-white/20 px-5 py-2.5 rounded-full text-xs font-medium shadow-2xl flex items-center gap-2 pointer-events-none animate-bounce">
+              <span>{toastMessage}</span>
+            </div>
+          )}
+          <div className="w-20 h-20 rounded-3xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-4xl mb-5 shadow-2xl">
+            📸
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/20 bg-amber-400/5 text-[11px] font-medium tracking-widest uppercase text-amber-300 mb-3">
+            Dashboard Host WIM
+          </div>
+          <h1 className="font-serif text-2xl sm:text-3xl font-semibold mb-2 text-white">
+            Album Belum Aktif / Telah Dihapus
+          </h1>
+          <p className="text-zinc-400 text-sm max-w-md mb-8 leading-relaxed font-sans">
+            Album foto tamu untuk acara ini belum dibuat atau sebelumnya telah dihapus bersih. Kamu dapat mengaktifkannya kembali untuk mulai mengumpulkan foto kenangan tamu.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+            <button
+              onClick={handleCreateAlbum}
+              disabled={isCreatingAlbum}
+              className="w-full h-12 rounded-2xl gold-shimmer text-zinc-950 font-semibold text-sm active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {isCreatingAlbum ? (
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>✨</span>
+                  <span>Aktifkan Album Baru</span>
+                </>
+              )}
+            </button>
+            <a
+              href="/wim/dashboard"
+              className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 font-medium text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              Dashboard WIM
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-[#070709] text-white flex flex-col items-center justify-center p-6 text-center select-none">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-4xl mb-5 shadow-2xl">
+          📷
+        </div>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] font-medium tracking-widest uppercase text-zinc-400 mb-3">
+          Album Bersama
+        </div>
+        <h1 className="font-serif text-2xl sm:text-3xl font-semibold mb-2 text-white">
+          Album Belum Dibuka
+        </h1>
+        <p className="text-zinc-400 text-sm max-w-md mb-8 leading-relaxed font-sans">
+          Penyelenggara acara belum mengaktifkan galeri album foto untuk momen ini. Silakan kunjungi kembali undangan digital utama.
+        </p>
+        <a
+          href={`/${slug}`}
+          className="w-full max-w-xs h-12 rounded-2xl gold-shimmer text-zinc-950 font-semibold text-sm active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2"
+        >
+          Buka Undangan Digital
+        </a>
       </div>
     );
   }
@@ -2838,37 +2985,56 @@ export default function AlbumKamiClient({ slug: propSlug, initialPhotoId }) {
       )}
 
       {/* ========================================================================= */}
-      {/* 12. SUB-MODAL: KONFIRMASI HAPUS ACARA                                      */}
+      {/* 12. SUB-MODAL: KONFIRMASI HAPUS ACARA (HAPUS BERSIH ALBUM)                */}
       {/* ========================================================================= */}
       {showDeleteAlbumConfirmModal && (
         <div
-          onClick={() => setShowDeleteAlbumConfirmModal(false)}
+          onClick={() => !isDeletingAlbum && setShowDeleteAlbumConfirmModal(false)}
           className="fixed inset-0 z-[80] bg-black/85 backdrop-blur-md flex items-end justify-center p-0 md:items-center md:p-4 anim-slide-up select-none"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#121215] border-t md:border border-amber-500/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
+            className="w-full max-w-md bg-[#121215] border-t md:border border-red-500/30 rounded-t-[32px] md:rounded-[32px] px-6 pt-4 pb-8 text-white shadow-2xl"
           >
             <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-white/20" />
             
             <div className="text-center mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 mx-auto flex items-center justify-center text-2xl mb-3 text-amber-300 shadow-inner">
-                ⚠️
+              <div className="w-14 h-14 rounded-2xl bg-red-950/40 border border-red-500/30 mx-auto flex items-center justify-center text-2xl mb-3 text-red-400 shadow-inner">
+                🗑️
               </div>
               <h3 className="font-serif text-[22px] font-semibold text-white tracking-tight mb-1.5">
-                Hapus Acara Ini?
+                Hapus Seluruh Album?
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto font-sans">
-                Album ini terhubung secara langsung dengan undangan pernikahan utama Anda di StoryKami. Untuk mengelola atau menghapus seluruh undangan beserta album, silakan lakukan dari <strong className="text-white">Dashboard WIM</strong>.
+                Seluruh foto kenangan tamu, data tamu, dan album ini akan dihapus bersih secara permanen dari database dan penyimpanan server.
+              </p>
+              <p className="text-[11px] text-red-400/90 font-medium mt-2 bg-red-950/30 py-1.5 px-3 rounded-lg border border-red-500/20 max-w-xs mx-auto">
+                Tindakan ini permanen &amp; tidak dapat dibatalkan.
               </p>
             </div>
 
-            <button
-              onClick={() => setShowDeleteAlbumConfirmModal(false)}
-              className="w-full h-11 rounded-xl gold-shimmer text-zinc-950 font-semibold text-xs active:scale-95 transition-all shadow-xl cursor-pointer"
-            >
-              Mengerti &amp; Kembali
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                disabled={isDeletingAlbum}
+                onClick={() => setShowDeleteAlbumConfirmModal(false)}
+                className="h-11 rounded-xl bg-[#18181b] hover:bg-[#202025] border border-white/10 text-zinc-300 font-medium text-xs active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingAlbum}
+                onClick={handleDeleteAlbum}
+                className="h-11 rounded-xl bg-red-950/90 hover:bg-red-900 border border-red-500/50 text-red-200 font-semibold text-xs active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                {isDeletingAlbum ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span>Ya, Hapus Bersih</span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
